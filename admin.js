@@ -1,72 +1,70 @@
+let currentCover = {};
 let covers = [];
 let coverIndex = 0;
 
 async function loadCovers() {
-  covers = await (await fetch('/data/covers.json')).json();
-  populateCoverList();
+  const response = await fetch('/data/covers.json');
+  covers = await response.json();
+  currentCover = covers[coverIndex];
+  populateForm();
 }
 
-function populateCoverList() {
-  const list = document.getElementById('cover-list');
-  list.innerHTML = '';
-  covers.forEach((cover, index) => {
-    const item = document.createElement('li');
-    item.textContent = cover.albumTitle || `Cover ${cover.id}`;
-    item.onclick = () => editCover(index);
-    list.appendChild(item);
-  });
+function populateForm() {
+  document.getElementById('coverId').innerText = currentCover.id;
+  document.getElementById('category').value = currentCover.category;
+  document.getElementById('frontImage').value = currentCover.frontImage;
+  document.getElementById('albumTitle').value = currentCover.albumTitle;
+  document.getElementById('coverLabel').value = currentCover.coverLabel;
+  document.getElementById('musicType').value = currentCover.music.type;
+  document.getElementById('musicContent').value = JSON.stringify(currentCover.music, null, 2);
+  document.getElementById('coverArtPreview').src = currentCover.frontImage;
 }
 
-function editCover(index) {
-  coverIndex = index;
-  const cover = covers[index];
-  ['category', 'frontImage', 'albumTitle', 'coverLabel', 'musicType', 'musicContent'].forEach(id => {
-    document.getElementById(id).value = cover[id] || '';
-  });
-  document.getElementById('coverArtPreview').src = cover.frontImage;
+function saveCoverData() {
+  currentCover.category = document.getElementById('category').value;
+  currentCover.frontImage = document.getElementById('frontImage').value;
+  currentCover.albumTitle = document.getElementById('albumTitle').value;
+  currentCover.coverLabel = document.getElementById('coverLabel').value;
+  currentCover.music.type = document.getElementById('musicType').value;
+  currentCover.music = JSON.parse(document.getElementById('musicContent').value);
+  alert("Cover changes stored locally. Press 'Save' to update covers.json.");
 }
 
-document.querySelector('.save-btn').onclick = async () => {
+async function saveCoversToFile() {
   await fetch('/save-covers', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(covers)
   });
-  alert('Saved');
-};
+  alert('Covers saved successfully!');
+}
 
 document.querySelector('.add-cover-btn').onclick = () => {
-  const newCover = { id: Date.now(), category: '', frontImage: '', albumTitle: '', coverLabel: '', musicType: '', musicContent: '{}' };
+  const newCover = {
+    id: covers.length,
+    category: '',
+    frontImage: '',
+    albumTitle: '',
+    coverLabel: '',
+    music: { type: 'tracks', tracks: [] }
+  };
   covers.push(newCover);
-  populateCoverList();
+  coverIndex = covers.length - 1;
+  currentCover = newCover;
+  populateForm();
 };
 
+document.querySelector('.save-btn').onclick = saveCoversToFile;
 document.querySelector('.delete-btn').onclick = () => {
   covers.splice(coverIndex, 1);
-  populateCoverList();
+  coverIndex = Math.max(0, coverIndex - 1);
+  currentCover = covers[coverIndex] || {};
+  populateForm();
+  alert("Cover removed locally. Press 'Save' to finalize.");
 };
 
-document.getElementById('frontImageUpload').onchange = async (e) => {
-  const file = e.target.files[0];
-  const data = new FormData();
-  data.append('image', file);
-  const res = await (await fetch('/upload', { method: 'POST', body: data })).json();
-  covers[coverIndex].frontImage = res.path;
-  editCover(coverIndex);
-};
-
-document.querySelectorAll('input, textarea').forEach(el => {
-  el.onchange = () => {
-    covers[coverIndex][el.id] = el.value;
-  };
-});
-
-new Sortable(document.getElementById('cover-list'), {
-  animation: 150,
-  onEnd: () => {
-    const newOrder = Array.from(document.getElementById('cover-list').children).map(el => covers.find(c => (c.albumTitle || `Cover ${c.id}`) === el.textContent));
-    covers = newOrder;
-  }
+['category', 'frontImage', 'albumTitle', 'coverLabel', 'musicType', 'musicContent'].forEach(id => {
+  document.getElementById(id).onchange = saveCoverData;
 });
 
 loadCovers();
