@@ -1,0 +1,60 @@
+[
+  {
+    "id": 0,
+    "category": "artist",
+    "frontImage": "https://sp.yimg.com/ib/th?id=OIP.ZgVVA410mjgmT1ykBslmtwHaFk&pid=Api&w=148&h=148&c=7&dpr=2&rs=1",
+    "albumTitle": "IGOR",
+    "coverLabel": "Tyler, the Creator",
+    "music": {
+      "type": "tracks",
+      "tracks": [
+        {
+          "label": "Spotify",
+          "url": "https://open.spotify.com"
+        },
+        {
+          "label": "Instagram",
+          "url": "https://instagram.com"
+        }
+      ]
+    }
+  },
+  {
+    "id": 1,
+    "category": "songwriter",
+    "frontImage": "https://www.billboard.com/wp-content/uploads/media/tyler-the-creator-igor-album-art-2019-billboard-embed.jpg?w=600",
+    "albumTitle": "Flower Boy",
+    "coverLabel": "Tyler, the Creator",
+    "music": {
+      "type": "tracks",
+      "tracks": [
+        {
+          "label": "TikTok",
+          "url": "https://tiktok.com"
+        }
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "category": "producer",
+    "frontImage": "https://www.billboard.com/wp-content/uploads/media/tyler-the-creator-igor-album-art-2019-billboard-embed.jpg?w=600",
+    "albumTitle": "Call Me If You Get Lost",
+    "coverLabel": "Tyler, the Creator",
+    "music": {
+      "type": "embed",
+      "embedHtml": "<iframe allow='autoplay *; encrypted-media *; fullscreen *' frameborder='0' height='450' style='width:100%;max-width:660px;overflow:hidden;background:transparent;' sandbox='allow-forms allow-popups allow-same-origin allow-scripts allow-top-navigation-by-user-activation' src='https://embed.music.apple.com/us/album/lumberjack/1574377334?i=1574377344'></iframe>"
+    }
+  },
+  {
+    "id": 3,
+    "category": "Artist",
+    "frontImage": "https://images.search.yahoo.com/search/images;_ylt=AwrOs9wc3.xnr.wBFKhXNyoA;_ylu=Y29sbwNncTEEcG9zAzEEdnRpZAMEc2VjA3Nj?ei=utf-8&p=kanye+cover&fr=aaplw&th=473&tw=474&imgurl=https%3A%2F%2Fwallpaperaccess.com%2Ffull%2F4966822.jpg&rurl=https%3A%2F%2Fwallpaperaccess.com%2Fkanye-west-album-cover&size=1822KB&name=Kanye+West+Album+Cover+Wallpapers+-+Top+Free+Kanye+West+Album+Cover+Backgrounds+-+WallpaperAccess&oid=4&h=2397&w=2402&turl=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.zZvTxAaKBqdEcOugVpYaawHaHZ%26pid%3DApi&tt=Kanye+West+Album+Cover+Wallpapers+-+Top+Free+Kanye+West+Album+Cover+Backgrounds+-+WallpaperAccess&sigr=7HXHp5PShSmo&sigit=67sofewxKKdZ&sigi=wuq5MgH1CwlE&sign=2Vce.cXL4vzM&sigt=2Vce.cXL4vzM",
+    "albumTitle": "YE",
+    "coverLabel": "YE",
+    "music": {
+      "type": "tracks",
+      "tracks": []
+    }
+  }
+]

@@ -1,0 +1,282 @@
+@font-face {
+  font-family: 'GT America';
+  src: url('app/assets/fonts/GT-America-Standard-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: 'GT America';
+  src: url('app/assets/fonts/GT-America-Standard-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #111;
+  overflow: hidden;
+  font-family: 'GT America', sans-serif;
+  letter-spacing: -0.5px;
+}
+@media (max-width: 768px) {
+  html, body {
+    font-size: 90%;
+  }
+}
+
+/* Filter menu */
+.filter-menu-wrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.5);
+}
+.filter-menu {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  white-space: nowrap;
+}
+.filter-menu button {
+  margin: 0 8px;
+  padding: 2px 5px;
+  font-size: 14px;
+  color: #fff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: 'GT America', sans-serif;
+  font-weight: 400;
+  transition: all 0.2s ease;
+  letter-spacing: -1px;
+}
+.filter-menu button:hover,
+.filter-menu button:focus {
+  font-weight: 700;
+  -webkit-text-stroke: 0.5px #fff;
+}
+.filter-menu button.active {
+  font-weight: 700;
+  -webkit-text-stroke: 0.5px #fff;
+}
+@media (max-width: 768px) {
+  .filter-menu-wrapper {
+    width: 85vw;
+    margin: 0 auto;
+    overflow: hidden;
+    padding: 10px;
+  }
+  .filter-menu {
+    justify-content: flex-start;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-menu-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40px;
+    height: 100%;
+    pointer-events: none;
+    background: linear-gradient(to left, #111, transparent);
+  }
+  .filter-menu button:last-child {
+    margin-right: 50px;
+  }
+  .filter-menu::-webkit-scrollbar {
+    display: none;
+  }
+  .filter-menu {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* Coverflow layout */
+.coverflow-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: visible;
+}
+.coverflow-container::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0)    0%,
+      rgba(0,0,0,0.85) 20%,
+      rgba(0,0,0,0.85) 60%,
+      rgba(0,0,0,0)    300%
+    ),
+    radial-gradient(
+      circle at 50% 100%,
+      rgba(0,0,0,0.85) 0%,
+      rgba(0,0,0,0)    50%
+    );
+}
+.coverflow-content {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 2500px;
+  transform-style: preserve-3d;
+}
+
+/* Covers */
+.cover {
+  position: absolute;
+  z-index: 2;
+  width: clamp(140px, 35vw, 320px);
+  height: clamp(140px, 35vw, 320px);
+  left: 50%;
+  top: 35%;
+  transform: translate(-50%, -50%);
+  transform-style: preserve-3d;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  pointer-events: auto;
+}
+.cover::before {
+  content: "";
+  position: absolute;
+  top: -20px;
+  left: -20px;
+  width: calc(100% + 40px);
+  height: calc(100% + 40px);
+  background: transparent;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Flip logic */
+.flip-container {
+  width: 100%;
+  height: 100%;
+  perspective: 1000px;
+  transform-style: preserve-3d;
+  transition: transform 0.6s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+}
+.cover-front,
+.cover-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  backface-visibility: hidden;
+}
+.cover-front {
+  background-size: cover;
+  background-position: center;
+  transform: rotateY(0deg);
+}
+.cover-front::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -80%;
+  width: 100%;
+  height: 80%;
+  background: inherit;
+  transform: scaleY(-1);
+  opacity: 0.6;
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+  pointer-events: none;
+}
+.cover-back {
+  background: #111;
+  color: #fff;
+  transform: rotateY(180deg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  padding: 1rem;
+  text-align: left;
+  box-sizing: border-box;
+  overflow-y: auto;
+  font-family: 'GT America', sans-serif;
+  pointer-events: auto;
+}
+.flip-container.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Back content: embed or track list */
+.back-content {
+  width: 90%;
+  height: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-sizing: border-box;
+}
+.back-content iframe {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+.track-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  display: block;
+}
+.track-list li {
+  margin-bottom: 0.75rem;
+}
+.track-list li a {
+  color: #fff;
+  text-decoration: none;
+  font-family: 'GT America', sans-serif;
+  font-weight: 400;
+}
+.track-list li a:hover {
+  text-decoration: underline;
+}
+
+/* Labels under covers */
+.cover-label {
+  position: absolute;
+  bottom: -3.2rem;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: #fff;
+  font-size: 0.9rem;
+  display: none;
+  font-family: 'GT America', sans-serif;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.cover.cover-active .cover-label {
+  display: block;
+}
+
+/* Filter hide animation */
+.removing {
+  opacity: 0;
+  transform: translate(-50%, -50%) translateY(20px) scale(0.8) rotateY(0deg) !important;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  pointer-events: none;
+}
+.hidden {
+  display: none !important;
+}
+
