@@ -12,7 +12,10 @@
   "dependencies": {
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "express-basic-auth": "^1.2.1",
+    "multer": "^1.4.5-lts.2",
+    "sortablejs": "^1.15.6"
   },
   "description": ""
 }
