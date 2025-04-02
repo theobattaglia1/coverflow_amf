@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>All My Friends – Admin</title>
+  <link rel="stylesheet" href="admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+</head>
+<body>
+<div class="admin-container">
+  <div class="admin-header">
+    <button class="add-cover-btn">Add Cover</button>
+    <button class="save-btn">Save</button>
+  </div>
+
+  <ul id="cover-list"></ul>
+
+  <div class="cover-edit-container">
+    <div class="left-input-section">
+      <input id="category" placeholder="Category">
+      <input id="albumTitle" placeholder="Album Title">
+      <input id="coverLabel" placeholder="Cover Label">
+      <select id="musicType">
+        <option value="tracks">Tracks</option>
+        <option value="embed">Embed</option>
+      </select>
+      <textarea id="musicContent" placeholder="Music Content"></textarea>
+      <input type="file" id="frontImageUpload">
+    </div>
+
+    <div class="right-cover-section">
+      <img id="coverArtPreview" class="cover-art-preview">
+      <button class="delete-btn">Delete This Cover</button>
+    </div>
+  </div>
+</div>
+<script src="admin.js"></script>
+</body>
+</html>
+
