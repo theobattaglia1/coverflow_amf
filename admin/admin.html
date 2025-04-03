@@ -2,53 +2,104 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>ALL MY FRIENDS – ADMIN</title>
-  <link rel="stylesheet" href="admin.css">
+  <title>Edit Cover - ALL MY FRIENDS ADMIN</title>
+  <link rel="stylesheet" href="/admin/admin.css">
+  <style>
+    body { font-family: 'Inter', sans-serif; background: #121212; color: #fff; padding: 30px; }
+    h1 { font-size: 22px; font-weight: bold; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input, textarea, select {
+      width: 100%; padding: 8px; border-radius: 6px; border: none; background: #2a2a2a; color: white; box-sizing: border-box;
+    }
+    .btn { padding: 10px 20px; border: none; cursor: pointer; border-radius: 6px; font-weight: bold; }
+    .btn-save { background: #18d860; color: white; }
+    .btn-delete { background: #e63946; color: white; }
+    img.preview { width: 250px; height: auto; margin-top: 15px; border-radius: 8px; }
+  </style>
 </head>
 <body>
-  <div class="admin-container">
-    <div class="admin-header">
-      <h1>ALL MY FRIENDS – ADMIN</h1>
-      <div>
-        <button class="add-cover-btn">+ ADD COVER</button>
-        <button class="save-btn">💾 SAVE</button>
-      </div>
-    </div>
 
-    <div class="cover-edit-container">
-      <div class="left-input-section">
-        <div class="cover-id-header">COVER ID <span id="coverId">0</span></div>
-
-        <label class="input-label">CATEGORY</label>
-        <input type="text" id="category">
-
-        <label class="input-label">FRONT IMAGE URL</label>
-        <input type="text" id="frontImage">
-
-        <label class="input-label">ALBUM TITLE</label>
-        <input type="text" id="albumTitle">
-
-        <label class="input-label">COVER LABEL</label>
-        <input type="text" id="coverLabel">
-
-        <label class="input-label">MUSIC TYPE</label>
-        <select id="musicType">
-          <option value="tracks">Track List</option>
-          <option value="embed">Embed HTML</option>
-        </select>
-
-        <label class="input-label">MUSIC CONTENT (JSON)</label>
-        <textarea id="musicContent">{ "tracks": [] }</textarea>
-      </div>
-
-      <div class="right-cover-section">
-        <img src="" alt="Cover Art Preview" class="cover-art-preview" id="coverArtPreview">
-        <button class="delete-btn">🗑 DELETE THIS COVER</button>
-      </div>
-    </div>
+<h1>Edit Cover</h1>
+<form id="coverForm">
+  <div class="form-group">
+    <label>Category</label>
+    <input id="category" name="category">
   </div>
 
-  <script src="admin.js"></script>
+  <div class="form-group">
+    <label>Front Image URL</label>
+    <input id="frontImage" name="frontImage">
+  </div>
+
+  <div class="form-group">
+    <label>Album Title</label>
+    <input id="albumTitle" name="albumTitle">
+  </div>
+
+  <div class="form-group">
+    <label>Cover Label</label>
+    <input id="coverLabel" name="coverLabel">
+  </div>
+
+  <div class="form-group">
+    <label>Music Type</label>
+    <select id="musicType" name="musicType">
+      <option value="tracks">Track List</option>
+      <option value="embed">Embed</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Music Content (JSON)</label>
+    <textarea id="musicContent" name="musicContent" rows="5"></textarea>
+  </div>
+
+  <img class="preview" id="imgPreview" src="">
+  <br>
+  <button class="btn btn-save" type="button" onclick="saveCover()">Save</button>
+  <button class="btn btn-delete" type="button" onclick="deleteCover()">Delete</button>
+</form>
+
+<script>
+(async function(){
+  const urlParams = new URLSearchParams(window.location.search);
+  const id = urlParams.get('id');
+  const cover = id ? (await fetch('/data/covers.json').then(r => r.json())).find(c => c.id.toString() === id) : {};
+
+  if (cover) {
+    Object.entries(cover).forEach(([key, value]) => {
+      if (key === 'music') {
+        document.getElementById('musicContent').value = JSON.stringify(value, null, 2);
+      } else if (document.getElementById(key)) {
+        document.getElementById(key).value = value;
+      }
+    });
+    document.getElementById('imgPreview').src = cover.frontImage || '';
+  }
+
+  window.saveCover = async function() {
+    const formData = Object.fromEntries(new FormData(document.getElementById('coverForm')));
+    await fetch('/save-cover', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        id,
+        ...formData,
+        music: JSON.parse(formData.musicContent || '{}')
+      })
+    });
+    window.location = '/admin/dashboard.html';
+  };
+
+  window.deleteCover = async function() {
+    await fetch('/delete-cover', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({id})
+    });
+    window.location = '/admin/dashboard.html';
+  };
+})();
+</script>
+
 </body>
 </html>
-
