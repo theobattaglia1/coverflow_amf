@@ -1,71 +1,78 @@
-document.addEventListener("DOMContentLoaded", async () => {
+(async function(){
   const urlParams = new URLSearchParams(window.location.search);
-  const coverId = urlParams.get("id");
-  let currentCover = {};
+  let id = urlParams.get('id');
+  const cover = id ? (await fetch(`/data/covers.json`).then(r => r.json())).find(c => c.id == id) : {};
 
-  const elements = {
-    coverId: document.getElementById('coverId'),
-    category: document.getElementById('category'),
-    frontImage: document.getElementById('frontImage'),
-    albumTitle: document.getElementById('albumTitle'),
-    coverLabel: document.getElementById('coverLabel'),
-    musicType: document.getElementById('musicType'),
-    musicContent: document.getElementById('musicContent'),
-    coverArtPreview: document.getElementById('coverArtPreview'),
-    saveBtn: document.querySelector('.save-btn'),
-    deleteBtn: document.querySelector('.delete-btn')
-  };
-
-  async function loadCover(id) {
-    const covers = await (await fetch('/data/covers.json')).json();
-    currentCover = covers.find(c => c.id.toString() === id.toString()) || {};
-    populateForm();
+  if (cover) {
+    Object.entries(cover).forEach(([key, value]) => {
+      const el = document.getElementById(key);
+      if (el) el.value = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+    });
+    if (cover.frontImage) document.getElementById('imgPreview').src = cover.frontImage;
+    if (cover.fontFamily) document.getElementById('fontFamily').value = cover.fontFamily;
+    if (cover.fontSize) document.getElementById('fontSize').value = cover.fontSize;
   }
 
-  function populateForm() {
-    elements.coverId.textContent = currentCover.id || 'New Cover';
-    elements.category.value = currentCover.category || '';
-    elements.frontImage.value = currentCover.frontImage || '';
-    elements.albumTitle.value = currentCover.albumTitle || '';
-    elements.coverLabel.value = currentCover.coverLabel || '';
-    elements.musicType.value = currentCover.music?.type || '';
-    elements.musicContent.value = JSON.stringify(currentCover.music || {}, null, 2);
-    elements.coverArtPreview.src = currentCover.frontImage || '/admin/placeholder-igor.jpg';
-  }
+  window.saveCover = async function () {
+    const form = document.getElementById('coverForm');
+    const data = Object.fromEntries(new FormData(form));
+    const isNew = !id;
+    if (isNew) id = Date.now().toString();
 
-  async function saveCover() {
-    const coverData = {
-      id: elements.coverId.textContent !== 'New Cover' ? elements.coverId.textContent : null,
-      category: elements.category.value,
-      frontImage: elements.frontImage.value,
-      albumTitle: elements.albumTitle.value,
-      coverLabel: elements.coverLabel.value,
-      music: JSON.parse(elements.musicContent.value || '{}'),
-      musicType: elements.musicType.value,
+    const body = {
+      id,
+      category: data.category || '',
+      frontImage: data.frontImage || '',
+      albumTitle: data.albumTitle || '',
+      coverLabel: data.coverLabel || '',
+      fontFamily: data.fontFamily || '',
+      fontSize: data.fontSize || '',
+      music: {
+        type: "embed",
+        embedHtml: data.musicContent || ''
+      }
     };
+
+    console.log("📦 Saving:", body);
 
     await fetch('/save-cover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(coverData)
+      body: JSON.stringify(body)
     });
 
-    window.location.href = '/admin/dashboard.html';
-  }
+    window.location = '/admin/dashboard.html';
+  };
 
-  async function deleteCover() {
-    if (!currentCover.id) return;
-    await fetch('/delete-cover', {
+  // Drag-and-drop image upload
+  const dropArea = document.getElementById('dropArea');
+  const fileInput = document.getElementById('imageInput');
+  const preview = document.getElementById('imgPreview');
+
+  dropArea.addEventListener('click', () => fileInput.click());
+  dropArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+  });
+  dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
+  dropArea.addEventListener('drop', e => {
+    e.preventDefault();
+    dropArea.classList.remove('dragover');
+    handleUpload(e.dataTransfer.files[0]);
+  });
+  fileInput.addEventListener('change', e => {
+    handleUpload(e.target.files[0]);
+  });
+
+  async function handleUpload(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch('/upload-image', {
       method: 'POST',
-      headers: { 'Content-Type':'application/json' },
-      body: JSON.stringify({ id: currentCover.id })
+      body: formData
     });
-    window.location.href = '/admin/dashboard.html';
+    const { url } = await res.json();
+    document.getElementById('frontImage').value = url;
+    preview.src = url;
   }
-
-  elements.saveBtn.addEventListener('click', saveCover);
-  elements.deleteBtn.addEventListener('click', deleteCover);
-
-  if (coverId) loadCover(coverId);
-  else populateForm();
-});
+})();

@@ -1,86 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>ALL MY FRIENDS ADMIN</title>
-  <link rel="stylesheet" href="/admin/admin.css">
+  <link rel="stylesheet" href="/admin/admin.css" />
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-  <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #121212; color: #f5f5f5; margin: 0; padding: 20px;
-    }
-    h1 { font-size: 24px; margin-bottom: 20px; font-weight: bold; }
-    .btn {
-      padding: 10px 15px; border-radius: 5px; border: none; cursor: pointer; font-weight: bold; margin-right: 10px;
-    }
-    .btn-primary { background: #18d860; color: white; }
-    .btn-secondary { background: #333; color: white; }
-    .btn:hover { opacity: 0.9; }
-    .dashboard-container {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px;
-    }
-    .cover-card {
-      background: #222; border-radius: 10px; padding: 15px; text-align: center; transition: transform 0.3s, box-shadow 0.3s;
-    }
-    .cover-card:hover {
-      transform: translateY(-5px); box-shadow: 0 10px 15px rgba(0,0,0,0.3);
-    }
-    .cover-card img { width: 100%; border-radius: 8px; margin-bottom: 10px; }
-    .search-input {
-      padding: 10px; border-radius: 8px; border: none; background: #2a2a2a; color: white; width: 100%; margin-bottom: 25px; box-sizing: border-box;
-    }
-  </style>
 </head>
 <body>
+  <h1>ALL COVERS DASHBOARD</h1>
 
-<h1>ALL COVERS DASHBOARD</h1>
+  <button class="btn btn-primary" onclick="window.location.href='/admin/admin.html'">➕ Add New</button>
+  <button class="btn btn-secondary" onclick="saveCovers()">💾 Save Covers</button>
+  <button class="btn btn-secondary" onclick="pushToTest()">🚀 Push to Test Site</button>
 
-<div>
-  <button class="btn btn-secondary" onclick="testFrontend()">Test Frontend</button>
-  <button class="btn btn-primary" onclick="publishLive()">Publish Live</button>
-  <button class="btn btn-secondary" onclick="addNewCover()">➕ Add Cover</button>
-</div>
+  <!-- Global font control panel -->
+  <div class="style-panel">
+    <h2>Global Font Settings</h2>
+    <div class="style-row">
+      <label>Font Family</label>
+      <select id="globalFont"></select>
+    </div>
+    <div class="style-row">
+      <label>Font Size</label>
+      <input type="number" id="globalSize" value="16" />
+    </div>
+    <div class="style-row">
+      <label>Upload Font</label>
+      <input type="file" id="uploadFont" accept=".woff2,.otf,.ttf" />
+    </div>
+    <button class="btn-style" id="saveStyle">💾 Save Style Settings</button>
+  </div>
 
-<input type="text" id="search" class="search-input" placeholder="🔍 Search covers...">
+  <div class="dropzone" id="coverDropzone">📥 Drag & Drop a Cover Image Here</div>
+  <div class="dashboard-container" id="coversContainer"></div>
 
-<div class="dashboard-container" id="coversContainer"></div>
-
-<script>
-async function loadCovers() {
-  covers = await (await fetch('/data/covers.json')).json();
-  renderCovers(covers);
-}
-
-function renderCovers(covers) {
-  const container = document.getElementById('coversContainer');
-  container.innerHTML = covers.map(cover => `
-    <div class="cover-card" data-id="${cover.id}">
-      <img src="${cover.frontImage}" alt="${cover.albumTitle}">
-      <strong>${cover.albumTitle || 'Untitled'}</strong>
-      <div>${cover.coverLabel || 'No Label'}</div>
-      <button class="btn btn-secondary" onclick="editCover(${cover.id})">✏️ Edit</button>
-    </div>`).join('');
-
-  Sortable.create(container, { animation: 150, onEnd: saveOrder });
-}
-
-function editCover(id) { window.location.href = `/admin/admin.html?id=${id}`; }
-function addNewCover() { window.location.href = `/admin/admin.html`; }
-function testFrontend() { window.open('/index.html', '_blank'); }
-function publishLive() { alert('Changes published!'); }
-
-function saveOrder() {
-  const orderedIds = [...document.querySelectorAll('.cover-card')].map(card => parseInt(card.dataset.id));
-  fetch('/save-order', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({order: orderedIds})});
-}
-
-document.getElementById('search').addEventListener('input', e => {
-  const term = e.target.value.toLowerCase();
-  renderCovers(covers.filter(c => c.albumTitle.toLowerCase().includes(term)));
-});
-
-loadCovers();
-</script>
+  <script src="/admin/dashboard.js"></script>
 </body>
 </html>

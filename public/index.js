@@ -6,21 +6,60 @@ let coverSpacing, anglePerOffset, minScale;
 const maxAngle = 80;
 
 const coverflowEl = document.getElementById("coverflow");
+const hoverDisplay = document.getElementById("hover-credits");
 
-fetch("/data/covers.json")
+// Inject global font/style
+fetch('/data/test-styles.json')
+  .then(res => res.json())
+  .then(style => {
+    const styleTag = document.createElement("style");
+    styleTag.id = "global-styles";
+
+    const font = style.fontFamily || 'GT America';
+    const size = style.fontSize || 16;
+
+    styleTag.innerHTML = `
+      html, body {
+        font-family: '${font}', sans-serif;
+        font-size: ${size}px;
+      }
+      .cover-label {
+        font-family: '${style.overrides?.coverLabel?.fontFamily || font}';
+        font-size: ${style.overrides?.coverLabel?.fontSize || 14}px;
+      }
+      .filter-label {
+        font-family: '${style.overrides?.filterLabel?.fontFamily || font}';
+        font-size: ${style.overrides?.filterLabel?.fontSize || 13}px;
+      }
+      .hover-credits-container {
+        font-family: '${style.overrides?.hoverCredits?.fontFamily || font}';
+        font-size: ${style.overrides?.hoverCredits?.fontSize || 12}px;
+      }
+    `;
+
+    document.head.appendChild(styleTag); // ✅ This now runs AFTER styleTag.innerHTML
+  });
+
+  fetch('/data/test-covers.json')
   .then(res => res.json())
   .then(data => {
     allCovers = data;
     covers = [...allCovers];
     activeIndex = Math.floor(covers.length / 2);
-    renderCovers();
     updateLayoutParameters();
+    renderCovers();
     renderCoverFlow();
   });
 
+function updateLayoutParameters() {
+  const vw = window.innerWidth;
+  coverSpacing = Math.max(120, vw * 0.18);
+  anglePerOffset = vw < 600 ? 50 : 65;
+  minScale = vw < 600 ? 0.45 : 0.5;
+}
+
 function renderCovers() {
   coverflowEl.innerHTML = "";
-
   covers.forEach((cover, i) => {
     const wrapper = document.createElement("div");
     wrapper.className = "cover";
@@ -42,23 +81,6 @@ function renderCovers() {
 
     if (cover.music?.type === "embed") {
       backContent.innerHTML = cover.music.embedHtml;
-    } else if (cover.music?.type === "tracks") {
-      const list = document.createElement("ul");
-      list.className = "track-list";
-      cover.music.tracks.forEach((track) => {
-        const li = document.createElement("li");
-        if (track.url) {
-          const a = document.createElement("a");
-          a.href = track.url;
-          a.target = "_blank";
-          a.textContent = track.label;
-          li.appendChild(a);
-        } else {
-          li.textContent = track.label;
-        }
-        list.appendChild(li);
-      });
-      backContent.appendChild(list);
     }
 
     back.appendChild(backContent);
@@ -72,16 +94,14 @@ function renderCovers() {
     wrapper.appendChild(label);
 
     wrapper.addEventListener("click", (e) => {
-      if (e.target.closest(".cover-back")) return;
-      const offset = parseInt(wrapper.dataset.index, 10) - activeIndex;
+      const i = parseInt(wrapper.dataset.index, 10);
+      const offset = i - activeIndex;
       const flipContainer = wrapper.querySelector(".flip-container");
 
-      if (offset === 0) {
-        if (!flipContainer.classList.contains("flipped")) {
-          flipContainer.classList.add("flipped");
-        }
+      if (offset === 0 && flipContainer) {
+        flipContainer.classList.toggle("flipped");
       } else {
-        setActiveIndex(parseInt(wrapper.dataset.index, 10));
+        setActiveIndex(i);
       }
     });
 
@@ -89,38 +109,14 @@ function renderCovers() {
   });
 }
 
-function updateLayoutParameters() {
-  if (window.innerWidth < 768) {
-    coverSpacing = 80;
-    anglePerOffset = 40;
-    minScale = 0.4;
-  } else {
-    coverSpacing = Math.max(100, window.innerWidth * 0.15);
-    anglePerOffset = 75;
-    minScale = 0.5;
-  }
-}
-
-function computeEffectiveOffset(offset) {
-  const absOffset = Math.abs(offset);
-  if (absOffset <= 1) return offset;
-  const compressionFactor = 0.7;
-  const extra = absOffset - 1;
-  const compressedExtra = extra * compressionFactor;
-  return offset < 0 ? -(1 + compressedExtra) : 1 + compressedExtra;
-}
-
 function renderCoverFlow() {
-  const domCovers = Array.from(document.querySelectorAll(".cover"));
-
-  domCovers.forEach((cover) => {
+  document.querySelectorAll(".cover").forEach((cover) => {
     const i = parseInt(cover.dataset.index, 10);
     const offset = i - activeIndex;
-    const effOffset = computeEffectiveOffset(offset);
-
+    const effOffset = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
     const translateX = effOffset * coverSpacing;
     const rotateY = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
-    const scale = Math.max(minScale, 1 - Math.abs(offset) * 0.1);
+    const scale = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
 
     cover.style.transform = `
       translate(-50%, -50%)
@@ -131,15 +127,9 @@ function renderCoverFlow() {
     cover.style.zIndex = covers.length - Math.abs(offset);
 
     const flipContainer = cover.querySelector(".flip-container");
-    if (offset !== 0 && flipContainer?.classList.contains("flipped")) {
-      flipContainer.classList.remove("flipped");
-    }
+    if (offset !== 0) flipContainer?.classList.remove("flipped");
 
-    if (offset === 0) {
-      cover.classList.add("cover-active");
-    } else {
-      cover.classList.remove("cover-active");
-    }
+    cover.classList.toggle("cover-active", offset === 0);
   });
 }
 
@@ -148,15 +138,47 @@ function setActiveIndex(index) {
   renderCoverFlow();
 }
 
-// Filter logic
-document.querySelectorAll(".filter-menu button").forEach((btn) => {
+// Filter dropdown logic
+const filterButtons = Array.from(document.querySelectorAll(".filter-label"));
+const filterDropdown = document.createElement("div");
+filterDropdown.className = "filter-dropdown";
+document.body.appendChild(filterDropdown);
+
+filterButtons.forEach((btn) => {
+  btn.addEventListener("mouseenter", () => {
+    const filter = btn.dataset.filter;
+    const results = allCovers
+      .filter(c => filter === "all" || c.category?.includes(filter));
+
+    const items = results.map(c => {
+      return `<div class="dropdown-item" data-id="${c.id}">
+        ${c.albumTitle || "Untitled"} — ${c.coverLabel || ""}
+      </div>`;
+    }).join("") || "<div class='dropdown-item'>No results</div>";
+
+    filterDropdown.innerHTML = items;
+    filterDropdown.style.display = "block";
+
+    const rect = btn.getBoundingClientRect();
+    filterDropdown.style.left = `${rect.left}px`;
+    filterDropdown.style.top = `${rect.bottom + 5}px`;
+  });
+
+  btn.addEventListener("mouseleave", () => {
+    setTimeout(() => {
+      if (!filterDropdown.matches(":hover")) {
+        filterDropdown.style.display = "none";
+      }
+    }, 100);
+  });
+
   btn.addEventListener("click", () => {
-    document.querySelectorAll(".filter-menu button").forEach((b) => b.classList.remove("active"));
+    filterButtons.forEach(b => b.classList.remove("active"));
     btn.classList.add("active");
     const filter = btn.dataset.filter;
     covers = filter === "all"
       ? [...allCovers]
-      : allCovers.filter((c) => c.category?.includes(filter));
+      : allCovers.filter(c => c.category?.includes(filter));
     covers.forEach((c, i) => c.index = i);
     activeIndex = Math.floor(covers.length / 2);
     renderCovers();
@@ -164,7 +186,31 @@ document.querySelectorAll(".filter-menu button").forEach((btn) => {
   });
 });
 
-// Nav + resize
+filterDropdown.addEventListener("mouseleave", () => {
+  filterDropdown.style.display = "none";
+});
+filterDropdown.addEventListener("click", (e) => {
+  const id = e.target.dataset.id;
+  if (!id) return;
+  const matchIndex = covers.findIndex(c => c.id.toString() === id);
+  if (matchIndex !== -1) {
+    setActiveIndex(matchIndex);
+    filterDropdown.style.display = "none";
+  }
+});
+
+// Float animation
+function animateKeywordDrift() {
+  const now = Date.now() / 1000;
+  filterButtons.forEach((label, i) => {
+    const offset = Math.sin(now + i) * 10;
+    label.style.transform = `translateY(${offset}px)`;
+  });
+  requestAnimationFrame(animateKeywordDrift);
+}
+animateKeywordDrift();
+
+// Navigation
 window.addEventListener("resize", () => {
   updateLayoutParameters();
   renderCoverFlow();
@@ -179,18 +225,18 @@ coverflowEl.addEventListener("wheel", (e) => {
     if (!wheelLock) {
       setActiveIndex(activeIndex + (e.deltaX > 0 ? 1 : -1));
       wheelLock = true;
-      setTimeout(() => { wheelLock = false; }, 100);
+      setTimeout(() => { wheelLock = false; }, 150);
     }
   }
 }, { passive: false });
+
 let touchStartX = 0;
 coverflowEl.addEventListener("touchstart", (e) => {
   touchStartX = e.changedTouches[0].screenX;
 });
 coverflowEl.addEventListener("touchend", (e) => {
   const touchEndX = e.changedTouches[0].screenX;
-  const threshold = 80;
+  const threshold = 60;
   if (touchEndX < touchStartX - threshold) setActiveIndex(activeIndex + 1);
   else if (touchEndX > touchStartX + threshold) setActiveIndex(activeIndex - 1);
 });
-

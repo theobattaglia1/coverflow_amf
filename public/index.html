@@ -1,29 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Animated Filtered Cover Flow</title>
+  <title>All My Friends — Coverflow</title>
   <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="/fonts.css" />
+  <style id="global-styles"></style>
 </head>
 <body>
-
-  <!-- Filter Menu -->
-  <div class="filter-menu-wrapper">
-    <nav class="filter-menu" id="filter-menu">
-      <button data-filter="all" class="active">ALL</button>
-      <button data-filter="artist">ARTISTS</button>
-      <button data-filter="songwriter">SONGWRITERS</button>
-      <button data-filter="producer">PRODUCERS</button>
-      <button data-filter="about">ABOUT US</button>
-    </nav>
+  <div class="logo-container">
+    <img src="/assets/logo.png" alt="AMF Logo" class="site-logo">
   </div>
 
-  <!-- Coverflow Container -->
+  <div class="filter-container">
+    <span class="filter-label active" data-filter="all">ALL</span>
+    <span class="filter-label" data-filter="artist">ARTISTS</span>
+    <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
+    <span class="filter-label" data-filter="producer">PRODUCERS</span>
+    <span class="filter-label" data-filter="about">ABOUT US</span>
+  </div>
+
   <div class="coverflow-container">
     <div class="coverflow-content" id="coverflow"></div>
   </div>
 
+  <div id="hover-credits" class="hover-credits-container"></div>
+
   <script src="index.js"></script>
 </body>
 </html>
-

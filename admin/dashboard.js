@@ -1,24 +1,30 @@
 let covers = [];
+let fonts = [];
 
 async function loadCovers() {
-  covers = await (await fetch('/data/covers.json')).json();
-  renderCovers(covers);
+  const res = await fetch('/data/covers.json');
+  covers = await res.json();
+  renderCovers();
 }
 
-function renderCovers(displayCovers) {
+function renderCovers() {
   const container = document.getElementById('coversContainer');
-  container.innerHTML = displayCovers.map(cover => `
+  container.innerHTML = covers.map(cover => `
     <div class="cover-card" data-id="${cover.id}">
       <img src="${cover.frontImage}" alt="${cover.albumTitle}">
-      <strong>${cover.albumTitle}</strong><br>
-      <small>${cover.coverLabel}</small><br>
-      <button onclick="editCover(${cover.id})">✏️ Edit</button>
+      <strong>${cover.albumTitle || "Untitled"}</strong><br>
+      <small>${cover.coverLabel || "No Label"}</small><br>
+      <button onclick="editCover('${cover.id}')">✏️ Edit</button>
     </div>
-  `).join('');
+  `).join("");
 
   new Sortable(container, {
-    animation: 150,
-    onEnd: saveOrder
+    animation: 200,
+    onEnd: () => {
+      const orderedIds = [...document.querySelectorAll('.cover-card')].map(c => c.dataset.id);
+      covers = orderedIds.map(id => covers.find(c => c.id.toString() === id));
+      console.log("🔄 Covers reordered:", orderedIds);
+    }
   });
 }
 
@@ -26,51 +32,109 @@ function editCover(id) {
   window.location.href = `/admin/admin.html?id=${id}`;
 }
 
-function saveOrder() {
-  const orderedIds = [...document.querySelectorAll('.cover-card')].map(card => parseInt(card.dataset.id));
-  covers.sort((a, b) => orderedIds.indexOf(a.id) - orderedIds.indexOf(b.id));
-}
-
 async function saveCovers() {
-  await fetch('/save-covers', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(covers)
-  });
-  window.open('/', '_blank');
+  const orderedIds = [...document.querySelectorAll('.cover-card')].map(c => c.dataset.id);
+  covers = orderedIds.map(id => covers.find(c => c.id.toString() === id));
+
+  console.log("📤 Attempting POST to /save-covers");
+
+  try {
+    const res = await fetch('/save-covers', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(covers)
+    });
+  
+    if (!res.ok) {
+      const errText = await res.text();
+      throw new Error(`Server responded ${res.status}: ${errText}`);
+    }
+  
+    const result = await res.json();
+    if (result.success) {
+      console.log("✅ Covers saved");
+      alert("✅ Covers saved.");
+    } else {
+      console.error("❌ Save failed:", result);
+      alert("❌ Server error while saving.");
+    }
+  } catch (err) {
+    console.error("❌ Network or server error:", err.message);
+    alert("❌ Could not reach the server.");
+  }
+  
 }
 
-document.getElementById('saveTestBtn').onclick = saveCovers;
-document.getElementById('savePublishBtn').onclick = saveCovers;
-
-document.getElementById('search').addEventListener('input', e => {
-  const term = e.target.value.toLowerCase();
-  const filtered = covers.filter(c => c.albumTitle.toLowerCase().includes(term));
-  renderCovers(filtered);
+// Drop to create new cover
+const dropzone = document.getElementById("coverDropzone");
+dropzone.addEventListener("dragover", e => {
+  e.preventDefault();
+  dropzone.classList.add("dragover");
 });
+dropzone.addEventListener("dragleave", () => {
+  dropzone.classList.remove("dragover");
+});
+dropzone.addEventListener("drop", async e => {
+  e.preventDefault();
+  dropzone.classList.remove("dragover");
+  const file = e.dataTransfer.files[0];
+  if (!file || !file.type.startsWith("image/")) return alert("Invalid image.");
 
-loadCovers();
-
-document.getElementById('addNewCoverBtn').onclick = async () => {
-  const newId = covers.length ? Math.max(...covers.map(c => c.id)) + 1 : 0;
+  const formData = new FormData();
+  formData.append("image", file);
+  const uploadRes = await fetch("/upload-image", { method: "POST", body: formData });
+  const { url } = await uploadRes.json();
 
   const newCover = {
-    id: newId,
-    category: '',
-    frontImage: '',
-    albumTitle: '',
-    coverLabel: '',
-    music: { type: 'tracks', tracks: [] }
+    id: Date.now().toString(),
+    frontImage: url,
+    albumTitle: "New Cover",
+    coverLabel: "",
+    category: "",
+    music: { type: "tracks", tracks: [] }
   };
-
   covers.push(newCover);
+  renderCovers();
+});
 
-  await fetch('/save-covers', {
-    method: 'POST',
-    headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify(covers)
+async function loadFontOptions() {
+  const res = await fetch('/data/styles.json');
+  const styles = await res.json();
+  fonts = styles.fonts || [];
+
+  const fontSelect = document.getElementById("globalFont");
+  fontSelect.innerHTML = fonts.map(f => `<option value="${f}">${f}</option>`).join('');
+  if (styles.fontFamily) fontSelect.value = styles.fontFamily;
+  if (styles.fontSize) document.getElementById("globalSize").value = styles.fontSize;
+}
+
+document.getElementById("uploadFont").addEventListener("change", async e => {
+  const file = e.target.files[0];
+  const formData = new FormData();
+  formData.append("font", file);
+  const res = await fetch("/upload-font", { method: "POST", body: formData });
+  const { fontName } = await res.json();
+  fonts.push(fontName);
+  await loadFontOptions();
+  alert("✅ Font uploaded: " + fontName);
+});
+
+document.getElementById("saveStyle").addEventListener("click", async () => {
+  const fontFamily = document.getElementById("globalFont").value;
+  const fontSize = document.getElementById("globalSize").value;
+  await fetch("/save-style-settings", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ fontFamily, fontSize, fonts })
   });
+  alert("✅ Global styles saved.");
+});
 
-  window.location.href = `/admin/admin.html?id=${newId}`;
-};
+async function pushToTest() {
+  const res = await fetch('/push-to-test', { method: 'POST' });
+  const result = await res.json();
+  alert(result.success ? "🚀 Test site updated!" : "❌ Failed to push.");
+}
 
+loadCovers();
+loadFontOptions();
