@@ -141,9 +141,14 @@ app.post('/push-to-test', async (req, res) => {
   }
 });
 
-// ✅ Redirect root path to admin dashboard
+// Redirect root of admin domain to dashboard
 app.get('/', (req, res) => {
-  res.redirect('/admin/dashboard.html');
+  const host = req.hostname;
+  if (host.startsWith('admin.')) {
+    res.redirect('/admin/dashboard.html');
+  } else {
+    res.sendFile(path.join(__dirname, 'public/index.html'));
+  }
 });
 
 // Start server
