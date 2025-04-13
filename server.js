@@ -141,6 +141,12 @@ app.post('/push-to-test', async (req, res) => {
   }
 });
 
+// ✅ Redirect root path to admin dashboard
+app.get('/', (req, res) => {
+  res.redirect('/admin/dashboard.html');
+});
+
+// Start server
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
 });
