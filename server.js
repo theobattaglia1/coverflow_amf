@@ -141,14 +141,17 @@ app.post('/push-to-test', async (req, res) => {
   }
 });
 
-// Redirect root of admin domain to dashboard
+// ✅ Redirect logic for both main and admin domains
 app.get('/', (req, res) => {
   const host = req.hostname;
+
+  // If admin subdomain, redirect to dashboard
   if (host.startsWith('admin.')) {
-    res.redirect('/admin/dashboard.html');
-  } else {
-    res.sendFile(path.join(__dirname, 'public/index.html'));
+    return res.redirect(302, '/admin/dashboard.html');
   }
+
+  // Otherwise serve index.html (for main site)
+  res.sendFile(path.join(__dirname, 'public/index.html'));
 });
 
 // Start server
