@@ -8,12 +8,25 @@ const upload = multer({ dest: 'uploads/' });
 const app = express();
 const port = 3000;
 
+// ✅ Redirect logic placed at the top
+app.get('/', (req, res, next) => {
+  const host = req.hostname;
+  if (host.startsWith('admin.')) {
+    return res.redirect(302, '/admin/dashboard.html');
+  }
+  next(); // pass control to other middleware
+});
+
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/data', express.static(path.join(__dirname, 'data')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/admin', basicAuth({ users: { 'admin': 'password' }, challenge: true }), express.static(path.join(__dirname, 'admin')));
+app.use(
+  '/admin',
+  basicAuth({ users: { admin: 'password' }, challenge: true }),
+  express.static(path.join(__dirname, 'admin'))
+);
 
 // Save a single cover
 app.post('/save-cover', async (req, res) => {
@@ -141,20 +154,7 @@ app.post('/push-to-test', async (req, res) => {
   }
 });
 
-// ✅ Redirect logic for both main and admin domains
-app.get('/', (req, res) => {
-  const host = req.hostname;
-
-  // If admin subdomain, redirect to dashboard
-  if (host.startsWith('admin.')) {
-    return res.redirect(302, '/admin/dashboard.html');
-  }
-
-  // Otherwise serve index.html (for main site)
-  res.sendFile(path.join(__dirname, 'public/index.html'));
-});
-
-// Start server
+// Start
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
 });
