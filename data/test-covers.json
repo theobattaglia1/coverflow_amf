@@ -14,24 +14,28 @@
   },
   {
     "id": "1743755620790",
-    "category": "artist",
+    "category": "artist, songwriter",
     "frontImage": "/uploads/b7d5aec19b44b906b6e79ede9b380850",
     "albumTitle": "Ruby Plume",
     "coverLabel": "Mututal Friends / AWAL",
+    "fontFamily": "",
+    "fontSize": "",
     "music": {
       "type": "embed",
-      "embedHtml": "<iframe style=\"border-radius:12px\" src=\"https://open.spotify.com/embed/track/2BeBp0IazmkqGVc0PxxDye?utm_source=generator\" width=\"100%\" height=\"352\" frameBorder=\"0\" allowfullscreen=\"\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\" loading=\"lazy\"></iframe>"
+      "embedHtml": ""
     }
   },
   {
     "id": "1743756368892",
-    "category": "artist",
+    "category": "artist, songwriter",
     "frontImage": "/uploads/bd34a93201c51e17c2699f51c522cee0",
     "albumTitle": "Tom Siletto",
     "coverLabel": "he's not fucking signed",
+    "fontFamily": "",
+    "fontSize": "",
     "music": {
       "type": "embed",
-      "embedHtml": "<iframe style=\"border-radius:12px\" src=\"https://open.spotify.com/embed/track/5LlRJdKv3lU4NmYOQrnNm4?utm_source=generator&theme=0\" width=\"25%\" height=\"152\" frameBorder=\"0\" allowfullscreen=\"\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\" loading=\"lazy\"></iframe>"
+      "embedHtml": ""
     }
   },
   {
@@ -47,13 +51,15 @@
   },
   {
     "id": "1",
-    "category": "artist",
+    "category": "artist, songwriter",
     "frontImage": "/uploads/444a59dfe2a66aa5224c7038f7539b15",
     "albumTitle": "Hudson Ingram",
     "coverLabel": "Interscope / Aaron Dessner",
+    "fontFamily": "",
+    "fontSize": "",
     "music": {
       "type": "embed",
-      "embedHtml": "<iframe style=\"border-radius:12px\" src=\"https://open.spotify.com/embed/playlist/5ey2AEb1NXYUlsBgjxPVl3?utm_source=generator\" width=\"50%\" height=\"352\" frameBorder=\"0\" allowfullscreen=\"\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\" loading=\"lazy\"></iframe>"
+      "embedHtml": ""
     }
   },
   {
