@@ -11,7 +11,7 @@ const port = 3000;
 const { Octokit } = require("@octokit/rest");
 
 const octokit = new Octokit({
-  auth: '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' // explicitly replace with your generated GitHub PAT
+  auth: process.env.GITHUB_TOKEN
 });
 
 // ✅ Redirect logic placed at the top
