@@ -138,3 +138,29 @@ async function pushToTest() {
 
 loadCovers();
 loadFontOptions();
+
+async function saveChanges() {
+  const orderedIds = [...document.querySelectorAll('.cover-card')].map(c => c.dataset.id);
+  covers = orderedIds.map(id => covers.find(c => c.id.toString() === id));
+
+  await fetch('/save-preview-covers', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(covers)
+  });
+
+  alert("✅ Changes saved privately for preview.");
+}
+
+function previewSite() {
+  window.open('/preview', '_blank');
+}
+
+async function pushLive() {
+  const res = await fetch('/push-live', { method: 'POST' });
+  if (res.ok) {
+    alert("✅ Changes are now live!");
+  } else {
+    alert("❌ Error pushing changes live.");
+  }
+}

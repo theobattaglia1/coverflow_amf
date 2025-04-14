@@ -1,5 +1,18 @@
 [
   {
+    "id": "1",
+    "category": "artist, songwriter",
+    "frontImage": "/uploads/444a59dfe2a66aa5224c7038f7539b15",
+    "albumTitle": "Hudson Ingram",
+    "coverLabel": "Interscope / Aaron Dessner",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "embedHtml": ""
+    }
+  },
+  {
     "id": "1743757227077",
     "category": "about us",
     "frontImage": "/uploads/75bc77b992dfc5eb11bf249b43590479",
@@ -47,19 +60,6 @@
     "music": {
       "type": "embed",
       "embedHtml": "<iframe style=\"border-radius:12px\" src=\"https://open.spotify.com/embed/playlist/0Yli4gIVDEyxG5XQAKkgkV?utm_source=generator&theme=0\" width=\"50%\" height=\"352\" frameBorder=\"0\" allowfullscreen=\"\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\" loading=\"lazy\"></iframe>"
-    }
-  },
-  {
-    "id": "1",
-    "category": "artist, songwriter",
-    "frontImage": "/uploads/444a59dfe2a66aa5224c7038f7539b15",
-    "albumTitle": "Hudson Ingram",
-    "coverLabel": "Interscope / Aaron Dessner",
-    "fontFamily": "",
-    "fontSize": "",
-    "music": {
-      "type": "embed",
-      "embedHtml": ""
     }
   },
   {

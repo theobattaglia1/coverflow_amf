@@ -144,7 +144,7 @@ app.post('/push-to-test', async (req, res) => {
   try {
     const covers = await fs.promises.readFile('./data/covers.json');
     const styles = await fs.promises.readFile('./data/styles.json');
-    await fs.promises.writeFile('./data/test-covers.json', covers);
+    await fs.promises.writeFile('./data/covers-preview.json', JSON.stringify(covers, null, 2));
     await fs.promises.writeFile('./data/test-styles.json', styles);
     console.log("🧪 Pushed covers + styles to test");
     res.json({ success: true });
@@ -157,4 +157,27 @@ app.post('/push-to-test', async (req, res) => {
 // Start
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
+});
+
+// Save covers privately for preview
+app.post('/save-preview-covers', async (req, res) => {
+  const coversPreview = req.body;
+  await fs.promises.writeFile('./data/covers-preview.json', JSON.stringify(coversPreview, null, 2));
+  res.json({ message: "✅ Preview covers saved." });
+});
+
+// Preview route
+app.use('/preview', express.static(path.join(__dirname, 'public-preview')));
+app.use('/preview/data', express.static(path.join(__dirname, 'data')));
+
+// Push live endpoint
+app.post('/push-live', async (req, res) => {
+  try {
+    const previewData = await fs.promises.readFile('./data/covers-preview.json');
+    await fs.promises.writeFile('./data/covers.json', previewData);
+    res.json({ message: "✅ Changes pushed live." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "❌ Failed to push live." });
+  }
 });

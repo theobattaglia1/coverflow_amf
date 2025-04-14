@@ -37,10 +37,11 @@ fetch('/data/test-styles.json')
       }
     `;
 
-    document.head.appendChild(styleTag); // ✅ This now runs AFTER styleTag.innerHTML
+    document.head.appendChild(styleTag);
   });
 
-  fetch('/data/covers.json')
+// ✅ Updated data source to covers-preview.json explicitly
+fetch('/data/covers-preview.json')
   .then(res => res.json())
   .then(data => {
     allCovers = data;
@@ -93,7 +94,7 @@ function renderCovers() {
     label.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
     wrapper.appendChild(label);
 
-    wrapper.addEventListener("click", (e) => {
+    wrapper.addEventListener("click", () => {
       const i = parseInt(wrapper.dataset.index, 10);
       const offset = i - activeIndex;
       const flipContainer = wrapper.querySelector(".flip-container");
@@ -147,14 +148,13 @@ document.body.appendChild(filterDropdown);
 filterButtons.forEach((btn) => {
   btn.addEventListener("mouseenter", () => {
     const filter = btn.dataset.filter;
-    const results = allCovers
-      .filter(c => filter === "all" || c.category?.includes(filter));
+    const results = allCovers.filter(c => filter === "all" || c.category?.includes(filter));
 
-    const items = results.map(c => {
-      return `<div class="dropdown-item" data-id="${c.id}">
+    const items = results.map(c => `
+      <div class="dropdown-item" data-id="${c.id}">
         ${c.albumTitle || "Untitled"} — ${c.coverLabel || ""}
-      </div>`;
-    }).join("") || "<div class='dropdown-item'>No results</div>";
+      </div>`
+    ).join("") || "<div class='dropdown-item'>No results</div>";
 
     filterDropdown.innerHTML = items;
     filterDropdown.style.display = "block";
@@ -189,6 +189,7 @@ filterButtons.forEach((btn) => {
 filterDropdown.addEventListener("mouseleave", () => {
   filterDropdown.style.display = "none";
 });
+
 filterDropdown.addEventListener("click", (e) => {
   const id = e.target.dataset.id;
   if (!id) return;
@@ -215,10 +216,12 @@ window.addEventListener("resize", () => {
   updateLayoutParameters();
   renderCoverFlow();
 });
+
 window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft") setActiveIndex(activeIndex - 1);
   if (e.key === "ArrowRight") setActiveIndex(activeIndex + 1);
 });
+
 coverflowEl.addEventListener("wheel", (e) => {
   if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
     e.preventDefault();
@@ -234,6 +237,7 @@ let touchStartX = 0;
 coverflowEl.addEventListener("touchstart", (e) => {
   touchStartX = e.changedTouches[0].screenX;
 });
+
 coverflowEl.addEventListener("touchend", (e) => {
   const touchEndX = e.changedTouches[0].screenX;
   const threshold = 60;
