@@ -44,16 +44,18 @@ app.use(
 // Optional: Serve the public-preview folder at /preview
 app.use('/preview', express.static(path.join(__dirname, 'public-preview')));
 
-// Save a single cover
+// =======================
+// Single Cover Save
+// =======================
 app.post('/save-cover', async (req, res) => {
   const updatedCover = req.body;
   console.log("🚀 Saving individual cover:", updatedCover.id);
 
   let covers = [];
   try {
-    covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8'));
+    covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8'));
   } catch {
-    console.warn("⚠️ Starting fresh (covers.json not found)");
+    console.warn("⚠️ Starting fresh (covers-preview.json not found)");
   }
 
   const index = covers.findIndex(c => c.id.toString() === updatedCover.id.toString());
@@ -64,43 +66,60 @@ app.post('/save-cover', async (req, res) => {
   }
 
   try {
-    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(covers, null, 2));
-    console.log("✅ Cover saved.");
+    await fs.promises.writeFile(
+      path.join(__dirname, 'data', 'covers-preview.json'),
+      JSON.stringify(covers, null, 2)
+    );
+    console.log("✅ Cover saved (preview).");
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ Error saving cover:", err);
+    console.error("❌ Error saving cover (preview):", err);
     res.status(500).json({ error: "Failed to save" });
   }
 });
 
-// Save full cover list (reorder)
+// =======================
+// Full Cover List (Reorder) Save
+// =======================
 app.post('/save-covers', async (req, res) => {
   const covers = req.body;
-  if (!Array.isArray(covers)) return res.status(400).json({ error: "Invalid format" });
+  if (!Array.isArray(covers)) {
+    return res.status(400).json({ error: "Invalid format" });
+  }
 
-  console.log("💾 Reordering covers, count:", covers.length);
+  console.log("💾 Reordering covers (preview), count:", covers.length);
   try {
-    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(covers, null, 2));
+    await fs.promises.writeFile(
+      path.join(__dirname, 'data', 'covers-preview.json'),
+      JSON.stringify(covers, null, 2)
+    );
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ Failed to save covers:", err);
+    console.error("❌ Failed to save covers (preview):", err);
     res.status(500).json({ error: "Write error" });
   }
 });
 
-// Delete cover
+// =======================
+// Delete Cover
+// =======================
 app.post('/delete-cover', async (req, res) => {
   const { id } = req.body;
   if (!id) return res.status(400).json({ error: "Missing cover ID" });
 
   try {
-    const covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8'));
+    const covers = JSON.parse(
+      await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8')
+    );
     const filtered = covers.filter(c => c.id.toString() !== id.toString());
-    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(filtered, null, 2));
-    console.log(`🗑️ Deleted cover ${id}`);
+    await fs.promises.writeFile(
+      path.join(__dirname, 'data', 'covers-preview.json'),
+      JSON.stringify(filtered, null, 2)
+    );
+    console.log(`🗑️ Deleted cover ${id} (preview)`);
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ Failed to delete cover:", err);
+    console.error("❌ Failed to delete cover (preview):", err);
     res.status(500).json({ error: "Delete error" });
   }
 });
@@ -155,73 +174,66 @@ app.post('/save-style-settings', (req, res) => {
   res.json({ success: true });
 });
 
-// Push to test
+
+// =======================
+// Push to Test
+// =======================
 app.post('/push-to-test', async (req, res) => {
   try {
-    const covers = await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'));
+    // Read from covers-preview.json (the "admin workspace")
+    const covers = await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'));
+    // You can still read styles.json if you have global styles
     const styles = await fs.promises.readFile(path.join(__dirname, 'data', 'styles.json'));
+
+    // Optional: Write to a separate test covers file if your test site uses it,
+    // or just keep writing back to covers-preview.json if your test site also points there.
     await fs.promises.writeFile(path.join(__dirname, 'data', 'covers-preview.json'), covers);
     await fs.promises.writeFile(path.join(__dirname, 'data', 'test-styles.json'), styles);
-    console.log("🧪 Pushed covers + styles to test");
+
+    console.log("🧪 Pushed covers + styles to test (from preview).");
     res.json({ success: true });
   } catch (err) {
-    console.error("❌ Push failed:", err);
+    console.error("❌ Push to test failed:", err);
     res.status(500).json({ error: "Push failed" });
   }
 });
 
-// Save covers privately for preview
-app.post('/save-preview-covers', async (req, res) => {
-  const coversPreview = req.body;
-  await fs.promises.writeFile(path.join(__dirname, 'data', 'covers-preview.json'), JSON.stringify(coversPreview, null, 2));
-  res.json({ message: "✅ Preview covers saved." });
-});
-
-// Push live: update GitHub and local live file
+// =======================
+// Push Live (unchanged)
+// =======================
 app.post('/push-live', async (req, res) => {
-  console.log("🔼 Received push-live request."); // Immediately at the top
-
   try {
-    // Read preview data using an absolute path
+    // Already reads covers-preview.json, pushes to GitHub + local covers.json
     const previewData = await fs.promises.readFile(
-      path.join(__dirname, 'data', 'covers-preview.json'),
-      'utf-8'
+      path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8'
     );
-    console.log("✅ Preview data:", previewData); // After previewData is defined
 
     const owner = 'theobattaglia1';
     const repo = 'coverflow-data';
-    const remoteFilePath = 'covers.json'; // Use a different variable name so it doesn't shadow the 'path' module
+    const pathOnRepo = 'covers.json';
 
-    // Retrieve the existing GitHub file to get its SHA
-    const { data: existingFile } = await octokit.repos.getContent({
-      owner,
-      repo,
-      path: remoteFilePath,
-    });
-
-    // Update the remote file on GitHub
+    const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
-      path: remoteFilePath,
+      path: pathOnRepo,
       message: '✅ Push live update from Admin Panel',
       content: Buffer.from(previewData).toString('base64'),
       sha: existingFile.sha,
     });
-    console.log("✅ Remote covers.json updated on GitHub."); // After GitHub update
+    console.log("✅ Remote covers.json updated on GitHub.");
 
-    // Update the local covers.json file so the live site reads the new order
+    // Also update local covers.json so the live front end reads new data
     await fs.promises.writeFile(
       path.join(__dirname, 'data', 'covers.json'),
       previewData
     );
-    console.log("✅ Local covers.json updated with:", previewData); // After local file update
+    console.log("✅ Local covers.json updated with preview data");
 
-    return res.json({ message: "✅ Changes pushed live via GitHub and updated locally." });
+    res.json({ message: "✅ Changes pushed live via GitHub and updated locally." });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "❌ GitHub push failed.", details: err.message });
+    res.status(500).json({ error: "❌ GitHub push failed.", details: err.message });
   }
 });
 
