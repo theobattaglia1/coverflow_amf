@@ -2,7 +2,7 @@ let covers = [];
 let fonts = [];
 
 async function loadCovers() {
-  const res = await fetch('/data/covers.json');
+  const res = await fetch('/data/covers-preview.json');
   covers = await res.json();
   renderCovers();
 }
