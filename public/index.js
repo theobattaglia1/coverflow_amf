@@ -40,7 +40,7 @@ fetch('/data/test-styles.json')
     document.head.appendChild(styleTag); // ✅ This now runs AFTER styleTag.innerHTML
   });
 
-  fetch('/data/covers.json')
+  fetch(`/data/covers.json?cachebust=${Date.now()}`)
   .then(res => res.json())
   .then(data => {
     allCovers = data;
