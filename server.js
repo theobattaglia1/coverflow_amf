@@ -14,7 +14,7 @@ app.get('/', (req, res, next) => {
   if (host.startsWith('admin.')) {
     return res.redirect(302, '/admin/dashboard.html');
   }
-  next(); // pass control to other middleware
+  next();
 });
 
 // Middleware
@@ -72,7 +72,7 @@ app.post('/save-covers', async (req, res) => {
   }
 });
 
-// Delete
+// Delete cover
 app.post('/delete-cover', async (req, res) => {
   const { id } = req.body;
   if (!id) return res.status(400).json({ error: "Missing cover ID" });
@@ -144,7 +144,7 @@ app.post('/push-to-test', async (req, res) => {
   try {
     const covers = await fs.promises.readFile('./data/covers.json');
     const styles = await fs.promises.readFile('./data/styles.json');
-    await fs.promises.writeFile('./data/covers-preview.json', JSON.stringify(covers, null, 2));
+    await fs.promises.writeFile('./data/covers-preview.json', covers);
     await fs.promises.writeFile('./data/test-styles.json', styles);
     console.log("🧪 Pushed covers + styles to test");
     res.json({ success: true });
@@ -154,11 +154,6 @@ app.post('/push-to-test', async (req, res) => {
   }
 });
 
-// Start
-app.listen(port, () => {
-  console.log(`🚀 Server running at http://localhost:${port}`);
-});
-
 // Save covers privately for preview
 app.post('/save-preview-covers', async (req, res) => {
   const coversPreview = req.body;
@@ -166,18 +161,29 @@ app.post('/save-preview-covers', async (req, res) => {
   res.json({ message: "✅ Preview covers saved." });
 });
 
+// Push Live (explicitly fixed version)
 app.post('/push-live', async (req, res) => {
   try {
     const previewData = await fs.promises.readFile('./data/covers-preview.json');
 
-    // Explicitly update covers.json in BOTH locations to be safe:
+    // Explicitly ensure public/data directory exists:
+    const publicDataDir = path.join(__dirname, 'public', 'data');
+    if (!fs.existsSync(publicDataDir)) {
+      fs.mkdirSync(publicDataDir, { recursive: true });
+    }
+
+    // Write explicitly to BOTH locations:
     await fs.promises.writeFile('./data/covers.json', previewData);
     await fs.promises.writeFile('./public/data/covers.json', previewData);
 
     res.json({ message: "✅ Changes pushed live." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "❌ Failed to push live." });
+    res.status(500).json({ error: "❌ Failed to push live.", details: err.message });
   }
 });
 
+// Start server
+app.listen(port, () => {
+  console.log(`🚀 Server running at http://localhost:${port}`);
+});
