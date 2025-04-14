@@ -33,6 +33,8 @@ app.use(
   basicAuth({ users: { admin: 'password' }, challenge: true }),
   express.static(path.join(__dirname, 'admin'))
 );
+// Optional: Serve the public-preview folder at /preview
+app.use('/preview', express.static(path.join(__dirname, 'public-preview')));
 
 // Save a single cover
 app.post('/save-cover', async (req, res) => {
@@ -41,7 +43,7 @@ app.post('/save-cover', async (req, res) => {
 
   let covers = [];
   try {
-    covers = JSON.parse(await fs.promises.readFile('./data/covers.json', 'utf-8'));
+    covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8'));
   } catch {
     console.warn("⚠️ Starting fresh (covers.json not found)");
   }
@@ -54,7 +56,7 @@ app.post('/save-cover', async (req, res) => {
   }
 
   try {
-    await fs.promises.writeFile('./data/covers.json', JSON.stringify(covers, null, 2));
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(covers, null, 2));
     console.log("✅ Cover saved.");
     res.json({ success: true });
   } catch (err) {
@@ -70,7 +72,7 @@ app.post('/save-covers', async (req, res) => {
 
   console.log("💾 Reordering covers, count:", covers.length);
   try {
-    await fs.promises.writeFile('./data/covers.json', JSON.stringify(covers, null, 2));
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(covers, null, 2));
     res.json({ success: true });
   } catch (err) {
     console.error("❌ Failed to save covers:", err);
@@ -84,9 +86,9 @@ app.post('/delete-cover', async (req, res) => {
   if (!id) return res.status(400).json({ error: "Missing cover ID" });
 
   try {
-    const covers = JSON.parse(await fs.promises.readFile('./data/covers.json', 'utf-8'));
+    const covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8'));
     const filtered = covers.filter(c => c.id.toString() !== id.toString());
-    await fs.promises.writeFile('./data/covers.json', JSON.stringify(filtered, null, 2));
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(filtered, null, 2));
     console.log(`🗑️ Deleted cover ${id}`);
     res.json({ success: true });
   } catch (err) {
@@ -129,7 +131,7 @@ app.post('/upload-font', upload.single('font'), (req, res) => {
 `;
   fs.appendFileSync(path.join(__dirname, 'public/fonts.css'), cssRule);
 
-  const stylesPath = path.join(__dirname, 'data/styles.json');
+  const stylesPath = path.join(__dirname, 'data', 'styles.json');
   const styles = JSON.parse(fs.readFileSync(stylesPath, 'utf-8'));
   if (!styles.fonts.includes(fontName)) styles.fonts.push(fontName);
   fs.writeFileSync(stylesPath, JSON.stringify(styles, null, 2));
@@ -139,7 +141,7 @@ app.post('/upload-font', upload.single('font'), (req, res) => {
 
 // Save global style settings
 app.post('/save-style-settings', (req, res) => {
-  const styleFile = path.join(__dirname, 'data/styles.json');
+  const styleFile = path.join(__dirname, 'data', 'styles.json');
   fs.writeFileSync(styleFile, JSON.stringify(req.body, null, 2));
   console.log("💾 Global styles saved.");
   res.json({ success: true });
@@ -148,10 +150,10 @@ app.post('/save-style-settings', (req, res) => {
 // Push to test
 app.post('/push-to-test', async (req, res) => {
   try {
-    const covers = await fs.promises.readFile('./data/covers.json');
-    const styles = await fs.promises.readFile('./data/styles.json');
-    await fs.promises.writeFile('./data/covers-preview.json', covers);
-    await fs.promises.writeFile('./data/test-styles.json', styles);
+    const covers = await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'));
+    const styles = await fs.promises.readFile(path.join(__dirname, 'data', 'styles.json'));
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers-preview.json'), covers);
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'test-styles.json'), styles);
     console.log("🧪 Pushed covers + styles to test");
     res.json({ success: true });
   } catch (err) {
@@ -163,82 +165,96 @@ app.post('/push-to-test', async (req, res) => {
 // Save covers privately for preview
 app.post('/save-preview-covers', async (req, res) => {
   const coversPreview = req.body;
-  await fs.promises.writeFile('./data/covers-preview.json', JSON.stringify(coversPreview, null, 2));
+  await fs.promises.writeFile(path.join(__dirname, 'data', 'covers-preview.json'), JSON.stringify(coversPreview, null, 2));
   res.json({ message: "✅ Preview covers saved." });
 });
 
+// Push live: update GitHub and local live file
 app.post('/push-live', async (req, res) => {
   try {
-    const previewData = await fs.promises.readFile('./data/covers-preview.json', 'utf-8');
+    // Read preview data with an absolute path
+    const previewData = await fs.promises.readFile(
+      path.join(__dirname, 'data', 'covers-preview.json'),
+      'utf-8'
+    );
 
     const owner = 'theobattaglia1';
     const repo = 'coverflow-data';
-    const path = 'covers.json';
+    const remoteFilePath = 'covers.json'; // renamed from "path" to avoid shadowing the module
 
-    const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path });
+    // Retrieve the existing file from GitHub to obtain its SHA
+    const { data: existingFile } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path: remoteFilePath,
+    });
 
+    // Update the file in the remote repository
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
-      path,
+      path: remoteFilePath,
       message: '✅ Push live update from Admin Panel',
       content: Buffer.from(previewData).toString('base64'),
       sha: existingFile.sha,
     });
 
-    // NEW: Update local covers.json so the live front end uses the updated data
-await fs.promises.writeFile('./data/covers.json', previewData);
-res.json({ message: "✅ Changes pushed live via GitHub and updated locally." });
+    // Update local covers.json so the live front end reads the updated data
+    await fs.promises.writeFile(
+      path.join(__dirname, 'data', 'covers.json'),
+      previewData
+    );
 
-
-    res.json({ message: "✅ Changes pushed live via GitHub." });
+    return res.json({ message: "✅ Changes pushed live via GitHub and updated locally." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "❌ GitHub push failed.", details: err.message });
+    return res.status(500).json({ error: "❌ GitHub push failed.", details: err.message });
   }
 });
+
 // Fetch covers
 app.get('/covers', async (req, res) => {
   try {
-    const data = await fs.promises.readFile('./data/covers.json', 'utf-8');
+    const data = await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8');
     res.json(JSON.parse(data));
   } catch (err) {
     console.error("❌ Failed to fetch covers:", err);
     res.status(500).json({ error: "Failed to fetch" });
   }
 });
+
 // Fetch styles
 app.get('/styles', async (req, res) => {
   try {
-    const data = await fs.promises.readFile('./data/styles.json', 'utf-8');
+    const data = await fs.promises.readFile(path.join(__dirname, 'data', 'styles.json'), 'utf-8');
     res.json(JSON.parse(data));
   } catch (err) {
     console.error("❌ Failed to fetch styles:", err);
     res.status(500).json({ error: "Failed to fetch" });
   }
 });
+
 // Fetch preview covers
 app.get('/covers-preview', async (req, res) => {
   try {
-    const data = await fs.promises.readFile('./data/covers-preview.json', 'utf-8');
+    const data = await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8');
     res.json(JSON.parse(data));
   } catch (err) {
     console.error("❌ Failed to fetch preview covers:", err);
     res.status(500).json({ error: "Failed to fetch" });
   }
 });
+
 // Fetch fonts
 app.get('/fonts', async (req, res) => {
   try {
-    const data = await fs.promises.readFile('./data/styles.json', 'utf-8');
+    const data = await fs.promises.readFile(path.join(__dirname, 'data', 'styles.json'), 'utf-8');
     res.json(JSON.parse(data).fonts);
   } catch (err) {
     console.error("❌ Failed to fetch fonts:", err);
     res.status(500).json({ error: "Failed to fetch" });
   }
 });
-
-
 
 // Start server
 app.listen(port, () => {
