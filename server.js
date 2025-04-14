@@ -166,18 +166,18 @@ app.post('/save-preview-covers', async (req, res) => {
   res.json({ message: "✅ Preview covers saved." });
 });
 
-// Preview route
-app.use('/preview', express.static(path.join(__dirname, 'public-preview')));
-app.use('/preview/data', express.static(path.join(__dirname, 'data')));
-
-// Push live endpoint
 app.post('/push-live', async (req, res) => {
   try {
     const previewData = await fs.promises.readFile('./data/covers-preview.json');
+
+    // Explicitly update covers.json in BOTH locations to be safe:
     await fs.promises.writeFile('./data/covers.json', previewData);
+    await fs.promises.writeFile('./public/data/covers.json', previewData);
+
     res.json({ message: "✅ Changes pushed live." });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "❌ Failed to push live." });
   }
 });
+
