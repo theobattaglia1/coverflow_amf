@@ -186,6 +186,11 @@ app.post('/push-live', async (req, res) => {
       sha: existingFile.sha,
     });
 
+    // NEW: Update local covers.json so the live front end uses the updated data
+await fs.promises.writeFile('./data/covers.json', previewData);
+res.json({ message: "✅ Changes pushed live via GitHub and updated locally." });
+
+
     res.json({ message: "✅ Changes pushed live via GitHub." });
   } catch (err) {
     console.error(err);
