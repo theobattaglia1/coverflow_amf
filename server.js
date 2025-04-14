@@ -26,7 +26,15 @@ app.get('/', (req, res, next) => {
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/data', express.static(path.join(__dirname, 'data')));
+app.use(
+  '/data',
+  express.static(path.join(__dirname, 'data'), {
+    setHeaders: (res, filePath) => {
+      // Ensure no caching for files in /data
+      res.setHeader('Cache-Control', 'no-store');
+    }
+  })
+);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(
   '/admin',
