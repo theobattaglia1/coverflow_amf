@@ -1,0 +1,3 @@
+[submodule "public/data"]
+	path = public/data
+	url = https://github.com/theobattaglia1/coverflow-data.git
