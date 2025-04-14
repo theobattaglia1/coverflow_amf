@@ -171,25 +171,28 @@ app.post('/save-preview-covers', async (req, res) => {
 
 // Push live: update GitHub and local live file
 app.post('/push-live', async (req, res) => {
+  console.log("🔼 Received push-live request."); // Immediately at the top
+
   try {
-    // Read preview data with an absolute path
+    // Read preview data using an absolute path
     const previewData = await fs.promises.readFile(
       path.join(__dirname, 'data', 'covers-preview.json'),
       'utf-8'
     );
+    console.log("✅ Preview data:", previewData); // After previewData is defined
 
     const owner = 'theobattaglia1';
     const repo = 'coverflow-data';
-    const remoteFilePath = 'covers.json'; // renamed from "path" to avoid shadowing the module
+    const remoteFilePath = 'covers.json'; // Use a different variable name so it doesn't shadow the 'path' module
 
-    // Retrieve the existing file from GitHub to obtain its SHA
+    // Retrieve the existing GitHub file to get its SHA
     const { data: existingFile } = await octokit.repos.getContent({
       owner,
       repo,
       path: remoteFilePath,
     });
 
-    // Update the file in the remote repository
+    // Update the remote file on GitHub
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
@@ -198,12 +201,14 @@ app.post('/push-live', async (req, res) => {
       content: Buffer.from(previewData).toString('base64'),
       sha: existingFile.sha,
     });
+    console.log("✅ Remote covers.json updated on GitHub."); // After GitHub update
 
-    // Update local covers.json so the live front end reads the updated data
+    // Update the local covers.json file so the live site reads the new order
     await fs.promises.writeFile(
       path.join(__dirname, 'data', 'covers.json'),
       previewData
     );
+    console.log("✅ Local covers.json updated with:", previewData); // After local file update
 
     return res.json({ message: "✅ Changes pushed live via GitHub and updated locally." });
   } catch (err) {
@@ -211,6 +216,7 @@ app.post('/push-live', async (req, res) => {
     return res.status(500).json({ error: "❌ GitHub push failed.", details: err.message });
   }
 });
+
 
 // Fetch covers
 app.get('/covers', async (req, res) => {
