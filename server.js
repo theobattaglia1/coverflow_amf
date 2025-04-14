@@ -8,6 +8,12 @@ const upload = multer({ dest: 'uploads/' });
 const app = express();
 const port = 3000;
 
+const { Octokit } = require("@octokit/rest");
+
+const octokit = new Octokit({
+  auth: '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' // explicitly replace with your generated GitHub PAT
+});
+
 // ✅ Redirect logic placed at the top
 app.get('/', (req, res, next) => {
   const host = req.hostname;
@@ -161,27 +167,38 @@ app.post('/save-preview-covers', async (req, res) => {
   res.json({ message: "✅ Preview covers saved." });
 });
 
-// Push Live (explicitly fixed version)
 app.post('/push-live', async (req, res) => {
   try {
-    const previewData = await fs.promises.readFile('./data/covers-preview.json');
+    const previewData = await fs.promises.readFile('./data/covers-preview.json', 'utf-8');
 
-    // Explicitly ensure public/data directory exists:
-    const publicDataDir = path.join(__dirname, 'public', 'data');
-    if (!fs.existsSync(publicDataDir)) {
-      fs.mkdirSync(publicDataDir, { recursive: true });
-    }
+    const owner = 'theobattaglia1'; // explicitly your GitHub username
+    const repo = 'coverflow-data';  // explicitly your newly created repo name
+    const path = 'covers.json';     // explicitly file to update
 
-    // Write explicitly to BOTH locations:
-    await fs.promises.writeFile('./data/covers.json', previewData);
-    await fs.promises.writeFile('./public/data/covers.json', previewData);
+    // explicitly get current SHA of file on GitHub
+    const { data: existingFile } = await octokit.repos.getContent({
+      owner,
+      repo,
+      path,
+    });
 
-    res.json({ message: "✅ Changes pushed live." });
+    // explicitly update file on GitHub
+    await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path,
+      message: '✅ Push live update explicitly from Admin Panel',
+      content: Buffer.from(previewData).toString('base64'),
+      sha: existingFile.sha,
+    });
+
+    res.json({ message: "✅ Changes explicitly pushed live via GitHub." });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "❌ Failed to push live.", details: err.message });
+    res.status(500).json({ error: "❌ GitHub push explicitly failed.", details: err.message });
   }
 });
+
 
 // Start server
 app.listen(port, () => {
