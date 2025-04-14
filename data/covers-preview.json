@@ -1,18 +1,5 @@
 [
   {
-    "id": "1",
-    "category": "artist, songwriter",
-    "frontImage": "/uploads/444a59dfe2a66aa5224c7038f7539b15",
-    "albumTitle": "Hudson Ingram",
-    "coverLabel": "Interscope / Aaron Dessner",
-    "fontFamily": "",
-    "fontSize": "",
-    "music": {
-      "type": "embed",
-      "embedHtml": ""
-    }
-  },
-  {
     "id": "1743757227077",
     "category": "about us",
     "frontImage": "/uploads/75bc77b992dfc5eb11bf249b43590479",
@@ -44,6 +31,19 @@
     "frontImage": "/uploads/bd34a93201c51e17c2699f51c522cee0",
     "albumTitle": "Tom Siletto",
     "coverLabel": "he's not fucking signed",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "embedHtml": ""
+    }
+  },
+  {
+    "id": "1",
+    "category": "artist, songwriter",
+    "frontImage": "/uploads/444a59dfe2a66aa5224c7038f7539b15",
+    "albumTitle": "Hudson Ingram",
+    "coverLabel": "Interscope / Aaron Dessner",
     "fontFamily": "",
     "fontSize": "",
     "music": {
