@@ -192,6 +192,47 @@ app.post('/push-live', async (req, res) => {
     res.status(500).json({ error: "❌ GitHub push failed.", details: err.message });
   }
 });
+// Fetch covers
+app.get('/covers', async (req, res) => {
+  try {
+    const data = await fs.promises.readFile('./data/covers.json', 'utf-8');
+    res.json(JSON.parse(data));
+  } catch (err) {
+    console.error("❌ Failed to fetch covers:", err);
+    res.status(500).json({ error: "Failed to fetch" });
+  }
+});
+// Fetch styles
+app.get('/styles', async (req, res) => {
+  try {
+    const data = await fs.promises.readFile('./data/styles.json', 'utf-8');
+    res.json(JSON.parse(data));
+  } catch (err) {
+    console.error("❌ Failed to fetch styles:", err);
+    res.status(500).json({ error: "Failed to fetch" });
+  }
+});
+// Fetch preview covers
+app.get('/covers-preview', async (req, res) => {
+  try {
+    const data = await fs.promises.readFile('./data/covers-preview.json', 'utf-8');
+    res.json(JSON.parse(data));
+  } catch (err) {
+    console.error("❌ Failed to fetch preview covers:", err);
+    res.status(500).json({ error: "Failed to fetch" });
+  }
+});
+// Fetch fonts
+app.get('/fonts', async (req, res) => {
+  try {
+    const data = await fs.promises.readFile('./data/styles.json', 'utf-8');
+    res.json(JSON.parse(data).fonts);
+  } catch (err) {
+    console.error("❌ Failed to fetch fonts:", err);
+    res.status(500).json({ error: "Failed to fetch" });
+  }
+});
+
 
 
 // Start server
