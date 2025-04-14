@@ -1,13 +1,21 @@
 (async function(){
   const urlParams = new URLSearchParams(window.location.search);
   let id = urlParams.get('id');
-  const cover = id ? (await fetch(`/data/covers.json`).then(r => r.json())).find(c => c.id == id) : {};
-
+  const cover = id ? (await fetch(`/data/covers-preview.json`).then(r => r.json())).find(c => c.id == id) : {};
+  
   if (cover) {
     Object.entries(cover).forEach(([key, value]) => {
       const el = document.getElementById(key);
-      if (el) el.value = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
+      if (el) el.value = typeof value === 'object'
+        ? JSON.stringify(value, null, 2)
+        : value;
     });
+    // After the forEach loop, but still inside "if (cover) { ... }"
+if (cover.music && cover.music.embedHtml) {
+  const mc = document.getElementById('musicContent');
+  if (mc) mc.value = cover.music.embedHtml;
+}
+
     if (cover.frontImage) document.getElementById('imgPreview').src = cover.frontImage;
     if (cover.fontFamily) document.getElementById('fontFamily').value = cover.fontFamily;
     if (cover.fontSize) document.getElementById('fontSize').value = cover.fontSize;
