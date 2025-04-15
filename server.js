@@ -38,7 +38,20 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/data', express.static(path.join(__dirname, 'data'), {
   setHeaders: (res) => res.setHeader('Cache-Control', 'no-store')
 }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/uploads', express.static(path.resolve(__dirname, './uploads'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
+      res.setHeader('Content-Type', 'image/jpeg');
+    } else if (filePath.endsWith('.png')) {
+      res.setHeader('Content-Type', 'image/png');
+    } else if (filePath.endsWith('.gif')) {
+      res.setHeader('Content-Type', 'image/gif');
+    } else if (filePath.endsWith('.svg')) {
+      res.setHeader('Content-Type', 'image/svg+xml');
+    }
+    res.setHeader('Cache-Control', 'no-store');
+  }
+}));
 app.use('/admin', basicAuth({ users: { admin: 'password' }, challenge: true }), express.static(path.join(__dirname, 'admin')));
 app.use('/preview', express.static(path.join(__dirname, 'public-preview')));
 
