@@ -60,22 +60,24 @@
         body: JSON.stringify(body)
       });
   
-      const result = await response.json();
-      console.log("📬 [RESPONSE] Server responded:", result);
+      const result = await response.json(); // ✅ Read once here
   
       if (!response.ok) {
-        const result = await response.json();
         console.error("❌ [ERROR] Saving cover failed:", result);
         alert("Failed to save: " + result.error + "\n" + result.details);
+        return; // ✅ important to stop further execution
       }
   
+      console.log("📬 [RESPONSE] Server responded:", result);
       alert("✅ Cover saved successfully!");
       window.location.href = '/admin/dashboard.html';
+      
     } catch (error) {
       console.error("❌ [ERROR] Saving cover failed:", error);
       alert("Failed to save: " + error.message);
     }
   };
+  
   
       
 
