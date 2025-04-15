@@ -76,19 +76,27 @@ function renderCovers() {
     front.className = "cover-front";
     front.style.backgroundImage = `url('${cover.frontImage}')`;
 
-    const back = document.createElement("div");
-    back.className = "cover-back";
-    const backContent = document.createElement("div");
-    backContent.className = "back-content";
+// Back cover
+const back = document.createElement("div");
+back.className = "cover-back";
+const backContent = document.createElement("div");
+backContent.className = "back-content";
 
-    if (cover.music?.type === "embed") {
-      backContent.innerHTML = cover.music.embedHtml;
-    }
+// Existing embed
+if (cover.music?.type === "embed") {
+  backContent.innerHTML = cover.music.embedHtml;
+}
 
-    back.appendChild(backContent);
-    flip.appendChild(front);
-    flip.appendChild(back);
-    wrapper.appendChild(flip);
+// New: Add expand button
+const expandBtn = document.createElement("button");
+expandBtn.className = "expand-btn";
+expandBtn.textContent = "＋";
+backContent.appendChild(expandBtn);
+
+back.appendChild(backContent);
+flip.appendChild(front);
+flip.appendChild(back);
+
 
     const label = document.createElement("div");
     label.className = "cover-label";
@@ -241,4 +249,50 @@ coverflowEl.addEventListener("touchend", (e) => {
   const threshold = 60;
   if (touchEndX < touchStartX - threshold) setActiveIndex(activeIndex + 1);
   else if (touchEndX > touchStartX + threshold) setActiveIndex(activeIndex - 1);
+});
+
+// Modal interaction logic
+document.body.addEventListener("click", (e) => {
+  if (e.target.classList.contains("expand-btn")) {
+    const coverId = e.target.closest('.cover').dataset.originalIndex;
+    const cover = covers.find(c => c.id == coverId);
+
+    if (!cover.artistDetails) return;
+
+    const modal = document.querySelector('.artist-modal');
+    modal.querySelector('.artist-photo').src = cover.artistDetails.image;
+    modal.querySelector('.artist-info h1').innerText = cover.artistDetails.name;
+    modal.querySelector('.artist-info .location').innerText = cover.artistDetails.location;
+    modal.querySelector('.artist-info .bio').innerText = cover.artistDetails.bio;
+    modal.querySelector('.spotify-link').href = cover.artistDetails.spotifyLink;
+
+    // Embed Spotify player if a valid link provided
+    if (cover.artistDetails.spotifyLink.includes("spotify.com")) {
+      const embedUrl = cover.artistDetails.spotifyLink.replace("spotify.com/", "spotify.com/embed/");
+      modal.querySelector('.spotify-player').src = embedUrl;
+    } else {
+      modal.querySelector('.spotify-player').style.display = 'none';
+    }
+
+    modal.classList.remove('hidden');
+  }
+
+  // Clicking outside modal closes it
+  if (e.target.classList.contains("artist-modal")) {
+    e.target.classList.add('hidden');
+  }
+});
+// Close modal on Escape key
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const modal = document.querySelector('.artist-modal');
+    if (!modal.classList.contains('hidden')) {
+      modal.classList.add('hidden');
+    }
+  }
+});
+// Close modal on clicking close button
+document.querySelector('.artist-modal .close-btn').addEventListener('click', () => {
+  const modal = document.querySelector('.artist-modal');
+  modal.classList.add('hidden');
 });

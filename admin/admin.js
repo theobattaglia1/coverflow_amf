@@ -1,74 +1,65 @@
 (async function(){
   const urlParams = new URLSearchParams(window.location.search);
   let id = urlParams.get('id');
-  const musicTypeEl = document.getElementById('musicType');
-  const mc = document.getElementById('musicContent');
-
-  const cover = id 
-    ? (await fetch(`/data/covers-preview.json`).then(r => r.json())).find(c => c.id == id)
-    : {};
+  const cover = id ? (await fetch(`/data/covers-preview.json`).then(r => r.json())).find(c => c.id == id) : {};
 
   if (cover) {
     Object.entries(cover).forEach(([key, value]) => {
-      if (key === 'music') return;  // Skip music, handle separately
       const el = document.getElementById(key);
       if (el) el.value = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
     });
 
     if (cover.frontImage) document.getElementById('imgPreview').src = cover.frontImage;
-    if (cover.fontFamily) document.getElementById('fontFamily').value = cover.fontFamily;
-    if (cover.fontSize) document.getElementById('fontSize').value = cover.fontSize;
 
-    // Properly load music content based on saved type
-    if (cover.music) {
-      musicTypeEl.value = cover.music.type || 'embed';
-      mc.value = cover.music.embedHtml || cover.music.url || cover.music.value || '';
+    if (cover.music && cover.music.url) {
+      document.getElementById('musicUrl').value = cover.music.url;
     }
 
-    musicTypeEl.dispatchEvent(new Event('change')); // Ensure placeholder updates
+    if (cover.artistDetails) {
+      document.getElementById('artistName').value = cover.artistDetails.name || '';
+      document.getElementById('artistLocation').value = cover.artistDetails.location || '';
+      document.getElementById('artistBio').value = cover.artistDetails.bio || '';
+      document.getElementById('artistSpotifyLink').value = cover.artistDetails.spotifyLink || '';
+      document.getElementById('artistImage').value = cover.artistDetails.image || '';
+    }
   }
-
-  musicTypeEl.addEventListener('change', function () {
-    mc.placeholder = musicTypeEl.value === 'embed' ? 'Paste embed HTML here' :
-                     musicTypeEl.value === 'link' ? 'Paste music URL here' :
-                     'Enter music info here';
-  });
 
   window.saveCover = async function () {
     const form = document.getElementById('coverForm');
     const data = Object.fromEntries(new FormData(form));
-
     const isNew = !id;
     if (isNew) id = Date.now().toString();
 
-    const musicContent = musicTypeEl.value === 'embed' ? { type: 'embed', embedHtml: data.musicContent } :
-                         musicTypeEl.value === 'link' ? { type: 'link', url: data.musicContent } :
-                         { type: musicTypeEl.value, value: data.musicContent };
-
     const body = {
       id,
-      category: data.category,
-      frontImage: data.frontImage,
-      albumTitle: data.albumTitle,
-      coverLabel: data.coverLabel,
-      fontFamily: data.fontFamily,
-      fontSize: data.fontSize,
-      music: musicContent
+      category: data.category || '',
+      frontImage: data.frontImage || '',
+      albumTitle: data.albumTitle || '',
+      coverLabel: data.coverLabel || '',
+      fontFamily: data.fontFamily || '',
+      fontSize: data.fontSize || '',
+      music: {
+        type: "url",
+        url: data.musicUrl || ''
+      },
+      artistDetails: {
+        name: data.artistName || '',
+        location: data.artistLocation || '',
+        bio: data.artistBio || '',
+        spotifyLink: data.artistSpotifyLink || '',
+        image: data.artistImage || ''
+      }
     };
 
-    const resp = await fetch('/save-cover', {
+    console.log("📦 Saving:", body);
+
+    await fetch('/save-cover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
 
-    if (!resp.ok) {
-      console.error("Failed to save:", await resp.text());
-      alert("❌ Failed to save cover.");
-      return;
-    }
-
-    alert("✅ Cover saved!");
+    alert("✅ Cover saved successfully!");
     window.location.href = '/admin/dashboard.html';
   };
 
@@ -79,7 +70,7 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
       });
-      alert("✅ Cover deleted!");
+      alert("✅ Cover deleted successfully!");
       window.location.href = '/admin/dashboard.html';
     }
   };
@@ -88,20 +79,29 @@
   const fileInput = document.getElementById('imageInput');
   const preview = document.getElementById('imgPreview');
 
-  dropArea.onclick = () => fileInput.click();
-  dropArea.ondragover = e => (e.preventDefault(), dropArea.classList.add('dragover'));
-  dropArea.ondragleave = () => dropArea.classList.remove('dragover');
-  dropArea.ondrop = e => {
+  dropArea.addEventListener('click', () => fileInput.click());
+  dropArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropArea.classList.add('dragover');
+  });
+  dropArea.addEventListener('dragleave', () => dropArea.classList.remove('dragover'));
+  dropArea.addEventListener('drop', e => {
     e.preventDefault();
     dropArea.classList.remove('dragover');
     handleUpload(e.dataTransfer.files[0]);
-  };
-  fileInput.onchange = e => handleUpload(e.target.files[0]);
+  });
+  fileInput.addEventListener('change', e => {
+    handleUpload(e.target.files[0]);
+  });
 
   async function handleUpload(file) {
     const formData = new FormData();
     formData.append('image', file);
-    const { url } = await fetch('/upload-image', { method: 'POST', body: formData }).then(res => res.json());
+    const res = await fetch('/upload-image', {
+      method: 'POST',
+      body: formData
+    });
+    const { url } = await res.json();
     document.getElementById('frontImage').value = url;
     preview.src = url;
   }

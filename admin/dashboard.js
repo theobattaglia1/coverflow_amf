@@ -1,5 +1,4 @@
 let covers = [];
-let fonts = [];
 
 async function loadCovers() {
   const res = await fetch('/data/covers-preview.json');
@@ -32,11 +31,9 @@ function editCover(id) {
   window.location.href = `/admin/admin.html?id=${id}`;
 }
 
-async function saveCovers() {
+async function saveChanges() {
   const orderedIds = [...document.querySelectorAll('.cover-card')].map(c => c.dataset.id);
   covers = orderedIds.map(id => covers.find(c => c.id.toString() === id));
-
-  console.log("📤 Attempting POST to /save-covers");
 
   try {
     const res = await fetch('/save-covers', {
@@ -44,28 +41,42 @@ async function saveCovers() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(covers)
     });
-  
+
     if (!res.ok) {
       const errText = await res.text();
       throw new Error(`Server responded ${res.status}: ${errText}`);
     }
-  
+
     const result = await res.json();
     if (result.success) {
-      console.log("✅ Covers saved");
-      alert("✅ Covers saved.");
+      console.log("✅ Covers saved (preview).");
+      alert("✅ Covers saved successfully.");
     } else {
-      console.error("❌ Save failed:", result);
-      alert("❌ Server error while saving.");
+      throw new Error("Unknown server error.");
     }
   } catch (err) {
-    console.error("❌ Network or server error:", err.message);
-    alert("❌ Could not reach the server.");
+    console.error("❌ Error saving covers:", err);
+    alert("❌ Could not save covers. Check the console.");
   }
-  
 }
 
-// Drop to create new cover
+async function pushLive() {
+  try {
+    const res = await fetch('/push-live', { method: 'POST' });
+    if (res.ok) {
+      alert("✅ Changes are now live!");
+    } else {
+      const err = await res.json();
+      console.error("❌ Error pushing live:", err);
+      alert("❌ Error pushing live. Check console.");
+    }
+  } catch (err) {
+    console.error("❌ Network error:", err);
+    alert("❌ Network error. Check console.");
+  }
+}
+
+// Drag-and-drop to create new cover
 const dropzone = document.getElementById("coverDropzone");
 dropzone.addEventListener("dragover", e => {
   e.preventDefault();
@@ -91,76 +102,17 @@ dropzone.addEventListener("drop", async e => {
     albumTitle: "New Cover",
     coverLabel: "",
     category: "",
-    music: { type: "tracks", tracks: [] }
+    music: { type: "embed", embedHtml: "" },
+    artistDetails: {
+      name: "",
+      location: "",
+      bio: "",
+      spotifyLink: "",
+      image: ""
+    }
   };
   covers.push(newCover);
   renderCovers();
 });
 
-async function loadFontOptions() {
-  const res = await fetch('/data/styles.json');
-  const styles = await res.json();
-  fonts = styles.fonts || [];
-
-  const fontSelect = document.getElementById("globalFont");
-  fontSelect.innerHTML = fonts.map(f => `<option value="${f}">${f}</option>`).join('');
-  if (styles.fontFamily) fontSelect.value = styles.fontFamily;
-  if (styles.fontSize) document.getElementById("globalSize").value = styles.fontSize;
-}
-
-document.getElementById("uploadFont").addEventListener("change", async e => {
-  const file = e.target.files[0];
-  const formData = new FormData();
-  formData.append("font", file);
-  const res = await fetch("/upload-font", { method: "POST", body: formData });
-  const { fontName } = await res.json();
-  fonts.push(fontName);
-  await loadFontOptions();
-  alert("✅ Font uploaded: " + fontName);
-});
-
-document.getElementById("saveStyle").addEventListener("click", async () => {
-  const fontFamily = document.getElementById("globalFont").value;
-  const fontSize = document.getElementById("globalSize").value;
-  await fetch("/save-style-settings", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ fontFamily, fontSize, fonts })
-  });
-  alert("✅ Global styles saved.");
-});
-
-async function pushToTest() {
-  const res = await fetch('/push-to-test', { method: 'POST' });
-  const result = await res.json();
-  alert(result.success ? "🚀 Test site updated!" : "❌ Failed to push.");
-}
-
 loadCovers();
-loadFontOptions();
-
-async function saveChanges() {
-  const orderedIds = [...document.querySelectorAll('.cover-card')].map(c => c.dataset.id);
-  covers = orderedIds.map(id => covers.find(c => c.id.toString() === id));
-
-  await fetch('/save-preview-covers', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(covers)
-  });
-
-  alert("✅ Changes saved privately for preview.");
-}
-
-function previewSite() {
-  window.open('/preview', '_blank');
-}
-
-async function pushLive() {
-  const res = await fetch('/push-live', { method: 'POST' });
-  if (res.ok) {
-    alert("✅ Changes are now live!");
-  } else {
-    alert("❌ Error pushing changes live.");
-  }
-}
