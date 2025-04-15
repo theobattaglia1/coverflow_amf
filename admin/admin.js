@@ -40,7 +40,7 @@
       fontSize: data.fontSize || '',
       music: {
         type: 'embed',
-        embedHtml: data.musicUrl || ''
+        url: data.musicUrl || ''
       },
       artistDetails: {
         name: data.artistName || '',
