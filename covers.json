@@ -35,13 +35,13 @@
     "fontSize": "",
     "music": {
       "type": "embed",
-      "url": "https://open.spotify.com/track/5LlRJdKv3lU4NmYOQrnNm4?si=ecf7d3619e764b95"
+      "url": "https://open.spotify.com/track/5LlRJdKv3lU4NmYOQrnNm4?si=5339c92792c244a0"
     },
     "artistDetails": {
-      "name": "Tom Siletto",
-      "location": "Los Angeles, CA",
-      "bio": "Test",
-      "spotifyLink": "https://open.spotify.com/artist/425hLCmDHF11OEX57lU2YX?si=glG6JY1KR9SphIPoQve7fw",
+      "name": "",
+      "location": "",
+      "bio": "",
+      "spotifyLink": "https://open.spotify.com/track/5LlRJdKv3lU4NmYOQrnNm4?si=5339c92792c244a0",
       "image": ""
     }
   },
