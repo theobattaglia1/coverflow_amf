@@ -41,7 +41,7 @@ fetch('/data/test-styles.json')
   });
 
 // Updated fetch: pulling updated covers from GitHub instead of from local /data folder
-fetch(`https://raw.githubusercontent.com/theobattaglia1/coverflow-data/main/covers.json?cachebust=${Date.now()}`)
+fetch(`/data/covers.json?cachebust=${Date.now()}`)
   .then(res => res.json())
   .then(data => {
     allCovers = data;
@@ -51,7 +51,8 @@ fetch(`https://raw.githubusercontent.com/theobattaglia1/coverflow-data/main/cove
     renderCovers();
     renderCoverFlow();
   })
-  .catch(err => console.error("Error fetching covers from GitHub:", err));
+  .catch(err => console.error("Error fetching covers from server:", err));
+
 
 function updateLayoutParameters() {
   const vw = window.innerWidth;
