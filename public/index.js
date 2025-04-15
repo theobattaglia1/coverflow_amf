@@ -75,7 +75,7 @@ function renderCovers() {
 
     const front = document.createElement("div");
     front.className = "cover-front";
-    front.style.backgroundImage = `url('${cover.frontImage}')`;
+    front.style.backgroundImage = `url('https://www.allmyfriendsinc.com${cover.frontImage}')`;
 
 // Back cover
 const back = document.createElement("div");
