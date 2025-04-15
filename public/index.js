@@ -79,7 +79,7 @@ function renderCovers() {
 
     const front = document.createElement("div");
     front.className = "cover-front";
-    
+
     const imageUrl = cover.frontImage;
     console.log(`🖼️ Cover [${i}] URL: ${imageUrl}`);
 
@@ -89,14 +89,31 @@ function renderCovers() {
       console.error(`❌ Image load error [${i}] URL:`, imageUrl, e);
     };
 
-    const back = document.createElement("div");
+    const back = document.createElement("div");  // ✅ This line was missing previously!
     back.className = "cover-back";
+
     const backContent = document.createElement("div");
     backContent.className = "back-content";
 
-    if (cover.music?.type === "embed") {
-      backContent.innerHTML = cover.music.embedHtml;
+    if (cover.music?.type === "embed" && cover.music.url) {
+      backContent.innerHTML = `
+        <iframe style="border-radius:12px"
+          src="${cover.music.url.replace('spotify.com/', 'spotify.com/embed/')}"
+          width="100%"
+          height="352"
+          frameBorder="0"
+          allowfullscreen
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy">
+        </iframe>`;
     }
+
+    // Add Artist Details Button to backContent
+    const artistDetailsBtn = document.createElement("button");
+    artistDetailsBtn.className = "expand-btn";
+    artistDetailsBtn.innerText = "Artist Details";
+
+    backContent.appendChild(artistDetailsBtn);
 
     back.appendChild(backContent);
     flip.appendChild(front);
@@ -123,6 +140,7 @@ function renderCovers() {
     coverflowEl.appendChild(wrapper);
   });
 }
+
 
 function renderCoverFlow() {
   document.querySelectorAll(".cover").forEach((cover) => {
