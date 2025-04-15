@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     const ext = path.extname(file.originalname);
     cb(null, `${file.fieldname}-${Date.now()}${ext}`);
   }
-});
+    });
 const upload = multer({ storage });
 
 // ESM replacement for __dirname
@@ -80,38 +80,41 @@ app.post('/save-cover', async (req, res) => {
     covers.push(updatedCover);
   }
 
-  try {
-    // Save to local preview
-    await fs.promises.writeFile(previewPath, JSON.stringify(covers, null, 2));
-    console.log("✅ Cover successfully written to covers-preview.json");
+// Replace existing save logic (only the GitHub portion) in server.js with this clearly-debuggable version:
 
-    // Immediately push to GitHub
-    const owner = 'theobattaglia1';
-    const repo = 'coverflow_amf';
-    const pathOnRepo = 'covers.json';
+try {
+  await fs.promises.writeFile(previewPath, JSON.stringify(covers, null, 2));
+  console.log("✅ Cover saved locally.");
 
-    const { data: existingFile } = await octokit.repos.getContent({
-      owner, repo, path: pathOnRepo
-    });
-    console.log("🔗 Loaded current covers.json from GitHub, SHA:", existingFile.sha);
+  const owner = 'theobattaglia1';
+  const repo = 'coverflow_amf';
+  const pathOnRepo = 'covers.json';
 
-    await octokit.repos.createOrUpdateFileContents({
-      owner,
-      repo,
-      path: pathOnRepo,
-      message: `✅ Automated push from Admin Panel (cover ID: ${updatedCover.id})`,
-      content: Buffer.from(JSON.stringify(covers, null, 2)).toString('base64'),
-      sha: existingFile.sha,
-    });
+  const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
+  
+  await octokit.repos.createOrUpdateFileContents({
+    owner,
+    repo,
+    path: pathOnRepo,
+    message: `✅ Automated push from Admin Panel (cover ID: ${updatedCover.id})`,
+    content: Buffer.from(JSON.stringify(covers, null, 2)).toString('base64'),
+    sha: existingFile.sha,
+  });
 
-    console.log("🚀 Successfully pushed changes to GitHub.");
+  console.log("🚀 Successfully pushed changes to GitHub.");
 
-    res.json({ success: true, message: "Cover saved and pushed live successfully!" });
-  } catch (err) {
-    console.error("❌ Error during GitHub push operation:", err);
-    res.status(500).json({ error: "Failed GitHub push operation", details: err.message });
-  }
+  res.json({ success: true, message: "Cover saved and pushed live successfully!" });
+
+} catch (err) {
+  console.error("❌ GitHub push failed:", err);
+  return res.status(500).json({
+    error: "GitHub push failed",
+    details: err.message,
+    githubError: err
+  });
+}
 });
+
 
 
 // Full Cover List Save (Reorder)
@@ -234,6 +237,8 @@ app.post('/push-live', async (req, res) => {
     res.status(500).json({ error: "GitHub push failed." });
   }
 });
+
+
 
 // Start server
 app.listen(port, () => {

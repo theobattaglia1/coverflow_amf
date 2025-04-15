@@ -64,7 +64,9 @@
       console.log("📬 [RESPONSE] Server responded:", result);
   
       if (!response.ok) {
-        throw new Error(`Server returned ${response.status}: ${result.error}`);
+        const result = await response.json();
+        console.error("❌ [ERROR] Saving cover failed:", result);
+        alert("Failed to save: " + result.error + "\n" + result.details);
       }
   
       alert("✅ Cover saved successfully!");
