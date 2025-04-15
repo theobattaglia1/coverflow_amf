@@ -26,23 +26,22 @@
 
   <div id="hover-credits" class="hover-credits-container"></div>
 
-  <!-- Artist modal placed correctly INSIDE <body> -->
-  <div class="artist-modal hidden">
-    <div class="artist-card">
-      <img class="artist-photo" src="" alt="Artist Image">
-      <div class="artist-info">
-        <h1></h1>
-        <p class="location"></p>
-        <div class="social-links">
-          <a class="spotify-link" href="#" target="_blank">
-            <img src="/spotify-icon.svg" alt="Spotify">
-          </a>
-        </div>
-        <p class="bio"></p>
-        <iframe class="spotify-player" src="" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  <!-- Artist modal -->
+<div class="artist-modal hidden">
+  <div class="artist-card">
+    <button class="close-btn">✕</button> <!-- Add this line -->
+    <img class="artist-photo" src="" alt="">
+    <div class="artist-info">
+      <h1></h1>
+      <p class="location"></p>
+      <div class="social-links">
+        <a class="spotify-link" href="#"><img src="spotify-icon.svg"></a>
       </div>
+      <p class="bio"></p>
+      <iframe class="spotify-player" src="" frameborder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
     </div>
   </div>
+</div>
 
   <script src="index.js"></script>
 </body>
