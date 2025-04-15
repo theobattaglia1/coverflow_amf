@@ -63,7 +63,11 @@ function updateLayoutParameters() {
 
 function renderCovers() {
   coverflowEl.innerHTML = "";
+  console.log("🟢 Rendering covers:", covers);
+
   covers.forEach((cover, i) => {
+    console.log(`🔍 Cover [${i}] Data:`, cover);
+
     const wrapper = document.createElement("div");
     wrapper.className = "cover";
     wrapper.dataset.index = i;
@@ -75,29 +79,29 @@ function renderCovers() {
 
     const front = document.createElement("div");
     front.className = "cover-front";
-    front.style.backgroundImage = `url('https://www.allmyfriendsinc.com${cover.frontImage}')`;
+    
+    const imageUrl = `https://www.allmyfriendsinc.com${cover.frontImage}`;
+    console.log(`🖼️ Cover [${i}] URL: ${imageUrl}`);
 
-// Back cover
-const back = document.createElement("div");
-back.className = "cover-back";
-const backContent = document.createElement("div");
-backContent.className = "back-content";
+    front.style.backgroundImage = `url('${imageUrl}')`;
 
-// Existing embed
-if (cover.music?.type === "embed") {
-  backContent.innerHTML = cover.music.embedHtml;
-}
+    front.onerror = (e) => {
+      console.error(`❌ Image load error [${i}] URL:`, imageUrl, e);
+    };
 
-// New: Add expand button
-const expandBtn = document.createElement("button");
-expandBtn.className = "expand-btn";
-expandBtn.textContent = "＋";
-backContent.appendChild(expandBtn);
+    const back = document.createElement("div");
+    back.className = "cover-back";
+    const backContent = document.createElement("div");
+    backContent.className = "back-content";
 
-back.appendChild(backContent);
-flip.appendChild(front);
-flip.appendChild(back);
+    if (cover.music?.type === "embed") {
+      backContent.innerHTML = cover.music.embedHtml;
+    }
 
+    back.appendChild(backContent);
+    flip.appendChild(front);
+    flip.appendChild(back);
+    wrapper.appendChild(flip);
 
     const label = document.createElement("div");
     label.className = "cover-label";
