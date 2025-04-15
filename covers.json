@@ -34,8 +34,7 @@
     "fontFamily": "",
     "fontSize": "",
     "music": {
-      "type": "url",
-      "url": "https://open.spotify.com/track/5LlRJdKv3lU4NmYOQrnNm4?si=867b780d7d984cf2",
+      "type": "embed",
       "embedHtml": ""
     },
     "artistDetails": {
