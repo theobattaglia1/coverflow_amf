@@ -66,17 +66,37 @@ app.post('/save-cover', async (req, res) => {
   }
 
   try {
+    // Save to local preview
     await fs.promises.writeFile(
       path.join(__dirname, 'data', 'covers-preview.json'),
       JSON.stringify(covers, null, 2)
     );
     console.log("✅ Cover saved (preview).");
-    res.json({ success: true });
+
+    // Push to GitHub immediately
+    const owner = 'theobattaglia1';
+    const repo = 'coverflow-data';
+    const pathOnRepo = 'covers.json';
+
+    const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
+    await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path: pathOnRepo,
+      message: '✅ Automated push from Admin Panel (save-cover)',
+      content: Buffer.from(JSON.stringify(covers, null, 2)).toString('base64'),
+      sha: existingFile.sha,
+    });
+    console.log("✅ GitHub covers.json updated.");
+
+    res.json({ success: true, message: "Cover saved and pushed live successfully!" });
+
   } catch (err) {
-    console.error("❌ Error saving cover (preview):", err);
-    res.status(500).json({ error: "Failed to save" });
+    console.error("❌ Error saving/pushing cover:", err);
+    res.status(500).json({ error: "Failed to save/push" });
   }
 });
+
 
 // =======================
 // Full Cover List (Reorder) Save

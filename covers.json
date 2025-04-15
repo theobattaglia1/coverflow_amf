@@ -2,7 +2,7 @@
   {
     "id": "1",
     "category": "artist, songwriter",
-    "frontImage": "/uploads/444a59dfe2a66aa5224c7038f7539b15",
+    "frontImage":  "https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15",
     "albumTitle": "Hudson Ingram",
     "coverLabel": "Interscope / Aaron Dessner",
     "fontFamily": "",
@@ -15,7 +15,7 @@
   {
     "id": "1743757227077",
     "category": "about us",
-    "frontImage": "/uploads/75bc77b992dfc5eb11bf249b43590479",
+    "frontImage":  "https://allmyfriendsinc.com/uploads/75bc77b992dfc5eb11bf249b43590479",
     "albumTitle": "Contact Us",
     "coverLabel": "",
     "fontFamily": "",
@@ -28,7 +28,7 @@
   {
     "id": "1743755620790",
     "category": "artist, songwriter",
-    "frontImage": "/uploads/b7d5aec19b44b906b6e79ede9b380850",
+    "frontImage":  "https://allmyfriendsinc.com/uploads/b7d5aec19b44b906b6e79ede9b380850",
     "albumTitle": "Ruby Plume",
     "coverLabel": "Mututal Friends / AWAL",
     "fontFamily": "",
@@ -41,7 +41,7 @@
   {
     "id": "1743756368892",
     "category": "artist, songwriter",
-    "frontImage": "/uploads/bd34a93201c51e17c2699f51c522cee0",
+    "frontImage":  "https://allmyfriendsinc.com/uploads/bd34a93201c51e17c2699f51c522cee0",
     "albumTitle": "Tom Siletto",
     "coverLabel": "he's not fucking signed",
     "fontFamily": "",
@@ -54,7 +54,7 @@
   {
     "id": "1743755607527",
     "category": "producer, songwriter",
-    "frontImage": "/uploads/26141c34120831f1c15f6b66fac2e9cc",
+    "frontImage":  "https://allmyfriendsinc.com/uploads/26141c34120831f1c15f6b66fac2e9cc",
     "albumTitle": "Jack Schrepferman",
     "coverLabel": "100 Publishing / Kobalt",
     "music": {

@@ -29,7 +29,7 @@
     const data = Object.fromEntries(new FormData(form));
     const isNew = !id;
     if (isNew) id = Date.now().toString();
-
+  
     const body = {
       id,
       category: data.category || '',
@@ -39,8 +39,9 @@
       fontFamily: data.fontFamily || '',
       fontSize: data.fontSize || '',
       music: {
-        type: "url",
-        url: data.musicUrl || ''
+        type: data.musicUrl?.includes('<iframe') ? "embed" : "url",
+        url: !data.musicUrl?.includes('<iframe') ? data.musicUrl : '',
+        embedHtml: data.musicUrl?.includes('<iframe') ? data.musicUrl : ''
       },
       artistDetails: {
         name: data.artistName || '',
@@ -50,18 +51,25 @@
         image: data.artistImage || ''
       }
     };
-
+  
     console.log("📦 Saving:", body);
-
-    await fetch('/save-cover', {
+  
+    const res = await fetch('/save-cover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
-
-    alert("✅ Cover saved successfully!");
-    window.location.href = '/admin/dashboard.html';
+  
+    const result = await res.json();
+  
+    if(result.success){
+      alert("✅ Cover saved and pushed live successfully!");
+      window.location.href = '/admin/dashboard.html';
+    } else {
+      alert("❌ Error: " + result.error);
+    }
   };
+  
 
   window.deleteCover = async function () {
     if (confirm("Are you sure you want to delete this cover?")) {
