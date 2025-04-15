@@ -68,25 +68,22 @@
       }
   
       alert("✅ Cover saved successfully!");
-      window.location.href = '/admin/dashboard.html';
-    } catch (error) {
+        } catch (error) {
       console.error("❌ [ERROR] Saving cover failed:", error);
       alert("Failed to save: " + error.message);
-    }
-  };
-  
-  
+        }
+      };
+      
 
-  window.deleteCover = async function () {
-    if (confirm("Are you sure you want to delete this cover?")) {
+      window.deleteCover = async function () {
+        if (confirm("Are you sure you want to delete this cover?")) {
       await fetch('/delete-cover', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
       });
       alert("✅ Cover deleted successfully!");
-      window.location.href = '/admin/dashboard.html';
-    }
+        }
   };
 
   const dropArea = document.getElementById('dropArea');
