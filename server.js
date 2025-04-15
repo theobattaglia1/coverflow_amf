@@ -55,50 +55,64 @@ app.use('/uploads', express.static(path.resolve(__dirname, './uploads'), {
 app.use('/admin', basicAuth({ users: { admin: 'password' }, challenge: true }), express.static(path.join(__dirname, 'admin')));
 app.use('/preview', express.static(path.join(__dirname, 'public-preview')));
 
-// Single Cover Save
 app.post('/save-cover', async (req, res) => {
   const updatedCover = req.body;
-  console.log("🚀 Saving individual cover:", updatedCover.id);
+  console.log("🚀 [START] Received request to save cover ID:", updatedCover.id);
+  console.log("📥 Payload received:", JSON.stringify(updatedCover, null, 2));
 
   let covers = [];
+  const previewPath = path.join(__dirname, 'data', 'covers-preview.json');
+
   try {
-    covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8'));
-  } catch {
-    console.warn("⚠️ Starting fresh (covers-preview.json not found)");
+    const previewData = await fs.promises.readFile(previewPath, 'utf-8');
+    covers = JSON.parse(previewData);
+    console.log("✅ Loaded existing covers from covers-preview.json");
+  } catch (err) {
+    console.warn("⚠️ covers-preview.json not found, starting fresh:", err);
   }
 
   const index = covers.findIndex(c => c.id.toString() === updatedCover.id.toString());
   if (index !== -1) {
+    console.log(`🔄 Updating existing cover at index ${index}`);
     covers[index] = updatedCover;
   } else {
+    console.log("🆕 Adding new cover");
     covers.push(updatedCover);
   }
 
   try {
-    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers-preview.json'), JSON.stringify(covers, null, 2));
-    console.log("✅ Cover saved (preview)");
+    // Save to local preview
+    await fs.promises.writeFile(previewPath, JSON.stringify(covers, null, 2));
+    console.log("✅ Cover successfully written to covers-preview.json");
 
+    // Immediately push to GitHub
     const owner = 'theobattaglia1';
     const repo = 'coverflow_amf';
     const pathOnRepo = 'covers.json';
 
-    const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
+    const { data: existingFile } = await octokit.repos.getContent({
+      owner, repo, path: pathOnRepo
+    });
+    console.log("🔗 Loaded current covers.json from GitHub, SHA:", existingFile.sha);
+
     await octokit.repos.createOrUpdateFileContents({
       owner,
       repo,
       path: pathOnRepo,
-      message: '✅ Automated push from Admin Panel (save-cover)',
+      message: `✅ Automated push from Admin Panel (cover ID: ${updatedCover.id})`,
       content: Buffer.from(JSON.stringify(covers, null, 2)).toString('base64'),
       sha: existingFile.sha,
     });
-    console.log("✅ GitHub covers.json updated");
+
+    console.log("🚀 Successfully pushed changes to GitHub.");
 
     res.json({ success: true, message: "Cover saved and pushed live successfully!" });
   } catch (err) {
-    console.error("❌ Error saving/pushing cover:", err);
-    res.status(500).json({ error: "Failed to save/push" });
+    console.error("❌ Error during GitHub push operation:", err);
+    res.status(500).json({ error: "Failed GitHub push operation", details: err.message });
   }
 });
+
 
 // Full Cover List Save (Reorder)
 app.post('/save-covers', async (req, res) => {

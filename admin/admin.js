@@ -39,9 +39,8 @@
       fontFamily: data.fontFamily || '',
       fontSize: data.fontSize || '',
       music: {
-        type: data.musicUrl?.includes('<iframe') ? "embed" : "url",
-        url: !data.musicUrl?.includes('<iframe') ? data.musicUrl : '',
-        embedHtml: data.musicUrl?.includes('<iframe') ? data.musicUrl : ''
+        type: data.musicType || 'embed',
+        embedHtml: data.musicContent || ''
       },
       artistDetails: {
         name: data.artistName || '',
@@ -52,23 +51,30 @@
       }
     };
   
-    console.log("📦 Saving:", body);
+    console.log("📦 [SEND] Sending data to server:", body);
   
-    const res = await fetch('/save-cover', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
-    });
+    try {
+      const response = await fetch('/save-cover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+      });
   
-    const result = await res.json();
+      const result = await response.json();
+      console.log("📬 [RESPONSE] Server responded:", result);
   
-    if(result.success){
-      alert("✅ Cover saved and pushed live successfully!");
+      if (!response.ok) {
+        throw new Error(`Server returned ${response.status}: ${result.error}`);
+      }
+  
+      alert("✅ Cover saved successfully!");
       window.location.href = '/admin/dashboard.html';
-    } else {
-      alert("❌ Error: " + result.error);
+    } catch (error) {
+      console.error("❌ [ERROR] Saving cover failed:", error);
+      alert("Failed to save: " + error.message);
     }
   };
+  
   
 
   window.deleteCover = async function () {
