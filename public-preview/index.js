@@ -40,8 +40,8 @@ fetch('/data/test-styles.json')
     document.head.appendChild(styleTag);
   });
 
-// ✅ Updated data source to covers-preview.json explicitly
-fetch('/data/covers-preview.json')
+// ✅ Updated data source to covers.json explicitly
+fetch('/data/covers.json')
   .then(res => res.json())
   .then(data => {
     allCovers = data;

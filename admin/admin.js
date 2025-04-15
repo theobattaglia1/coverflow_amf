@@ -1,7 +1,7 @@
 (async function(){
   const urlParams = new URLSearchParams(window.location.search);
   let id = urlParams.get('id');
-  const cover = id ? (await fetch(`/data/covers-preview.json`).then(r => r.json())).find(c => c.id == id) : {};
+  const cover = id ? (await fetch(`/data/covers.json`).then(r => r.json())).find(c => c.id == id) : {};
 
   if (cover) {
     Object.entries(cover).forEach(([key, value]) => {

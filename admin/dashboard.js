@@ -1,7 +1,7 @@
 let covers = [];
 
 async function loadCovers() {
-  const res = await fetch('/data/covers-preview.json');
+  const res = await fetch('/data/covers.json');
   covers = await res.json();
   renderCovers();
 }

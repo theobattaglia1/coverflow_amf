@@ -61,14 +61,14 @@ app.post('/save-cover', async (req, res) => {
   console.log("📥 Payload received:", JSON.stringify(updatedCover, null, 2));
 
   let covers = [];
-  const previewPath = path.join(__dirname, 'data', 'covers-preview.json');
+  const previewPath = path.join(__dirname, 'data', 'covers.json');
 
   try {
     const previewData = await fs.promises.readFile(previewPath, 'utf-8');
     covers = JSON.parse(previewData);
-    console.log("✅ Loaded existing covers from covers-preview.json");
+    console.log("✅ Loaded existing covers from covers.json");
   } catch (err) {
-    console.warn("⚠️ covers-preview.json not found, starting fresh:", err);
+    console.warn("⚠️ covers.json not found, starting fresh:", err);
   }
 
   const index = covers.findIndex(c => c.id.toString() === updatedCover.id.toString());
@@ -126,7 +126,7 @@ app.post('/save-covers', async (req, res) => {
 
   console.log("💾 Reordering covers (preview), count:", covers.length);
   try {
-    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers-preview.json'), JSON.stringify(covers, null, 2));
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(covers, null, 2));
     res.json({ success: true });
   } catch (err) {
     console.error("❌ Failed to save covers:", err);
@@ -140,9 +140,9 @@ app.post('/delete-cover', async (req, res) => {
   if (!id) return res.status(400).json({ error: "Missing cover ID" });
 
   try {
-    const covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8'));
+    const covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8'));
     const filtered = covers.filter(c => c.id.toString() !== id.toString());
-    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers-preview.json'), JSON.stringify(filtered, null, 2));
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(filtered, null, 2));
     console.log(`🗑️ Deleted cover ${id} (preview)`);
     res.json({ success: true });
   } catch (err) {
@@ -202,7 +202,7 @@ app.post('/save-style-settings', (req, res) => {
 // Push to Test
 app.post('/push-to-test', async (req, res) => {
   try {
-    const covers = await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'));
+    const covers = await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'));
     const styles = await fs.promises.readFile(path.join(__dirname, 'data', 'styles.json'));
     await fs.promises.writeFile(path.join(__dirname, 'data', 'test-styles.json'), styles);
     console.log("🧪 Pushed covers + styles to test");
@@ -216,7 +216,7 @@ app.post('/push-to-test', async (req, res) => {
 // Push Live
 app.post('/push-live', async (req, res) => {
   try {
-    const previewData = await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8');
+    const previewData = await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8');
     const owner = 'theobattaglia1';
     const repo = 'coverflow_amf';
     const pathOnRepo = 'covers.json';
