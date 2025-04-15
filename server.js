@@ -17,7 +17,7 @@ const storage = multer.diskStorage({
     const ext = path.extname(file.originalname);
     cb(null, `${file.fieldname}-${Date.now()}${ext}`);
   }
-    });
+});
 const upload = multer({ storage });
 
 // ESM replacement for __dirname
@@ -61,11 +61,11 @@ app.post('/save-cover', async (req, res) => {
   console.log("📥 Payload received:", JSON.stringify(updatedCover, null, 2));
 
   let covers = [];
-  const previewPath = path.join(__dirname, 'data', 'covers.json');
+  const coversFilePath = path.join(__dirname, 'data', 'covers.json');
 
   try {
-    const previewData = await fs.promises.readFile(previewPath, 'utf-8');
-    covers = JSON.parse(previewData);
+    const fileData = await fs.promises.readFile(coversFilePath, 'utf-8');
+    covers = JSON.parse(fileData);
     console.log("✅ Loaded existing covers from covers.json");
   } catch (err) {
     console.warn("⚠️ covers.json not found, starting fresh:", err);
@@ -80,42 +80,38 @@ app.post('/save-cover', async (req, res) => {
     covers.push(updatedCover);
   }
 
-// Replace existing save logic (only the GitHub portion) in server.js with this clearly-debuggable version:
+  try {
+    await fs.promises.writeFile(coversFilePath, JSON.stringify(covers, null, 2));
+    console.log("✅ Cover saved locally.");
 
-try {
-  await fs.promises.writeFile(previewPath, JSON.stringify(covers, null, 2));
-  console.log("✅ Cover saved locally.");
+    const owner = 'theobattaglia1';
+    const repo = 'coverflow_amf';
+    const pathOnRepo = 'covers.json';
 
-  const owner = 'theobattaglia1';
-  const repo = 'coverflow_amf';
-  const pathOnRepo = 'covers.json';
+    const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
+    
+    await octokit.repos.createOrUpdateFileContents({
+      owner,
+      repo,
+      path: pathOnRepo,
+      message: `✅ Automated push from Admin Panel (cover ID: ${updatedCover.id})`,
+      content: Buffer.from(JSON.stringify(covers, null, 2)).toString('base64'),
+      sha: existingFile.sha,
+    });
 
-  const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
-  
-  await octokit.repos.createOrUpdateFileContents({
-    owner,
-    repo,
-    path: pathOnRepo,
-    message: `✅ Automated push from Admin Panel (cover ID: ${updatedCover.id})`,
-    content: Buffer.from(JSON.stringify(covers, null, 2)).toString('base64'),
-    sha: existingFile.sha,
-  });
+    console.log("🚀 Successfully pushed changes to GitHub.");
 
-  console.log("🚀 Successfully pushed changes to GitHub.");
+    res.json({ success: true, message: "Cover saved and pushed live successfully!" });
 
-  res.json({ success: true, message: "Cover saved and pushed live successfully!" });
-
-} catch (err) {
-  console.error("❌ GitHub push failed:", err);
-  return res.status(500).json({
-    error: "GitHub push failed",
-    details: err.message,
-    githubError: err
-  });
-}
+  } catch (err) {
+    console.error("❌ GitHub push failed:", err);
+    return res.status(500).json({
+      error: "GitHub push failed",
+      details: err.message,
+      githubError: err
+    });
+  }
 });
-
-
 
 // Full Cover List Save (Reorder)
 app.post('/save-covers', async (req, res) => {
@@ -143,7 +139,7 @@ app.post('/delete-cover', async (req, res) => {
     const covers = JSON.parse(await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8'));
     const filtered = covers.filter(c => c.id.toString() !== id.toString());
     await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), JSON.stringify(filtered, null, 2));
-    console.log(`🗑️ Deleted cover ${id} (preview)`);
+    console.log(`🗑️ Deleted cover ${id}`);
     res.json({ success: true });
   } catch (err) {
     console.error("❌ Failed to delete cover:", err);
@@ -216,7 +212,7 @@ app.post('/push-to-test', async (req, res) => {
 // Push Live
 app.post('/push-live', async (req, res) => {
   try {
-    const previewData = await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8');
+    const coversData = await fs.promises.readFile(path.join(__dirname, 'data', 'covers.json'), 'utf-8');
     const owner = 'theobattaglia1';
     const repo = 'coverflow_amf';
     const pathOnRepo = 'covers.json';
@@ -226,10 +222,11 @@ app.post('/push-live', async (req, res) => {
       repo,
       path: pathOnRepo,
       message: '✅ Push live from Admin Panel',
-      content: Buffer.from(previewData).toString('base64'),
+      content: Buffer.from(coversData).toString('base64'),
       sha: existingFile.sha,
     });
-    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), previewData);
+    // Optionally write back to covers.json (if needed)
+    await fs.promises.writeFile(path.join(__dirname, 'data', 'covers.json'), coversData);
     console.log("✅ Changes pushed live");
     res.json({ message: "✅ Changes pushed live" });
   } catch (err) {
@@ -237,8 +234,6 @@ app.post('/push-live', async (req, res) => {
     res.status(500).json({ error: "GitHub push failed." });
   }
 });
-
-
 
 // Start server
 app.listen(port, () => {
