@@ -80,7 +80,7 @@ function renderCovers() {
     const front = document.createElement("div");
     front.className = "cover-front";
     
-    const imageUrl = `https://www.allmyfriendsinc.com${cover.frontImage}`;
+    const imageUrl = cover.frontImage;
     console.log(`🖼️ Cover [${i}] URL: ${imageUrl}`);
 
     front.style.backgroundImage = `url('${imageUrl}')`;
