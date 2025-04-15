@@ -79,7 +79,7 @@ app.post('/save-cover', async (req, res) => {
     console.log("✅ Cover saved (preview)");
 
     const owner = 'theobattaglia1';
-    const repo = 'coverflow-amf';
+    const repo = 'coverflow_amf';
     const pathOnRepo = 'covers.json';
 
     const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
@@ -201,7 +201,7 @@ app.post('/push-live', async (req, res) => {
   try {
     const previewData = await fs.promises.readFile(path.join(__dirname, 'data', 'covers-preview.json'), 'utf-8');
     const owner = 'theobattaglia1';
-    const repo = 'coverflow-amf';
+    const repo = 'coverflow_amf';
     const pathOnRepo = 'covers.json';
     const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
     await octokit.repos.createOrUpdateFileContents({
