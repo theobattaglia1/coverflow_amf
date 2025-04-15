@@ -39,8 +39,8 @@
       fontFamily: data.fontFamily || '',
       fontSize: data.fontSize || '',
       music: {
-        type: data.musicType || 'embed',
-        embedHtml: data.musicContent || ''
+        type: 'embed',
+        embedHtml: data.musicUrl || ''
       },
       artistDetails: {
         name: data.artistName || '',
@@ -68,11 +68,13 @@
       }
   
       alert("✅ Cover saved successfully!");
-        } catch (error) {
+      window.location.href = '/admin/dashboard.html';
+    } catch (error) {
       console.error("❌ [ERROR] Saving cover failed:", error);
       alert("Failed to save: " + error.message);
-        }
-      };
+    }
+  };
+  
       
 
       window.deleteCover = async function () {
