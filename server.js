@@ -34,15 +34,10 @@ app.get('/', (req, res, next) => {
 // Middleware
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-app.use(
-  '/data',
-  express.static(path.join(__dirname, 'data'), {
-    setHeaders: (res, filePath) => {
-      // Ensure no caching for files in /data
-      res.setHeader('Cache-Control', 'no-store');
-    }
-  })
-);
+app.use('/data', express.static(path.join(__dirname, 'public/data'), {
+  setHeaders: (res) => res.setHeader('Cache-Control', 'no-store')
+}));
+
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   setHeaders: (res, filePath) => {
     if (filePath.endsWith('.jpg') || filePath.endsWith('.jpeg')) {
@@ -95,7 +90,7 @@ app.post('/save-cover', async (req, res) => {
 
     // Push to GitHub immediately
     const owner = 'theobattaglia1';
-    const repo = 'coverflow-data';
+    const repo = 'coverflow-amf';
     const pathOnRepo = 'covers.json';
 
     const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
@@ -249,7 +244,7 @@ app.post('/push-live', async (req, res) => {
     );
 
     const owner = 'theobattaglia1';
-    const repo = 'coverflow-data';
+    const repo = 'coverflow-amf';
     const pathOnRepo = 'covers.json';
 
     const { data: existingFile } = await octokit.repos.getContent({ owner, repo, path: pathOnRepo });
