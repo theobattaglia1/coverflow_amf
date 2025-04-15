@@ -2,38 +2,35 @@
   const urlParams = new URLSearchParams(window.location.search);
   let id = urlParams.get('id');
 
-  // Fetch covers-preview.json and find the cover if 'id' is provided
-  const cover = id
+  // Fetch the cover from covers-preview.json
+  const cover = id 
     ? (await fetch(`/data/covers-preview.json`).then(r => r.json())).find(c => c.id == id)
     : {};
 
-  // 1. Populate form fields if cover exists
+  // Populate the form fields if a cover exists
   if (cover) {
+    // Fill in all matching fields from cover object (except music, which we handle separately)
     Object.entries(cover).forEach(([key, value]) => {
+      // Skip 'music' here to handle it later
+      if (key === 'music') return; 
       const el = document.getElementById(key);
-      if (el) {
-        el.value = typeof value === 'object'
-          ? JSON.stringify(value, null, 2)
-          : value;
-      }
+      if (el) el.value = typeof value === 'object' ? JSON.stringify(value, null, 2) : value;
     });
 
-    // Set frontImage, fontFamily, fontSize, and image preview
+    // Set image, fonts, etc.
     if (cover.frontImage) document.getElementById('imgPreview').src = cover.frontImage;
     if (cover.fontFamily) document.getElementById('fontFamily').value = cover.fontFamily;
     if (cover.fontSize) document.getElementById('fontSize').value = cover.fontSize;
 
-    // 2. Initialize music type and content fields
+    // Handle the music field separately
     const musicTypeEl = document.getElementById('musicType');
     const mc = document.getElementById('musicContent');
-
     if (cover.music) {
-      // If there's a music object, set the dropdown (default: embed)
+      // Set the music type dropdown if exists
       if (musicTypeEl && cover.music.type) {
         musicTypeEl.value = cover.music.type;
       }
-
-      // Depending on type, load the correct field into <textarea id="musicContent">
+      // Load the appropriate field into the textarea based on type
       if (cover.music.type === 'embed') {
         mc.value = cover.music.embedHtml || '';
       } else if (cover.music.type === 'link') {
@@ -42,8 +39,7 @@
         mc.value = cover.music.value || '';
       }
     }
-
-    // 3. If the user changes the music type dropdown, update placeholder
+    // If the user changes the music type, update the placeholder
     if (musicTypeEl) {
       musicTypeEl.addEventListener('change', function () {
         const type = musicTypeEl.value;
@@ -74,22 +70,21 @@
   };
 
   // =========================
-  // Save (Create/Update) Cover
+  // Single Cover Save (Unified)
   // =========================
   window.saveCover = async function () {
     const form = document.getElementById('coverForm');
     const data = Object.fromEntries(new FormData(form));
-    const isNew = !id;
-    if (isNew) {
-      // Assign a new ID if cover doesn't exist
-      id = Date.now().toString();
-    }
 
-    // Grab the music type dropdown
+    // Debug: Log the form data to verify embed value
+    console.log("Form Data:", data);
+    
+    const isNew = !id;
+    if (isNew) id = Date.now().toString();
+
+    // Retrieve music type; default to 'embed'
     const musicTypeEl = document.getElementById('musicType');
     const musicType = musicTypeEl ? musicTypeEl.value : 'embed';
-
-    // Build the music object according to chosen type
     let musicContent;
     if (musicType === 'embed') {
       musicContent = { type: 'embed', embedHtml: data.musicContent || '' };
@@ -99,7 +94,6 @@
       musicContent = { type: musicType, value: data.musicContent || '' };
     }
 
-    // Construct the final cover object
     const body = {
       id,
       category: data.category || '',
@@ -111,9 +105,8 @@
       music: musicContent
     };
 
-    console.log("📦 Saving:", body);
+    console.log("📦 Saving cover with payload:", body);
 
-    // Send to /save-cover endpoint
     const resp = await fetch('/save-cover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -121,19 +114,17 @@
     });
 
     if (!resp.ok) {
-      alert("❌ Failed to save. Check console for details.");
+      alert("❌ Failed to save cover. Check console for errors.");
       return;
     }
 
     alert("✅ Cover saved!");
 
-    // If newly created, optionally redirect to some admin route with the new ID
+    // If new, optionally redirect
     if (isNew) {
-      // Reload covers-preview to confirm the new cover was saved
       const covers = await fetch('/data/covers-preview.json').then(r => r.json());
       const newCover = covers.find(c => c.id == id);
       if (newCover) {
-        // Go to admin route with ?cover=...
         window.location.href = `/admin?cover=${newCover.id}`;
       }
     }
