@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>All My Friends — Logo</title>
   <style>
     @font-face {
@@ -16,16 +16,28 @@
       --bar-width: 60px;
       --black: #000;
       --white: #fff;
-      --font-family: 'Helvetica Neue', Arial, sans-serif;
+      --font-family: 'Helvetica Neue', 'Arial', sans-serif;
     }
 
     html, body {
       margin: 0;
       padding: 0;
-      background-color: transparent;
-      height: 100%;
+      background: transparent;
       width: 100%;
-      overflow: hidden; /* No scrollbars; fits neatly in an iframe */
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-wrapper {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transform: scale(0.85); /* initial base scale */
+      transform-origin: center;
     }
 
     .logo-container {
@@ -33,11 +45,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      position: relative;
-      padding: 2rem;      /* The original vertical spacing you liked */
       box-sizing: border-box;
       user-select: none;
-      /* No fixed height; it will fit the iframe. */
     }
 
     .logo-elements {
@@ -47,7 +56,6 @@
       gap: calc(var(--logo-unit) / 12);
     }
 
-    /* A circle, M bar, F bar */
     .logo-a .circle {
       width: var(--bar-width);
       height: var(--bar-width);
@@ -105,6 +113,14 @@
       transform: translateX(-50%);
     }
 
+    .bar-m .letter {
+      animation: sliderUpDown 6s ease-in-out infinite alternate;
+    }
+
+    .bar-f .letter {
+      animation: sliderDownUp 6.5s ease-in-out infinite alternate;
+    }
+
     @keyframes sliderUpDown {
       0%, 100% { bottom: 0%; }
       50% { bottom: 60%; }
@@ -113,14 +129,6 @@
     @keyframes sliderDownUp {
       0%, 100% { bottom: 60%; }
       50% { bottom: 0%; }
-    }
-
-    .bar-m .letter {
-      animation: sliderUpDown 6s ease-in-out infinite alternate;
-    }
-
-    .bar-f .letter {
-      animation: sliderDownUp 6.5s ease-in-out infinite alternate;
     }
 
     @keyframes rotateKnob {
@@ -135,7 +143,7 @@
     .logo-text {
       font-family: 'Serial D', sans-serif;
       font-size: calc(var(--logo-unit) / 1.7);
-      color: #fff; /* White text, as desired */
+      color: #fff;
       text-transform: uppercase;
       letter-spacing: 3px;
       text-align: center;
@@ -144,38 +152,46 @@
       user-select: none;
     }
 
-    /* Slight horizontal offset for lines of text */
     .logo-text div:first-child {
       margin-left: calc(var(--logo-unit) * -0.4);
     }
+
     .logo-text div:last-child {
       margin-left: 100px;
+    }
+
+    @media (max-height: 280px), (max-width: 500px) {
+      .logo-wrapper {
+        transform: scale(0.7);
+      }
+    }
+
+    @media (max-height: 220px), (max-width: 400px) {
+      .logo-wrapper {
+        transform: scale(0.6);
+      }
     }
   </style>
 </head>
 
 <body>
-  <div class="logo-container">
-    <div class="logo-elements">
-      <!-- A circle -->
-      <div class="logo-a">
-        <div class="circle">A</div>
+  <div class="logo-wrapper">
+    <div class="logo-container">
+      <div class="logo-elements">
+        <div class="logo-a">
+          <div class="circle">A</div>
+        </div>
+        <div class="rounded-bar bar-m">
+          <div class="letter">M</div>
+        </div>
+        <div class="rounded-bar bar-f">
+          <div class="letter">F</div>
+        </div>
       </div>
-
-      <!-- M bar -->
-      <div class="rounded-bar bar-m">
-        <div class="letter">M</div>
+      <div class="logo-text">
+        <div>ALL MY</div>
+        <div>FRIENDS</div>
       </div>
-
-      <!-- F bar with longer adjustments -->
-      <div class="rounded-bar bar-f">
-        <div class="letter">F</div>
-      </div>
-    </div>
-
-    <div class="logo-text">
-      <div>ALL MY</div>
-      <div>FRIENDS</div>
     </div>
   </div>
 </body>
