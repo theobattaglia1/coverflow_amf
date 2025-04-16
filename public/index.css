@@ -16,8 +16,15 @@ html, body {
 
 /* === LOGO === */
 .logo-container {
-  text-align: center;
-  padding: clamp(24px, 6vh, 48px) 0 clamp(12px, 3vh, 24px);
+  width: 100%;
+  max-width: 100%;
+  height: clamp(150px, 20vh, 280px); /* dynamically scale height based on viewport */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* ensures nothing spills out */
+  padding: 10px 0;
+  box-sizing: border-box;
 }
 .site-logo {
   max-height: clamp(100px, 25vw, 200px);
