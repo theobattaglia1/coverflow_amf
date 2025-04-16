@@ -14,15 +14,6 @@ html, body {
   height: 100%;
 }
 
-/* === LOGO === */
-.logo-container {
-  text-align: center;
-  padding: clamp(24px, 6vh, 48px) 0 clamp(12px, 3vh, 24px);
-}
-.site-logo {
-  max-height: clamp(100px, 25vw, 200px);
-  width: auto;
-}
 
 /* === FILTER BAR === */
 .filter-container {
