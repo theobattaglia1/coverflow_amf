@@ -7,33 +7,28 @@
   <link rel="stylesheet" href="/fonts.css" />
   <style id="global-styles"></style>
 </head>
-  
-<!-- 1) A top container (named differently from .logo-container to avoid collision) -->
-<div class="top-logo" style="
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  margin: 2rem auto;   /* some vertical spacing from top edge */
-">
-  <!-- 2) The iframe referencing the final `logo.html` -->
-  <iframe
-    src="/assets/logo.html"
-    style="
-      border: none;
-      display: block;
-      width: 100%;
-      max-width: 600px; /* scale to your preference */
-      height: 240px;    /* set a comfortable default height */
-      overflow: hidden;
-    "
-  ></iframe>
-</div>
+<body>
+  <!-- Logo -->
+  <div class="top-logo" style="
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 2rem auto;
+  ">
+    <iframe
+      src="/assets/logo.html"
+      style="
+        border: none;
+        display: block;
+        width: 100%;
+        max-width: 600px;
+        height: 240px;
+        overflow: hidden;
+      "
+    ></iframe>
+  </div>
 
-
-
-  
-  
-
+  <!-- Filters -->
   <div class="filter-container">
     <span class="filter-label active" data-filter="all">ALL</span>
     <span class="filter-label" data-filter="artist">ARTISTS</span>
@@ -42,30 +37,37 @@
     <span class="filter-label" data-filter="about">ABOUT US</span>
   </div>
 
-  <div class="coverflow-container">
+  <!-- Coverflow + Ambient Light + Trail Canvas -->
+  <div class="coverflow-container" id="coverflow-container">
+    <!-- ambient glow behind covers -->
+    <div id="ambient-light"></div>
+    <!-- particle trails overlay -->
+    <canvas id="trail-canvas"></canvas>
+    <!-- actual coverflow content -->
     <div class="coverflow-content" id="coverflow"></div>
   </div>
 
+  <!-- Hover credits -->
   <div id="hover-credits" class="hover-credits-container"></div>
 
+  <!-- Artist Detail Modal -->
   <div class="artist-modal hidden">
     <div class="modal-content">
-      <img class="artist-photo" src="ARTIST IMAGE URL">
+      <img class="artist-photo" src="ARTIST IMAGE URL" />
       <button class="close-btn">✕</button>
-  
       <div class="artist-info">
         <h1 class="artist-name">Artist Name</h1>
         <div class="artist-location">Artist Location</div>
         <div class="artist-bio">Artist Bio here...</div>
-        <a class="spotify-button spotify-link" href="SPOTIFY LINK" target="_blank">Open in Spotify</a>
-  
+        <a class="spotify-button spotify-link" href="SPOTIFY LINK" target="_blank">
+          Open in Spotify
+        </a>
         <iframe class="spotify-player" src="SPOTIFY EMBED URL" allowfullscreen></iframe>
       </div>
     </div>
   </div>
-  
-  
 
+  <!-- Main script -->
   <script src="index.js"></script>
 </body>
 </html>
