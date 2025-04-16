@@ -214,10 +214,18 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
-// Click outside modal closes it
 document.querySelector('.artist-modal').addEventListener("click", (e) => {
   if (e.target.classList.contains("artist-modal")) {
-    e.target.classList.add('hidden');
+    const modalContent = e.target.querySelector('.modal-content');
+    
+    // Add pulse animation
+    modalContent.classList.add('pulse-dismiss');
+
+    // After animation ends, hide modal
+    setTimeout(() => {
+      e.target.classList.add('hidden');
+      modalContent.classList.remove('pulse-dismiss');
+    }, 250); // Match animation duration
   }
 });
 
