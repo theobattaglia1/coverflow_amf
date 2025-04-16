@@ -22,7 +22,14 @@
     "fontSize": "",
     "music": {
       "type": "embed",
-      "embedHtml": ""
+      "url": "https://open.spotify.com/track/2BeBp0IazmkqGVc0PxxDye?si=95799ccf1a97435f"
+    },
+    "artistDetails": {
+      "name": "Ruby Plume",
+      "location": "",
+      "bio": "Ruby Plume is an alt-folk-pop artist from Boston whose intricate storytelling and lush guitar melodies form a liminal, daydreamy musical canvas. Her vocals carry a quiet intensity, layering youthful clarity over emotional depth reminiscent of artists who defined alt-pop for a new generation.\nRuby’s songs are subtly prismatic—shifting effortlessly between vivid emotion and elusive mystery, warmth and introspection.\nBeyond her standout singer-songwriter talent, Ruby is a poly-artistic force, incorporating guitar finesse, imaginative illustration, and mixed-media art into her creative arsenal. These visual explorations deepen the vivid daydream that is her developing world—rounding out a creative universe that feels both tangible and dreamlike.",
+      "spotifyLink": "https://open.spotify.com/track/2BeBp0IazmkqGVc0PxxDye?si=95799ccf1a97435f",
+      "image": "https://allmyfriendsinc.com/uploads/b7d5aec19b44b906b6e79ede9b380850"
     }
   },
   {
