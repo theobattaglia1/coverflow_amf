@@ -392,3 +392,18 @@ html, body {
 .scrollable::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+@keyframes modalDismissPulse {
+  0%   { transform: scale(1); opacity: 1; }
+  40%  { transform: scale(0.97); opacity: 0.85; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.modal-content.pulse-dismiss {
+  animation: modalDismissPulse 0.25s ease;
+}
+
+.artist-modal {
+  transition: opacity 0.25s ease;
+}
+
