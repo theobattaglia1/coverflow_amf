@@ -95,9 +95,9 @@ function applyMomentum() {
   const sum = wheelEvents.reduce((s, ev) => s + ev.dx, 0);
   let v = sum / wheelEvents.length / 30;
   function step() {
-    if (Math.abs(v) < 0.3) return;
+    if (Math.abs(v) < 0.7) return;
     setActiveIndex(activeIndex + (v > 0 ? 1 : -1));
-    v *= 0.7;
+    v *= 0.9;
     requestAnimationFrame(step);
   }
   requestAnimationFrame(step);
