@@ -204,6 +204,29 @@ document.body.addEventListener("click", (e) => {
   }
 });
 
+// Escape key closes modal
+window.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+    const modal = document.querySelector('.artist-modal');
+    if (!modal.classList.contains('hidden')) {
+      modal.classList.add('hidden');
+    }
+  }
+});
+
+// Click outside modal closes it
+document.querySelector('.artist-modal').addEventListener("click", (e) => {
+  if (e.target.classList.contains("artist-modal")) {
+    e.target.classList.add('hidden');
+  }
+});
+
+// X button closes modal
+document.querySelector('.artist-modal .close-btn').addEventListener('click', () => {
+  const modal = document.querySelector('.artist-modal');
+  modal.classList.add('hidden');
+});
+
 
 // Dropdown & Navigation logic remains unchanged...
 // Modal open/close logic remains unchanged...
