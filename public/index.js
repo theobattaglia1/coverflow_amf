@@ -1,8 +1,8 @@
 let allCovers = [];
 let covers = [];
 let activeIndex = 0;
-let wheelLock = false;
 let coverSpacing, anglePerOffset, minScale;
+let wheelEvents = [], momentumTimer;
 const maxAngle = 80;
 
 const coverflowEl = document.getElementById("coverflow");
@@ -34,6 +34,9 @@ fetch('/data/test-styles.json')
       .hover-credits-container {
         font-family: '${style.overrides?.hoverCredits?.fontFamily || font}';
         font-size: ${style.overrides?.hoverCredits?.fontSize || 12}px;
+      }
+      .cover {
+        transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
       }
     `;
 
@@ -95,44 +98,42 @@ function renderCovers() {
         </iframe>`;
     }
 
-  if (cover.albumTitle?.toLowerCase() === "contact") {
-  // CONTACT: Mailto button only, no labels
-  const contactBtn = document.createElement("a");
-  contactBtn.href = "mailto:hi@allmyfriendsinc.com";
-  contactBtn.innerText = "Contact Us";
-  contactBtn.className = "expand-btn";
-  contactBtn.style.textDecoration = "none";
-  contactBtn.style.textAlign = "center";
-  backContent.appendChild(contactBtn);
-} else {
-  // NON-CONTACT: Artist Details button + labels
-  const artistDetailsBtn = document.createElement("button");
-  artistDetailsBtn.className = "expand-btn";
-  artistDetailsBtn.innerText = "Artist Details";
-  backContent.appendChild(artistDetailsBtn);
+    if (cover.albumTitle?.toLowerCase() === "contact") {
+      // CONTACT: Mailto button only, no labels
+      const contactBtn = document.createElement("a");
+      contactBtn.href = "mailto:hi@allmyfriendsinc.com";
+      contactBtn.innerText = "Contact Us";
+      contactBtn.className = "expand-btn";
+      contactBtn.style.textDecoration = "none";
+      contactBtn.style.textAlign = "center";
+      backContent.appendChild(contactBtn);
+    } else {
+      // NON‑CONTACT: Artist Details button + labels
+      const artistDetailsBtn = document.createElement("button");
+      artistDetailsBtn.className = "expand-btn";
+      artistDetailsBtn.innerText = "Artist Details";
+      backContent.appendChild(artistDetailsBtn);
 
-  const labelFront = document.createElement("div");
-  labelFront.className = "cover-label";
-  labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
-  wrapper.appendChild(labelFront);
+      const labelFront = document.createElement("div");
+      labelFront.className = "cover-label";
+      labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+      wrapper.appendChild(labelFront);
 
-  const labelBack = document.createElement("div");
-  labelBack.className = "back-label";
-  labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
-  wrapper.appendChild(labelBack);
-}
-
+      const labelBack = document.createElement("div");
+      labelBack.className = "back-label";
+      labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+      wrapper.appendChild(labelBack);
+    }
 
     back.appendChild(backContent);
     flip.appendChild(front);
     flip.appendChild(back);
     wrapper.appendChild(flip);
 
-    wrapper.addEventListener("click", (e) => {
+    wrapper.addEventListener("click", () => {
       const i = parseInt(wrapper.dataset.index, 10);
       const offset = i - activeIndex;
       const flipContainer = wrapper.querySelector(".flip-container");
-
       if (offset === 0 && flipContainer) {
         flipContainer.classList.toggle("flipped");
       } else {
@@ -163,78 +164,53 @@ function renderCoverFlow() {
 
     const flipContainer = cover.querySelector(".flip-container");
     if (offset !== 0) flipContainer?.classList.remove("flipped");
-
     cover.classList.toggle("cover-active", offset === 0);
   });
 }
 
-function setActiveIndex(index) {
-  activeIndex = Math.max(0, Math.min(index, covers.length - 1));
+function setActiveIndex(idx) {
+  const max = covers.length - 1;
+  if (idx < 0 || idx > max) {
+    bounceEdge(idx < 0 ? -1 : max + 1);
+    activeIndex = idx < 0 ? 0 : max;
+  } else {
+    activeIndex = idx;
+  }
   renderCoverFlow();
 }
 
-let wheelCooldown = false;
-let lastWheelDirection = 0;
-
-window.addEventListener("wheel", (e) => {
-  // Trigger only if horizontal scroll dominates
-
-  e.preventDefault(); // 🛑 prevent back navigation gesture
-
-  // Reset flipped cards (if any)
-  document.querySelectorAll(".flip-container.flipped").forEach(fc => {
-    fc.classList.remove("flipped");
+function bounceEdge(edgePos) {
+  const shift = edgePos < 0 ? 20 : -20;
+  document.querySelectorAll(".cover").forEach(cover => {
+    cover.style.transform += ` translateX(${shift}px)`;
   });
+  setTimeout(renderCoverFlow, 300);
+}
 
-  // Throttle slightly to prevent stutter
-  if (!wheelCooldown) {
-    const direction = e.deltaX > 0 ? 1 : -1;
+function onWheel(e) {
+  if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+  e.preventDefault();
+  const now = performance.now();
+  wheelEvents.push({ dx: e.deltaX, t: now });
+  wheelEvents = wheelEvents.filter(ev => now - ev.t < 100);
+  setActiveIndex(activeIndex + (e.deltaX > 0 ? 1 : -1));
+  clearTimeout(momentumTimer);
+  momentumTimer = setTimeout(applyMomentum, 50);
+}
 
-    // Only trigger if direction changed or cooldown is clear
-    if (direction !== lastWheelDirection || !wheelCooldown) {
-      setActiveIndex(activeIndex + direction);
-      lastWheelDirection = direction;
-      wheelCooldown = true;
-
-      setTimeout(() => {
-        wheelCooldown = false;
-      }, 120); // you can tune this lower (100) for faster feel
-    }
+function applyMomentum() {
+  const sum = wheelEvents.reduce((s, ev) => s + ev.dx, 0);
+  let v = sum / wheelEvents.length / 10;
+  function step() {
+    if (Math.abs(v) < 0.2) return;
+    setActiveIndex(activeIndex + (v > 0 ? 1 : -1));
+    v *= 0.9;
+    requestAnimationFrame(step);
   }
-}, { passive: false });
+  requestAnimationFrame(step);
+}
 
-
-
-// Modal logic for Artist Details button
-document.body.addEventListener("click", (e) => {
-  // Make sure this is the actual Artist Details button, not the contact link
-  if (
-    e.target.classList.contains("expand-btn") &&
-    e.target.tagName === "BUTTON"
-  ) {
-    const coverEl = e.target.closest('.cover');
-    const coverId = coverEl?.dataset.originalIndex;
-    const cover = covers.find(c => c.id == coverId);
-
-    if (!cover || !cover.artistDetails) return;
-
-    const modal = document.querySelector('.artist-modal');
-    modal.querySelector('.artist-photo').src = cover.artistDetails.image;
-    modal.querySelector('.artist-name').innerText = cover.artistDetails.name;
-    modal.querySelector('.artist-location').innerText = cover.artistDetails.location;
-    modal.querySelector('.artist-bio').innerText = cover.artistDetails.bio;
-    modal.querySelector('.spotify-link').href = cover.artistDetails.spotifyLink;
-
-    if (cover.artistDetails.spotifyLink.includes("spotify.com")) {
-      modal.querySelector('.spotify-player').src =
-        cover.artistDetails.spotifyLink.replace("spotify.com/", "spotify.com/embed/");
-    } else {
-      modal.querySelector('.spotify-player').style.display = 'none';
-    }
-
-    modal.classList.remove('hidden');
-  }
-});
+window.addEventListener("wheel", onWheel, { passive: false });
 
 window.addEventListener("keydown", (e) => {
   if (e.key === "ArrowLeft")  setActiveIndex(activeIndex - 1);
@@ -245,26 +221,42 @@ window.addEventListener("keydown", (e) => {
   }
 });
 
+// Modal logic for Artist Details button
+document.body.addEventListener("click", (e) => {
+  if (e.target.classList.contains("expand-btn") && e.target.tagName === "BUTTON") {
+    const coverEl = e.target.closest('.cover');
+    const coverId = coverEl?.dataset.originalIndex;
+    const cover = covers.find(c => c.id == coverId);
+    if (!cover?.artistDetails) return;
+    const modal = document.querySelector('.artist-modal');
+    modal.querySelector('.artist-photo').src = cover.artistDetails.image;
+    modal.querySelector('.artist-name').innerText = cover.artistDetails.name;
+    modal.querySelector('.artist-location').innerText = cover.artistDetails.location;
+    modal.querySelector('.artist-bio').innerText = cover.artistDetails.bio;
+    modal.querySelector('.spotify-link').href = cover.artistDetails.spotifyLink;
+    if (cover.artistDetails.spotifyLink.includes("spotify.com")) {
+      modal.querySelector('.spotify-player').src =
+        cover.artistDetails.spotifyLink.replace("spotify.com/", "spotify.com/embed/");
+    } else {
+      modal.querySelector('.spotify-player').style.display = 'none';
+    }
+    modal.classList.remove('hidden');
+  }
+});
 
 document.querySelector('.artist-modal').addEventListener("click", (e) => {
   if (e.target.classList.contains("artist-modal")) {
     const modalContent = e.target.querySelector('.modal-content');
-    
-    // Add pulse animation
     modalContent.classList.add('pulse-dismiss');
-
-    // After animation ends, hide modal
     setTimeout(() => {
       e.target.classList.add('hidden');
       modalContent.classList.remove('pulse-dismiss');
-    }, 250); // Match animation duration
+    }, 250);
   }
 });
 
-// X button closes modal
 document.querySelector('.artist-modal .close-btn').addEventListener('click', () => {
-  const modal = document.querySelector('.artist-modal');
-  modal.classList.add('hidden');
+  document.querySelector('.artist-modal').classList.add('hidden');
 });
 
 const filterButtons = Array.from(document.querySelectorAll(".filter-label"));
@@ -275,18 +267,14 @@ document.body.appendChild(filterDropdown);
 filterButtons.forEach((btn) => {
   btn.addEventListener("mouseenter", () => {
     const filter = btn.dataset.filter;
-    const results = allCovers
-      .filter(c => filter === "all" || c.category?.includes(filter));
-
-    const items = results.map(c => {
-      return `<div class="dropdown-item" data-id="${c.id}">
+    const results = allCovers.filter(c => filter === "all" || c.category?.includes(filter));
+    const items = results.map(c => `
+      <div class="dropdown-item" data-id="${c.id}">
         ${c.albumTitle || "Untitled"} — ${c.coverLabel || ""}
-      </div>`;
-    }).join("") || "<div class='dropdown-item'>No results</div>";
-
+      </div>
+    `).join("") || "<div class='dropdown-item'>No results</div>";
     filterDropdown.innerHTML = items;
     filterDropdown.style.display = "block";
-
     const rect = btn.getBoundingClientRect();
     filterDropdown.style.left = `${rect.left}px`;
     filterDropdown.style.top = `${rect.bottom + 5}px`;
@@ -307,7 +295,6 @@ filterButtons.forEach((btn) => {
     covers = filter === "all"
       ? [...allCovers]
       : allCovers.filter(c => c.category?.includes(filter));
-    covers.forEach((c, i) => c.index = i);
     activeIndex = Math.floor(covers.length / 2);
     renderCovers();
     renderCoverFlow();
@@ -327,8 +314,3 @@ filterDropdown.addEventListener("click", (e) => {
     filterDropdown.style.display = "none";
   }
 });
-
-
-
-// Dropdown & Navigation logic remains unchanged...
-// Modal open/close logic remains unchanged...
