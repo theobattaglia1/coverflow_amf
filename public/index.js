@@ -173,6 +173,26 @@ function setActiveIndex(index) {
   renderCoverFlow();
 }
 
+let wheelTimeout;
+coverflowEl.addEventListener("wheel", (e) => {
+  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
+    e.preventDefault();
+
+    clearTimeout(wheelTimeout);
+
+    if (!wheelLock) {
+      const direction = e.deltaX > 0 ? 1 : -1;
+      setActiveIndex(activeIndex + direction);
+      wheelLock = true;
+
+      wheelTimeout = setTimeout(() => {
+        wheelLock = false;
+      }, 150);
+    }
+  }
+}, { passive: false });
+
+
 // Modal logic for Artist Details button
 document.body.addEventListener("click", (e) => {
   // Make sure this is the actual Artist Details button, not the contact link
@@ -234,6 +254,68 @@ document.querySelector('.artist-modal .close-btn').addEventListener('click', () 
   const modal = document.querySelector('.artist-modal');
   modal.classList.add('hidden');
 });
+
+const filterButtons = Array.from(document.querySelectorAll(".filter-label"));
+const filterDropdown = document.createElement("div");
+filterDropdown.className = "filter-dropdown";
+document.body.appendChild(filterDropdown);
+
+filterButtons.forEach((btn) => {
+  btn.addEventListener("mouseenter", () => {
+    const filter = btn.dataset.filter;
+    const results = allCovers
+      .filter(c => filter === "all" || c.category?.includes(filter));
+
+    const items = results.map(c => {
+      return `<div class="dropdown-item" data-id="${c.id}">
+        ${c.albumTitle || "Untitled"} — ${c.coverLabel || ""}
+      </div>`;
+    }).join("") || "<div class='dropdown-item'>No results</div>";
+
+    filterDropdown.innerHTML = items;
+    filterDropdown.style.display = "block";
+
+    const rect = btn.getBoundingClientRect();
+    filterDropdown.style.left = `${rect.left}px`;
+    filterDropdown.style.top = `${rect.bottom + 5}px`;
+  });
+
+  btn.addEventListener("mouseleave", () => {
+    setTimeout(() => {
+      if (!filterDropdown.matches(":hover")) {
+        filterDropdown.style.display = "none";
+      }
+    }, 100);
+  });
+
+  btn.addEventListener("click", () => {
+    filterButtons.forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    const filter = btn.dataset.filter;
+    covers = filter === "all"
+      ? [...allCovers]
+      : allCovers.filter(c => c.category?.includes(filter));
+    covers.forEach((c, i) => c.index = i);
+    activeIndex = Math.floor(covers.length / 2);
+    renderCovers();
+    renderCoverFlow();
+  });
+});
+
+filterDropdown.addEventListener("mouseleave", () => {
+  filterDropdown.style.display = "none";
+});
+
+filterDropdown.addEventListener("click", (e) => {
+  const id = e.target.dataset.id;
+  if (!id) return;
+  const matchIndex = covers.findIndex(c => c.id.toString() === id);
+  if (matchIndex !== -1) {
+    setActiveIndex(matchIndex);
+    filterDropdown.style.display = "none";
+  }
+});
+
 
 
 // Dropdown & Navigation logic remains unchanged...
