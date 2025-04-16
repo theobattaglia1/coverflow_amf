@@ -173,22 +173,32 @@ function setActiveIndex(index) {
   renderCoverFlow();
 }
 
-let wheelTimeout;
+let lastWheelTime = 0;
+let wheelCooldown = false;
+
 coverflowEl.addEventListener("wheel", (e) => {
-  if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) {
-    e.preventDefault();
+  const now = Date.now();
+  const deltaX = e.deltaX;
+  const deltaThreshold = 10; // Lower = more sensitive
 
-    clearTimeout(wheelTimeout);
+  if (Math.abs(deltaX) < deltaThreshold) return; // skip if not a real swipe
+  e.preventDefault();
 
-    if (!wheelLock) {
-      const direction = e.deltaX > 0 ? 1 : -1;
-      setActiveIndex(activeIndex + direction);
-      wheelLock = true;
+  if (!wheelCooldown) {
+    // Reset all flipped cards
+    document.querySelectorAll(".flip-container.flipped").forEach(fc => {
+      fc.classList.remove("flipped");
+    });
 
-      wheelTimeout = setTimeout(() => {
-        wheelLock = false;
-      }, 150);
-    }
+    const direction = deltaX > 0 ? 1 : -1;
+    setActiveIndex(activeIndex + direction);
+    wheelCooldown = true;
+    lastWheelTime = now;
+
+    // unlock faster than before
+    setTimeout(() => {
+      wheelCooldown = false;
+    }, 100);
   }
 }, { passive: false });
 
