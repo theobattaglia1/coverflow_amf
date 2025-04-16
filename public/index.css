@@ -122,9 +122,8 @@ html, body {
   width: clamp(160px, 25vw, 300px);
   height: clamp(160px, 25vw, 300px);
   transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
 }
-
 
 .flip-container {
   width: 100%;
@@ -186,7 +185,7 @@ html, body {
   mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
 }
 
-
+/* === BUTTONS & LABELS === */
 .expand-btn {
   padding: 10px 24px;
   font-weight: 600;
@@ -208,17 +207,14 @@ html, body {
   transform: translateY(-1px);
 }
 
-
-
-/* === COVER LABEL === */
 .cover-label {
   position: absolute;
-  bottom: -3.5rem;
+  bottom: -4.5rem;
   text-align: center;
   width: 100%;
   font-size: 0.9rem;
-  display: none;
   line-height: 1.2;
+  pointer-events: none;
 }
 .cover.cover-active .cover-label {
   display: block;
@@ -231,34 +227,24 @@ html, body {
   max-width: 100%;
 }
 
-.cover-label, .back-label {
+.back-label {
   position: absolute;
-  bottom: -4.5rem; /* ⬅️ changed from -3.5rem to give it more breathing room */
+  bottom: -4.5rem;
   text-align: center;
   width: 100%;
   font-size: 0.9rem;
   line-height: 1.2;
   pointer-events: none;
-}
-
-.cover-label {
-  display: block;
-}
-
-.back-label {
   display: none;
 }
-
 .cover.cover-active.flipped .back-label {
   display: block;
 }
-
 .cover.cover-active.flipped .cover-label {
   display: none;
 }
 
-
-
+/* === MODAL === */
 .artist-modal {
   position: fixed;
   inset: 0;
@@ -268,6 +254,7 @@ html, body {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  transition: opacity 0.25s ease;
 }
 
 .modal-content {
@@ -299,7 +286,6 @@ html, body {
   gap: 0.5rem;
   overflow: hidden;
 }
-
 
 .artist-name {
   font-size: clamp(22px, 4vw, 36px);
@@ -343,7 +329,6 @@ html, body {
   border: none;
   border-radius: 12px;
 }
-
 
 .close-btn {
   position: absolute;
@@ -404,7 +389,29 @@ html, body {
   animation: modalDismissPulse 0.25s ease;
 }
 
-.artist-modal {
-  transition: opacity 0.25s ease;
+/* === AMBIENT LIGHT & PARTICLE TRAILS === */
+#coverflow-container {
+  position: relative;
 }
 
+#ambient-light {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  transition: background-color 0.6s ease;
+  z-index: -1;
+  filter: blur(80px) brightness(0.7);
+}
+
+#trail-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
