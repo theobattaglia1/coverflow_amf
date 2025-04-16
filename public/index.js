@@ -108,12 +108,23 @@ function renderCovers() {
         </iframe>`;
     }
 
-    // Add Artist Details Button to backContent
-    const artistDetailsBtn = document.createElement("button");
-    artistDetailsBtn.className = "expand-btn";
-    artistDetailsBtn.innerText = "Artist Details";
+if (cover.albumTitle?.toLowerCase() === "contact") {
+  // Custom Contact Us button
+  const contactBtn = document.createElement("a");
+  contactBtn.href = "mailto:your@email.com"; // 🔁 replace with your actual email
+  contactBtn.innerText = "Contact Us";
+  contactBtn.className = "expand-btn";
+  contactBtn.style.textDecoration = "none";
+  contactBtn.style.textAlign = "center";
+  backContent.appendChild(contactBtn);
+} else {
+  // Default Artist Details button
+  const artistDetailsBtn = document.createElement("button");
+  artistDetailsBtn.className = "expand-btn";
+  artistDetailsBtn.innerText = "Artist Details";
+  backContent.appendChild(artistDetailsBtn);
+}
 
-    backContent.appendChild(artistDetailsBtn);
 
     back.appendChild(backContent);
     flip.appendChild(front);
