@@ -1,4 +1,4 @@
- let allCovers = [];
+let allCovers = [];
 let covers = [];
 let activeIndex = 0;
 let wheelLock = false;
