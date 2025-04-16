@@ -2,21 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>AMF Logo</title>
+  <title>All My Friends — Logo</title>
   <style>
     @font-face {
       font-family: 'Serial D';
       src: url('https://cdn.jsdelivr.net/gh/theobattaglia1/serial-d@34dce13be6faaaf868a35a56a4bc6bb69dae23c5/SerialDTRIAL-Light.ttf') format('truetype');
-      font-weight: normal;
-      font-style: normal;
-    }
-
-    :root {
-      --logo-unit: 80px;
-      --bar-width: 60px;
-      --black: #000;
-      --white: #ffffff;
-      --font-family: 'Helvetica Neue', 'Arial', sans-serif;
     }
 
     html, body {
@@ -24,28 +14,42 @@
       padding: 0;
       overflow: hidden;
       background: transparent;
-      width: 100%;
       height: 100%;
     }
 
+    :root {
+      --logo-scale: min(1.2vh, 1.2vw); /* Dynamically scales logo to fit available space perfectly */
+      --bar-width: calc(var(--logo-scale) * 6);
+      --font-family: 'Helvetica Neue', Arial, sans-serif;
+      --black: #000;
+      --white: #fff;
+    }
+
     .logo-container {
-      width: 100%;
-      height: 100%;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      user-select: none;
-      transform-origin: center;
-      transform: scale(0.85); /* adjust scaling as needed */
+      width: 100%;
+      height: 100%;
       box-sizing: border-box;
+      overflow: visible;
+      user-select: none;
     }
 
     .logo-elements {
       display: flex;
       align-items: flex-end;
       justify-content: center;
-      gap: calc(var(--logo-unit) / 12);
+      gap: calc(var(--bar-width) / 4);
+    }
+
+    .logo-a, .rounded-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: visible;
     }
 
     .logo-a .circle {
@@ -54,52 +58,72 @@
       background-color: var(--white);
       color: var(--black);
       font-family: var(--font-family);
-      font-size: calc(var(--logo-unit) / 2);
+      font-size: calc(var(--bar-width) / 2);
       font-weight: bold;
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       border: 1px solid var(--black);
       animation: rotateKnob 6s linear infinite;
-      transform: translateY(15px);
     }
 
     .rounded-bar {
       width: var(--bar-width);
       background-color: var(--white);
+      color: var(--black);
       border-radius: calc(var(--bar-width) / 2);
       border: 1px solid rgba(0,0,0,0.2);
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      position: relative;
-      overflow: hidden;
     }
 
     .bar-m {
-      height: calc(var(--logo-unit) * 2);
-      transform: translateY(15px);
+      height: calc(var(--bar-width) * 2);
     }
 
     .bar-f {
-      height: calc(var(--logo-unit) * 3.7);
-      top: calc(var(--logo-unit) * 0.8);
+      height: calc(var(--bar-width) * 3.7);
+      top: calc(var(--bar-width) * 0.8);
     }
 
     .rounded-bar .letter {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
       width: var(--bar-width);
       height: var(--bar-width);
       background-color: var(--black);
       color: var(--white);
       font-family: var(--font-family);
-      font-size: calc(var(--logo-unit) / 2);
+      font-size: calc(var(--bar-width) / 2);
       font-weight: bold;
       border-radius: 50%;
-      position: absolute;
-      bottom: 0;
-      left: 50%;
-      transform: translateX(-50%);
+    }
+
+    .bar-m .letter {
+      animation: sliderUpDown 6s ease-in-out infinite alternate;
+    }
+
+    .bar-f .letter {
+      animation: sliderDownUp 6.5s ease-in-out infinite alternate;
+    }
+
+    .logo-text {
+      font-family: 'Serial D', sans-serif;
+      font-size: calc(var(--bar-width) / 1.5);
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-align: center;
+      line-height: 1;
+      margin-top: calc(var(--bar-width) / 4);
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .logo-text div:first-child {
+      margin-left: calc(var(--bar-width) * -0.4);
+    }
+
+    .logo-text div:last-child {
+      margin-left: calc(var(--bar-width) * 0.5);
     }
 
     @keyframes sliderUpDown {
@@ -112,41 +136,13 @@
       50% { bottom: 0%; }
     }
 
-    .bar-m .letter {
-      animation: sliderUpDown 6s ease-in-out infinite alternate;
-    }
-
-    .bar-f .letter {
-      animation: sliderDownUp 6.5s ease-in-out infinite alternate;
-    }
-
     @keyframes rotateKnob {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
-
-    .logo-text {
-      font-family: 'Serial D', sans-serif;
-      font-size: calc(var(--logo-unit) / 1.7);
-      color: #fff; /* WHITE text as requested */
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      text-align: center;
-      line-height: 1;
-      margin-top: calc(var(--logo-unit) / 5.5);
-      user-select: none;
-    }
-
-    .logo-text div:first-child {
-      margin-left: calc(var(--logo-unit) * -0.4);
-    }
-
-    .logo-text div:last-child {
-      margin-left: 100px;
-    }
-
   </style>
 </head>
+
 <body>
   <div class="logo-container">
     <div class="logo-elements">
