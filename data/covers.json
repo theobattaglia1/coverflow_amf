@@ -78,9 +78,18 @@
     "frontImage": "https://allmyfriendsinc.com/uploads/26141c34120831f1c15f6b66fac2e9cc",
     "albumTitle": "Jack Schrepferman",
     "coverLabel": "100 Publishing / Kobalt",
+    "fontFamily": "",
+    "fontSize": "",
     "music": {
       "type": "embed",
-      "embedHtml": "<iframe style=\"border-radius:12px\" src=\"https://open.spotify.com/embed/playlist/0Yli4gIVDEyxG5XQAKkgkV?utm_source=generator&theme=0\" width=\"50%\" height=\"352\" frameBorder=\"0\" allowfullscreen=\"\" allow=\"autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture\" loading=\"lazy\"></iframe>"
+      "url": "https://open.spotify.com/playlist/0Yli4gIVDEyxG5XQAKkgkV?si=4447905899154961"
+    },
+    "artistDetails": {
+      "name": "Jack Schrepferman",
+      "location": "Nashville TN | Los Angeles, CA",
+      "bio": "Jack Schrepferman is a Nashville-based multi genre songwriter, producer, and multi-instrumentalist known for crafting song-centered music that seamlessly blends pop sensibility with bold, innovative production. At just 21, his catalogue has amassed over 70 million streams across all genres, with recent singles cut by Dasha (Warner), Dhruv (RCA), Steinza (Santa Ana), Midwxst (Geffen), and Astrid S (Island).\n\nJack spent his formative years working closely with Grammy-nominated, multi-platinum producer JT Daly, contributing to projects for artists such as Benson Boone, Tai Verdes, Bully, and PVRIS at MMK Studios. This experience laid the foundation for Jack’s adaptable and artist-first approach, regardless of musical style.\n\nJack’s work has also included placements for brands like Michael Kors and Amazon. He is actively collaborating with both emerging and established artists / writers, including Jensen McRae, Johnny Orlando, M-Phazes, Geoff Warburton alongside developing sounds with rising independent talents such as Hudson Ingram, Ryman, Conall Cafferty, Kenzie Cait, and Casper Sage.",
+      "spotifyLink": "https://open.spotify.com/playlist/0Yli4gIVDEyxG5XQAKkgkV?si=4447905899154961",
+      "image": "https://allmyfriendsinc.com/uploads/26141c34120831f1c15f6b66fac2e9cc"
     }
   },
   {
