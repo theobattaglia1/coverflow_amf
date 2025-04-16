@@ -122,8 +122,9 @@ html, body {
   width: clamp(160px, 25vw, 300px);
   height: clamp(160px, 25vw, 300px);
   transform-style: preserve-3d;
-  transition: transform 0.4s ease, opacity 0.3s;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 
 .flip-container {
   width: 100%;
