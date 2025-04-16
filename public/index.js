@@ -228,7 +228,7 @@ function renderCoverFlow() {
     const sc     = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
 
     cover.style.transform = `translate(-50%, -50%) translateX(${tx}px) scale(${sc}) rotateY(${ry}deg)`;
-    cover.style.filter    = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset) * 2, 8)}px)`;
+    cover.style.filter    = offset === 0 ? 'none'   : `blur(${Math.min(Math.abs(offset) * 1, 4)}px)`;
     cover.style.zIndex    = covers.length - Math.abs(offset);
 
     const flipContainer = cover.querySelector('.flip-container');
