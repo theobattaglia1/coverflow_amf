@@ -18,7 +18,7 @@ fetch('/data/test-styles.json')
     const font = style.fontFamily || 'GT America';
     const size = style.fontSize || 16;
 
-    styleTag.innerHTML = 
+    styleTag.innerHTML = `
       html, body {
         font-family: '${font}', sans-serif;
         font-size: ${size}px;
@@ -35,12 +35,12 @@ fetch('/data/test-styles.json')
         font-family: '${style.overrides?.hoverCredits?.fontFamily || font}';
         font-size: ${style.overrides?.hoverCredits?.fontSize || 12}px;
       }
-    ;
+    `;
 
     document.head.appendChild(styleTag);
   });
 
-fetch(/data/covers.json?cachebust=${Date.now()})
+fetch(`/data/covers.json?cachebust=${Date.now()}`)
   .then(res => res.json())
   .then(data => {
     allCovers = data;
@@ -74,7 +74,7 @@ function renderCovers() {
 
     const front = document.createElement("div");
     front.className = "cover-front";
-    front.style.backgroundImage = url('${cover.frontImage}');
+    front.style.backgroundImage = `url('${cover.frontImage}')`;
 
     const back = document.createElement("div");
     back.className = "cover-back";
@@ -83,7 +83,7 @@ function renderCovers() {
     backContent.className = "back-content";
 
     if (cover.music?.type === "embed" && cover.music.url) {
-      backContent.innerHTML = 
+      backContent.innerHTML = `
         <iframe style="border-radius:12px"
           src="${cover.music.url.replace('spotify.com/', 'spotify.com/embed/')}"
           width="100%"
@@ -92,7 +92,7 @@ function renderCovers() {
           allowfullscreen
           allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
           loading="lazy">
-        </iframe>;
+        </iframe>`;
     }
 
   if (cover.albumTitle?.toLowerCase() === "contact") {
@@ -113,12 +113,12 @@ function renderCovers() {
 
   const labelFront = document.createElement("div");
   labelFront.className = "cover-label";
-  labelFront.innerHTML = <strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""};
+  labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
   wrapper.appendChild(labelFront);
 
   const labelBack = document.createElement("div");
   labelBack.className = "back-label";
-  labelBack.innerHTML = <strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""};
+  labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
   wrapper.appendChild(labelBack);
 }
 
@@ -153,12 +153,12 @@ function renderCoverFlow() {
     const rotateY = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
     const scale = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
 
-    cover.style.transform = 
+    cover.style.transform = `
       translate(-50%, -50%)
       translateX(${translateX}px)
       scale(${scale})
       rotateY(${rotateY}deg)
-    ;
+    `;
     cover.style.zIndex = covers.length - Math.abs(offset);
 
     const flipContainer = cover.querySelector(".flip-container");
@@ -280,17 +280,17 @@ filterButtons.forEach((btn) => {
       .filter(c => filter === "all" || c.category?.includes(filter));
 
     const items = results.map(c => {
-      return <div class="dropdown-item" data-id="${c.id}">
+      return `<div class="dropdown-item" data-id="${c.id}">
         ${c.albumTitle || "Untitled"} — ${c.coverLabel || ""}
-      </div>;
+      </div>`;
     }).join("") || "<div class='dropdown-item'>No results</div>";
 
     filterDropdown.innerHTML = items;
     filterDropdown.style.display = "block";
 
     const rect = btn.getBoundingClientRect();
-    filterDropdown.style.left = ${rect.left}px;
-    filterDropdown.style.top = ${rect.bottom + 5}px;
+    filterDropdown.style.left = `${rect.left}px`;
+    filterDropdown.style.top = `${rect.bottom + 5}px`;
   });
 
   btn.addEventListener("mouseleave", () => {
