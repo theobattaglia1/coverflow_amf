@@ -232,7 +232,7 @@ html, body {
 
 .cover-label, .back-label {
   position: absolute;
-  bottom: -3.5rem;
+  bottom: -4.5rem; /* ⬅️ changed from -3.5rem to give it more breathing room */
   text-align: center;
   width: 100%;
   font-size: 0.9rem;
@@ -255,6 +255,7 @@ html, body {
 .cover.cover-active.flipped .cover-label {
   display: none;
 }
+
 
 
 .artist-modal {
