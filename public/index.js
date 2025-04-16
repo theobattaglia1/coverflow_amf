@@ -233,15 +233,15 @@ filterDropdown.addEventListener("click", (e) => {
 });
 
 // Float animation
-function animateKeywordDrift() {
-  const now = Date.now() / 1000;
-  filterButtons.forEach((label, i) => {
-    const offset = Math.sin(now + i) * 10;
-    label.style.transform = `translateY(${offset}px)`;
-  });
-  requestAnimationFrame(animateKeywordDrift);
-}
-animateKeywordDrift();
+// function animateKeywordDrift() {
+  // const now = Date.now() / 1000;
+  // filterButtons.forEach((label, i) => {
+  //   const offset = Math.sin(now + i) * 10;
+  //   label.style.transform = `translateY(${offset}px)`;
+ //  });
+ //  requestAnimationFrame(animateKeywordDrift);
+// }
+// animateKeywordDrift();
 
 // Navigation
 window.addEventListener("resize", () => {
