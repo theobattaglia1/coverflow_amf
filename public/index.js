@@ -98,7 +98,7 @@ function renderCovers() {
   if (cover.albumTitle?.toLowerCase() === "contact") {
   // CONTACT: Mailto button only, no labels
   const contactBtn = document.createElement("a");
-  contactBtn.href = "mailto:your@email.com";
+  contactBtn.href = "mailto:hi@allmyfriendsinc.com";
   contactBtn.innerText = "Contact Us";
   contactBtn.className = "expand-btn";
   contactBtn.style.textDecoration = "none";
