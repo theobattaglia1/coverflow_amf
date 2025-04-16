@@ -173,5 +173,37 @@ function setActiveIndex(index) {
   renderCoverFlow();
 }
 
+// Modal logic for Artist Details button
+document.body.addEventListener("click", (e) => {
+  // Make sure this is the actual Artist Details button, not the contact link
+  if (
+    e.target.classList.contains("expand-btn") &&
+    e.target.tagName === "BUTTON"
+  ) {
+    const coverEl = e.target.closest('.cover');
+    const coverId = coverEl?.dataset.originalIndex;
+    const cover = covers.find(c => c.id == coverId);
+
+    if (!cover || !cover.artistDetails) return;
+
+    const modal = document.querySelector('.artist-modal');
+    modal.querySelector('.artist-photo').src = cover.artistDetails.image;
+    modal.querySelector('.artist-name').innerText = cover.artistDetails.name;
+    modal.querySelector('.artist-location').innerText = cover.artistDetails.location;
+    modal.querySelector('.artist-bio').innerText = cover.artistDetails.bio;
+    modal.querySelector('.spotify-link').href = cover.artistDetails.spotifyLink;
+
+    if (cover.artistDetails.spotifyLink.includes("spotify.com")) {
+      modal.querySelector('.spotify-player').src =
+        cover.artistDetails.spotifyLink.replace("spotify.com/", "spotify.com/embed/");
+    } else {
+      modal.querySelector('.spotify-player').style.display = 'none';
+    }
+
+    modal.classList.remove('hidden');
+  }
+});
+
+
 // Dropdown & Navigation logic remains unchanged...
 // Modal open/close logic remains unchanged...
