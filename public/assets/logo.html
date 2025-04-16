@@ -3,38 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <title>AMF Logo</title>
-  <link rel="stylesheet" href="logo.css">
   <style>
-    body, html {
-      margin: 0;
-      padding: 0;
-      overflow: hidden;
-      background: transparent;
+    @font-face {
+      font-family: 'Serial D';
+      src: url('https://cdn.jsdelivr.net/gh/theobattaglia1/serial-d@34dce13be6faaaf868a35a56a4bc6bb69dae23c5/SerialDTRIAL-Light.ttf') format('truetype');
     }
-    .glass-cover {
-      display: inline-block;
-      padding: 10px;
-      border-radius: 13px;
-      background: rgba(255,255,255,0.08);
-      box-shadow:
-        inset 0 8px 16px rgba(0,0,0,0.3),
-        inset 0 -4px 20px rgba(255,255,255,0.1),
-        0 4px 20px rgba(0,0,0,0.2);
-    }
-    .logo-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      user-select: none;
-      transform: scale(0.75);
-      transform-origin: center;
-    }
-    .logo-elements {
-      display: flex;
-      align-items: flex-end;
-      gap: 5px;
-    }
+
     :root {
       --logo-unit: 70px;
       --bar-width: 50px;
@@ -42,6 +16,45 @@
       --white: #fff;
       --font-family: 'Helvetica Neue', sans-serif;
     }
+
+    body, html {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: transparent;
+      width: 100%;
+      height: 100%;
+    }
+
+    .glass-cover {
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.08);
+      box-shadow:
+        inset 0 8px 16px rgba(0,0,0,0.3),
+        inset 0 -4px 20px rgba(255,255,255,0.1),
+        0 4px 20px rgba(0,0,0,0.2);
+      border-radius: 12px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .logo-container {
+      transform-origin: center;
+      transform: scale(0.8);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-elements {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+    }
+
     .logo-a .circle, .rounded-bar .letter {
       width: var(--bar-width);
       height: var(--bar-width);
@@ -49,16 +62,18 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-weight: bold;
       font-family: var(--font-family);
       font-size: 1.5rem;
+      font-weight: bold;
     }
+
     .logo-a .circle {
       background-color: var(--white);
       color: var(--black);
       border: 1px solid var(--black);
       animation: rotateKnob 6s linear infinite;
     }
+
     .rounded-bar {
       width: var(--bar-width);
       background-color: var(--white);
@@ -66,8 +81,16 @@
       border: 1px solid rgba(0,0,0,0.2);
       position: relative;
     }
-    .bar-m { height: calc(var(--logo-unit) * 2); }
-    .bar-f { height: calc(var(--logo-unit) * 3.7); top: calc(var(--logo-unit) * 0.8); }
+
+    .bar-m {
+      height: calc(var(--logo-unit) * 2);
+    }
+
+    .bar-f {
+      height: calc(var(--logo-unit) * 3.7);
+      top: calc(var(--logo-unit) * 0.8);
+    }
+
     .rounded-bar .letter {
       background-color: var(--black);
       color: var(--white);
@@ -76,20 +99,30 @@
       left: 50%;
       transform: translateX(-50%);
     }
-    .bar-m .letter { animation: sliderUpDown 6s ease-in-out infinite alternate; }
-    .bar-f .letter { animation: sliderDownUp 6.5s ease-in-out infinite alternate; }
+
+    .bar-m .letter {
+      animation: sliderUpDown 6s ease-in-out infinite alternate;
+    }
+
+    .bar-f .letter {
+      animation: sliderDownUp 6.5s ease-in-out infinite alternate;
+    }
+
     @keyframes sliderUpDown {
-      0%,100% { bottom: 0%; }
+      0%, 100% { bottom: 0%; }
       50% { bottom: 60%; }
     }
+
     @keyframes sliderDownUp {
-      0%,100% { bottom: 60%; }
+      0%, 100% { bottom: 60%; }
       50% { bottom: 0%; }
     }
+
     @keyframes rotateKnob {
       from { transform: rotate(0deg); }
       to { transform: rotate(360deg); }
     }
+
     .logo-text {
       font-family: 'Serial D', sans-serif;
       font-size: 1.4rem;
@@ -98,10 +131,6 @@
       text-transform: uppercase;
       letter-spacing: 3px;
       margin-top: 10px;
-    }
-    @font-face {
-      font-family: 'Serial D';
-      src: url('https://cdn.jsdelivr.net/gh/theobattaglia1/serial-d@34dce13be6faaaf868a35a56a4bc6bb69dae23c5/SerialDTRIAL-Light.ttf') format('truetype');
     }
   </style>
 </head>
