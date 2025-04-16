@@ -12,8 +12,8 @@
     }
 
     :root {
-      --logo-unit: 80px;
-      --bar-width: 60px;
+      --logo-unit: 64px;
+      --bar-width: 48px;
       --black: #000;
       --white: #fff;
       --font-family: 'Helvetica Neue', 'Arial', sans-serif;
@@ -37,7 +37,6 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      transform: scale(0.6); /* initial base scale */
       transform-origin: center;
     }
 
@@ -172,6 +171,14 @@
         transform: scale(0.6);
       }
     }
+
+    @media (max-width: 500px) {
+  :root {
+    --logo-unit: 50px;
+    --bar-width: 40px;
+  }
+}
+
   </style>
 </head>
 
