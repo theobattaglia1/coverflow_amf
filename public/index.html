@@ -7,14 +7,28 @@
   <link rel="stylesheet" href="/fonts.css" />
   <style id="global-styles"></style>
 </head>
-<body>
-<div class="logo-container">
+  
+<!-- 1) A top container (named differently from .logo-container to avoid collision) -->
+<div class="top-logo" style="
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 2rem auto;   /* some vertical spacing from top edge */
+">
+  <!-- 2) The iframe referencing the final `logo.html` -->
   <iframe
     src="/assets/logo.html"
-    class="site-logo"
-    ">
-  </iframe>
+    style="
+      border: none;
+      display: block;
+      width: 100%;
+      max-width: 600px; /* scale to your preference */
+      height: 240px;    /* set a comfortable default height */
+      overflow: hidden;
+    "
+  ></iframe>
 </div>
+
 
 
   
