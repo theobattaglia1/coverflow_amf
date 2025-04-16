@@ -95,30 +95,33 @@ function renderCovers() {
         </iframe>`;
     }
 
-    if (cover.albumTitle?.toLowerCase() === "contact") {
-      const contactBtn = document.createElement("a");
-      contactBtn.href = "mailto:your@email.com";
-      contactBtn.innerText = "Contact Us";
-      contactBtn.className = "expand-btn";
-      contactBtn.style.textDecoration = "none";
-      contactBtn.style.textAlign = "center";
-      backContent.appendChild(contactBtn);
-    } else {
-      const artistDetailsBtn = document.createElement("button");
-      artistDetailsBtn.className = "expand-btn";
-      artistDetailsBtn.innerText = "Artist Details";
-      backContent.appendChild(artistDetailsBtn);
+  if (cover.albumTitle?.toLowerCase() === "contact") {
+  // CONTACT: Mailto button only, no labels
+  const contactBtn = document.createElement("a");
+  contactBtn.href = "mailto:your@email.com";
+  contactBtn.innerText = "Contact Us";
+  contactBtn.className = "expand-btn";
+  contactBtn.style.textDecoration = "none";
+  contactBtn.style.textAlign = "center";
+  backContent.appendChild(contactBtn);
+} else {
+  // NON-CONTACT: Artist Details button + labels
+  const artistDetailsBtn = document.createElement("button");
+  artistDetailsBtn.className = "expand-btn";
+  artistDetailsBtn.innerText = "Artist Details";
+  backContent.appendChild(artistDetailsBtn);
 
-      const labelFront = document.createElement("div");
-      labelFront.className = "cover-label";
-      labelFront.innerHTML = `<strong>${cover.albumTitle}</strong><br/>${cover.coverLabel}`;
-      wrapper.appendChild(labelFront);
+  const labelFront = document.createElement("div");
+  labelFront.className = "cover-label";
+  labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+  wrapper.appendChild(labelFront);
 
-      const labelBack = document.createElement("div");
-      labelBack.className = "back-label";
-      labelBack.innerHTML = `<strong>${cover.albumTitle}</strong><br/>${cover.coverLabel}`;
-      wrapper.appendChild(labelBack);
-    }
+  const labelBack = document.createElement("div");
+  labelBack.className = "back-label";
+  labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+  wrapper.appendChild(labelBack);
+}
+
 
     back.appendChild(backContent);
     flip.appendChild(front);
