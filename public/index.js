@@ -284,15 +284,15 @@ document.body.addEventListener("click", (e) => {
 
     const modal = document.querySelector('.artist-modal');
     modal.querySelector('.artist-photo').src = cover.artistDetails.image;
-    modal.querySelector('.artist-info h1').innerText = cover.artistDetails.name;
-    modal.querySelector('.artist-info .location').innerText = cover.artistDetails.location;
-    modal.querySelector('.artist-info .bio').innerText = cover.artistDetails.bio;
+    modal.querySelector('.artist-name').innerText = cover.artistDetails.name;
+    modal.querySelector('.artist-location').innerText = cover.artistDetails.location;
+    modal.querySelector('.artist-bio').innerText = cover.artistDetails.bio;
     modal.querySelector('.spotify-link').href = cover.artistDetails.spotifyLink;
-
-    // Embed Spotify player if a valid link provided
+    
+    // For Spotify embed player:
     if (cover.artistDetails.spotifyLink.includes("spotify.com")) {
-      const embedUrl = cover.artistDetails.spotifyLink.replace("spotify.com/", "spotify.com/embed/");
-      modal.querySelector('.spotify-player').src = embedUrl;
+      modal.querySelector('.spotify-player').src =
+        cover.artistDetails.spotifyLink.replace("spotify.com/", "spotify.com/embed/");
     } else {
       modal.querySelector('.spotify-player').style.display = 'none';
     }
