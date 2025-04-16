@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AMF Logo</title>
+  <style>
+    @font-face {
+      font-family: 'Serial D';
+      src: url('https://cdn.jsdelivr.net/gh/theobattaglia1/serial-d@34dce13be6faaaf868a35a56a4bc6bb69dae23c5/SerialDTRIAL-Light.ttf') format('truetype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    :root {
+      --logo-unit: 80px;
+      --bar-width: 60px;
+      --black: #000;
+      --white: #ffffff;
+      --font-family: 'Helvetica Neue', 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .glass-cover {
+      display: inline-block;
+      padding-top: 10px;
+      border-radius: 13px;
+      background: #e0e0e0;
+      box-shadow:
+        inset 0 8px 16px rgba(0,0,0,0.3),
+        inset 0 -4px 20px rgba(255,255,255,0.5),
+        0 4px 20px rgba(0,0,0, .2);
+      position: relative;
+    }
+
+    .logo-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      padding-top: 1rem;
+      padding-right: 1rem;
+      padding-left: 1rem;
+      padding-bottom: 1rem;
+      user-select: none;
+    }
+
+    .logo-elements {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: calc(var(--logo-unit) / 12);
+    }
+
+    .logo-a .circle {
+      width: var(--bar-width);
+      height: var(--bar-width);
+      background-color: var(--white);
+      color: var(--black);
+      font-family: var(--font-family);
+      font-size: calc(var(--logo-unit) / 2);
+      font-weight: bold;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--black);
+      animation: rotateKnob 6s linear infinite;
+    }
+
+    .rounded-bar {
+      width: var(--bar-width);
+      background-color: var(--white);
+      color: var(--black);
+      border-radius: calc(var(--bar-width) / 2);
+      border: 1px solid rgba(0,0,0,0.2);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .bar-m {
+      height: calc(var(--logo-unit) * 2);
+      bottom: 0;
+    }
+
+    .bar-f {
+      height: calc(var(--logo-unit) * 3.7);
+      top: calc(var(--logo-unit) * 0.8);
+    }
+
+    .rounded-bar .letter {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--bar-width);
+      height: var(--bar-width);
+      background-color: var(--black);
+      color: var(--white);
+      font-family: var(--font-family);
+      font-size: calc(var(--logo-unit) / 2);
+      font-weight: bold;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    @keyframes sliderUpDown {
+      0%, 100% { bottom: 0%; }
+      50% { bottom: 60%; }
+    }
+
+    @keyframes sliderDownUp {
+      0%, 100% { bottom: 60%; }
+      50% { bottom: 0%; }
+    }
+
+    .bar-m .letter {
+      animation: sliderUpDown 6s ease-in-out infinite alternate;
+    }
+
+    .bar-f .letter {
+      animation: sliderDownUp 6.5s ease-in-out infinite alternate;
+    }
+
+    @keyframes rotateKnob {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .logo-a, .bar-m {
+      transform: translateY(15px);
+    }
+
+    .logo-text {
+      font-family: 'Serial D', sans-serif;
+      font-size: calc(var(--logo-unit) / 1.7);
+      color: #ffffff; /* Text color updated to white as requested */
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      text-align: center;
+      line-height: 1;
+      margin-top: calc(var(--logo-unit) / 5.5);
+      user-select: none;
+    }
+
+    .logo-text div:first-child {
+      margin-left: calc(var(--logo-unit) * -0.4);
+    }
+
+    .logo-text div:last-child {
+      margin-left: 100px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="glass-cover">
+    <div class="logo-container">
+      <div class="logo-elements">
+        <div class="logo-a">
+          <div class="circle">A</div>
+        </div>
+
+        <div class="rounded-bar bar-m">
+          <div class="letter">M</div>
+        </div>
+
+        <div class="rounded-bar bar-f">
+          <div class="letter">F</div>
+        </div>
+      </div>
+
+      <div class="logo-text">
+        <div>ALL MY</div>
+        <div>FRIENDS</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
