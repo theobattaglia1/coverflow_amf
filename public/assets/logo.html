@@ -26,15 +26,18 @@
     }
 
     .logo-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end; /* key fix: aligns logo tightly at bottom */
-      width: 100%;
-      height: 100%;
-      padding-bottom: 0.2rem; /* tight padding at bottom */      box-sizing: border-box;
-      user-select: none;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* precisely vertical-center */
+  width: 100%;
+  height: 100%;
+  padding-top: 0.3rem;   /* tightly tuned padding above */
+  padding-bottom: 0.3rem; /* tightly tuned padding below */
+  box-sizing: border-box;
+  user-select: none;
+}
+
 
     .logo-elements {
       display: flex;
