@@ -236,15 +236,15 @@ document.body.addEventListener("click", (e) => {
   }
 });
 
-// Escape key closes modal
 window.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft")  setActiveIndex(activeIndex - 1);
+  if (e.key === "ArrowRight") setActiveIndex(activeIndex + 1);
   if (e.key === "Escape") {
     const modal = document.querySelector('.artist-modal');
-    if (!modal.classList.contains('hidden')) {
-      modal.classList.add('hidden');
-    }
+    modal.classList.add('hidden');
   }
 });
+
 
 document.querySelector('.artist-modal').addEventListener("click", (e) => {
   if (e.target.classList.contains("artist-modal")) {
