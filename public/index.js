@@ -74,36 +74,19 @@ function updateAmbient() {
 }
 
 // ────────────────────────────────────────────────────────────
-// Kinetic-swipe inertia
+// Wheel scroll (simple, smooth, throttled)
 // ────────────────────────────────────────────────────────────
-let wheelEvents = [];
-let momentumTimer;
+let wheelCooldown = false;
 
-function onWheel(e) {
+window.addEventListener('wheel', e => {
   if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
   e.preventDefault();
-  emitParticles(e.deltaX);
-  const now = performance.now();
-  wheelEvents.push({ dx: e.deltaX, t: now });
-  wheelEvents = wheelEvents.filter(ev => now - ev.t < 100);
-  setActiveIndex(activeIndex + (e.deltaX > 0 ? 1 : -1));
-  clearTimeout(momentumTimer);
-  momentumTimer = setTimeout(applyMomentum, 50);
-}
-
-function applyMomentum() {
-  const sum = wheelEvents.reduce((s, ev) => s + ev.dx, 0);
-  let v = sum / wheelEvents.length / 30;
-  function step() {
-    if (Math.abs(v) < 0.7) return;
-    setActiveIndex(activeIndex + (v > 0 ? 1 : -1));
-    v *= 0.9;
-    requestAnimationFrame(step);
+  if (!wheelCooldown) {
+    setActiveIndex(activeIndex + (e.deltaX > 0 ? 1 : -1));
+    wheelCooldown = true;
+    setTimeout(() => { wheelCooldown = false; }, 120);
   }
-  requestAnimationFrame(step);
-}
-
-window.addEventListener('wheel', onWheel, { passive: false });
+}, { passive: false });
 
 // ────────────────────────────────────────────────────────────
 // Fetch global styles and covers data
