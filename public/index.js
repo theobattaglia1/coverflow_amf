@@ -89,12 +89,13 @@ function renderCovers() {
       console.error(`❌ Image load error [${i}] URL:`, imageUrl, e);
     };
 
-    const back = document.createElement("div");  // ✅ This line was missing previously!
+    const back = document.createElement("div");
     back.className = "cover-back";
 
     const backContent = document.createElement("div");
     backContent.className = "back-content";
 
+    // Embed Spotify player if applicable
     if (cover.music?.type === "embed" && cover.music.url) {
       backContent.innerHTML = `
         <iframe style="border-radius:12px"
@@ -108,39 +109,39 @@ function renderCovers() {
         </iframe>`;
     }
 
-if (cover.albumTitle?.toLowerCase() === "contact") {
-  // Custom Contact Us button
-  const contactBtn = document.createElement("a");
-  contactBtn.href = "mailto:your@email.com"; // 🔁 replace with your actual email
-  contactBtn.innerText = "Contact Us";
-  contactBtn.className = "expand-btn";
-  contactBtn.style.textDecoration = "none";
-  contactBtn.style.textAlign = "center";
-  backContent.appendChild(contactBtn);
-} else {
-  // Default Artist Details button
-  const artistDetailsBtn = document.createElement("button");
-  artistDetailsBtn.className = "expand-btn";
-  artistDetailsBtn.innerText = "Artist Details";
-  backContent.appendChild(artistDetailsBtn);
-}
+    // Custom behavior for contact cover
+    if (cover.albumTitle?.toLowerCase() === "contact") {
+      const contactBtn = document.createElement("a");
+      contactBtn.href = "mailto:your@email.com"; // Replace with actual email
+      contactBtn.innerText = "Contact Us";
+      contactBtn.className = "expand-btn";
+      contactBtn.style.textDecoration = "none";
+      contactBtn.style.textAlign = "center";
+      backContent.appendChild(contactBtn);
+    } else {
+      // Normal artist details button
+      const artistDetailsBtn = document.createElement("button");
+      artistDetailsBtn.className = "expand-btn";
+      artistDetailsBtn.innerText = "Artist Details";
+      backContent.appendChild(artistDetailsBtn);
 
+      // Add front-facing label
+      const labelFront = document.createElement("div");
+      labelFront.className = "cover-label";
+      labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+      wrapper.appendChild(labelFront);
+
+      // Add mirrored label for back
+      const labelBack = document.createElement("div");
+      labelBack.className = "back-label";
+      labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+      wrapper.appendChild(labelBack);
+    }
 
     back.appendChild(backContent);
     flip.appendChild(front);
     flip.appendChild(back);
     wrapper.appendChild(flip);
-
-const labelFront = document.createElement("div");
-labelFront.className = "cover-label";
-labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
-wrapper.appendChild(labelFront);
-
-const labelBack = document.createElement("div");
-labelBack.className = "back-label";
-labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
-wrapper.appendChild(labelBack);
-
 
     wrapper.addEventListener("click", (e) => {
       const i = parseInt(wrapper.dataset.index, 10);
@@ -157,6 +158,7 @@ wrapper.appendChild(labelBack);
     coverflowEl.appendChild(wrapper);
   });
 }
+
 
 
 function renderCoverFlow() {
