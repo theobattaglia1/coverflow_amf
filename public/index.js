@@ -131,10 +131,16 @@ if (cover.albumTitle?.toLowerCase() === "contact") {
     flip.appendChild(back);
     wrapper.appendChild(flip);
 
-    const label = document.createElement("div");
-    label.className = "cover-label";
-    label.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
-    wrapper.appendChild(label);
+const labelFront = document.createElement("div");
+labelFront.className = "cover-label";
+labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+wrapper.appendChild(labelFront);
+
+const labelBack = document.createElement("div");
+labelBack.className = "back-label";
+labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+wrapper.appendChild(labelBack);
+
 
     wrapper.addEventListener("click", (e) => {
       const i = parseInt(wrapper.dataset.index, 10);
