@@ -212,6 +212,33 @@ html, body {
   max-width: 100%;
 }
 
+.cover-label, .back-label {
+  position: absolute;
+  bottom: -3.5rem;
+  text-align: center;
+  width: 100%;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+.cover-label {
+  display: block;
+}
+
+.back-label {
+  display: none;
+}
+
+.cover.cover-active.flipped .back-label {
+  display: block;
+}
+
+.cover.cover-active.flipped .cover-label {
+  display: none;
+}
+
+
 .artist-modal {
   position: fixed;
   inset: 0;
