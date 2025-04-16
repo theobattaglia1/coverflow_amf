@@ -173,34 +173,37 @@ function setActiveIndex(index) {
   renderCoverFlow();
 }
 
-let lastWheelTime = 0;
 let wheelCooldown = false;
+let lastWheelDirection = 0;
 
-coverflowEl.addEventListener("wheel", (e) => {
-  const now = Date.now();
-  const deltaX = e.deltaX;
-  const deltaThreshold = 10; // Lower = more sensitive
+window.addEventListener("wheel", (e) => {
+  // Trigger only if horizontal scroll dominates
+  if (Math.abs(e.deltaX) < 10 || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
 
-  if (Math.abs(deltaX) < deltaThreshold) return; // skip if not a real swipe
-  e.preventDefault();
+  e.preventDefault(); // 🛑 prevent back navigation gesture
 
+  // Reset flipped cards (if any)
+  document.querySelectorAll(".flip-container.flipped").forEach(fc => {
+    fc.classList.remove("flipped");
+  });
+
+  // Throttle slightly to prevent stutter
   if (!wheelCooldown) {
-    // Reset all flipped cards
-    document.querySelectorAll(".flip-container.flipped").forEach(fc => {
-      fc.classList.remove("flipped");
-    });
+    const direction = e.deltaX > 0 ? 1 : -1;
 
-    const direction = deltaX > 0 ? 1 : -1;
-    setActiveIndex(activeIndex + direction);
-    wheelCooldown = true;
-    lastWheelTime = now;
+    // Only trigger if direction changed or cooldown is clear
+    if (direction !== lastWheelDirection || !wheelCooldown) {
+      setActiveIndex(activeIndex + direction);
+      lastWheelDirection = direction;
+      wheelCooldown = true;
 
-    // unlock faster than before
-    setTimeout(() => {
-      wheelCooldown = false;
-    }, 100);
+      setTimeout(() => {
+        wheelCooldown = false;
+      }, 120); // you can tune this lower (100) for faster feel
+    }
   }
 }, { passive: false });
+
 
 
 // Modal logic for Artist Details button
