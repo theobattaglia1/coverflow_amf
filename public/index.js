@@ -176,22 +176,31 @@ function setActiveIndex(index) {
 let wheelCooldown = false;
 let lastWheelDirection = 0;
 
-‑ window.addEventListener("wheel", (e) => {
-‑   // Trigger only if horizontal scroll dominates
-‑   if (Math.abs(e.deltaX) < 10 || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
-+ coverflowEl.addEventListener("wheel", (e) => {
-+   // Trigger only if horizontal scroll dominates
-+   if (Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+window.addEventListener("wheel", (e) => {
+  // Trigger only if horizontal scroll dominates
 
-    e.preventDefault();
+  e.preventDefault(); // 🛑 prevent back navigation gesture
 
-    if (!wheelCooldown) {
-      const direction = e.deltaX > 0 ? 1 : -1;
+  // Reset flipped cards (if any)
+  document.querySelectorAll(".flip-container.flipped").forEach(fc => {
+    fc.classList.remove("flipped");
+  });
+
+  // Throttle slightly to prevent stutter
+  if (!wheelCooldown) {
+    const direction = e.deltaX > 0 ? 1 : -1;
+
+    // Only trigger if direction changed or cooldown is clear
+    if (direction !== lastWheelDirection || !wheelCooldown) {
       setActiveIndex(activeIndex + direction);
+      lastWheelDirection = direction;
       wheelCooldown = true;
-‑     setTimeout(() => { wheelCooldown = false; }, 120);
-+     setTimeout(() => { wheelCooldown = false; }, 150);
+
+      setTimeout(() => {
+        wheelCooldown = false;
+      }, 120); // you can tune this lower (100) for faster feel
     }
+  }
 }, { passive: false });
 
 
