@@ -420,6 +420,7 @@ html, body {
 
   .top-logo {
     margin: 1.5rem auto; /* logo stays at the top */
+    transform: translateY(15vh);
   }
 
   .logo-frame {
@@ -434,9 +435,6 @@ html, body {
     align-items: center;
     justify-content: center;
     padding: 0 3vw;
-  }
-  
-    /* ← New: shift everything up by 10% of viewport height */
     transform: translateY(-10vh);
   }
 
