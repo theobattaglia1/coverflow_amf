@@ -435,6 +435,10 @@ html, body {
     justify-content: center;
     padding: 0 3vw;
   }
+  
+    /* ← New: shift everything up by 10% of viewport height */
+    transform: translateY(-10vh);
+  }
 
   /* BOTTOM‐PINNED FILTER BAR */
   .filter-container {
