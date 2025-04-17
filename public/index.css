@@ -372,36 +372,36 @@ html, body {
   pointer-events: none; z-index:0;
 }
 
-/* === MOBILE LAYOUT (HORIZONTAL) === */
 @media (max-width: 768px) {
-  html, body {
+  body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* kills native vertical scroll */
   }
+
   .top-logo {
-    margin: 1.5rem auto;
+    margin: 1.5rem auto; /* logo stays at the top */
   }
+
   .logo-frame {
     max-width: 50% !important;
     height: auto !important;
   }
 
-  /* Center covers vertically between logo & bottom bar */
+  /* CENTER COVERFLOW BETWEEN LOGO & BOTTOM NAV */
   .coverflow-container {
-    flex: 1 1 auto;
+    flex: 1;               /* fills the middle space */
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 3vw;
   }
 
-  /* bottom nav for filters */
+  /* BOTTOM‐PINNED FILTER BAR */
   .filter-container {
     position: fixed;
-    bottom: 0;
-    left: 0; right: 0;
+    bottom: 0; left: 0; right: 0;
     justify-content: space-around;
     padding: 12px 0;
     background: rgba(0,0,0,0.85);
