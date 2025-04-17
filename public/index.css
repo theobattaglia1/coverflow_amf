@@ -449,23 +449,40 @@ html, body {
     padding: clamp(0.5rem, 1.5vh, 1rem) 2vw;
   }
 
-  /* === FAB‑style FILTER PILL === */
+/* ===== FAB‑style FILTER BUTTON (matching .expand-btn) ===== */
   .filter-accordion {
     position: fixed;
-    bottom: clamp(5rem, 10vh, 8rem);  /* lifts it just above the bottom‑pinned bar */
-    right: clamp(1rem, 5vw, 2rem);     /* small gap from the right edge */
-    z-index: 30;                       /* above everything else */
+    bottom: clamp(5rem, 10vh, 8rem);
+    right: clamp(1rem, 5vw, 2rem);
+    z-index: 30;
   }
+
   .filter-accordion summary {
-    padding: clamp(0.5rem, 3vh, 1rem) clamp(1rem, 4vw, 1.5rem);
-    border-radius: 999px;              /* keeps the pill shape */
-    background: rgba(255,255,255,0.1);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    /* exactly the same base styles as .cover .expand-btn */
+    padding: 5px 12px;
+    font-weight: 600;
+    font-size: 14px;
+    color: #eee;
+    border: none;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(12px);
+    box-shadow:
+      inset 0 0 0 0.5px rgba(255,255,255,0.2),
+      0 4px 12px rgba(0,0,0,0.3);
     cursor: pointer;
-    transition: background 0.2s ease;
+
+    /* center the text */
+    text-align: center;
+    /* drop the default disclosure arrow if you like */
+    list-style: none;
   }
+
+  .filter-accordion summary::-webkit-details-marker {
+    display: none;
+  }
+
   .filter-accordion summary:hover {
-    background: rgba(255,255,255,0.2);
+    background: rgba(255,255,255,0.25);
   }
 }
