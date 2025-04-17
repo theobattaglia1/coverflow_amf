@@ -1,21 +1,23 @@
 // == index.js ==
 
-// 1) Core globals and mobile flag
+// 1) Core globals
 let allCovers = [];
 let covers = [];
 let activeIndex = 0;
 let coverSpacing, anglePerOffset, minScale;
 const maxAngle = 80;
+
+// Handy flag for any device-specific CSS/JS (we keep horizontal axis by default)
 const isMobile = window.matchMedia('(max-width:768px)').matches;
 
+// Grab core elements
 const coverflowEl = document.getElementById('coverflow');
 const hoverDisplay = document.getElementById('hover-credits');
 
-// 2) Particle trails setup
+// 2) Particle trails setup (unchanged)
 const trailCanvas = document.getElementById('trail-canvas');
 const trailCtx    = trailCanvas.getContext('2d');
-let particles    = [];
-
+let particles = [];
 function resizeTrailCanvas() {
   trailCanvas.width  = coverflowEl.clientWidth;
   trailCanvas.height = coverflowEl.clientHeight;
@@ -27,7 +29,7 @@ function emitParticles(delta) {
   const count = Math.min(Math.abs(delta) / 5, 10);
   for (let i = 0; i < count; i++) {
     particles.push({
-      x: trailCanvas.width / 2,
+      x: trailCanvas.width  / 2,
       y: trailCanvas.height / 2,
       vx: delta * (Math.random() * 0.2 + 0.1),
       vy: (Math.random() - 0.5) * 2,
@@ -37,22 +39,22 @@ function emitParticles(delta) {
 }
 
 function animateTrails() {
-  trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
-  particles.forEach((p, i) => {
+  trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);
+  particles.forEach((p,i) => {
     trailCtx.globalAlpha = p.life / 60;
     trailCtx.beginPath();
-    trailCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    trailCtx.arc(p.x, p.y, 3, 0, Math.PI*2);
     trailCtx.fill();
     p.x += p.vx;
     p.y += p.vy;
     p.life--;
-    if (p.life <= 0) particles.splice(i, 1);
+    if (p.life <= 0) particles.splice(i,1);
   });
   requestAnimationFrame(animateTrails);
 }
 animateTrails();
 
-// 3) Ambient reactive glow
+// 3) Ambient reactive glow (unchanged)
 function updateAmbient() {
   const img = new Image();
   img.crossOrigin = 'anonymous';
@@ -62,71 +64,75 @@ function updateAmbient() {
     c.width = c.height = 10;
     const ctx = c.getContext('2d');
     ctx.drawImage(img, 0, 0, 10, 10);
-    const [r, g, b] = ctx.getImageData(0, 0, 10, 10).data;
+    const [r,g,b] = ctx.getImageData(0,0,10,10).data;
     document.getElementById('ambient-light')
       .style.backgroundColor = `rgba(${r},${g},${b},0.4)`;
   };
 }
 
-// 4) Prevent native scroll & axis-aware wheel/touch
+// 4) Prevent native scroll & use horizontal axis always
 let wheelCooldown = false;
-let touchStart = 0;
+let touchStartX = 0;
 
-// disable native scroll in coverflow on mobile
+// Prevent any vertical page scroll on coverflow
 coverflowEl.addEventListener('touchmove', e => {
-  const delta = isMobile
-    ? e.changedTouches[0].screenY - touchStart
-    : 0;
-  if (Math.abs(delta) > 10) e.preventDefault();
+  e.preventDefault();
 }, { passive: false });
 
-// wheel scroll / swipe logic
+// Wheel logic: horizontal only
 window.addEventListener('wheel', e => {
-  const delta = isMobile ? e.deltaY : e.deltaX;
-  const opp   = isMobile ? e.deltaX : e.deltaY;
-  if (Math.abs(delta) <= Math.abs(opp)) return;
+  if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
   e.preventDefault();
   if (!wheelCooldown) {
-    emitParticles(delta);
-    setActiveIndex(activeIndex + (delta > 0 ? 1 : -1));
+    emitParticles(e.deltaX);
+    setActiveIndex(activeIndex + (e.deltaX > 0 ? 1 : -1));
     wheelCooldown = true;
     setTimeout(() => { wheelCooldown = false; }, 120);
   }
 }, { passive: false });
 
+// Touch swipe logic: horizontal
 coverflowEl.addEventListener('touchstart', e => {
-  touchStart = isMobile
-    ? e.touches[0].screenY
-    : e.touches[0].screenX;
+  touchStartX = e.touches[0].screenX;
 });
 coverflowEl.addEventListener('touchend', e => {
-  const end = isMobile
-    ? e.changedTouches[0].screenY
-    : e.changedTouches[0].screenX;
-  const diff = end - touchStart;
+  const endX = e.changedTouches[0].screenX;
+  const diff = endX - touchStartX;
   if (Math.abs(diff) > 60) {
     setActiveIndex(activeIndex + (diff < 0 ? 1 : -1));
   }
 });
 
-// 5) Fetch styles & covers data
+// 5) Fetch styles & covers
 fetch('/data/test-styles.json')
-  .then(res => res.json())
+  .then(r => r.json())
   .then(style => {
     const tag = document.getElementById('global-styles');
     tag.innerHTML = `
-      html, body { font-family:'${style.fontFamily||'GT America'}',sans-serif; font-size:${style.fontSize||16}px; }
-      .cover-label { font-family:'${style.overrides?.coverLabel?.fontFamily||style.fontFamily||'GT America'}'; font-size:${style.overrides?.coverLabel?.fontSize||14}px; }
-      .filter-label { font-family:'${style.overrides?.filterLabel?.fontFamily||style.fontFamily||'GT America'}'; font-size:${style.overrides?.filterLabel?.fontSize||13}px; }
-      .hover-credits-container { font-family:'${style.overrides?.hoverCredits?.fontFamily||style.fontFamily||'GT America'}'; font-size:${style.overrides?.hoverCredits?.fontSize||12}px; }
+      html, body {
+        font-family: '${style.fontFamily||'GT America'}',sans-serif;
+        font-size: ${style.fontSize||16}px;
+      }
+      .cover-label {
+        font-family: '${style.overrides?.coverLabel?.fontFamily||style.fontFamily||'GT America'}';
+        font-size: ${style.overrides?.coverLabel?.fontSize||14}px;
+      }
+      .filter-label {
+        font-family: '${style.overrides?.filterLabel?.fontFamily||style.fontFamily||'GT America'}';
+        font-size: ${style.overrides?.filterLabel?.fontSize||13}px;
+      }
+      .hover-credits-container {
+        font-family: '${style.overrides?.hoverCredits?.fontFamily||style.fontFamily||'GT America'}';
+        font-size: ${style.overrides?.hoverCredits?.fontSize||12}px;
+      }
     `;
   });
 
 fetch(`/data/covers.json?cachebust=${Date.now()}`)
-  .then(res => res.json())
+  .then(r => r.json())
   .then(data => {
-    allCovers = data;
-    covers    = [...allCovers];
+    allCovers  = data;
+    covers     = [...allCovers];
     activeIndex = Math.floor(covers.length/2);
     updateLayoutParameters();
     renderCovers();
@@ -134,7 +140,7 @@ fetch(`/data/covers.json?cachebust=${Date.now()}`)
   })
   .catch(err => console.error('Error fetching covers:', err));
 
-// 6) Layout & render routines
+// 6) Layout & rendering
 function updateLayoutParameters() {
   const vw = window.innerWidth;
   coverSpacing   = Math.max(120, vw * 0.18);
@@ -161,68 +167,66 @@ function renderCovers() {
     const back = document.createElement('div');
     back.className = 'cover-back';
 
-    const backContent = document.createElement('div');
-    backContent.className = 'back-content';
+    const bc = document.createElement('div');
+    bc.className = 'back-content';
 
-    // CONTACT card
+    // CONTACT case
     if (cover.albumTitle?.toLowerCase() === 'contact') {
-      const contactBtn = document.createElement('a');
-      contactBtn.href = 'mailto:hi@allmyfriendsinc.com';
-      contactBtn.innerText = 'Contact Us';
-      contactBtn.className = 'expand-btn';
-      contactBtn.style.textDecoration = 'none';
-      contactBtn.style.textAlign = 'center';
-      backContent.appendChild(contactBtn);
+      const btn = document.createElement('a');
+      btn.href = 'mailto:hi@allmyfriendsinc.com';
+      btn.innerText = 'Contact Us';
+      btn.className = 'expand-btn';
+      btn.style.textDecoration = 'none';
+      btn.style.textAlign = 'center';
+      bc.appendChild(btn);
 
     } else {
-      // Artist Details button always
-      const artistDetailsBtn = document.createElement('button');
-      artistDetailsBtn.className = 'expand-btn';
-      artistDetailsBtn.innerText = 'Artist Details';
-      backContent.appendChild(artistDetailsBtn);
+      // Artist Details button
+      const btn = document.createElement('button');
+      btn.className = 'expand-btn';
+      btn.innerText = 'Artist Details';
+      bc.appendChild(btn);
 
-      // Labels front/back
-      const labelFront = document.createElement('div');
-      labelFront.className = 'cover-label';
-      labelFront.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
-      wrapper.appendChild(labelFront);
+      // Labels
+      const lf = document.createElement('div');
+      lf.className = 'cover-label';
+      lf.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
+      wrapper.appendChild(lf);
 
-      const labelBack = document.createElement('div');
-      labelBack.className = 'back-label';
-      labelBack.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
-      wrapper.appendChild(labelBack);
+      const lb = document.createElement('div');
+      lb.className = 'back-label';
+      lb.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
+      wrapper.appendChild(lb);
 
       // Spotify embed or link
       if (cover.music?.type === 'embed' && cover.music.url) {
-        if (!isMobile) {
-          // full iframe on desktop
-          backContent.innerHTML += `
+        if (isMobile) {
+          const l = document.createElement('a');
+          l.href = cover.music.url;
+          l.target = '_blank';
+          l.className = 'spotify-button';
+          l.innerText = 'Play on Spotify';
+          bc.appendChild(l);
+        } else {
+          bc.innerHTML += `
             <iframe style="border-radius:12px"
               src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}"
-              width="100%" height="352" frameBorder="0"
+              width="100%" height="352" frameborder="0"
               allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
               loading="lazy"></iframe>`;
-        } else {
-          // mobile: link button
-          const spotifyLinkBtn = document.createElement('a');
-          spotifyLinkBtn.href = cover.music.url;
-          spotifyLinkBtn.innerText = 'Play on Spotify';
-          spotifyLinkBtn.className = 'spotify-button';
-          spotifyLinkBtn.style.marginTop = '0.5rem';
-          backContent.appendChild(spotifyLinkBtn);
         }
       }
     }
 
-    back.appendChild(backContent);
+    back.appendChild(bc);
     flip.appendChild(front);
     flip.appendChild(back);
     wrapper.appendChild(flip);
 
     wrapper.addEventListener('click', () => {
-      const idx = parseInt(wrapper.dataset.index, 10);
+      const idx = +wrapper.dataset.index;
       const off = idx - activeIndex;
-      const fc = wrapper.querySelector('.flip-container');
+      const fc  = wrapper.querySelector('.flip-container');
       if (off === 0 && fc) fc.classList.toggle('flipped');
       else setActiveIndex(idx);
     });
@@ -234,28 +238,20 @@ function renderCovers() {
 function renderCoverFlow() {
   document.querySelectorAll('.cover').forEach(cover => {
     const i      = +cover.dataset.index;
-    const offset = i - activeIndex;
-    const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
-    const scale  = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
-    let transform;
+    const off    = i - activeIndex;
+    const eff    = Math.sign(off) * Math.log2(Math.abs(off) + 1);
+    const scale  = Math.max(minScale, 1 - Math.abs(off) * 0.08);
 
-    if (!isMobile) {
-      const tx = eff * coverSpacing;
-      const ry = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
-      transform = `translate(-50%,-50%) translateX(${tx}px) scale(${scale}) rotateY(${ry}deg)`;
-    } else {
-      const ty = eff * coverSpacing;
-      const rx = Math.max(-maxAngle, Math.min(offset * anglePerOffset, maxAngle));
-      transform = `translate(-50%,-50%) translateY(${ty}px) scale(${scale}) rotateX(${rx}deg)`;
-    }
+    const tx = eff * coverSpacing;
+    const ry = Math.max(-maxAngle, Math.min(off * -anglePerOffset, maxAngle));
+    cover.style.transform = `translate(-50%,-50%) translateX(${tx}px) scale(${scale}) rotateY(${ry}deg)`;
 
-    cover.style.transform = transform;
-    cover.style.filter    = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset)*1,4)}px)`;
-    cover.style.zIndex    = covers.length - Math.abs(offset);
+    cover.style.filter = off === 0 ? 'none' : `blur(${Math.min(Math.abs(off)*1,4)}px)`;
+    cover.style.zIndex = covers.length - Math.abs(off);
 
     const fc = cover.querySelector('.flip-container');
-    if (offset !== 0) fc?.classList.remove('flipped');
-    cover.classList.toggle('cover-active', offset === 0);
+    if (off !== 0) fc?.classList.remove('flipped');
+    cover.classList.toggle('cover-active', off === 0);
   });
   updateAmbient();
 }
@@ -265,30 +261,32 @@ function setActiveIndex(idx) {
   renderCoverFlow();
 }
 
-// 7) Keyboard navigation & modal close
+// 7) Keyboard nav & modal close
 window.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft')  setActiveIndex(activeIndex - 1);
   if (e.key === 'ArrowRight') setActiveIndex(activeIndex + 1);
   if (e.key === 'Escape')     document.querySelector('.artist-modal').classList.add('hidden');
 });
 
-// 8) Artist Detail modal logic
+// 8) Artist Detail modal logic (unchanged)
 document.body.addEventListener('click', e => {
   if (e.target.classList.contains('expand-btn') && e.target.tagName === 'BUTTON') {
-    const coverEl = e.target.closest('.cover');
-    const id = coverEl?.dataset.originalIndex;
-    const cd = covers.find(c => c.id == id);
+    const wrapper = e.target.closest('.cover');
+    const id      = wrapper?.dataset.originalIndex;
+    const cd      = covers.find(c => c.id == id);
     if (!cd?.artistDetails) return;
     const modal = document.querySelector('.artist-modal');
-    modal.querySelector('.artist-photo').src       = cd.artistDetails.image;
-    modal.querySelector('.artist-name').innerText  = cd.artistDetails.name;
+    modal.querySelector('.artist-photo').src        = cd.artistDetails.image;
+    modal.querySelector('.artist-name').innerText   = cd.artistDetails.name;
     modal.querySelector('.artist-location').innerText = cd.artistDetails.location;
-    modal.querySelector('.artist-bio').innerText   = cd.artistDetails.bio;
-    modal.querySelector('.spotify-link').href      = cd.artistDetails.spotifyLink;
+    modal.querySelector('.artist-bio').innerText    = cd.artistDetails.bio;
+    modal.querySelector('.spotify-link').href       = cd.artistDetails.spotifyLink;
+    const player = modal.querySelector('.spotify-player');
     if (cd.artistDetails.spotifyLink.includes('spotify.com')) {
-      modal.querySelector('.spotify-player').src = cd.artistDetails.spotifyLink.replace('spotify.com/','spotify.com/embed/');
+      player.src = cd.artistDetails.spotifyLink.replace('spotify.com/','spotify.com/embed/');
+      player.style.display = '';
     } else {
-      modal.querySelector('.spotify-player').style.display = 'none';
+      player.style.display = 'none';
     }
     modal.classList.remove('hidden');
   }
@@ -297,14 +295,17 @@ document.querySelector('.artist-modal').addEventListener('click', e => {
   if (e.target.classList.contains('artist-modal')) {
     const mc = e.target.querySelector('.modal-content');
     mc.classList.add('pulse-dismiss');
-    setTimeout(() => { e.target.classList.add('hidden'); mc.classList.remove('pulse-dismiss'); }, 250);
+    setTimeout(() => {
+      e.target.classList.add('hidden');
+      mc.classList.remove('pulse-dismiss');
+    }, 250);
   }
 });
 document.querySelector('.artist-modal .close-btn').addEventListener('click', () => {
   document.querySelector('.artist-modal').classList.add('hidden');
 });
 
-// 9) Filter dropdown logic
+// 9) Filter dropdown logic — position above if it would overflow
 const filterButtons = Array.from(document.querySelectorAll('.filter-label'));
 const filterDropdown = document.createElement('div');
 filterDropdown.className = 'filter-dropdown';
@@ -314,16 +315,34 @@ filterButtons.forEach(btn => {
   btn.addEventListener('mouseenter', () => {
     const filter = btn.dataset.filter;
     const results = allCovers.filter(c => filter === 'all' || c.category?.includes(filter));
-    const items = results.map(c => `<div class="dropdown-item" data-id="${c.id}">${c.albumTitle||'Untitled'} — ${c.coverLabel||''}</div>`).join('') || '<div class="dropdown-item">No results</div>';
-    filterDropdown.innerHTML = items;
+    const itemsHtml = results.map(c =>
+      `<div class="dropdown-item" data-id="${c.id}">${c.albumTitle||'Untitled'} — ${c.coverLabel||''}</div>`
+    ).join('') || `<div class="dropdown-item">No results</div>`;
+
+    filterDropdown.innerHTML = itemsHtml;
     filterDropdown.style.display = 'block';
-    const rect = btn.getBoundingClientRect();
+
+    const ddHeight = filterDropdown.offsetHeight;
+    const rect     = btn.getBoundingClientRect();
     filterDropdown.style.left = `${rect.left}px`;
-    filterDropdown.style.top  = `${rect.bottom + 5}px`;
+
+    // if dropdown would go off bottom, anchor it above the bar
+    if (rect.bottom + 5 + ddHeight > window.innerHeight) {
+      filterDropdown.style.top = '';
+      const bottomVal = window.innerHeight - rect.top + 5;
+      filterDropdown.style.bottom = `${bottomVal}px`;
+    } else {
+      filterDropdown.style.bottom = '';
+      filterDropdown.style.top = `${rect.bottom + 5}px`;
+    }
   });
 
   btn.addEventListener('mouseleave', () => {
-    setTimeout(() => { if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none'; }, 100);
+    setTimeout(() => {
+      if (!filterDropdown.matches(':hover')) {
+        filterDropdown.style.display = 'none';
+      }
+    }, 100);
   });
 
   btn.addEventListener('click', () => {
@@ -336,10 +355,13 @@ filterButtons.forEach(btn => {
     activeIndex = Math.floor(covers.length / 2);
     renderCovers();
     renderCoverFlow();
+    filterDropdown.style.display = 'none';
   });
 });
 
-filterDropdown.addEventListener('mouseleave', () => filterDropdown.style.display = 'none');
+filterDropdown.addEventListener('mouseleave', () => {
+  filterDropdown.style.display = 'none';
+});
 filterDropdown.addEventListener('click', e => {
   const id = e.target.dataset.id;
   if (!id) return;
