@@ -3,76 +3,15 @@
   --global-font-size: 1rem;
 }
 
-/* — Full‑screen layout, no vertical scroll — */
 html, body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100vh;
-  overflow-x: hidden;
-  overflow-y: hidden;
   background: #111;
   color: #fff;
   font-family: var(--global-font-family);
   font-size: var(--global-font-size);
-}
-body {
-  display: flex;
-  flex-direction: column;
-}
-.app-container {
-  display: flex;
-  flex-direction: column;
-  flex: 1 1 auto;
-  overflow: hidden;
-}
-
-/* === Accordion Filter === */
-.filter-accordion {
-  width: 100%;
-  margin: 0 auto clamp(12px, 2vh, 24px);
-}
-.filter-accordion summary {
-  list-style: none;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: clamp(10px, 1.2vw, 14px)
-           clamp(12px, 2vw, 20px);
-  background: rgba(255,255,255,0.05);
-  border-radius: 16px;
-  font-weight: 600;
-  font-size: clamp(0.9rem, 1.5vw, 1.1rem);
-  color: #fff;
-}
-.filter-accordion summary::-webkit-details-marker {
-  display: none;
-}
-.filter-accordion summary::after {
-  content: '▼';
-  transition: transform 0.3s ease;
-}
-.filter-accordion[open] summary::after {
-  transform: rotate(-180deg);
-}
-@media (max-width: 768px) {
-  .filter-container {
-    display: none;
-    flex-direction: column;
-    gap: clamp(6px, 1.5vw, 20px);
-  }
-  .filter-accordion[open] .filter-container {
-    display: flex;
-  }
-}
-@media (min-width: 769px) {
-  .filter-accordion summary {
-    display: none;
-  }
-  .filter-container {
-    display: flex !important;
-  }
+  overflow-x: hidden;
+  height: 100%;
 }
 
 /* === LOGO === */
@@ -80,7 +19,8 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
-  margin: 2rem auto;
+  /* keep a small, fluid margin above & below */
+  margin: clamp(2rem, 10vh, 3rem) auto;
 }
 .logo-frame {
   border: none;
@@ -99,8 +39,7 @@ body {
   gap: clamp(6px, 1.5vw, 20px);
   flex-wrap: nowrap;
   width: 100%;
-  padding: clamp(10px, 1.2vw, 14px)
-           clamp(12px, 2vw, 20px);
+  padding: clamp(10px, 1.2vw, 14px) clamp(12px, 2vw, 20px);
   margin: 0 auto clamp(12px, 2vh, 24px);
   box-sizing: border-box;
   background: rgba(255,255,255,0.05);
@@ -113,13 +52,13 @@ body {
   z-index: 10;
   -webkit-overflow-scrolling: touch;
 }
+
 .filter-label {
   flex: 0 0 auto;
   scroll-snap-align: center;
   font-size: clamp(10px, 1.1vw, 13px);
   font-weight: 600;
-  padding: clamp(6px, 1vh, 12px)
-           clamp(14px, 2vw, 22px);
+  padding: clamp(6px, 1vh, 12px) clamp(14px, 2vw, 22px);
   border-radius: 24px;
   background: rgba(255,255,255,0.07);
   color: rgba(255,255,255,0.9);
@@ -130,7 +69,6 @@ body {
   user-select: none;
   touch-action: manipulation;
 }
-.filter-label:hover,
 .filter-label:active {
   background: rgba(255,255,255,0.15);
   transform: translateY(-1px);
@@ -162,7 +100,7 @@ body {
   padding: 6px 8px;
   cursor: pointer;
   border-radius: 6px;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 .dropdown-item:hover {
   background: rgba(255,255,255,0.1);
@@ -171,14 +109,12 @@ body {
 
 /* === COVERFLOW === */
 .coverflow-container {
-  flex: 1 1 auto;
   display: flex;
   justify-content: center;
   align-items: center;
   padding-block: clamp(12px, 3vh, 32px);
   width: 100%;
   box-sizing: border-box;
-  overflow: hidden;
 }
 #coverflow-container {
   position: relative;
@@ -196,18 +132,16 @@ body {
   align-items: center;
 }
 
-/* ↑30% cover size on desktop */
 .cover {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(208px, 32.5vw, 390px);
-  height: clamp(208px, 32.5vw, 390px);
+  width: clamp(160px, 25vw, 300px);
+  height: clamp(160px, 25vw, 300px);
   transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), filter 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
 }
-
 .flip-container {
   width: 100%;
   height: 100%;
@@ -219,6 +153,7 @@ body {
   position: relative;
   z-index: 1000;
 }
+
 .cover-front, .cover-back {
   position: absolute;
   width: 100%;
@@ -245,7 +180,6 @@ body {
   background: linear-gradient(145deg, #1e1e1e, #2e2e2e);
   transform: rotateY(180deg);
   padding: 1rem;
-  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -293,46 +227,21 @@ body {
   background: rgba(255,255,255,0.25);
 }
 
-.cover-label {
+.cover-label, .back-label {
   position: absolute;
-  bottom: -4.5rem;
-  text-align: center;
+  bottom: -3.5rem;
   width: 100%;
+  text-align: center;
   font-size: 0.9rem;
   line-height: 1.2;
   pointer-events: none;
-  display: none; /* hide non‑center labels */
+  display: none;
 }
 .cover.cover-active .cover-label {
   display: block;
 }
-
-/* === HOVER CREDITS === */
-.hover-credits-container {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  padding: 12px 0;
-  background: rgba(0,0,0,0.85);
-  overflow-x: auto;
-  z-index: 20;
-  -webkit-overflow-scrolling: touch;
-}
-.hover-credits-container .filter-label {
-  flex: 1 1 auto;
-  min-width: 0;
-  text-align: center;
-  padding: 12px 8px;
-}
-
-/* === MEDIA QUERY ADJUSTMENTS === */
-@media (max-width: 600px) {
-  .cover {
-    width: clamp(200px, 55vw, 300px);
-    height: clamp(200px, 55vw, 300px);
-  }
+.cover.cover-active.flipped .back-label {
+  display: block;
 }
 
 /* === MODAL === */
@@ -349,7 +258,7 @@ body {
 }
 .modal-content {
   position: relative;
-  width: clamp(300px,85vw,800px);
+  width: clamp(300px, 85vw, 800px);
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 24px;
@@ -362,31 +271,29 @@ body {
 .artist-photo {
   width: 100%;
   height: auto;
-  max-height: clamp(200px,40vh,380px);
+  max-height: clamp(200px, 40vh, 380px);
   object-fit: cover;
   opacity: 0.6;
-  flex-shrink: 0;
 }
 .artist-info {
-  padding: clamp(12px,3vw,24px);
+  padding: clamp(12px, 3vw, 24px);
   display: flex;
-  flex-direction: column;  
+  flex-direction: column;
   gap: 0.5rem;
-  overflow: hidden;
 }
 .artist-name {
-  font-size: clamp(22px,4vw,36px);
+  font-size: clamp(22px, 4vw, 36px);
   margin: 0;
   font-weight: bold;
 }
 .artist-location {
-  font-size: clamp(12px,2vw,16px);
+  font-size: clamp(12px, 2vw, 16px);
   opacity: 0.8;
 }
 .artist-bio {
-  font-size: clamp(12px,2vw,15px);
+  font-size: clamp(12px, 2vw, 15px);
   overflow-y: auto;
-  max-height: clamp(60px,12vh,120px);
+  max-height: clamp(60px, 12vh, 120px);
 }
 .spotify-button {
   align-self: start;
@@ -394,9 +301,9 @@ body {
   background-color: #1DB954;
   border: none;
   color: white;
-  padding: clamp(6px,2vw,12px) clamp(14px,4vw,20px);
+  padding: clamp(6px, 2vw, 12px) clamp(14px, 4vw, 20px);
   border-radius: 50px;
-  font-size: clamp(12px,2vw,14px);
+  font-size: clamp(12px, 2vw, 14px);
   cursor: pointer;
   transition: 0.3s ease;
 }
@@ -406,15 +313,14 @@ body {
 .spotify-player {
   margin-top: 10px;
   width: 100%;
-  height: clamp(80px,15vh,152px);
-  flex-shrink: 0;
+  height: clamp(80px, 15vh, 152px);
   border: none;
   border-radius: 12px;
 }
 .close-btn {
   position: absolute;
-  top: clamp(8px,2vw,12px);
-  right: clamp(8px,2vw,12px);
+  top: clamp(8px, 2vw, 12px);
+  right: clamp(8px, 2vw, 12px);
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(5px);
   border: none;
@@ -433,52 +339,78 @@ body {
   display: none !important;
 }
 
+/* === SCROLLABLE CONTAINER === */
+.scrollable {
+  overflow-y: auto;
+  max-height: 80vh;
+  padding-right: 16px;
+}
 
+/* === AMBIENT LIGHT & PARTICLE TRAILS === */
+#ambient-light {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  transition: background-color 0.6s ease;
+  z-index: -1;
+  filter: blur(80px) brightness(0.7);
+}
+#trail-canvas {
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* === MOBILE LAYOUT (HORIZONTAL) === */
 @media (max-width: 768px) {
-  /* Make body a full‑height flex container */
-  html, body {
-    height: 100vh;
-    overflow: hidden;
-  }
-  /* Ensure our main wrapper stacks vertically */
-  .app-container {
+  body {
     display: flex;
     flex-direction: column;
-    height: 100%;
-    overflow: hidden;
+    height: 100vh;
+    overflow: hidden; /* kill native vertical scroll */
   }
 
-  /* Logo = top quarter of screen, no extra margin */
-  .top-logo {
-    flex: 0 0 25vh;
-    margin: clamp(0.5rem, 3vh, 1rem) auto 0;
-  }
-  
-    /* 2) Reduce the logo to 50% width */
+  /* shrink logo to half its desktop width */
   .logo-frame {
     max-width: 50% !important;
     height: auto !important;
   }
 
-  /* Filter bar sits just below logo */
-  .filter-accordion,
-  .filter-container {
+  /* let logo sit naturally, no forced 25vh gap */
+  .top-logo {
     flex: 0 0 auto;
-    margin: 0;
+    margin: clamp(0.5rem, 3vh, 1rem) auto;
   }
 
-  /* Coverflow fills remaining 75vh */
+  /* coverflow hugs right under the logo with no extra padding */
   .coverflow-container {
     flex: 1 1 auto;
-    margin: 0;            /* kill any top‐margin */
-    padding-top: clamp(0.25rem, 2vh, 0.5rem);
+    margin: 0;
+    padding-top: 0;
     padding-bottom: 0;
+    padding-inline: 3vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: hidden;
   }
 
-  /* And inside, make sure content stretches */
-  .coverflow-content {
-    height: 100%;
+  /* bottom‑pinned filter bar */
+  .filter-container {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    justify-content: space-around;
+    padding: clamp(0.75rem, 2.5vh, 1rem) 3vw;
+    background: rgba(0,0,0,0.85);
+    overflow-x: auto;
+    z-index: 20;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    padding: clamp(0.5rem, 1.5vh, 1rem) 2vw;
   }
 }
-
