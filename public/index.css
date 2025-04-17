@@ -451,21 +451,22 @@ body {
   /* Logo = top quarter of screen, no extra margin */
   .top-logo {
     flex: 0 0 25vh;
-    margin: 0;
+    margin: clamp(2rem, 10vh, 3rem) auto 0;
   }
 
   /* Filter bar sits just below logo */
   .filter-accordion,
   .filter-container {
     flex: 0 0 auto;
-    margin: 0 auto clamp(8px, 2vh, 16px);
+    margin: 0;
   }
 
   /* Coverflow fills remaining 75vh */
   .coverflow-container {
     flex: 1 1 auto;
     margin: 0;            /* kill any top‐margin */
-    padding-block: 0;     /* kill vertical padding */
+    padding-top: clamp(0.25rem, 2vh, 0.5rem);
+    padding-bottom: 0;
     overflow: hidden;
   }
 
