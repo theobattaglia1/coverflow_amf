@@ -221,9 +221,10 @@ html, body {
 /* back-face button positioning — float it above the card */
 .cover .expand-btn {
   position: absolute;
+  min-width: 160px;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(100% + 1rem);  /* 1rem gap above the back‑face */
+  bottom: calc(100% + 2rem);  /* 1rem gap above the back‑face */
   z-index: 1000;
   background: rgba(255,255,255,0.15);
   color: #eee;
