@@ -108,7 +108,6 @@ html, body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding-block: clamp(1rem, 8vh, 2rem);
   width: 100%;
   box-sizing: border-box;
 }
