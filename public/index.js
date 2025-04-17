@@ -142,12 +142,24 @@ function renderCovers(){
       artistBtn.className='expand-btn';
       artistBtn.innerText='Artist Details';
       backContent.appendChild(artistBtn);
+// …still inside your “else” branch for non‑contact covers…
 
-      // TOP label
-      const topLabel = document.createElement('div');
-      topLabel.className='back-label';
-      topLabel.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
-      wrapper.appendChild(topLabel);
+// 1) FRONT label (shown on the active, un‑flipped card)
+const coverLabel = document.createElement('div');
+coverLabel.className = 'cover-label';
+coverLabel.innerHTML = `
+  <strong>${cover.albumTitle || ''}</strong><br/>
+  ${cover.coverLabel   || ''}
+`;
+wrapper.appendChild(coverLabel);
+
+// 2) BACK label (shown only when flipped)
+const backLabel = document.createElement('div');
+backLabel.className = 'back-label';
+backLabel.innerHTML = coverLabel.innerHTML;
+wrapper.appendChild(backLabel);
+
+// …then continue building your `backContent` / iframe, etc.
 
       if (cover.music?.type==='embed'&&cover.music.url) {
         backContent.innerHTML+=`
