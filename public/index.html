@@ -1,10 +1,13 @@
+<!-- public/index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  />
   <title>All My Friends — Coverflow</title>
-  <!-- 1: Viewport meta for true device‑relative units -->
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="index.css" />
   <link rel="stylesheet" href="/fonts.css" />
   <style id="global-styles"></style>
@@ -15,45 +18,70 @@
     <iframe
       class="logo-frame"
       src="/assets/logo.html"
+      frameborder="0"
+      scrolling="no"
     ></iframe>
   </div>
 
-  <!-- Filters -->
-  <div class="filter-container">
-    <span class="filter-label active" data-filter="all">ALL</span>
-    <span class="filter-label" data-filter="artist">ARTISTS</span>
-    <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
-    <span class="filter-label" data-filter="producer">PRODUCERS</span>
-    <span class="filter-label" data-filter="about">ABOUT US</span>
-  </div>
+  <!-- Filters: accordion on mobile, inline on desktop -->
+  <details class="filter-accordion">
+    <summary>FILTER</summary>
+    <div class="filter-container">
+      <span class="filter-label active" data-filter="all">ALL</span>
+      <span class="filter-label" data-filter="artist">ARTISTS</span>
+      <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
+      <span class="filter-label" data-filter="producer">PRODUCERS</span>
+      <span class="filter-label" data-filter="about">ABOUT US</span>
+    </div>
+  </details>
 
   <!-- Coverflow + Ambient Light + Trail Canvas -->
-  <div class="coverflow-container" id="coverflow-container">
+  <div
+    class="coverflow-container"
+    id="coverflow-container"
+  >
     <div id="ambient-light"></div>
     <canvas id="trail-canvas"></canvas>
-    <div class="coverflow-content" id="coverflow"></div>
+    <div
+      class="coverflow-content"
+      id="coverflow"
+    ></div>
   </div>
 
   <!-- Hover credits -->
-  <div id="hover-credits" class="hover-credits-container"></div>
+  <div
+    id="hover-credits"
+    class="hover-credits-container"
+  ></div>
 
   <!-- Artist Detail Modal -->
   <div class="artist-modal hidden">
     <div class="modal-content">
-      <img class="artist-photo" src="ARTIST IMAGE URL" />
+      <img
+        class="artist-photo"
+        src="ARTIST IMAGE URL"
+      />
       <button class="close-btn">✕</button>
       <div class="artist-info">
         <h1 class="artist-name">Artist Name</h1>
         <div class="artist-location">Artist Location</div>
         <div class="artist-bio">Artist Bio here...</div>
-        <a class="spotify-button spotify-link" href="SPOTIFY LINK" target="_blank">
-          Open in Spotify
-        </a>
-        <iframe class="spotify-player" src="SPOTIFY EMBED URL" allowfullscreen></iframe>
+        <a
+          class="spotify-button spotify-link"
+          href="SPOTIFY LINK"
+          target="_blank"
+          >Open in Spotify</a
+        >
+        <iframe
+          class="spotify-player"
+          src="SPOTIFY EMBED URL"
+          allowfullscreen
+        ></iframe>
       </div>
     </div>
   </div>
 
+  <!-- Main script -->
   <script src="index.js"></script>
 </body>
 </html>
