@@ -420,7 +420,7 @@ html, body {
 
   .top-logo {
     margin: 1.5rem auto; /* logo stays at the top */
-    transform: translateY(15vh);
+    transform: translateY(10vh);
   }
 
   .logo-frame {
@@ -458,7 +458,7 @@ html, body {
 
   /* ↑30% cover size on mobile */
   .cover {
-    width: clamp(182px, 52vw, 260px);
-    height: clamp(182px, 52vw, 260px);
+    width: clamp(200px, 55vw, 300px);
+    height: clamp(200px, 55vw, 300px);
   }
 }
