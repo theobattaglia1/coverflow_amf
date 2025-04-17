@@ -141,6 +141,7 @@ html, body {
   height: clamp(160px, 25vw, 300px);
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
+  overflow: visible; /* allow button overflow */
 }
 .flip-container {
   width: 100%;
@@ -187,6 +188,7 @@ html, body {
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.1);
+  overflow: visible; /* allow button overflow */
 }
 .cover-back::after {
   content: "";
@@ -217,9 +219,14 @@ html, body {
   transition: all 0.3s ease;
   cursor: pointer;
 }
+
+/* back-face button positioning */
 .cover .expand-btn {
-  display: block;
-  margin: 0 auto 1rem;
+  position: absolute;
+  top: clamp(0.75rem, 4vh, 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
   background: rgba(255,255,255,0.15);
   color: #eee;
 }
@@ -227,27 +234,49 @@ html, body {
   background: rgba(255,255,255,0.25);
 }
 
+/* ensure back-content makes room */
+.cover-back .back-content {
+  padding-top: clamp(3rem, 8vh, 5rem);
+}
+
+/* make the back‑face’s inner wrapper fill the card */
+.cover-back .back-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* absolutely stretch the Spotify iframe to fill it */
+.cover-back .back-content iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: 12px;
+}
+
 /* === COVER & BACK LABELS ===
      position them under the card, hide by default,
      then show only on the active/front or active/flipped cover */
-  .cover-label,
-  .back-label {
-    position: absolute;
-    bottom: -3.5rem;      /* same offset you already use */
-    width: 100%;
-    text-align: center;
-    font-size: 0.9rem;
-    line-height: 1.2;
-    pointer-events: none;
-    display: none;        /* hide all labels by default */
-  }
-  .cover.cover-active .cover-label {
-    display: block;       /* show the front label on the centered cover */
-  }
-  .cover.cover-active.flipped .back-label {
-    display: block;       /* show the back label only when flipped */
-  }
-
+.cover-label,
+.back-label {
+  position: absolute;
+  bottom: -3.5rem;      /* same offset you already use */
+  width: 100%;
+  text-align: center;
+  font-size: 0.9rem;
+  line-height: 1.2;
+  pointer-events: none;
+  display: none;        /* hide all labels by default */
+}
+.cover.cover-active .cover-label {
+  display: block;       /* show the front label on the centered cover */
+}
+.cover.cover-active.flipped .back-label {
+  display: block;       /* show the back label only when flipped */
+}
 
 /* === MODAL === */
 .artist-modal {
@@ -382,13 +411,13 @@ html, body {
     height: auto !important;
   }
 
-  /* let logo sit naturally, no forced 25vh gap */
+  /* let logo sit naturally, no forced gap */
   .top-logo {
     flex: 0 0 auto;
     margin: clamp(0.5rem, 3vh, 1rem) auto;
   }
 
-  /* coverflow hugs right under the logo with no extra padding */
+  /* coverflow hugs right under the logo */
   .coverflow-container {
     flex: 1 1 auto;
     margin: 0;
@@ -419,22 +448,4 @@ html, body {
     text-align: center;
     padding: clamp(0.5rem, 1.5vh, 1rem) 2vw;
   }
-}
-
-/* make the back‑face’s inner wrapper fill the card */
-.cover-back .back-content {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-/* absolutely stretch the Spotify iframe to fill it */
-.cover-back .back-content iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: none;
-  border-radius: 12px;
 }
