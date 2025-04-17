@@ -453,6 +453,12 @@ body {
     flex: 0 0 25vh;
     margin: clamp(0.5rem, 3vh, 1rem) auto 0;
   }
+  
+    /* 2) Reduce the logo to 50% width */
+  .logo-frame {
+    max-width: 50% !important;
+    height: auto !important;
+  }
 
   /* Filter bar sits just below logo */
   .filter-accordion,
