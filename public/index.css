@@ -223,7 +223,7 @@ html, body {
 /* back-face button positioning */
 .cover .expand-btn {
   position: absolute;
-  top: clamp(0.75rem, 4vh, 1.5rem);
+  top: -clamp(1.5rem, 5vh, 2rem);
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
