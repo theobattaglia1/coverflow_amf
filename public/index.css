@@ -99,6 +99,16 @@ html, body {
   z-index: 999;
   border: 1px solid rgba(255,255,255,0.1);
 }
+.dropdown-item {
+  padding: 6px 8px;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.2s ease;
+}
+.dropdown-item:hover {
+  background: rgba(255,255,255,0.1);
+  transform: translateX(4px);
+}
 
 /* === COVERFLOW === */
 .coverflow-container {
@@ -111,8 +121,9 @@ html, body {
 }
 #coverflow-container {
   position: relative;
-  touch-action: none;
 }
+#coverflow-container { touch-action: none; }
+
 .coverflow-content {
   position: relative;
   width: 100%;
@@ -130,10 +141,10 @@ html, body {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(320px, 50vw, 600px); /* doubled size */
-  height: clamp(320px, 50vw, 600px);
+  width: clamp(160px, 25vw, 300px);
+  height: clamp(160px, 25vw, 300px);
   transform-style: preserve-3d;
-  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
+  transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), filter 0.3s ease;
 }
 .flip-container {
   width: 100%;
@@ -158,8 +169,10 @@ html, body {
 .cover-front::after {
   content: "";
   position: absolute;
-  left: 0; bottom: -80%;
-  width: 100%; height: 80%;
+  left: 0;
+  bottom: -80%;
+  width: 100%;
+  height: 80%;
   background: inherit;
   transform: scaleY(-1);
   opacity: 0.6;
@@ -181,8 +194,10 @@ html, body {
 .cover-back::after {
   content: "";
   position: absolute;
-  left: 0; bottom: -80%;
-  width: 100%; height: 80%;
+  left: 0;
+  bottom: -80%;
+  width: 100%;
+  height: 80%;
   background: inherit;
   transform: scaleY(-1);
   opacity: 0.6;
@@ -197,9 +212,11 @@ html, body {
   color: white;
   border: none;
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255,255,255,0.08);
   backdrop-filter: blur(12px);
-  box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.2), 0 4px 12px rgba(0,0,0,0.3);
+  box-shadow:
+    inset 0 0 0 0.5px rgba(255,255,255,0.2),
+    0 4px 12px rgba(0,0,0,0.3);
   transition: all 0.3s ease;
   cursor: pointer;
 }
@@ -217,9 +234,7 @@ html, body {
   line-height: 1.2;
   pointer-events: none;
 }
-.cover.cover-active .cover-label {
-  display: block;
-}
+.cover.cover-active .cover-label { display: block; }
 
 .back-content iframe {
   width: 100%;
@@ -238,18 +253,14 @@ html, body {
   pointer-events: none;
   display: none;
 }
-.cover.cover-active.flipped .back-label {
-  display: block;
-}
-.cover.cover-active.flipped .cover-label {
-  display: none;
-}
+.cover.cover-active.flipped .back-label { display: block; }
+.cover.cover-active.flipped .cover-label { display: none; }
 
 /* === MODAL === */
 .artist-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0,0,0,0.75);
   backdrop-filter: blur(20px);
   display: flex;
   align-items: center;
@@ -259,7 +270,7 @@ html, body {
 }
 .modal-content {
   position: relative;
-  width: clamp(300px, 85vw, 800px);
+  width: clamp(300px,85vw,800px);
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 24px;
@@ -272,31 +283,31 @@ html, body {
 .artist-photo {
   width: 100%;
   height: auto;
-  max-height: clamp(200px, 40vh, 380px);
+  max-height: clamp(200px,40vh,380px);
   object-fit: cover;
   opacity: 0.6;
   flex-shrink: 0;
 }
 .artist-info {
-  padding: clamp(12px, 3vw, 24px);
+  padding: clamp(12px,3vw,24px);
   display: flex;
-  flex-direction: column;
+  flex-direction: column;  
   gap: 0.5rem;
   overflow: hidden;
 }
 .artist-name {
-  font-size: clamp(22px, 4vw, 36px);
+  font-size: clamp(22px,4vw,36px);
   margin: 0;
   font-weight: bold;
 }
 .artist-location {
-  font-size: clamp(12px, 2vw, 16px);
+  font-size: clamp(12px,2vw,16px);
   opacity: 0.8;
 }
 .artist-bio {
-  font-size: clamp(12px, 2vw, 15px);
+  font-size: clamp(12px,2vw,15px);
   overflow-y: auto;
-  max-height: clamp(60px, 12vh, 120px);
+  max-height: clamp(60px,12vh,120px);
 }
 .spotify-button {
   align-self: start;
@@ -304,9 +315,9 @@ html, body {
   background-color: #1DB954;
   border: none;
   color: white;
-  padding: clamp(6px, 2vw, 12px) clamp(14px, 4vw, 20px);
+  padding: clamp(6px,2vw,12px) clamp(14px,4vw,20px);
   border-radius: 50px;
-  font-size: clamp(12px, 2vw, 14px);
+  font-size: clamp(12px,2vw,14px);
   cursor: pointer;
   transition: 0.3s ease;
 }
@@ -316,15 +327,15 @@ html, body {
 .spotify-player {
   margin-top: 10px;
   width: 100%;
-  height: clamp(80px, 15vh, 152px);
+  height: clamp(80px,15vh,152px);
   flex-shrink: 0;
   border: none;
   border-radius: 12px;
 }
 .close-btn {
   position: absolute;
-  top: clamp(8px, 2vw, 12px);
-  right: clamp(8px, 2vw, 12px);
+  top: clamp(8px,2vw,12px);
+  right: clamp(8px,2vw,12px);
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(5px);
   border: none;
@@ -339,9 +350,7 @@ html, body {
 .close-btn:hover {
   background-color: rgba(255,255,255,0.3);
 }
-.hidden {
-  display: none !important;
-}
+.hidden { display: none !important; }
 
 /* === SCROLLABLE CONTAINER === */
 .scrollable {
@@ -349,21 +358,61 @@ html, body {
   max-height: 80vh;
   padding-right: 16px;
 }
-/* scrollbar styling omitted for brevity */
 
 /* === AMBIENT LIGHT & PARTICLE TRAILS === */
 #ambient-light {
-  position: absolute;
-  top: 0; left: 0; right: 0; bottom: 0;
+  position: absolute; top:0; left:0; right:0; bottom:0;
   pointer-events: none;
   transition: background-color 0.6s ease;
   z-index: -1;
   filter: blur(80px) brightness(0.7);
 }
 #trail-canvas {
-  position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
-  pointer-events: none;
-  z-index: 0;
+  position: absolute; top:0; left:0; width:100%; height:100%;
+  pointer-events: none; z-index:0;
+}
+
+/* === MOBILE LAYOUT === */
+@media (max-width: 768px) {
+  html, body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+  }
+  .top-logo {
+    margin: 1.5rem auto;
+  }
+  .logo-frame {
+    max-width: 50% !important;
+    height: auto !important;
+  }
+
+  /* center the coverflow */
+  .coverflow-container {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3vw;
+  }
+
+  /* bottom nav for filters */
+  .filter-container {
+    position: fixed;
+    bottom: 0;
+    left: 0; right: 0;
+    justify-content: space-around;
+    padding: 12px 0;
+    background: rgba(0,0,0,0.85);
+    overflow-x: auto;
+    z-index: 20;
+    -webkit-overflow-scrolling: touch;
+  }
+  .filter-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    padding: 12px 8px;
+  }
 }
