@@ -422,6 +422,13 @@ html, body {
     overflow-x: hidden;
     overflow-y: visible;
   }
+  
+    /* === ENLARGE FLIPPED CARD ON MOBILE ONLY === */
+  .cover.cover-active.flipped {
+    /* bump up from your normal 25vw → around 70vw for the flipped card */
+    width: clamp(240px, 70vw, 360px) !important;
+    height: clamp(240px, 70vw, 360px) !important;
+  }
 
   /* bottom‑pinned filter bar */
   .filter-container {
