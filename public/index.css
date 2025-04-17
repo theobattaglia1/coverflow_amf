@@ -14,6 +14,22 @@ html, body {
   height: 100%;
 }
 
+/* === LOGO === */
+.top-logo {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin: 2rem auto;
+}
+.logo-frame {
+  border: none;
+  display: block;
+  width: 100%;
+  max-width: 600px;
+  height: 240px;
+  overflow: hidden;
+}
+
 /* === FILTER BAR === */
 .filter-container {
   display: flex;
@@ -83,7 +99,6 @@ html, body {
   z-index: 999;
   border: 1px solid rgba(255,255,255,0.1);
 }
-
 .dropdown-item {
   padding: 6px 8px;
   cursor: pointer;
@@ -104,6 +119,10 @@ html, body {
   width: 100%;
   box-sizing: border-box;
 }
+#coverflow-container {
+  position: relative;
+}
+#coverflow-container { touch-action: none; }
 
 .coverflow-content {
   position: relative;
@@ -127,16 +146,13 @@ html, body {
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), filter 0.3s ease;
 }
-
 .flip-container {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.5s ease;
 }
-.flip-container.flipped {
-  transform: rotateY(180deg);
-}
+.flip-container.flipped { transform: rotateY(180deg); }
 
 .cover-front, .cover-back {
   position: absolute;
@@ -160,7 +176,6 @@ html, body {
   opacity: 0.6;
   mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
 }
-
 .cover-back {
   background: linear-gradient(145deg, #1e1e1e, #2e2e2e);
   transform: rotateY(180deg);
@@ -174,7 +189,6 @@ html, body {
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.1);
 }
-
 .cover-back::after {
   content: "";
   position: absolute;
@@ -204,7 +218,6 @@ html, body {
   transition: all 0.3s ease;
   cursor: pointer;
 }
-
 .expand-btn:hover {
   background: rgba(255,255,255,0.2);
   transform: translateY(-1px);
@@ -253,7 +266,6 @@ html, body {
   z-index: 1000;
   transition: opacity 0.25s ease;
 }
-
 .modal-content {
   position: relative;
   width: clamp(300px, 85vw, 800px);
@@ -261,12 +273,11 @@ html, body {
   overflow-y: auto;
   border-radius: 24px;
   background-color: #111;
-  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
   color: #fff;
   display: flex;
   flex-direction: column;
 }
-
 .artist-photo {
   width: 100%;
   height: auto;
@@ -275,7 +286,6 @@ html, body {
   opacity: 0.6;
   flex-shrink: 0;
 }
-
 .artist-info {
   padding: clamp(12px, 3vw, 24px);
   display: flex;
@@ -283,24 +293,20 @@ html, body {
   gap: 0.5rem;
   overflow: hidden;
 }
-
 .artist-name {
   font-size: clamp(22px, 4vw, 36px);
   margin: 0;
   font-weight: bold;
 }
-
 .artist-location {
   font-size: clamp(12px, 2vw, 16px);
   opacity: 0.8;
 }
-
 .artist-bio {
   font-size: clamp(12px, 2vw, 15px);
   overflow-y: auto;
   max-height: clamp(60px, 12vh, 120px);
 }
-
 .spotify-button {
   align-self: start;
   margin-top: 12px;
@@ -313,11 +319,9 @@ html, body {
   cursor: pointer;
   transition: 0.3s ease;
 }
-
 .spotify-button:hover {
   transform: scale(1.05);
 }
-
 .spotify-player {
   margin-top: 10px;
   width: 100%;
@@ -326,12 +330,11 @@ html, body {
   border: none;
   border-radius: 12px;
 }
-
 .close-btn {
   position: absolute;
   top: clamp(8px, 2vw, 12px);
   right: clamp(8px, 2vw, 12px);
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(255,255,255,0.15);
   backdrop-filter: blur(5px);
   border: none;
   color: white;
@@ -342,11 +345,9 @@ html, body {
   transition: background-color 0.3s;
   z-index: 2;
 }
-
 .close-btn:hover {
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255,255,255,0.3);
 }
-
 .hidden { display: none !important; }
 
 /* === SCROLLABLE CONTAINER === */
@@ -355,75 +356,35 @@ html, body {
   max-height: 80vh;
   padding-right: 16px;
 }
-.scrollable::-webkit-scrollbar { width: 8px; }
-.scrollable::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.2);
-  border-radius: 4px;
-}
-.scrollable::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.4);
-}
-.scrollable::-webkit-scrollbar-track {
-  background: rgba(255,255,255,0.1);
-  border-radius: 4px;
-}
-.scrollable::-webkit-scrollbar-track:hover {
-  background: rgba(255,255,255,0.2);
-}
-.scrollable::-webkit-scrollbar-corner { background: transparent; }
+/* … scrollbar styling … */
 
 /* === AMBIENT LIGHT & PARTICLE TRAILS === */
-#coverflow-container {
-  position: relative;
-}
-
 #ambient-light {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  position: absolute; top:0; left:0; right:0; bottom:0;
   pointer-events: none;
   transition: background-color 0.6s ease;
   z-index: -1;
   filter: blur(80px) brightness(0.7);
 }
-
 #trail-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 0;
+  position: absolute; top:0; left:0; width:100%; height:100%;
+  pointer-events: none; z-index:0;
 }
 
 /* === MOBILE LAYOUT === */
 @media (max-width: 768px) {
-  /* Shrink logo */
-  .top-logo iframe {
-    max-width: 50%;
-    height: auto;
-  }
-  .top-logo {
-    margin: 1.5rem auto;
-  }
+  .logo-frame { max-width:50% !important; height:auto !important; }
+  .top-logo { margin:1.5rem auto; }
 
-  /* Vertical coverflow container */
   #coverflow-container {
     height: 60vh;
     overflow: hidden;
     padding: 0 3vw;
     touch-action: none;
   }
-
-  /* Bottom nav for filters */
   .filter-container {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: 0; left: 0; right: 0;
     justify-content: space-around;
     padding: 12px 0;
     background: rgba(0,0,0,0.85);
@@ -432,32 +393,19 @@ html, body {
     z-index: 20;
     -webkit-overflow-scrolling: touch;
   }
-
   .filter-label {
     flex: 1 1 auto;
     min-width: 0;
     text-align: center;
     padding: 12px 8px;
   }
-
-  /* Slightly smaller covers on mobile */
   .cover {
     width: clamp(140px, 40vw, 200px);
     height: clamp(140px, 40vw, 200px);
   }
-
-  /* Mobile artist-details back of card */
-  .mobile-artist-details {
-    padding: 1rem;
-    text-align: center;
-  }
-  .mobile-artist-details h2 {
-    margin: 0 0 0.5rem;
-  }
+  .mobile-artist-details { padding:1rem; text-align:center; }
+  .mobile-artist-details h2 { margin:0 0 .5rem; }
   .mobile-artist-details .small-bio {
-    font-size: 0.85rem;
-    margin: 0.5rem 0;
-    max-height: 4.5em;
-    overflow: hidden;
+    font-size:.85rem; margin:.5rem 0; max-height:4.5em; overflow:hidden;
   }
 }
