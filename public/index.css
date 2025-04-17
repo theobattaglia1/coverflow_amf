@@ -146,16 +146,21 @@ html, body {
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), filter 0.3s ease;
 }
+
 .flip-container {
   width: 100%;
   height: 100%;
   transform-style: preserve-3d;
   transition: transform 0.5s ease;
+  /* when flipped, sit above siblings */
 }
 .flip-container.flipped {
   transform: rotateY(180deg);
+  position: relative;
+  z-index: 1000;
 }
 
+/* cover-front / back */
 .cover-front, .cover-back {
   position: absolute;
   width: 100%;
@@ -184,9 +189,9 @@ html, body {
   padding: 1rem;
   color: #fff;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  flex-direction: column;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.1);
@@ -212,7 +217,7 @@ html, body {
   color: white;
   border: none;
   border-radius: 999px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255, 255, 255, 0.08);
   backdrop-filter: blur(12px);
   box-shadow:
     inset 0 0 0 0.5px rgba(255,255,255,0.2),
@@ -220,9 +225,16 @@ html, body {
   transition: all 0.3s ease;
   cursor: pointer;
 }
-.expand-btn:hover {
-  background: rgba(255,255,255,0.2);
-  transform: translateY(-1px);
+
+/* Center & lighten Artist Details button on back-face */
+.cover .expand-btn {
+  display: block;
+  margin: 0 auto 1rem;
+  background: rgba(255,255,255,0.15);
+  color: #eee;
+}
+.cover .expand-btn:hover {
+  background: rgba(255,255,255,0.25);
 }
 
 .cover-label {
@@ -233,14 +245,10 @@ html, body {
   font-size: 0.9rem;
   line-height: 1.2;
   pointer-events: none;
+  display: none;   /* hide non‑center labels */
 }
-.cover.cover-active .cover-label { display: block; }
-
-.back-content iframe {
-  width: 100%;
-  height: 100%;
-  border: none;
-  max-width: 100%;
+.cover.cover-active .cover-label {
+  display: block;
 }
 
 .back-label {
@@ -253,8 +261,17 @@ html, body {
   pointer-events: none;
   display: none;
 }
-.cover.cover-active.flipped .back-label { display: block; }
-.cover.cover-active.flipped .cover-label { display: none; }
+.cover.cover-active.flipped .back-label {
+  display: block;
+}
+
+/* iframe inside back-content */
+.back-content iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  max-width: 100%;
+}
 
 /* === MODAL === */
 .artist-modal {
@@ -358,6 +375,26 @@ html, body {
   max-height: 80vh;
   padding-right: 16px;
 }
+.scrollable::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollable::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+.scrollable::-webkit-scrollbar-thumb:hover {
+  background: rgba(255,255,255,0.4);
+}
+.scrollable::-webkit-scrollbar-track {
+  background: rgba(255,255,255,0.1);
+  border-radius: 4px;
+}
+.scrollable::-webkit-scrollbar-track:hover {
+  background: rgba(255,255,255,0.2);
+}
+.scrollable::-webkit-scrollbar-corner {
+  background: transparent;
+}
 
 /* === AMBIENT LIGHT & PARTICLE TRAILS === */
 #ambient-light {
@@ -372,21 +409,18 @@ html, body {
   pointer-events: none; z-index:0;
 }
 
+/* === MOBILE LAYOUT (HORIZONTAL) === */
 @media (max-width: 768px) {
   body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden;
+    overflow: hidden; /* kills native vertical scroll */
   }
 
-.top-logo {
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
-  margin-left: auto;
-  margin-right: auto;
-}
-
+  .top-logo {
+    margin: 1.5rem auto; /* logo stays at the top */
+  }
 
   .logo-frame {
     max-width: 50% !important;
@@ -395,14 +429,11 @@ html, body {
 
   /* CENTER COVERFLOW BETWEEN LOGO & BOTTOM NAV */
   .coverflow-container {
-    flex: 1;
+    flex: 1;               /* fills the middle space */
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 3vw;
-
-    /* ← New: shift everything up by 10% of viewport height */
-    transform: translateY(-10vh);
   }
 
   /* BOTTOM‐PINNED FILTER BAR */
@@ -429,6 +460,3 @@ html, body {
     height: clamp(182px, 52vw, 260px);
   }
 }
-
-
-
