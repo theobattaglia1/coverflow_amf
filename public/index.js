@@ -1,51 +1,36 @@
+// == index.js ==
+
+// 1) Core globals
 let allCovers = [];
 let covers = [];
 let activeIndex = 0;
 let coverSpacing, anglePerOffset, minScale;
 const maxAngle = 80;
 
-// ─── Drag‑and‑snap state ──────────────────────────────────────
-let isDragging = false;
-let dragStartX = 0;
-let dragOffset = 0;
-let dragIndex = null;
+// Scroll/touch helpers
+let wheelCooldown = false;
+let touchStartX = 0;
 
-const coverflowEl = document.getElementById("coverflow");
-const hoverDisplay = document.getElementById("hover-credits");
+const coverflowEl = document.getElementById('coverflow');
+const hoverDisplay = document.getElementById('hover-credits');
 
-// Inject global font/style
+// 2) Inject global font/style
 fetch('/data/test-styles.json')
   .then(res => res.json())
   .then(style => {
-    const styleTag = document.createElement("style");
-    styleTag.id = "global-styles";
-
+    const tag = document.getElementById('global-styles');
     const font = style.fontFamily || 'GT America';
-    const size = style.fontSize || 16;
-
-    styleTag.innerHTML = `
-      html, body {
-        font-family: '${font}', sans-serif;
-        font-size: ${size}px;
-      }
-      .cover-label {
-        font-family: '${style.overrides?.coverLabel?.fontFamily || font}';
-        font-size: ${style.overrides?.coverLabel?.fontSize || 14}px;
-      }
-      .filter-label {
-        font-family: '${style.overrides?.filterLabel?.fontFamily || font}';
-        font-size: ${style.overrides?.filterLabel?.fontSize || 13}px;
-      }
-      .hover-credits-container {
-        font-family: '${style.overrides?.hoverCredits?.fontFamily || font}';
-        font-size: ${style.overrides?.hoverCredits?.fontSize || 12}px;
-      }
+    const size = style.fontSize   || 16;
+    tag.innerHTML = `
+      html, body { font-family:'${font}',sans-serif; font-size:${size}px; }
+      .cover-label { font-family:'${style.overrides?.coverLabel?.fontFamily||font}',sans-serif; font-size:${style.overrides?.coverLabel?.fontSize||14}px; }
+      .filter-label { font-family:'${style.overrides?.filterLabel?.fontFamily||font}',sans-serif; font-size:${style.overrides?.filterLabel?.fontSize||13}px; }
+      .hover-credits-container { font-family:'${style.overrides?.hoverCredits?.fontFamily||font}',sans-serif; font-size:${style.overrides?.hoverCredits?.fontSize||12}px; }
     `;
+  })
+  .catch(console.error);
 
-    document.head.appendChild(styleTag);
-  });
-
-// Fetch covers
+// 3) Fetch covers data
 fetch(`/data/covers.json?cachebust=${Date.now()}`)
   .then(res => res.json())
   .then(data => {
@@ -54,71 +39,77 @@ fetch(`/data/covers.json?cachebust=${Date.now()}`)
     activeIndex = Math.floor(covers.length / 2);
     updateLayoutParameters();
     renderCovers();
-    renderCoverFlow(); // no drag
+    renderCoverFlow();
   })
-  .catch(err => console.error("Error fetching covers:", err));
+  .catch(err => console.error('Error fetching covers:', err));
 
+// 4) Responsive layout parameters
 function updateLayoutParameters() {
   const vw = window.innerWidth;
-  coverSpacing = Math.max(120, vw * 0.18);
+  coverSpacing   = Math.max(120, vw * 0.18);
   anglePerOffset = vw < 600 ? 50 : 65;
-  minScale = vw < 600 ? 0.45 : 0.5;
+  minScale       = vw < 600 ? 0.45 : 0.5;
 }
+window.addEventListener('resize', () => {
+  updateLayoutParameters();
+  renderCoverFlow();
+});
 
-// Build DOM
+// 5) Build cover elements
 function renderCovers() {
-  coverflowEl.innerHTML = "";
-
+  coverflowEl.innerHTML = '';
   covers.forEach((cover, i) => {
-    const wrapper = document.createElement("div");
-    wrapper.className = "cover";
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cover';
     wrapper.dataset.index = i;
     wrapper.dataset.originalIndex = cover.id;
     wrapper.dataset.category = cover.category;
 
-    const flip = document.createElement("div");
-    flip.className = "flip-container";
+    // Flip container
+    const flip = document.createElement('div');
+    flip.className = 'flip-container';
 
-    const front = document.createElement("div");
-    front.className = "cover-front";
+    // Front
+    const front = document.createElement('div');
+    front.className = 'cover-front';
     front.style.backgroundImage = `url('${cover.frontImage}')`;
 
-    const back = document.createElement("div");
-    back.className = "cover-back";
-    const backContent = document.createElement("div");
-    backContent.className = "back-content";
+    // Back
+    const back = document.createElement('div');
+    back.className = 'cover-back';
+    const backContent = document.createElement('div');
+    backContent.className = 'back-content';
 
-    if (cover.music?.type === "embed" && cover.music.url) {
-      backContent.innerHTML = `
-        <iframe style="border-radius:12px"
-          src="${cover.music.url.replace('spotify.com/', 'spotify.com/embed/')}"
-          width="100%" height="352" frameBorder="0"
-          allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy">
-        </iframe>`;
-    }
-
-    if (cover.albumTitle?.toLowerCase() === "contact") {
-      const contactBtn = document.createElement("a");
-      contactBtn.href = "mailto:hi@allmyfriendsinc.com";
-      contactBtn.innerText = "Contact Us";
-      contactBtn.className = "expand-btn";
+    if (cover.albumTitle?.toLowerCase() === 'contact') {
+      const contactBtn = document.createElement('a');
+      contactBtn.href = 'mailto:hi@allmyfriendsinc.com';
+      contactBtn.innerText = 'Contact Us';
+      contactBtn.className = 'expand-btn';
       backContent.appendChild(contactBtn);
     } else {
-      const artistDetailsBtn = document.createElement("button");
-      artistDetailsBtn.className = "expand-btn";
-      artistDetailsBtn.innerText = "Artist Details";
+      const artistDetailsBtn = document.createElement('button');
+      artistDetailsBtn.className = 'expand-btn';
+      artistDetailsBtn.innerText = 'Artist Details';
       backContent.appendChild(artistDetailsBtn);
 
-      const labelFront = document.createElement("div");
-      labelFront.className = "cover-label";
-      labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+      const labelFront = document.createElement('div');
+      labelFront.className = 'cover-label';
+      labelFront.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
       wrapper.appendChild(labelFront);
 
-      const labelBack = document.createElement("div");
-      labelBack.className = "back-label";
-      labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
+      const labelBack = document.createElement('div');
+      labelBack.className = 'back-label';
+      labelBack.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
       wrapper.appendChild(labelBack);
+
+      if (cover.music?.type === 'embed' && cover.music.url) {
+        backContent.innerHTML += `
+          <iframe style="border-radius:12px"
+            src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}"
+            width="100%" height="352" frameborder="0"
+            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"></iframe>`;
+      }
     }
 
     back.appendChild(backContent);
@@ -126,14 +117,14 @@ function renderCovers() {
     flip.appendChild(back);
     wrapper.appendChild(flip);
 
-    wrapper.addEventListener("click", () => {
-      const i = parseInt(wrapper.dataset.index, 10);
-      const offset = i - activeIndex;
-      const fc = wrapper.querySelector(".flip-container");
-      if (offset === 0 && fc) {
-        fc.classList.toggle("flipped");
+    // Tap to flip or move
+    wrapper.addEventListener('click', () => {
+      const idx = parseInt(wrapper.dataset.index, 10);
+      const off = idx - activeIndex;
+      if (off === 0) {
+        flip.classList.toggle('flipped');
       } else {
-        setActiveIndex(i);
+        setActiveIndex(idx);
       }
     });
 
@@ -141,97 +132,81 @@ function renderCovers() {
   });
 }
 
-// Key change: renderCoverFlow can take a fractional dragOffset
-function renderCoverFlow(dragOffsetParam = 0) {
-  // decide which “index” to center on:
-  const indexRef = (dragIndex !== null ? dragIndex : activeIndex);
-  // and whether to apply the fractional offset
-  const useOffset = (dragIndex !== null ? dragOffsetParam : 0);
-
-  document.querySelectorAll(".cover").forEach((cover) => {
-    const i = parseInt(cover.dataset.index, 10);
-    const rawOffset = i - indexRef - useOffset;
-    const effOffset = Math.sign(rawOffset) * Math.log2(Math.abs(rawOffset) + 1);
-    const translateX = effOffset * coverSpacing;
-    const rotateY = Math.max(-maxAngle, Math.min(rawOffset * -anglePerOffset, maxAngle));
-    const scale = Math.max(minScale, 1 - Math.abs(rawOffset) * 0.08);
+// 6) Position & transform covers
+function renderCoverFlow() {
+  document.querySelectorAll('.cover').forEach(cover => {
+    const i      = +cover.dataset.index;
+    const offset = i - activeIndex;
+    const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
+    const scale  = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
+    const tx     = eff * coverSpacing;
+    const ry     = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
 
     cover.style.transform = `
       translate(-50%, -50%)
-      translateX(${translateX}px)
+      translateX(${tx}px)
       scale(${scale})
-      rotateY(${rotateY}deg)
+      rotateY(${ry}deg)
     `;
-    cover.style.zIndex = covers.length - Math.abs(rawOffset);
+    cover.style.zIndex = covers.length - Math.abs(offset);
 
-    const fc = cover.querySelector(".flip-container");
-    if (Math.round(rawOffset) !== 0) fc?.classList.remove("flipped");
-    cover.classList.toggle("cover-active", Math.round(rawOffset) === 0);
+    // remove flipped on non-active
+    const fc = cover.querySelector('.flip-container');
+    if (offset !== 0) fc?.classList.remove('flipped');
+    cover.classList.toggle('cover-active', offset === 0);
   });
+
+  // optional: update ambient glow here if implemented
 }
 
+// 7) Clamp active index & rerender
 function setActiveIndex(idx) {
   activeIndex = Math.max(0, Math.min(idx, covers.length - 1));
   renderCoverFlow();
 }
 
-// ─── Desktop wheel navigation (unchanged) ─────────────────
-let wheelCooldown = false;
-let lastWheelDirection = 0;
-
-window.addEventListener("wheel", (e) => {
+// ─── Scroll & Touch Handlers ────────────────────────────────
+// Prevent native page scroll on all touch moves inside coverflow
+coverflowEl.addEventListener('touchmove', e => {
   e.preventDefault();
-  document.querySelectorAll(".flip-container.flipped").forEach(fc => fc.classList.remove("flipped"));
+}, { passive: false });
+
+// Desktop wheel: only horizontal, throttled
+window.addEventListener('wheel', e => {
+  if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
+  e.preventDefault();
   if (!wheelCooldown) {
-    const dir = e.deltaX > 0 ? 1 : -1;
-    if (dir !== lastWheelDirection || !wheelCooldown) {
-      setActiveIndex(activeIndex + dir);
-      lastWheelDirection = dir;
-      wheelCooldown = true;
-      setTimeout(() => { wheelCooldown = false; }, 120);
-    }
+    setActiveIndex(activeIndex + (e.deltaX > 0 ? 1 : -1));
+    wheelCooldown = true;
+    setTimeout(() => { wheelCooldown = false; }, 120);
   }
 }, { passive: false });
 
-// ─── Touch‑drag & snap for mobile ────────────────────────
-coverflowEl.addEventListener("touchstart", (e) => {
-  if (e.touches.length !== 1) return;
-  isDragging = true;
-  dragStartX = e.touches[0].clientX;
-  dragOffset = 0;
-  dragIndex = activeIndex;
-  // disable CSS transitions so covers follow instantly
-  document.querySelectorAll(".cover").forEach(c => {
-    c.style.transition = "none";
-  });
-}, { passive: false });
+// Mobile swipe: discrete step
+coverflowEl.addEventListener('touchstart', e => {
+  touchStartX = e.touches[0].screenX;
+});
+coverflowEl.addEventListener('touchend', e => {
+  const endX = e.changedTouches[0].screenX;
+  const diff = endX - touchStartX;
+  if (Math.abs(diff) > 60) {
+    setActiveIndex(activeIndex + (diff < 0 ? 1 : -1));
+  }
+});
 
-coverflowEl.addEventListener("touchmove", (e) => {
-  if (!isDragging) return;
-  e.preventDefault();
-  const deltaX = dragStartX - e.touches[0].clientX;
-  dragOffset = deltaX / coverSpacing;
-  renderCoverFlow(dragOffset);
-}, { passive: false });
+// 8) Keyboard nav & Escape
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft')  setActiveIndex(activeIndex - 1);
+  if (e.key === 'ArrowRight') setActiveIndex(activeIndex + 1);
+  if (e.key === 'Escape')     document.querySelector('.artist-modal').classList.add('hidden');
+});
 
-function endDrag() {
-  if (!isDragging) return;
-  isDragging = false;
-  // snap to nearest
-  let newIdx = Math.round(dragIndex + dragOffset);
-  newIdx = Math.max(0, Math.min(newIdx, covers.length - 1));
-  // re‑enable transitions for the snap animation
-  document.querySelectorAll(".cover").forEach(c => {
-    c.style.transition = "transform 0.5s cubic-bezier(0.22,1,0.36,1), filter 0.3s ease";
-  });
-  // perform the final snap
-  setActiveIndex(newIdx);
-  dragIndex = null;
-  dragOffset = 0;
-}
+// 9) Modal logic (unchanged from before)
+// ...insert your existing click-to-open, backdrop, and close-button logic here...
 
-coverflowEl.addEventListener("touchend",   endDrag);
-coverflowEl.addEventListener("touchcancel", endDrag);
+// 10) Filter logic (unchanged)
+// ...insert your existing dropdown and click handlers here...
+
 
 // ─── Modal logic (unchanged) ───────────────────────────
 document.body.addEventListener("click", (e) => {
