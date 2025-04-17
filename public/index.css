@@ -377,11 +377,11 @@ html, body {
     display: flex;
     flex-direction: column;
     height: 100vh;
-    overflow: hidden; /* kills native vertical scroll */
+    overflow: hidden;
   }
 
   .top-logo {
-    margin: 1.5rem auto; /* logo stays at the top */
+    margin: 1.5rem auto;
   }
 
   .logo-frame {
@@ -391,11 +391,14 @@ html, body {
 
   /* CENTER COVERFLOW BETWEEN LOGO & BOTTOM NAV */
   .coverflow-container {
-    flex: 1;               /* fills the middle space */
+    flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 0 3vw;
+
+    /* ← New: shift everything up by 10% of viewport height */
+    transform: translateY(-10vh);
   }
 
   /* BOTTOM‐PINNED FILTER BAR */
@@ -422,3 +425,6 @@ html, body {
     height: clamp(182px, 52vw, 260px);
   }
 }
+
+
+
