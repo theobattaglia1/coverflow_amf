@@ -1,190 +1,120 @@
-// == index.js ==
-
-// 1) Core globals and mobile flag
 let allCovers = [];
 let covers = [];
 let activeIndex = 0;
+let wheelLock = false;
 let coverSpacing, anglePerOffset, minScale;
 const maxAngle = 80;
-const isMobile = window.matchMedia('(max-width:768px)').matches;
 
-const coverflowEl = document.getElementById('coverflow');
-const hoverDisplay = document.getElementById('hover-credits');
+const coverflowEl = document.getElementById("coverflow");
+const hoverDisplay = document.getElementById("hover-credits");
 
-// 2) Particle trails setup
-const trailCanvas = document.getElementById('trail-canvas');
-const trailCtx    = trailCanvas.getContext('2d');
-let particles    = [];
-
-function resizeTrailCanvas() {
-  trailCanvas.width  = coverflowEl.clientWidth;
-  trailCanvas.height = coverflowEl.clientHeight;
-}
-window.addEventListener('resize', resizeTrailCanvas);
-resizeTrailCanvas();
-
-function emitParticles(delta) {
-  const count = Math.min(Math.abs(delta) / 5, 10);
-  for (let i = 0; i < count; i++) {
-    particles.push({
-      x: trailCanvas.width/2,
-      y: trailCanvas.height/2,
-      vx: delta*(Math.random()*0.2+0.1),
-      vy: (Math.random()-0.5)*2,
-      life: 60
-    });
-  }
-}
-
-function animateTrails() {
-  trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);
-  particles.forEach((p,i) => {
-    trailCtx.globalAlpha = p.life/60;
-    trailCtx.beginPath();
-    trailCtx.arc(p.x,p.y,3,0,Math.PI*2);
-    trailCtx.fill();
-    p.x += p.vx; p.y += p.vy; p.life--;
-    if (p.life <= 0) particles.splice(i,1);
-  });
-  requestAnimationFrame(animateTrails);
-}
-animateTrails();
-
-// 3) Ambient reactive glow
-function updateAmbient() {
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.src = covers[activeIndex]?.frontImage;
-  img.onload = () => {
-    const c = document.createElement('canvas');
-    c.width = c.height = 10;
-    const ctx = c.getContext('2d');
-    ctx.drawImage(img,0,0,10,10);
-    const [r,g,b] = ctx.getImageData(0,0,10,10).data;
-    document.getElementById('ambient-light')
-            .style.backgroundColor = `rgba(${r},${g},${b},0.4)`;
-  };
-}
-
-// 4) Prevent native vertical scroll & handle horizontal swipe/wheel
-let wheelCooldown = false;
-let touchStartX = 0;
-
-coverflowEl.addEventListener('touchmove', e => {
-  e.preventDefault(); 
-}, { passive: false });
-
-window.addEventListener('wheel', e => {
-  if (Math.abs(e.deltaX) <= Math.abs(e.deltaY)) return;
-  e.preventDefault();
-  if (!wheelCooldown) {
-    emitParticles(e.deltaX);
-    setActiveIndex(activeIndex + (e.deltaX > 0 ? 1 : -1));
-    wheelCooldown = true;
-    setTimeout(() => { wheelCooldown = false; }, 120);
-  }
-}, { passive: false });
-
-coverflowEl.addEventListener('touchstart', e => {
-  touchStartX = e.touches[0].screenX;
-});
-coverflowEl.addEventListener('touchend', e => {
-  const endX = e.changedTouches[0].screenX;
-  const diff = endX - touchStartX;
-  if (Math.abs(diff) > 60) {
-    setActiveIndex(activeIndex + (diff < 0 ? 1 : -1));
-  }
-});
-
-// 5) Fetch styles & covers data
+// Inject global font/style
 fetch('/data/test-styles.json')
   .then(res => res.json())
   .then(style => {
-    const tag = document.getElementById('global-styles');
-    tag.innerHTML = `
-      html, body { font-family:'${style.fontFamily||'GT America'}',sans-serif; font-size:${style.fontSize||16}px; }
-      .cover-label { font-family:'${style.overrides?.coverLabel?.fontFamily||style.fontFamily||'GT America'}'; font-size:${style.overrides?.coverLabel?.fontSize||14}px; }
-      .filter-label { font-family:'${style.overrides?.filterLabel?.fontFamily||style.fontFamily||'GT America'}'; font-size:${style.overrides?.filterLabel?.fontSize||13}px; }
-      .hover-credits-container { font-family:'${style.overrides?.hoverCredits?.fontFamily||style.fontFamily||'GT America'}'; font-size:${style.overrides?.hoverCredits?.fontSize||12}px; }
+    const styleTag = document.createElement("style");
+    styleTag.id = "global-styles";
+
+    const font = style.fontFamily || 'GT America';
+    const size = style.fontSize || 16;
+
+    styleTag.innerHTML = `
+      html, body {
+        font-family: '${font}', sans-serif;
+        font-size: ${size}px;
+      }
+      .cover-label {
+        font-family: '${style.overrides?.coverLabel?.fontFamily || font}';
+        font-size: ${style.overrides?.coverLabel?.fontSize || 14}px;
+      }
+      .filter-label {
+        font-family: '${style.overrides?.filterLabel?.fontFamily || font}';
+        font-size: ${style.overrides?.filterLabel?.fontSize || 13}px;
+      }
+      .hover-credits-container {
+        font-family: '${style.overrides?.hoverCredits?.fontFamily || font}';
+        font-size: ${style.overrides?.hoverCredits?.fontSize || 12}px;
+      }
     `;
+
+    document.head.appendChild(styleTag);
   });
 
 fetch(`/data/covers.json?cachebust=${Date.now()}`)
   .then(res => res.json())
   .then(data => {
     allCovers = data;
-    covers    = [...allCovers];
-    activeIndex = Math.floor(covers.length/2);
+    covers = [...allCovers];
+    activeIndex = Math.floor(covers.length / 2);
     updateLayoutParameters();
     renderCovers();
     renderCoverFlow();
   })
-  .catch(err => console.error('Error fetching covers:', err));
+  .catch(err => console.error("Error fetching covers:", err));
 
-// 6) Layout params
 function updateLayoutParameters() {
   const vw = window.innerWidth;
-  coverSpacing   = Math.max(120, vw * 0.18);
+  // spacing: clamp between 100px and 260px, ideal 18% of vw
+  coverSpacing = Math.min(260, Math.max(100, vw * 0.18));
   anglePerOffset = vw < 600 ? 50 : 65;
-  minScale       = vw < 600 ? 0.45 : 0.5;
+  minScale = vw < 600 ? 0.45 : 0.5;
 }
 
-// 7) Render covers
 function renderCovers() {
-  coverflowEl.innerHTML = '';
+  coverflowEl.innerHTML = "";
+
   covers.forEach((cover, i) => {
-    const wrapper = document.createElement('div');
-    wrapper.className = 'cover';
+    const wrapper = document.createElement("div");
+    wrapper.className = "cover";
     wrapper.dataset.index = i;
     wrapper.dataset.originalIndex = cover.id;
     wrapper.dataset.category = cover.category;
 
-    const flip = document.createElement('div');
-    flip.className = 'flip-container';
+    const flip = document.createElement("div");
+    flip.className = "flip-container";
 
-    const front = document.createElement('div');
-    front.className = 'cover-front';
+    const front = document.createElement("div");
+    front.className = "cover-front";
     front.style.backgroundImage = `url('${cover.frontImage}')`;
 
-    const back = document.createElement('div');
-    back.className = 'cover-back';
+    const back = document.createElement("div");
+    back.className = "cover-back";
 
-    const backContent = document.createElement('div');
-    backContent.className = 'back-content';
+    const backContent = document.createElement("div");
+    backContent.className = "back-content";
 
-    if (cover.albumTitle?.toLowerCase() === 'contact') {
-      const contactBtn = document.createElement('a');
-      contactBtn.href = 'mailto:hi@allmyfriendsinc.com';
-      contactBtn.innerText = 'Contact Us';
-      contactBtn.className = 'expand-btn';
-      contactBtn.style.textDecoration = 'none';
-      contactBtn.style.textAlign = 'center';
+    if (cover.music?.type === "embed" && cover.music.url) {
+      backContent.innerHTML = `
+        <iframe
+          style="border-radius:12px"
+          src="${cover.music.url.replace('spotify.com/', 'spotify.com/embed/')}"
+          frameborder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy">
+        </iframe>`;
+    }
+
+    if (cover.albumTitle?.toLowerCase() === "contact") {
+      const contactBtn = document.createElement("a");
+      contactBtn.href = "mailto:hi@allmyfriendsinc.com";
+      contactBtn.innerText = "Contact Us";
+      contactBtn.className = "expand-btn";
       backContent.appendChild(contactBtn);
-
     } else {
-      const artistDetailsBtn = document.createElement('button');
-      artistDetailsBtn.className = 'expand-btn';
-      artistDetailsBtn.innerText = 'Artist Details';
+      const artistDetailsBtn = document.createElement("button");
+      artistDetailsBtn.className = "expand-btn";
+      artistDetailsBtn.innerText = "Artist Details";
       backContent.appendChild(artistDetailsBtn);
 
-      const labelFront = document.createElement('div');
-      labelFront.className = 'cover-label';
-      labelFront.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
+      const labelFront = document.createElement("div");
+      labelFront.className = "cover-label";
+      labelFront.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
       wrapper.appendChild(labelFront);
 
-      const labelBack = document.createElement('div');
-      labelBack.className = 'back-label';
-      labelBack.innerHTML = `<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
+      const labelBack = document.createElement("div");
+      labelBack.className = "back-label";
+      labelBack.innerHTML = `<strong>${cover.albumTitle || ""}</strong><br/>${cover.coverLabel || ""}`;
       wrapper.appendChild(labelBack);
-
-      if (cover.music?.type === 'embed' && cover.music.url) {
-        backContent.innerHTML += `
-          <iframe style="border-radius:12px"
-            src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}"
-            width="100%" height="352" frameborder="0"
-            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"></iframe>`;
-      }
     }
 
     back.appendChild(backContent);
@@ -192,152 +122,95 @@ function renderCovers() {
     flip.appendChild(back);
     wrapper.appendChild(flip);
 
-    wrapper.addEventListener('click', () => {
+    wrapper.addEventListener("click", () => {
       const idx = parseInt(wrapper.dataset.index, 10);
-      const off = idx - activeIndex;
-      const fc  = wrapper.querySelector('.flip-container');
-      if (off === 0 && fc) fc.classList.toggle('flipped');
-      else setActiveIndex(idx);
+      const offset = idx - activeIndex;
+
+      if (offset === 0) {
+        flip.classList.toggle("flipped");
+      } else {
+        setActiveIndex(idx);
+      }
     });
 
     coverflowEl.appendChild(wrapper);
   });
 }
 
-// 8) Render coverflow (horizontal)
 function renderCoverFlow() {
-  document.querySelectorAll('.cover').forEach(cover => {
-    const i      = +cover.dataset.index;
+  document.querySelectorAll(".cover").forEach((cover) => {
+    const i = parseInt(cover.dataset.index, 10);
     const offset = i - activeIndex;
-    const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
-    const scale  = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
+    const effOffset = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
+    const translateX = effOffset * coverSpacing;
+    const rotateY = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
+    const scale = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
 
-    const tx = eff * coverSpacing;
-    const ry = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
+    // Apply transform & z-index based on offset
     cover.style.transform = `
       translate(-50%, -50%)
-      translateX(${tx}px)
+      translateX(${translateX}px)
       scale(${scale})
-      rotateY(${ry}deg)
+      rotateY(${rotateY}deg)
     `;
-    cover.style.filter = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset)*1,4)}px)`;
     cover.style.zIndex = covers.length - Math.abs(offset);
 
-    const fc = cover.querySelector('.flip-container');
-    if (offset !== 0) fc?.classList.remove('flipped');
-    cover.classList.toggle('cover-active', offset === 0);
+    const fc = cover.querySelector(".flip-container");
+    if (offset !== 0) fc?.classList.remove("flipped");
+
+    cover.classList.toggle("cover-active", offset === 0);
   });
-  updateAmbient();
 }
 
-function setActiveIndex(idx) {
-  activeIndex = Math.max(0, Math.min(idx, covers.length - 1));
+function setActiveIndex(index) {
+  activeIndex = Math.max(0, Math.min(index, covers.length - 1));
   renderCoverFlow();
 }
 
-// 9) Keyboard nav & modal
-window.addEventListener('keydown', e => {
-  if (e.key === 'ArrowLeft')  setActiveIndex(activeIndex - 1);
-  if (e.key === 'ArrowRight') setActiveIndex(activeIndex + 1);
-  if (e.key === 'Escape')     document.querySelector('.artist-modal').classList.add('hidden');
+window.addEventListener("wheel", (e) => {
+  if (Math.abs(e.deltaX) < 10 || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
+  e.preventDefault();
+
+  if (!wheelLock) {
+    const dir = e.deltaX > 0 ? 1 : -1;
+    setActiveIndex(activeIndex + dir);
+    wheelLock = true;
+    setTimeout(() => { wheelLock = false; }, 120);
+  }
+}, { passive: false });
+
+window.addEventListener("keydown", (e) => {
+  if (e.key === "ArrowLeft") setActiveIndex(activeIndex - 1);
+  if (e.key === "ArrowRight") setActiveIndex(activeIndex + 1);
+  if (e.key === "Escape") {
+    document.querySelector(".artist-modal").classList.add("hidden");
+  }
 });
 
-// 10) Artist modal logic
-document.body.addEventListener('click', e => {
-  if (e.target.classList.contains('expand-btn') && e.target.tagName === 'BUTTON') {
-    const coverEl = e.target.closest('.cover');
-    const id = coverEl?.dataset.originalIndex;
-    const cd = covers.find(c => c.id == id);
-    if (!cd?.artistDetails) return;
-    const modal = document.querySelector('.artist-modal');
-    modal.querySelector('.artist-photo').src          = cd.artistDetails.image;
-    modal.querySelector('.artist-name').innerText     = cd.artistDetails.name;
-    modal.querySelector('.artist-location').innerText = cd.artistDetails.location;
-    modal.querySelector('.artist-bio').innerText      = cd.artistDetails.bio;
-    modal.querySelector('.spotify-link').href         = cd.artistDetails.spotifyLink;
-    if (cd.artistDetails.spotifyLink.includes('spotify.com')) {
-      modal.querySelector('.spotify-player').src =
-        cd.artistDetails.spotifyLink.replace('spotify.com/','spotify.com/embed/');
-      modal.querySelector('.spotify-player').style.display = '';
+document.body.addEventListener("click", (e) => {
+  if (e.target.classList.contains("expand-btn")) {
+    const coverEl = e.target.closest(".cover");
+    const coverId = coverEl?.dataset.originalIndex;
+    const cover = covers.find(c => c.id == coverId);
+    if (!cover?.artistDetails) return;
+
+    const modal = document.querySelector(".artist-modal");
+    modal.querySelector(".artist-photo").src = cover.artistDetails.image;
+    modal.querySelector(".artist-name").innerText = cover.artistDetails.name;
+    modal.querySelector(".artist-location").innerText = cover.artistDetails.location;
+    modal.querySelector(".artist-bio").innerText = cover.artistDetails.bio;
+    modal.querySelector(".spotify-link").href = cover.artistDetails.spotifyLink;
+    const player = modal.querySelector(".spotify-player");
+    if (cover.artistDetails.spotifyLink.includes("spotify.com")) {
+      player.src = cover.artistDetails.spotifyLink.replace("spotify.com/", "spotify.com/embed/");
+      player.style.display = "";
     } else {
-      modal.querySelector('.spotify-player').style.display = 'none';
+      player.style.display = "none";
     }
-    modal.classList.remove('hidden');
+    modal.classList.remove("hidden");
   }
 });
-document.querySelector('.artist-modal').addEventListener('click', e => {
-  if (e.target.classList.contains('artist-modal')) {
-    const mc = e.target.querySelector('.modal-content');
-    mc.classList.add('pulse-dismiss');
-    setTimeout(() => {
-      e.target.classList.add('hidden');
-      mc.classList.remove('pulse-dismiss');
-    }, 250);
-  }
-});
-document.querySelector('.artist-modal .close-btn').addEventListener('click', () => {
-  document.querySelector('.artist-modal').classList.add('hidden');
-});
 
-// 11) Filter dropdown logic (above bottom bar)
-const filterButtons = Array.from(document.querySelectorAll('.filter-label'));
-const filterDropdown = document.createElement('div');
-filterDropdown.className = 'filter-dropdown';
-document.body.appendChild(filterDropdown);
-
-filterButtons.forEach(btn => {
-  btn.addEventListener('mouseenter', () => {
-    const filter = btn.dataset.filter;
-    const results = allCovers.filter(c => filter==='all' || c.category?.includes(filter));
-    const items = results.map(c =>
-      `<div class="dropdown-item" data-id="${c.id}">${c.albumTitle||'Untitled'} — ${c.coverLabel||''}</div>`
-    ).join('') || `<div class="dropdown-item">No results</div>`;
-
-    filterDropdown.innerHTML = items;
-    filterDropdown.style.display = 'block';
-
-    const rect = btn.getBoundingClientRect();
-    filterDropdown.style.left = `${rect.left}px`;
-
-    if (isMobile) {
-      filterDropdown.style.top = 'auto';
-      filterDropdown.style.bottom = `${window.innerHeight - rect.top + 5}px`;
-    } else {
-      filterDropdown.style.bottom = 'auto';
-      filterDropdown.style.top = `${rect.bottom + 5}px`;
-    }
-  });
-
-  btn.addEventListener('mouseleave', () => {
-    setTimeout(() => {
-      if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none';
-    }, 100);
-  });
-
-  btn.addEventListener('click', () => {
-    filterButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    const filter = btn.dataset.filter;
-    covers = (filter === 'all'
-      ? [...allCovers]
-      : allCovers.filter(c => c.category?.includes(filter))
-    );
-    activeIndex = Math.floor(covers.length / 2);
-    renderCovers();
-    renderCoverFlow();
-  });
-});
-
-filterDropdown.addEventListener('mouseleave', () => {
-  filterDropdown.style.display = 'none';
-});
-filterDropdown.addEventListener('click', e => {
-  const id = e.target.dataset.id;
-  if (!id) return;
-  const idx = covers.findIndex(c => c.id.toString() === id);
-  if (idx !== -1) {
-    setActiveIndex(idx);
-    filterDropdown.style.display = 'none';
-  }
+document.querySelector(".artist-modal .close-btn").addEventListener("click", () => {
+  document.querySelector(".artist-modal").classList.add("hidden");
 });
