@@ -110,6 +110,7 @@ html, body {
   align-items: center;
   width: 100%;
   box-sizing: border-box;
+  transform: translateY(-20px);
 }
 #coverflow-container {
   position: relative;
