@@ -227,22 +227,27 @@ html, body {
   background: rgba(255,255,255,0.25);
 }
 
-.cover-label, .back-label {
-  position: absolute;
-  bottom: -3.5rem;
-  width: 100%;
-  text-align: center;
-  font-size: 0.9rem;
-  line-height: 1.2;
-  pointer-events: none;
-  display: none;
-}
-.cover.cover-active .cover-label {
-  display: block;
-}
-.cover.cover-active.flipped .back-label {
-  display: block;
-}
+/* === COVER & BACK LABELS ===
+     position them under the card, hide by default,
+     then show only on the active/front or active/flipped cover */
+  .cover-label,
+  .back-label {
+    position: absolute;
+    bottom: -3.5rem;      /* same offset you already use */
+    width: 100%;
+    text-align: center;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    pointer-events: none;
+    display: none;        /* hide all labels by default */
+  }
+  .cover.cover-active .cover-label {
+    display: block;       /* show the front label on the centered cover */
+  }
+  .cover.cover-active.flipped .back-label {
+    display: block;       /* show the back label only when flipped */
+  }
+
 
 /* === MODAL === */
 .artist-modal {
