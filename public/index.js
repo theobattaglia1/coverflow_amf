@@ -68,14 +68,23 @@ function updateAmbient() {
   };
 }
 
-// 4) Wheel & touch handlers (axis-swapped for mobile)
+// 4) Prevent native scroll & axis-aware wheel/touch
 let wheelCooldown = false;
 let touchStart = 0;
 
+// disable native scroll in coverflow on mobile
+coverflowEl.addEventListener('touchmove', e => {
+  const delta = isMobile
+    ? e.changedTouches[0].screenY - touchStart
+    : 0;
+  if (Math.abs(delta) > 10) e.preventDefault();
+}, { passive: false });
+
+// wheel scroll / swipe
 window.addEventListener('wheel', e => {
-  const delta     = isMobile ? e.deltaY : e.deltaX;
-  const opposite  = isMobile ? e.deltaX : e.deltaY;
-  if (Math.abs(delta) <= Math.abs(opposite)) return;
+  const delta = isMobile ? e.deltaY : e.deltaX;
+  const opp   = isMobile ? e.deltaX : e.deltaY;
+  if (Math.abs(delta) <= Math.abs(opp)) return;
   e.preventDefault();
   if (!wheelCooldown) {
     emitParticles(delta);
@@ -85,13 +94,17 @@ window.addEventListener('wheel', e => {
   }
 }, { passive: false });
 
+// touch gestures
 coverflowEl.addEventListener('touchstart', e => {
-  touchStart = isMobile ? e.touches[0].screenY : e.touches[0].screenX;
+  touchStart = isMobile
+    ? e.touches[0].screenY
+    : e.touches[0].screenX;
 });
-
 coverflowEl.addEventListener('touchend', e => {
-  const touchEnd = isMobile ? e.changedTouches[0].screenY : e.changedTouches[0].screenX;
-  const diff     = touchEnd - touchStart;
+  const end = isMobile
+    ? e.changedTouches[0].screenY
+    : e.changedTouches[0].screenX;
+  const diff = end - touchStart;
   if (Math.abs(diff) > 60) {
     setActiveIndex(activeIndex + (diff < 0 ? 1 : -1));
   }
@@ -101,17 +114,17 @@ coverflowEl.addEventListener('touchend', e => {
 fetch('/data/test-styles.json')
   .then(res => res.json())
   .then(style => {
-    const styleTag = document.getElementById('global-styles');
-    styleTag.innerHTML = `
+    const tag = document.getElementById('global-styles');
+    tag.innerHTML = `
       html, body { font-family: '${style.fontFamily||'GT America'}', sans-serif; font-size: ${style.fontSize||16}px; }
       .cover-label { font-family: '${style.overrides?.coverLabel?.fontFamily||style.fontFamily||'GT America'}'; font-size: ${style.overrides?.coverLabel?.fontSize||14}px; }
-      .filter-label{ font-family: '${style.overrides?.filterLabel?.fontFamily||style.fontFamily||'GT America'}'; font-size: ${style.overrides?.filterLabel?.fontSize||13}px; }
-      .hover-credits-container{ font-family: '${style.overrides?.hoverCredits?.fontFamily||style.fontFamily||'GT America'}'; font-size: ${style.overrides?.hoverCredits?.fontSize||12}px; }
+      .filter-label { font-family: '${style.overrides?.filterLabel?.fontFamily||style.fontFamily||'GT America'}'; font-size: ${style.overrides?.filterLabel?.fontSize||13}px; }
+      .hover-credits-container { font-family: '${style.overrides?.hoverCredits?.fontFamily||style.fontFamily||'GT America'}'; font-size: ${style.overrides?.hoverCredits?.fontSize||12}px; }
     `;
   });
 
 fetch(`/data/covers.json?cachebust=${Date.now()}`)
-  .then(r => r.json())
+  .then(res => res.json())
   .then(data => {
     allCovers = data;
     covers    = [...allCovers];
@@ -122,7 +135,7 @@ fetch(`/data/covers.json?cachebust=${Date.now()}`)
   })
   .catch(err => console.error('Error fetching covers:', err));
 
-// 6) Layout & render functions
+// 6) Layout & render routines
 function updateLayoutParameters() {
   const vw = window.innerWidth;
   coverSpacing   = Math.max(120, vw * 0.18);
@@ -138,122 +151,177 @@ function renderCovers() {
     wrapper.dataset.index = i;
     wrapper.dataset.originalIndex = cover.id;
     wrapper.dataset.category = cover.category;
-    const flip = document.createElement('div'); flip.className = 'flip-container';
-    const front = document.createElement('div'); front.className = 'cover-front';
+
+    const flip = document.createElement('div');
+    flip.className = 'flip-container';
+
+    const front = document.createElement('div');
+    front.className = 'cover-front';
     front.style.backgroundImage = `url('${cover.frontImage}')`;
-    const back = document.createElement('div'); back.className = 'cover-back';
-    const backContent = document.createElement('div'); backContent.className = 'back-content';
-    if (cover.music?.type === 'embed' && cover.music.url) {
-      backContent.innerHTML = `<iframe style="border-radius:12px" src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}" width="100%" height="352" frameBorder="0" allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+
+    const back = document.createElement('div');
+    back.className = 'cover-back';
+
+    const backContent = document.createElement('div');
+    backContent.className = 'back-content';
+
+    if (isMobile) {
+      backContent.innerHTML = `
+        <div class="mobile-artist-details">
+          <h2>${cover.artistDetails?.name||''}</h2>
+          <p>${cover.artistDetails?.location||''}</p>
+          <p class="small-bio">${cover.artistDetails?.bio||''}</p>
+          <a href="${cover.artistDetails?.spotifyLink||'#'}" target="_blank" class="spotify-button">Open in Spotify</a>
+        </div>`;
+    } else if (cover.music?.type === 'embed' && cover.music.url) {
+      backContent.innerHTML = `
+        <iframe style="border-radius:12px"
+          src="${cover.music.url.replace('spotify.com/','spotify.com/embed/') }"
+          width="100%" height="352" frameBorder="0"
+          allowfullscreen allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"></iframe>`;
     }
-    if (cover.albumTitle?.toLowerCase() === 'contact') {
-      const contactBtn = document.createElement('a');
-      contactBtn.href = 'mailto:hi@allmyfriendsinc.com'; contactBtn.innerText = 'Contact Us'; contactBtn.className = 'expand-btn';
-      contactBtn.style.textDecoration = 'none'; contactBtn.style.textAlign = 'center';
-      backContent.appendChild(contactBtn);
-    } else {
-      const artistBtn = document.createElement('button'); artistBtn.className='expand-btn'; artistBtn.innerText='Artist Details';
-      backContent.appendChild(artistBtn);
-      const labelFront = document.createElement('div'); labelFront.className='cover-label';
-      labelFront.innerHTML=`<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
-      wrapper.appendChild(labelFront);
-      const labelBack = document.createElement('div'); labelBack.className='back-label';
-      labelBack.innerHTML=`<strong>${cover.albumTitle||''}</strong><br/>${cover.coverLabel||''}`;
-      wrapper.appendChild(labelBack);
-    }
+
     back.appendChild(backContent);
-    flip.appendChild(front); flip.appendChild(back);
+    flip.appendChild(front);
+    flip.appendChild(back);
     wrapper.appendChild(flip);
+
     wrapper.addEventListener('click', () => {
       const idx = parseInt(wrapper.dataset.index, 10);
-      const off = idx - activeIndex;
+      const offset = idx - activeIndex;
       const fc = wrapper.querySelector('.flip-container');
-      if (off===0 && fc) fc.classList.toggle('flipped'); else setActiveIndex(idx);
+      if (offset === 0 && fc) fc.classList.toggle('flipped');
+      else setActiveIndex(idx);
     });
+
     coverflowEl.appendChild(wrapper);
   });
 }
 
 function renderCoverFlow() {
   document.querySelectorAll('.cover').forEach(cover => {
-    const i      = +cover.dataset.index;
+    const i = parseInt(cover.dataset.index, 10);
     const offset = i - activeIndex;
-    const eff    = Math.sign(offset)*Math.log2(Math.abs(offset)+1);
-    const sc     = Math.max(minScale,1-Math.abs(offset)*0.08);
+    const effOffset = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
+    const scale = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
     let transform;
+
     if (!isMobile) {
-      const tx = eff*coverSpacing;
-      const ry = Math.max(-maxAngle,Math.min(offset*-anglePerOffset,maxAngle));
-      transform = `translate(-50%,-50%) translateX(${tx}px) scale(${sc}) rotateY(${ry}deg)`;
+      const translateX = effOffset * coverSpacing;
+      const rotateY = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
+      transform = `translate(-50%,-50%) translateX(${translateX}px) scale(${scale}) rotateY(${rotateY}deg)`;
     } else {
-      const ty = eff*coverSpacing;
-      const rx = Math.max(-maxAngle,Math.min(offset*anglePerOffset,maxAngle));
-      transform = `translate(-50%,-50%) translateY(${ty}px) scale(${sc}) rotateX(${rx}deg)`;
+      const translateY = effOffset * coverSpacing;
+      const rotateX = Math.max(-maxAngle, Math.min(offset * anglePerOffset, maxAngle));
+      transform = `translate(-50%,-50%) translateY(${translateY}px) scale(${scale}) rotateX(${rotateX}deg)`;
     }
+
     cover.style.transform = transform;
-    cover.style.filter    = offset===0 ? 'none' : `blur(${Math.min(Math.abs(offset)*1,4)}px)`;
-    cover.style.zIndex    = covers.length - Math.abs(offset);
-    const fc = cover.querySelector('.flip-container'); if(offset!==0) fc?.classList.remove('flipped');
-    cover.classList.toggle('cover-active', offset===0);
+    cover.style.filter = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset) * 1, 4)}px)`;
+    cover.style.zIndex = covers.length - Math.abs(offset);
+
+    const fc = cover.querySelector('.flip-container');
+    if (offset !== 0) fc?.classList.remove('flipped');
+    cover.classList.toggle('cover-active', offset === 0);
   });
   updateAmbient();
 }
 
-function setActiveIndex(idx) {
-  activeIndex = Math.max(0,Math.min(idx,covers.length-1));
+function setActiveIndex(index) {
+  activeIndex = Math.max(0, Math.min(index, covers.length - 1));
   renderCoverFlow();
 }
 
-// Keyboard navigation & modal close
+// 7) Keyboard navigation & modal close
 window.addEventListener('keydown', e => {
-  if (e.key==='ArrowLeft')  setActiveIndex(activeIndex-1);
-  if (e.key==='ArrowRight') setActiveIndex(activeIndex+1);
-  if (e.key==='Escape')     document.querySelector('.artist-modal').classList.add('hidden');
+  if (e.key === 'ArrowLeft') setActiveIndex(activeIndex - 1);
+  if (e.key === 'ArrowRight') setActiveIndex(activeIndex + 1);
+  if (e.key === 'Escape') document.querySelector('.artist-modal').classList.add('hidden');
 });
 
-// Modal logic
-// (unchanged from desktop version)
+// 8) Artist Detail modal logic
+// click on Artist Details button
 document.body.addEventListener('click', e => {
-  if (e.target.classList.contains('expand-btn') && e.target.tagName==='BUTTON') {
+  if (e.target.classList.contains('expand-btn') && e.target.tagName === 'BUTTON') {
     const coverEl = e.target.closest('.cover');
-    const cid = coverEl?.dataset.originalIndex;
-    const cd  = covers.find(c=>c.id==cid);
+    const id = coverEl?.dataset.originalIndex;
+    const cd = covers.find(c => c.id == id);
     if (!cd?.artistDetails) return;
     const modal = document.querySelector('.artist-modal');
-    modal.querySelector('.artist-photo').src     = cd.artistDetails.image;
-    modal.querySelector('.artist-name').innerText     = cd.artistDetails.name;
+    modal.querySelector('.artist-photo').src = cd.artistDetails.image;
+    modal.querySelector('.artist-name').innerText = cd.artistDetails.name;
     modal.querySelector('.artist-location').innerText = cd.artistDetails.location;
-    modal.querySelector('.artist-bio').innerText      = cd.artistDetails.bio;
-    modal.querySelector('.spotify-link').href         = cd.artistDetails.spotifyLink;
+    modal.querySelector('.artist-bio').innerText = cd.artistDetails.bio;
+    modal.querySelector('.spotify-link').href = cd.artistDetails.spotifyLink;
     if (cd.artistDetails.spotifyLink.includes('spotify.com')) {
       modal.querySelector('.spotify-player').src = cd.artistDetails.spotifyLink.replace('spotify.com/','spotify.com/embed/');
-    } else modal.querySelector('.spotify-player').style.display='none';
+    } else {
+      modal.querySelector('.spotify-player').style.display = 'none';
+    }
     modal.classList.remove('hidden');
   }
 });
 
-// Close modal on outside tap
+// close modal on backdrop click
 document.querySelector('.artist-modal').addEventListener('click', e => {
   if (e.target.classList.contains('artist-modal')) {
     const mc = e.target.querySelector('.modal-content');
     mc.classList.add('pulse-dismiss');
-    setTimeout(()=>{ e.target.classList.add('hidden'); mc.classList.remove('pulse-dismiss'); },250);
+    setTimeout(() => {
+      e.target.classList.add('hidden');
+      mc.classList.remove('pulse-dismiss');
+    }, 250);
   }
 });
 
-document.querySelector('.artist-modal .close-btn').addEventListener('click', ()=>{
+// close button
+document.querySelector('.artist-modal .close-btn').addEventListener('click', () => {
   document.querySelector('.artist-modal').classList.add('hidden');
 });
 
-// Filter dropdown logic (unchanged)
+// 9) Filter dropdown logic
 const filterButtons = Array.from(document.querySelectorAll('.filter-label'));
 const filterDropdown = document.createElement('div');
 filterDropdown.className = 'filter-dropdown';
 document.body.appendChild(filterDropdown);
-filterButtons.forEach(btn=>{
-  btn.addEventListener('mouseenter', ()=>{ /* hover logic unchanged */ });
-  btn.addEventListener('mouseleave', ()=>{ /* unchanged */ });
-  btn.addEventListener('click', ()=>{ /* unchanged */ });
+
+filterButtons.forEach(btn => {
+  btn.addEventListener('mouseenter', () => {
+    const filter = btn.dataset.filter;
+    const results = allCovers.filter(c => filter === 'all' || c.category?.includes(filter));
+    const items = results.map(c => `<div class="dropdown-item" data-id="${c.id}">${c.albumTitle||'Untitled'} — ${c.coverLabel||''}</div>`).join('') || '<div class="dropdown-item">No results</div>';
+    filterDropdown.innerHTML = items;
+    filterDropdown.style.display = 'block';
+    const rect = btn.getBoundingClientRect();
+    filterDropdown.style.left = `${rect.left}px`;
+    filterDropdown.style.top = `${rect.bottom+5}px`;
+  });
+
+  btn.addEventListener('mouseleave', () => {
+    setTimeout(() => {
+      if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none';
+    }, 100);
+  });
+
+  btn.addEventListener('click', () => {
+    filterButtons.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const filter = btn.dataset.filter;
+    covers = filter === 'all' ? [...allCovers] : allCovers.filter(c => c.category?.includes(filter));
+    activeIndex = Math.floor(covers.length/2);
+    renderCovers();
+    renderCoverFlow();
+  });
 });
-filterDropdown.addEventListener('mouseleave', ()=>{ filterDropdown.style.display='none'; });
-filterDropdown.addEventListener('click', e=>{ /* unchanged */ });
+
+filterDropdown.addEventListener('mouseleave', () => filterDropdown.style.display='none');
+filterDropdown.addEventListener('click', e => {
+  const id = e.target.dataset.id;
+  if (!id) return;
+  const idx = covers.findIndex(c => c.id.toString() === id);
+  if (idx !== -1) {
+    setActiveIndex(idx);
+    filterDropdown.style.display = 'none';
+  }
+});
