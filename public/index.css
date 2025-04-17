@@ -224,7 +224,7 @@ html, body {
   min-width: 160px;
   left: 50%;
   transform: translateX(-50%);
-  bottom: calc(100% + 2rem);  /* 1rem gap above the back‑face */
+  bottom: calc(100% + 2rem);
   z-index: 1000;
   background: rgba(255,255,255,0.15);
   color: #eee;
@@ -256,19 +256,19 @@ html, body {
 .cover-label,
 .back-label {
   position: absolute;
-  bottom: -3.5rem;      /* same offset you already use */
+  bottom: -3.5rem;
   width: 100%;
   text-align: center;
   font-size: 0.9rem;
   line-height: 1.2;
   pointer-events: none;
-  display: none;        /* hide all labels by default */
+  display: none;
 }
 .cover.cover-active .cover-label {
-  display: block;       /* show the front label on the centered cover */
+  display: block;
 }
 .cover.cover-active.flipped .back-label {
-  display: block;       /* show the back label only when flipped */
+  display: block;
 }
 
 /* === MODAL === */
@@ -423,8 +423,8 @@ html, body {
     overflow-x: hidden;
     overflow-y: visible;
   }
-  
-    /* === ENLARGE FLIPPED CARD ON MOBILE ONLY === */
+
+  /* === ENLARGE FLIPPED CARD ON MOBILE ONLY === */
   .cover.cover-active.flipped {
     /* bump up from your normal 25vw → around 70vw for the flipped card */
     width: clamp(240px, 70vw, 360px) !important;
@@ -447,5 +447,25 @@ html, body {
     min-width: 0;
     text-align: center;
     padding: clamp(0.5rem, 1.5vh, 1rem) 2vw;
+  }
+
+  /* === FAB‑style FILTER PILL === */
+  .filter-accordion {
+    position: fixed;
+    bottom: clamp(5rem, 10vh, 8rem);  /* lifts it just above the bottom‑pinned bar */
+    right: clamp(1rem, 5vw, 2rem);     /* small gap from the right edge */
+    z-index: 30;                       /* above everything else */
+  }
+  .filter-accordion summary {
+    padding: clamp(0.5rem, 3vh, 1rem) clamp(1rem, 4vw, 1.5rem);
+    border-radius: 999px;              /* keeps the pill shape */
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  .filter-accordion summary:hover {
+    background: rgba(255,255,255,0.2);
   }
 }
