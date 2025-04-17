@@ -1,6 +1,6 @@
 // == index.js ==
 
-// 1) Core globals
+// 1) Core globals and mobile flag
 let allCovers = [];
 let covers = [];
 let activeIndex = 0;
@@ -11,7 +11,7 @@ const isMobile = window.matchMedia('(max-width:768px)').matches;
 const coverflowEl = document.getElementById('coverflow');
 const hoverDisplay = document.getElementById('hover-credits');
 
-// 2) Particle trails
+// 2) Particle trails setup
 const trailCanvas = document.getElementById('trail-canvas');
 const trailCtx    = trailCanvas.getContext('2d');
 let particles    = [];
@@ -27,32 +27,30 @@ function emitParticles(delta) {
   const count = Math.min(Math.abs(delta) / 5, 10);
   for (let i = 0; i < count; i++) {
     particles.push({
-      x: trailCanvas.width / 2,
-      y: trailCanvas.height / 2,
-      vx: delta * (Math.random() * 0.2 + 0.1),
-      vy: (Math.random() - 0.5) * 2,
+      x: trailCanvas.width/2,
+      y: trailCanvas.height/2,
+      vx: delta*(Math.random()*0.2+0.1),
+      vy: (Math.random()-0.5)*2,
       life: 60
     });
   }
 }
 
 function animateTrails() {
-  trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
-  particles.forEach((p, i) => {
-    trailCtx.globalAlpha = p.life / 60;
+  trailCtx.clearRect(0,0,trailCanvas.width,trailCanvas.height);
+  particles.forEach((p,i) => {
+    trailCtx.globalAlpha = p.life/60;
     trailCtx.beginPath();
-    trailCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    trailCtx.arc(p.x,p.y,3,0,Math.PI*2);
     trailCtx.fill();
-    p.x += p.vx;
-    p.y += p.vy;
-    p.life--;
-    if (p.life <= 0) particles.splice(i, 1);
+    p.x += p.vx; p.y += p.vy; p.life--;
+    if (p.life <= 0) particles.splice(i,1);
   });
   requestAnimationFrame(animateTrails);
 }
 animateTrails();
 
-// 3) Ambient glow
+// 3) Ambient reactive glow
 function updateAmbient() {
   const img = new Image();
   img.crossOrigin = 'anonymous';
@@ -61,10 +59,10 @@ function updateAmbient() {
     const c = document.createElement('canvas');
     c.width = c.height = 10;
     const ctx = c.getContext('2d');
-    ctx.drawImage(img, 0, 0, 10, 10);
-    const [r, g, b] = ctx.getImageData(0, 0, 10, 10).data;
+    ctx.drawImage(img,0,0,10,10);
+    const [r,g,b] = ctx.getImageData(0,0,10,10).data;
     document.getElementById('ambient-light')
-      .style.backgroundColor = `rgba(${r},${g},${b},0.4)`;
+            .style.backgroundColor = `rgba(${r},${g},${b},0.4)`;
   };
 }
 
@@ -73,7 +71,7 @@ let wheelCooldown = false;
 let touchStartX = 0;
 
 coverflowEl.addEventListener('touchmove', e => {
-  e.preventDefault(); // capture all vertical drags
+  e.preventDefault(); 
 }, { passive: false });
 
 window.addEventListener('wheel', e => {
@@ -98,7 +96,7 @@ coverflowEl.addEventListener('touchend', e => {
   }
 });
 
-// 5) Fetch styles & covers
+// 5) Fetch styles & covers data
 fetch('/data/test-styles.json')
   .then(res => res.json())
   .then(style => {
@@ -116,7 +114,7 @@ fetch(`/data/covers.json?cachebust=${Date.now()}`)
   .then(data => {
     allCovers = data;
     covers    = [...allCovers];
-    activeIndex = Math.floor(covers.length / 2);
+    activeIndex = Math.floor(covers.length/2);
     updateLayoutParameters();
     renderCovers();
     renderCoverFlow();
@@ -162,6 +160,7 @@ function renderCovers() {
       contactBtn.style.textDecoration = 'none';
       contactBtn.style.textAlign = 'center';
       backContent.appendChild(contactBtn);
+
     } else {
       const artistDetailsBtn = document.createElement('button');
       artistDetailsBtn.className = 'expand-btn';
@@ -179,13 +178,12 @@ function renderCovers() {
       wrapper.appendChild(labelBack);
 
       if (cover.music?.type === 'embed' && cover.music.url) {
-        const iframeHTML = `
+        backContent.innerHTML += `
           <iframe style="border-radius:12px"
             src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}"
             width="100%" height="352" frameborder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"></iframe>`;
-        backContent.innerHTML += iframeHTML;
       }
     }
 
@@ -206,7 +204,7 @@ function renderCovers() {
   });
 }
 
-// 8) Render coverflow (always horizontal)
+// 8) Render coverflow (horizontal)
 function renderCoverFlow() {
   document.querySelectorAll('.cover').forEach(cover => {
     const i      = +cover.dataset.index;
@@ -232,20 +230,19 @@ function renderCoverFlow() {
   updateAmbient();
 }
 
-// 9) setActiveIndex
 function setActiveIndex(idx) {
   activeIndex = Math.max(0, Math.min(idx, covers.length - 1));
   renderCoverFlow();
 }
 
-// 10) Keyboard nav & modal
+// 9) Keyboard nav & modal
 window.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft')  setActiveIndex(activeIndex - 1);
   if (e.key === 'ArrowRight') setActiveIndex(activeIndex + 1);
   if (e.key === 'Escape')     document.querySelector('.artist-modal').classList.add('hidden');
 });
 
-// 11) Artist modal logic
+// 10) Artist modal logic
 document.body.addEventListener('click', e => {
   if (e.target.classList.contains('expand-btn') && e.target.tagName === 'BUTTON') {
     const coverEl = e.target.closest('.cover');
@@ -282,7 +279,7 @@ document.querySelector('.artist-modal .close-btn').addEventListener('click', () 
   document.querySelector('.artist-modal').classList.add('hidden');
 });
 
-// 12) Filter dropdown logic (dropdown now pops above on mobile)
+// 11) Filter dropdown logic (above bottom bar)
 const filterButtons = Array.from(document.querySelectorAll('.filter-label'));
 const filterDropdown = document.createElement('div');
 filterDropdown.className = 'filter-dropdown';
@@ -291,10 +288,10 @@ document.body.appendChild(filterDropdown);
 filterButtons.forEach(btn => {
   btn.addEventListener('mouseenter', () => {
     const filter = btn.dataset.filter;
-    const results = allCovers.filter(c => filter === 'all' || c.category?.includes(filter));
+    const results = allCovers.filter(c => filter==='all' || c.category?.includes(filter));
     const items = results.map(c =>
       `<div class="dropdown-item" data-id="${c.id}">${c.albumTitle||'Untitled'} — ${c.coverLabel||''}</div>`
-    ).join('') || '<div class="dropdown-item">No results</div>';
+    ).join('') || `<div class="dropdown-item">No results</div>`;
 
     filterDropdown.innerHTML = items;
     filterDropdown.style.display = 'block';
@@ -303,11 +300,9 @@ filterButtons.forEach(btn => {
     filterDropdown.style.left = `${rect.left}px`;
 
     if (isMobile) {
-      // position above filter bar
       filterDropdown.style.top = 'auto';
       filterDropdown.style.bottom = `${window.innerHeight - rect.top + 5}px`;
     } else {
-      // position below
       filterDropdown.style.bottom = 'auto';
       filterDropdown.style.top = `${rect.bottom + 5}px`;
     }
@@ -315,9 +310,7 @@ filterButtons.forEach(btn => {
 
   btn.addEventListener('mouseleave', () => {
     setTimeout(() => {
-      if (!filterDropdown.matches(':hover')) {
-        filterDropdown.style.display = 'none';
-      }
+      if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none';
     }, 100);
   });
 
