@@ -404,3 +404,45 @@ body {
   border: none;
   display: block;
 }
+
+@media (max-width: 768px) {
+  /* Make body a full‑height flex container */
+  html, body {
+    height: 100vh;
+    overflow: hidden;
+  }
+  /* Ensure our main wrapper stacks vertically */
+  .app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* Logo = top quarter of screen, no extra margin */
+  .top-logo {
+    flex: 0 0 25vh;
+    margin: 0;
+  }
+
+  /* Filter bar sits just below logo */
+  .filter-accordion,
+  .filter-container {
+    flex: 0 0 auto;
+    margin: 0 auto clamp(8px, 2vh, 16px);
+  }
+
+  /* Coverflow fills remaining 75vh */
+  .coverflow-container {
+    flex: 1 1 auto;
+    margin: 0;            /* kill any top‐margin */
+    padding-block: 0;     /* kill vertical padding */
+    overflow: hidden;
+  }
+
+  /* And inside, make sure content stretches */
+  .coverflow-content {
+    height: 100%;
+  }
+}
+
