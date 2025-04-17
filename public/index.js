@@ -171,6 +171,23 @@ window.addEventListener("wheel", (e) => {
   if (Math.abs(e.deltaX) < 10 || Math.abs(e.deltaX) < Math.abs(e.deltaY)) return;
   e.preventDefault();
 
+  let touchStartX = 0;
+
+coverflowEl.addEventListener('touchstart', (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+coverflowEl.addEventListener('touchend', (e) => {
+  const dx = e.changedTouches[0].screenX - touchStartX;
+  const threshold = 50; // px of swipe before we move
+  if (dx > threshold) {
+    setActiveIndex(activeIndex - 1);
+  } else if (dx < -threshold) {
+    setActiveIndex(activeIndex + 1);
+  }
+});
+
+
   if (!wheelLock) {
     const dir = e.deltaX > 0 ? 1 : -1;
     setActiveIndex(activeIndex + dir);
