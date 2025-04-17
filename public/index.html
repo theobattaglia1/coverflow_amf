@@ -10,22 +10,12 @@
 </head>
 <body>
   <!-- Logo -->
-  <div class="top-logo" style="
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    margin: 2rem auto;
-  ">
+  <div class="top-logo">
     <iframe
+      class="logo-frame"
       src="/assets/logo.html"
-      style="
-        border: none;
-        display: block;
-        width: 100%;
-        max-width: 600px;
-        height: 240px;
-        overflow: hidden;
-      "
+      frameborder="0"
+      scrolling="no"
     ></iframe>
   </div>
 
@@ -40,11 +30,8 @@
 
   <!-- Coverflow + Ambient Light + Trail Canvas -->
   <div class="coverflow-container" id="coverflow-container">
-    <!-- ambient glow behind covers -->
     <div id="ambient-light"></div>
-    <!-- particle trails overlay -->
     <canvas id="trail-canvas"></canvas>
-    <!-- actual coverflow content -->
     <div class="coverflow-content" id="coverflow"></div>
   </div>
 
