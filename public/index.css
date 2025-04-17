@@ -33,6 +33,7 @@ html, body {
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   z-index: 10;
+  -webkit-overflow-scrolling: touch;
 }
 
 .filter-label {
@@ -49,6 +50,11 @@ html, body {
   transition: all 0.2s ease;
   white-space: nowrap;
   user-select: none;
+  touch-action: manipulation;
+}
+.filter-label:active {
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-1px);
 }
 .filter-label.active {
   background: white;
@@ -273,7 +279,7 @@ html, body {
 .artist-info {
   padding: clamp(12px, 3vw, 24px);
   display: flex;
-  flex-direction: column;
+  flex-direction: column;  
   gap: 0.5rem;
   overflow: hidden;
 }
@@ -349,9 +355,7 @@ html, body {
   max-height: 80vh;
   padding-right: 16px;
 }
-.scrollable::-webkit-scrollbar {
-  width: 8px;
-}
+.scrollable::-webkit-scrollbar { width: 8px; }
 .scrollable::-webkit-scrollbar-thumb {
   background: rgba(255,255,255,0.2);
   border-radius: 4px;
@@ -366,19 +370,7 @@ html, body {
 .scrollable::-webkit-scrollbar-track:hover {
   background: rgba(255,255,255,0.2);
 }
-.scrollable::-webkit-scrollbar-corner {
-  background: transparent;
-}
-
-@keyframes modalDismissPulse {
-  0%   { transform: scale(1); opacity: 1; }
-  40%  { transform: scale(0.97); opacity: 0.85; }
-  100% { transform: scale(1); opacity: 1; }
-}
-
-.modal-content.pulse-dismiss {
-  animation: modalDismissPulse 0.25s ease;
-}
+.scrollable::-webkit-scrollbar-corner { background: transparent; }
 
 /* === AMBIENT LIGHT & PARTICLE TRAILS === */
 #coverflow-container {
@@ -409,12 +401,23 @@ html, body {
 
 /* === MOBILE LAYOUT === */
 @media (max-width: 768px) {
+  /* Shrink logo */
+  .top-logo iframe {
+    max-width: 50%;
+    height: auto;
+  }
+  .top-logo {
+    margin: 1.5rem auto;
+  }
+
   /* Vertical coverflow container */
   #coverflow-container {
     height: 60vh;
     overflow: hidden;
     padding: 0 3vw;
+    touch-action: none;
   }
+
   /* Bottom nav for filters */
   .filter-container {
     position: fixed;
@@ -427,16 +430,34 @@ html, body {
     overflow-x: auto;
     scroll-snap-type: none;
     z-index: 20;
+    -webkit-overflow-scrolling: touch;
   }
+
   .filter-label {
     flex: 1 1 auto;
     min-width: 0;
     text-align: center;
     padding: 12px 8px;
   }
+
   /* Slightly smaller covers on mobile */
   .cover {
     width: clamp(140px, 40vw, 200px);
     height: clamp(140px, 40vw, 200px);
+  }
+
+  /* Mobile artist-details back of card */
+  .mobile-artist-details {
+    padding: 1rem;
+    text-align: center;
+  }
+  .mobile-artist-details h2 {
+    margin: 0 0 0.5rem;
+  }
+  .mobile-artist-details .small-bio {
+    font-size: 0.85rem;
+    margin: 0.5rem 0;
+    max-height: 4.5em;
+    overflow: hidden;
   }
 }
