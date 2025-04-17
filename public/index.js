@@ -161,13 +161,11 @@ wrapper.appendChild(backLabel);
 
 // …then continue building your `backContent` / iframe, etc.
 
-      if (cover.music?.type==='embed'&&cover.music.url) {
-        backContent.innerHTML+=`
-          <iframe style="border-radius:12px"
-            src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}"
-            width="100%" height="352" frameborder="0"
-            allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
-            loading="lazy"></iframe>`;
+      backContent.innerHTML += `
+  <iframe
+    src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy"></iframe>`;
       }
     }
 
