@@ -14,7 +14,6 @@ html, body {
   height: 100%;
 }
 
-
 /* === FILTER BAR === */
 .filter-container {
   display: flex;
@@ -22,12 +21,10 @@ html, body {
   align-items: center;
   gap: clamp(6px, 1.5vw, 20px);
   flex-wrap: nowrap;
-
   width: 100%;
   padding: clamp(10px, 1.2vw, 14px) clamp(12px, 2vw, 20px);
   margin: 0 auto clamp(12px, 2vh, 24px);
   box-sizing: border-box;
-
   background: rgba(255,255,255,0.05);
   backdrop-filter: blur(12px);
   border-radius: 16px;
@@ -216,9 +213,7 @@ html, body {
   line-height: 1.2;
   pointer-events: none;
 }
-.cover.cover-active .cover-label {
-  display: block;
-}
+.cover.cover-active .cover-label { display: block; }
 
 .back-content iframe {
   width: 100%;
@@ -237,12 +232,8 @@ html, body {
   pointer-events: none;
   display: none;
 }
-.cover.cover-active.flipped .back-label {
-  display: block;
-}
-.cover.cover-active.flipped .cover-label {
-  display: none;
-}
+.cover.cover-active.flipped .back-label { display: block; }
+.cover.cover-active.flipped .cover-label { display: none; }
 
 /* === MODAL === */
 .artist-modal {
@@ -414,4 +405,38 @@ html, body {
   height: 100%;
   pointer-events: none;
   z-index: 0;
+}
+
+/* === MOBILE LAYOUT === */
+@media (max-width: 768px) {
+  /* Vertical coverflow container */
+  #coverflow-container {
+    height: 60vh;
+    overflow: hidden;
+    padding: 0 3vw;
+  }
+  /* Bottom nav for filters */
+  .filter-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    justify-content: space-around;
+    padding: 12px 0;
+    background: rgba(0,0,0,0.85);
+    overflow-x: auto;
+    scroll-snap-type: none;
+    z-index: 20;
+  }
+  .filter-label {
+    flex: 1 1 auto;
+    min-width: 0;
+    text-align: center;
+    padding: 12px 8px;
+  }
+  /* Slightly smaller covers on mobile */
+  .cover {
+    width: clamp(140px, 40vw, 200px);
+    height: clamp(140px, 40vw, 200px);
+  }
 }
