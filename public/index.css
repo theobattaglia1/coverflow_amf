@@ -397,6 +397,16 @@ html, body {
     height: 100vh;
     overflow: hidden; /* kill native vertical scroll */
   }
+  
+  {
+  /* … */
+  /* right now you inherit the desktop clamp(160px,25vw,300px) */
+  .cover {
+    /* add this to bump up the min/ideal/max on mobile */
+    width: clamp(200px, 60vw, 360px);
+    height: clamp(200px, 60vw, 360px);
+  }
+
 
   /* shrink logo to half its desktop width */
   .logo-frame {
