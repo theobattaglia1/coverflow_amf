@@ -121,9 +121,8 @@ html, body {
 }
 #coverflow-container {
   position: relative;
+  touch-action: none;
 }
-#coverflow-container { touch-action: none; }
-
 .coverflow-content {
   position: relative;
   width: 100%;
@@ -136,13 +135,14 @@ html, body {
   align-items: center;
 }
 
+/* ↑30% cover size on desktop */
 .cover {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  width: clamp(160px, 25vw, 300px);
-  height: clamp(160px, 25vw, 300px);
+  width: clamp(208px, 32.5vw, 390px);
+  height: clamp(208px, 32.5vw, 390px);
   transform-style: preserve-3d;
   transition: transform 0.5s cubic-bezier(0.22,1,0.36,1), filter 0.3s ease;
 }
@@ -372,7 +372,7 @@ html, body {
   pointer-events: none; z-index:0;
 }
 
-/* === MOBILE LAYOUT === */
+/* === MOBILE LAYOUT (HORIZONTAL) === */
 @media (max-width: 768px) {
   html, body {
     display: flex;
@@ -388,13 +388,13 @@ html, body {
     height: auto !important;
   }
 
-  /* center the coverflow */
+  /* scoot covers up and keep horizontal */
   .coverflow-container {
     flex: 1 1 auto;
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: center;
-    padding: 0 3vw;
+    padding: 10vh 3vw 0;
   }
 
   /* bottom nav for filters */
@@ -414,5 +414,11 @@ html, body {
     min-width: 0;
     text-align: center;
     padding: 12px 8px;
+  }
+
+  /* ↑30% cover size on mobile */
+  .cover {
+    width: clamp(182px, 52vw, 260px);
+    height: clamp(182px, 52vw, 260px);
   }
 }
