@@ -411,8 +411,6 @@ html, body {
     display: flex;
     align-items: center;
     justify-content: center;
-    padding-block: clamp(1rem, 8vh, 2rem);
-    padding-inline: 3vw;
   }
 
   /* bottom‑pinned filter bar */
