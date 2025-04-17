@@ -12,54 +12,44 @@
   <style id="global-styles"></style>
 </head>
 <body>
-  <!-- Logo -->
-  <div class="top-logo">
-    <iframe
-      class="logo-frame"
-      src="/assets/logo.html"
-      frameborder="0"
-      scrolling="no"
-    ></iframe>
-  </div>
-
-  <!-- Accordion filter on mobile / inline on desktop -->
-  <details class="filter-accordion">
-    <summary>FILTER</summary>
-    <div class="filter-container">
-      <span class="filter-label active" data-filter="all">ALL</span>
-      <span class="filter-label" data-filter="artist">ARTISTS</span>
-      <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
-      <span class="filter-label" data-filter="producer">PRODUCERS</span>
-      <span class="filter-label" data-filter="about">ABOUT US</span>
+  <div class="app-container">
+    <!-- Logo -->
+    <div class="top-logo">
+      <iframe
+        class="logo-frame"
+        src="/assets/logo.html"
+        frameborder="0"
+        scrolling="no"
+      ></iframe>
     </div>
-  </details>
 
-  <!-- Coverflow + ambient light + trail -->
-  <div
-    class="coverflow-container"
-    id="coverflow-container"
-  >
-    <div id="ambient-light"></div>
-    <canvas id="trail-canvas"></canvas>
-    <div
-      class="coverflow-content"
-      id="coverflow"
-    ></div>
+    <!-- Accordion filter on mobile / inline & open on desktop -->
+    <details class="filter-accordion">
+      <summary>FILTER</summary>
+      <div class="filter-container">
+        <span class="filter-label active" data-filter="all">ALL</span>
+        <span class="filter-label" data-filter="artist">ARTISTS</span>
+        <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
+        <span class="filter-label" data-filter="producer">PRODUCERS</span>
+        <span class="filter-label" data-filter="about">ABOUT US</span>
+      </div>
+    </details>
+
+    <!-- Coverflow -->
+    <div class="coverflow-container" id="coverflow-container">
+      <div id="ambient-light"></div>
+      <canvas id="trail-canvas"></canvas>
+      <div class="coverflow-content" id="coverflow"></div>
+    </div>
+
+    <!-- Hover credits (optional) -->
+    <div id="hover-credits" class="hover-credits-container"></div>
   </div>
-
-  <!-- Hover credits -->
-  <div
-    id="hover-credits"
-    class="hover-credits-container"
-  ></div>
 
   <!-- Artist detail modal -->
   <div class="artist-modal hidden">
     <div class="modal-content">
-      <img
-        class="artist-photo"
-        src="ARTIST IMAGE URL"
-      />
+      <img class="artist-photo" src="ARTIST IMAGE URL" />
       <button class="close-btn">✕</button>
       <div class="artist-info">
         <h1 class="artist-name">Artist Name</h1>
