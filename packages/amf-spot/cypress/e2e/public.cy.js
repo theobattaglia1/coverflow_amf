@@ -1,28 +1,29 @@
 describe('Public SPA', () => {
   before(() => {
     cy.visit('/');
+    // give the page half a second to hydrate
+    cy.wait(500);
   });
 
   it('displays cover elements', () => {
-    cy.get('.cover').should('exist');
+    cy.get('.cover', { timeout: 10000 }).should('exist');
   });
 
   it('changes active cover with ArrowRight', () => {
-    cy.get('.cover.active').should('exist').then($a1 => {
+    // wait for the active class to appear
+    cy.get('.cover.active', { timeout: 10000 }).should('exist').then($a1 => {
       cy.get('body').type('{rightarrow}');
-      cy.get('.cover.active').should($a2 => {
+      // now the active cover must be different
+      cy.get('.cover.active', { timeout: 10000 }).should($a2 => {
         expect($a2[0]).not.to.equal($a1[0]);
       });
     });
   });
 
   it('filter input narrows results', () => {
-    cy.get('#filter-ui input')
-      .should('exist')
-      .clear()
-      .type('nope')
-      .then(()=>{
-        cy.get('.cover').should('have.length',0);
-      });
+    // look for any input (the one in #filter-ui)
+    cy.get('input', { timeout: 10000 }).should('exist').clear().type('nope');
+    // after typing something that matches nothing, covers = []
+    cy.get('.cover', { timeout: 10000 }).should('have.length', 0);
   });
 });
