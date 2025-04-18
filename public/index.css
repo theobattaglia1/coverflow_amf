@@ -154,7 +154,8 @@ html, body {
   z-index: 1000;
 }
 
-.cover-front, .cover-back {
+.cover-front,
+.cover-back {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -233,14 +234,14 @@ html, body {
   background: rgba(255,255,255,0.25);
 }
 
-/* ensure the back‑face’s inner wrapper has no extra top padding and fills card */
+/* ensure the back‑face’s inner wrapper fills card */
 .cover-back .back-content {
   padding-top: 0 !important;
   position: relative;
   width: 100%;
   height: 100%;
 }
-/* absolutely stretch the Spotify iframe to fill its wrapper */
+/* absolutely stretch the Spotify iframe */
 .cover-back .back-content iframe {
   position: absolute;
   top: 0; left: 0;
@@ -250,9 +251,7 @@ html, body {
   border-radius: 12px;
 }
 
-/* === COVER & BACK LABELS ===
-     position them under the card, hide by default,
-     then show only on the active/front or active/flipped cover */
+/* === COVER & BACK LABELS === */
 .cover-label,
 .back-label {
   position: absolute;
@@ -397,35 +396,31 @@ html, body {
     height: 100vh;
     overflow: hidden; /* kill native vertical scroll */
   }
-  
-  
-  /* … */
-  /* right now you inherit the desktop clamp(160px,25vw,300px) */
+
+  /* bump up covers on mobile */
   .cover {
-    /* add this to bump up the min/ideal/max on mobile */
     width: clamp(200px, 70vw, 360px);
     height: clamp(200px, 70vw, 360px);
   }
 
-
-  /* shrink logo to half its desktop width */
+  /* shrink logo */
   .logo-frame {
     max-width: 50% !important;
     height: auto !important;
   }
 
-  /* let logo sit naturally, no forced large gap */
+  /* let logo sit naturally */
   .top-logo {
     flex: 0 0 auto;
     margin: clamp(0.5rem, 3vh, 1rem) auto;
   }
 
-  /* coverflow hugs right under the logo */
+  /* restore bottom padding so cards & labels clear the filter */
   .coverflow-container {
     flex: 1 1 auto;
     margin: 0;
     padding-top: 0;
-    padding-bottom: 0;
+    padding-bottom: clamp(12px, 3vh, 32px);
     padding-inline: 3vw;
     display: flex;
     align-items: center;
@@ -434,9 +429,8 @@ html, body {
     overflow-y: visible;
   }
 
-  /* === ENLARGE FLIPPED CARD ON MOBILE ONLY === */
+  /* enlarge flipped card */
   .cover.cover-active.flipped {
-    /* bump up from your normal 25vw → around 70vw for the flipped card */
     width: clamp(240px, 70vw, 360px) !important;
     height: clamp(240px, 70vw, 360px) !important;
   }
@@ -459,16 +453,20 @@ html, body {
     padding: clamp(0.5rem, 1.5vh, 1rem) 2vw;
   }
 
-/* ===== FAB‑style FILTER BUTTON (matching .expand-btn) ===== */
+  /* elevate both labels up so they never hide behind bottom */
+  .cover-label,
+  .back-label {
+    bottom: -2.5rem;
+  }
+
+  /* FAB‑style filter button */
   .filter-accordion {
     position: fixed;
     bottom: clamp(5rem, 10vh, 8rem);
     right: clamp(1rem, 5vw, 2rem);
     z-index: 30;
   }
-
   .filter-accordion summary {
-    /* exactly the same base styles as .cover .expand-btn */
     padding: 5px 12px;
     font-weight: 600;
     font-size: 14px;
@@ -481,17 +479,12 @@ html, body {
       inset 0 0 0 0.5px rgba(255,255,255,0.2),
       0 4px 12px rgba(0,0,0,0.3);
     cursor: pointer;
-
-    /* center the text */
     text-align: center;
-    /* drop the default disclosure arrow if you like */
     list-style: none;
   }
-
   .filter-accordion summary::-webkit-details-marker {
     display: none;
   }
-
   .filter-accordion summary:hover {
     background: rgba(255,255,255,0.25);
   }
