@@ -398,7 +398,7 @@ html, body {
     overflow: hidden; /* kill native vertical scroll */
   }
   
-  {
+  
   /* … */
   /* right now you inherit the desktop clamp(160px,25vw,300px) */
   .cover {
