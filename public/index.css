@@ -403,8 +403,8 @@ html, body {
   /* right now you inherit the desktop clamp(160px,25vw,300px) */
   .cover {
     /* add this to bump up the min/ideal/max on mobile */
-    width: clamp(200px, 75vw, 500px);
-    height: clamp(200px, 75vw, 500px);
+    width: clamp(200px, 65, 425px);
+    height: clamp(200px, 65vw, 425px);
   }
 
 
