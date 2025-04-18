@@ -109,15 +109,24 @@ fetch(`/data/covers.json?cb=${Date.now()}`)
   .catch(console.error);
 
 // 6) Layout params
-function updateLayoutParameters(){
+function updateLayoutParameters() {
   const vw = window.innerWidth;
-  coverSpacing   = Math.max(120, vw * 0.18);
-  anglePerOffset = vw < 600 ? 50 : 65;
-  minScale       = vw < 600 ? 0.45 : 0.5;
+
+  if (isMobile) {
+    // on mobile, use larger spacing to accommodate bigger/flipped cards
+    coverSpacing   = Math.max(180, vw * 0.30);
+    anglePerOffset = 50;
+    minScale       = 0.45;
+  } else {
+    // original desktop spacing
+    coverSpacing   = Math.max(120, vw * 0.18);
+    anglePerOffset = vw < 600 ? 50 : 65;
+    minScale       = vw < 600 ? 0.45 : 0.5;
+  }
 }
 
 // 7) Render covers
-function renderCovers(){
+function renderCovers() {
   coverflowEl.innerHTML = '';
   covers.forEach((cover, i) => {
     const wrapper = document.createElement('div');
@@ -140,20 +149,18 @@ function renderCovers(){
     backContent.className = 'back-content';
 
     if (cover.albumTitle?.toLowerCase() === 'contact') {
-      // “Contact Us” card
       const contactBtn = document.createElement('a');
       contactBtn.href = 'mailto:hi@allmyfriendsinc.com';
       contactBtn.innerText = 'Contact Us';
       contactBtn.className = 'expand-btn';
       backContent.appendChild(contactBtn);
     } else {
-      // Artist Details button
       const artistBtn = document.createElement('button');
       artistBtn.className = 'expand-btn';
       artistBtn.innerText = 'Artist Details';
       backContent.appendChild(artistBtn);
 
-      // 1) FRONT label (shown on un‑flipped center cover)
+      // FRONT label
       const coverLabel = document.createElement('div');
       coverLabel.className = 'cover-label';
       coverLabel.innerHTML = `
@@ -162,30 +169,29 @@ function renderCovers(){
       `;
       wrapper.appendChild(coverLabel);
 
-      // 2) BACK label (shown only when flipped)
+      // BACK label
       const backLabel = document.createElement('div');
       backLabel.className = 'back-label';
       backLabel.innerHTML = coverLabel.innerHTML;
       wrapper.appendChild(backLabel);
 
-      // 3) Spotify embed (if present)
+      // Spotify embed
       if (cover.music?.type === 'embed' && cover.music.url) {
         backContent.innerHTML += `
-          <iframe style="border-radius:12px"
+          <iframe
+            style="border-radius:12px"
             src="${cover.music.url.replace('spotify.com/','spotify.com/embed/')}"
             width="100%" height="352" frameborder="0"
             allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
             loading="lazy"></iframe>`;
       }
-    }  // ← this closing brace ends the else block correctly
+    }
 
-    // Append everything
     back.appendChild(backContent);
     flip.appendChild(front);
     flip.appendChild(back);
     wrapper.appendChild(flip);
 
-    // Click / flip behavior
     wrapper.addEventListener('click', () => {
       const idx = +wrapper.dataset.index;
       const off = idx - activeIndex;
@@ -199,7 +205,7 @@ function renderCovers(){
 }
 
 // 8) 3D layout
-function renderCoverFlow(){
+function renderCoverFlow() {
   document.querySelectorAll('.cover').forEach(cover => {
     const i      = +cover.dataset.index;
     const offset = i - activeIndex;
@@ -216,8 +222,6 @@ function renderCoverFlow(){
     `;
     cover.style.filter = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset),4)}px)`;
     cover.style.zIndex = covers.length - Math.abs(offset);
-
-    // always reset any flipped card when it’s no longer center
     cover.querySelector('.flip-container')?.classList.remove('flipped');
     cover.classList.toggle('cover-active', offset === 0);
   });
@@ -243,14 +247,13 @@ document.body.addEventListener('click', e => {
           player= modal.querySelector('.spotify-player'),
           link  = cd.artistDetails.spotifyLink;
 
-    // image
     if (cd.artistDetails.image) {
       photo.src = cd.artistDetails.image;
       photo.style.display = '';
     } else {
       photo.style.display = 'none';
     }
-    // spotify embed
+
     if (link?.includes('spotify.com')) {
       player.src = link.replace('spotify.com/','spotify.com/embed/');
       player.style.display = '';
