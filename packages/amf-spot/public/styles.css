@@ -1,0 +1,23 @@
+body {
+  margin:0; padding:0;
+  display:flex; flex-direction:column; align-items:center;
+}
+header {
+  width:100%; padding:1rem; text-align:center;
+}
+#filter-ui { margin-top:.5rem; }
+#coverflow {
+  width:100%; height:360px; overflow:hidden;
+  margin:2rem 0; white-space:nowrap;
+}
+.cover {
+  display:inline-block; margin:0 1rem;
+  transition:transform .3s ease;
+}
+.cover img {
+  width:200px; height:auto; border-radius:8px;
+}
+.cover.active { z-index:1; }
+@media(max-width:600px){
+  .cover img { width:120px; }
+}
