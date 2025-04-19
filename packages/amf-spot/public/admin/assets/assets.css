@@ -1,0 +1,5 @@
+#assetList { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:1rem; }
+#assetList li { position:relative; }
+#assetList img { max-width:200px; cursor:pointer; border:1px solid #ccc; }
+#annotation-ui { margin-top:2rem; }
+#assetCommentsList { list-style:none; padding:0; }
