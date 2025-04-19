@@ -1,0 +1,5 @@
+2025-04-19T05:26:58.8279223Z Requested labels: ubuntu-latest
+2025-04-19T05:26:58.8279223Z Job defined at: theobattaglia1/coverflow_amf/.github/workflows/ci.yml@refs/heads/main
+2025-04-19T05:26:58.8279223Z Waiting for a runner to pick up this job...
+2025-04-19T05:26:58.9714247Z Job is waiting for a hosted runner to come online.
+2025-04-19T05:26:58.9714298Z Job is about to start running on the hosted runner: GitHub Actions

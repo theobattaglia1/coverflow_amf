@@ -1,0 +1,12 @@
+*** Begin Patch
+*** Update File: server.js
+@@
+-app.use(express.static(path.join(__dirname, 'public')));
++app.use(express.static(path.join(__dirname, 'public')));
++
++// ── Serve uploaded assets (audio, images, etc.) ────────────────────────────
++app.use(
++  '/uploads',
++  express.static(path.join(__dirname, 'uploads'))
++);
+*** End Patch

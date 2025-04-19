@@ -1,0 +1,81 @@
+(async () => {
+  const uploadForm   = document.getElementById('upload-form');
+  const fileInput    = document.getElementById('file-input');
+  const select       = document.getElementById('audio-select');
+  const player       = document.getElementById('audio-player');
+  const timestampIn  = document.getElementById('timestamp');
+  const commentIn    = document.getElementById('comment-text');
+  const addBtn       = document.getElementById('add-comment');
+  const commentsList = document.getElementById('comments-list');
+
+  // Upload handler
+  uploadForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    const file = fileInput.files[0];
+    if (!file) return alert('Please choose a file first');
+    const form = new FormData();
+    form.append('file', file);
+    const res = await fetch('/upload-audio', { method: 'POST', body: form });
+    if (!res.ok) return alert('Upload failed');
+    const { url } = await res.json();
+    alert('Uploaded: ' + url);
+    await loadAudioList();
+  });
+
+  // Populate <select> with existing files
+  async function loadAudioList() {
+    const res = await fetch('/audio-files');
+    const files = await res.json();
+    select.innerHTML = '';
+    files.forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f.split('/').pop();
+      select.appendChild(opt);
+    });
+    if (files.length) {
+      select.value = files[0];
+      player.src = select.value;
+      await loadComments();
+    }
+  }
+
+  // When user picks a different file
+  select.addEventListener('change', async () => {
+    player.src = select.value;
+    await loadComments();
+  });
+
+  // Post a new comment
+  addBtn.addEventListener('click', async () => {
+    const payload = {
+      file: select.value,
+      timestamp: Number(timestampIn.value),
+      text: commentIn.value.trim()
+    };
+    const res = await fetch('/api/comments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) return alert('Comment failed');
+    commentIn.value = '';
+    timestampIn.value = '';
+    await loadComments();
+  });
+
+  // Fetch & render comments
+  async function loadComments() {
+    const res = await fetch('/api/comments?file=' + encodeURIComponent(select.value));
+    const list = await res.json();
+    commentsList.innerHTML = '';
+    list.forEach(c => {
+      const li = document.createElement('li');
+      li.textContent = \`\${c.timestamp}s: \${c.text}\`;
+      commentsList.appendChild(li);
+    });
+  }
+
+  // kick things off
+  await loadAudioList();
+})();

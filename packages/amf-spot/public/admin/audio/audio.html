@@ -1,21 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Audio Annotator</title>
-  <link rel="stylesheet" href="../audio.css"/>
+  <meta charset="utf-8" />
+  <title>Audio Commenting</title>
+  <link rel="stylesheet" href="audio.css" />
 </head>
 <body>
-  <h2>Audio Annotator</h2>
-  <select id="audio-select"></select>
-  <audio id="player" controls></audio>
-  <div id="comments-panel">
-    <h3>Comments</h3>
-    <ul id="comments-list"></ul>
-    <input id="comment-text" placeholder="New comment…"/>
-    <button id="add-comment">Add at current time</button>
+  <h1>Audio Commenting</h1>
+  <div>
+    <label for="audio-select">Choose file:</label>
+    <select id="audio-select"></select>
   </div>
-  <script type="module" src="audio.js"></script>
+  <div>
+    <audio id="audio-player" controls style="width:100%;margin:1rem 0;"></audio>
+  </div>
+  <div>
+    <input id="timestamp-input" type="number" placeholder="Timestamp (s)" />
+    <input id="comment-input" type="text" placeholder="Comment" />
+    <button id="add-comment-btn">Add Comment</button>
+  </div>
+  <ul id="comments-list"></ul>
+  <script src="audio.js" defer></script>
 </body>
 </html>
