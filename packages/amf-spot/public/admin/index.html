@@ -1,27 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Artist Dashboard</title>
-  <link rel="stylesheet" href="/admin/styles.css" />
+  <meta charset="UTF-8">
+  <title>Artist Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>Artist Dashboard</h1>
-  </header>
+  <h1>🎨 Artist Dashboard</h1>
 
-  <section id="showcase-container">
-    <h2>Showcase Reel</h2>
-    <div id="showcase"></div>
+  <section id="coverflow-section">
+    <h2>Covers Showcase</h2>
+    <div id="coverflow"></div>
+    <button id="save-order">Save Order</button>
   </section>
 
-  <section id="upload-container">
-    <h2>Upload New Cover</h2>
-    <input type="file" id="cover-upload" accept="image/*" />
-    <button id="upload-btn">Upload</button>
+  <section id="audio-comments-section">
+    <h2>Audio Comments (WIP)</h2>
+    <div id="audio-files"></div>
+    <div id="comments"></div>
   </section>
 
-  <script type="module" src="/admin/dashboard.js"></script>
+  <script src="dashboard.js"></script>
 </body>
 </html>
