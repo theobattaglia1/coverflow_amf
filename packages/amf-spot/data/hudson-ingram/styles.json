@@ -1,0 +1,11 @@
+{
+  "fontFamily": "GT America",
+  "fontSize": 16,
+  "fonts": [
+    {
+      "name": "SF-Pro-Text-Regular.otf",
+      "url": "/assets/fonts/hudson-ingram/1745015682610-SF-Pro-Text-Regular.otf"
+    }
+  ],
+  "overrides": {}
+}
