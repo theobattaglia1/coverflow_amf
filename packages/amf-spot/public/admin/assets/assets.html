@@ -1,34 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>Assets Management</title>
-  <link rel="stylesheet" href="assets.css" />
+  <meta charset="utf-8">
+  <title>Image Assets</title>
+  <link rel="stylesheet" href="assets.css">
 </head>
 <body>
-  <h1>Assets</h1>
-  <!-- Upload form -->
+  <h1>Image Assets</h1>
+
+  <!-- Upload -->
   <div id="upload-ui">
-    <input type="file" id="assetInput" accept="image/*" />
-    <button id="uploadAssetBtn">Upload Image</button>
+    <input type="file" id="imgInput" accept="image/*" multiple>
+    <button id="uploadBtn">Upload Images</button>
   </div>
 
-  <hr/>
+  <!-- Gallery -->
+  <div id="gallery"></div>
 
-  <!-- Gallery & annotation -->
-  <div id="gallery-ui">
-    <h2>Gallery</h2>
-    <ul id="assetList"></ul>
-  </div>
-
-  <!-- Simple annotation panel -->
-  <div id="annotation-ui">
-    <h2>Annotations</h2>
-    <input id="commentX" type="number" placeholder="X (px)" />
-    <input id="commentY" type="number" placeholder="Y (px)" />
-    <input id="commentText" type="text" placeholder="Comment" />
-    <button id="addAssetCommentBtn">Annotate</button>
-    <ul id="assetCommentsList"></ul>
+  <!-- Modal for annotations -->
+  <div id="lightbox" class="hidden">
+    <div id="lightbox-content">
+      <img id="lightbox-img" src="">
+      <textarea id="captionIn" placeholder="Enter caption…"></textarea>
+      <button id="saveCaptionBtn">Save Caption</button>
+      <button id="closeBtn">Close</button>
+    </div>
   </div>
 
   <script src="assets.js"></script>
