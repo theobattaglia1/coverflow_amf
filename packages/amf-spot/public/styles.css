@@ -21,3 +21,16 @@ header {
 @media(max-width:600px){
   .cover img { width:120px; }
 }
+
+#covers-container {
+  margin-top: 2rem;
+}
+.cover {
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+  font-size: 1.25rem;
+}
+.cover.active {
+  background: #def;
+  font-weight: bold;
+}
