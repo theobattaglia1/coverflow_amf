@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>AMF Spot Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <h1>Admin Dashboard</h1>
+
+  <section id="styles-section">
+    <h2>Styles</h2>
+    <form id="styles-form">
+      <label>
+        Font Family:
+        <input type="text" name="fontFamily" />
+      </label>
+      <label>
+        Font Size:
+        <input type="number" name="fontSize" />
+      </label>
+      <button type="submit">Save Styles</button>
+    </form>
+  </section>
+
+  <section id="upload-section">
+    <h2>Upload</h2>
+    <form id="image-upload-form" enctype="multipart/form-data">
+      <label>
+        Image:
+        <input type="file" name="file" accept="image/*" />
+      </label>
+      <button type="submit">Upload Image</button>
+    </form>
+    <form id="font-upload-form" enctype="multipart/form-data">
+      <label>
+        Font:
+        <input type="file" name="file" accept=".woff2,.otf,.ttf" />
+      </label>
+      <button type="submit">Upload Font</button>
+    </form>
+  </section>
+
+  <section id="covers-section">
+    <h2>Covers</h2>
+    <ul id="covers-list"></ul>
+    <button id="refresh-covers">Refresh Covers</button>
+  </section>
+
+  <section id="push-section">
+    <h2>Publish</h2>
+    <button id="push-test">Push to Test</button>
+    <button id="push-live">Push to Live</button>
+  </section>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
