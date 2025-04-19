@@ -1,22 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="UTF-8" />
   <title>All My Friends Spot</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { font-family: sans-serif; text-align: center; padding: 2rem; }
+    #filter-ui input { padding: 0.5rem; font-size: 1rem; }
+    .cover { margin: 1rem 0; font-size: 1.25rem; }
+    .cover.active { font-weight: bold; }
+  </style>
 </head>
 <body>
   <header>
     <h1>All My Friends Spot</h1>
     <div id="filter-ui">
-      <!-- static fallback so Cypress always finds it -->
+      <!-- this static input is picked up by index.js -->
       <input type="text" placeholder="Filter covers…" />
     </div>
   </header>
+
   <main>
-    <div id="coverflow"></div>
+    <!-- JS will render each cover here -->
+    <div id="covers-container"></div>
   </main>
+
+  <!-- Load your SPA logic -->
   <script src="index.js"></script>
 </body>
 </html>
