@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Assets Management</title>
+  <link rel="stylesheet" href="assets.css" />
+</head>
+<body>
+  <h1>Assets</h1>
+  <!-- Upload form -->
+  <div id="upload-ui">
+    <input type="file" id="assetInput" accept="image/*" />
+    <button id="uploadAssetBtn">Upload Image</button>
+  </div>
+
+  <hr/>
+
+  <!-- Gallery & annotation -->
+  <div id="gallery-ui">
+    <h2>Gallery</h2>
+    <ul id="assetList"></ul>
+  </div>
+
+  <!-- Simple annotation panel -->
+  <div id="annotation-ui">
+    <h2>Annotations</h2>
+    <input id="commentX" type="number" placeholder="X (px)" />
+    <input id="commentY" type="number" placeholder="Y (px)" />
+    <input id="commentText" type="text" placeholder="Comment" />
+    <button id="addAssetCommentBtn">Annotate</button>
+    <ul id="assetCommentsList"></ul>
+  </div>
+
+  <script src="assets.js"></script>
+</body>
+</html>
