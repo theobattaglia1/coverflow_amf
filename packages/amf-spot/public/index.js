@@ -1,51 +1,46 @@
-(function(){
-  // Two static covers
-  var allCovers = [
-    { id: 'first',  title: 'First' },
-    { id: 'second', title: 'Second' }
-  ];
-  var covers = allCovers.slice();
-  var activeIndex = 0;
+;(function(){
+  const container = document.getElementById('covers-container');
+  const input = document.querySelector('#filter-ui input');
+  let allCovers = [], covers = [], activeIndex = 0;
 
-  var container = document.getElementById('coverflow');
-  var input = document.querySelector('#filter-ui input');
-
-  // Render function
-  function render(){
-    container.innerHTML = '';
-    for(var i=0; i<covers.length; i++){
-      var c = covers[i];
-      var div = document.createElement('div');
-      div.className = (i===activeIndex)? 'cover active' : 'cover';
-      div.appendChild(document.createTextNode(c.title));
-      var x = (i - activeIndex) * 220;
-      div.style.transform = 'translateX(' + x + 'px) scale(' + (i===activeIndex?1.2:0.8) + ')';
-      container.appendChild(div);
-    }
+  // Fetch initial data
+  async function fetchData(){
+    allCovers = await fetch('/api/covers').then(r=>r.json());
+    covers = allCovers;
+    render();
   }
 
-  // Initial render
-  render();
-
-  // Filter logic
-  input.addEventListener('input', function(e){
-    var term = e.target.value.toLowerCase();
-    covers = allCovers.filter(function(c){
-      return c.title.toLowerCase().indexOf(term) !== -1;
+  // Render covers into #covers-container
+  function render(){
+    if (!container) return;
+    container.innerHTML = '';
+    covers.forEach((c, i) => {
+      const div = document.createElement('div');
+      div.className = 'cover' + (i === activeIndex ? ' active' : '');
+      div.textContent = c.title;
+      container.appendChild(div);
     });
+  }
+
+  // Filter input
+  input.addEventListener('input', e => {
+    const term = e.target.value.toLowerCase();
+    covers = allCovers.filter(c => c.title.toLowerCase().includes(term));
     activeIndex = 0;
     render();
   });
 
-  // Keyboard nav
-  window.addEventListener('keydown', function(e){
-    if(e.key === 'ArrowRight' && activeIndex < covers.length - 1){
+  // Arrow key navigation
+  window.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' && activeIndex < covers.length - 1) {
       activeIndex++;
       render();
     }
-    if(e.key === 'ArrowLeft' && activeIndex > 0){
+    if (e.key === 'ArrowLeft' && activeIndex > 0) {
       activeIndex--;
       render();
     }
   });
+
+  fetchData();
 })();
