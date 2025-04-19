@@ -1,0 +1,67 @@
+// packages/amf-spot/api.test.js
+const fs = require('fs-extra')
+const path = require('path')
+const request = require('supertest')
+const { app, dataDir } = require('./server')
+
+const coversFile = path.join(dataDir, 'covers.json')
+const stylesFile = path.join(dataDir, 'styles.json')
+
+beforeEach(async () => {
+  // clear dataDir
+  await fs.emptyDir(dataDir)
+  // recreate base files
+  await fs.writeJson(coversFile, [], { spaces: 2 })
+  await fs.writeJson(stylesFile, {
+    fontFamily: 'GT America',
+    fontSize: 16,
+    fonts: [],
+    overrides: {}
+  }, { spaces: 2 })
+})
+
+describe('GET /api/covers', () => {
+  test('returns empty array initially', async () => {
+    const res = await request(app).get('/api/covers')
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ success: true, covers: [] })
+  })
+})
+
+describe('POST /save-covers', () => {
+  test('replaces covers.json', async () => {
+    const sample = [{ id: 'x', title: 'Test' }]
+    const res = await request(app)
+      .post('/save-covers')
+      .send(sample)
+      .set('Content-Type', 'application/json')
+    expect(res.status).toBe(200)
+    expect(res.body).toEqual({ success: true, covers: sample })
+
+    // verify GET now returns it
+    const getRes = await request(app).get('/api/covers')
+    expect(getRes.body.covers).toEqual(sample)
+  })
+})
+
+describe('GET /api/styles', () => {
+  test('returns default styles', async () => {
+    const res = await request(app).get('/api/styles')
+    expect(res.status).toBe(200)
+    expect(res.body.success).toBe(true)
+    expect(res.body.styles.fontFamily).toBe('GT America')
+  })
+})
+
+describe('POST /save-style-settings', () => {
+  test('merges style updates', async () => {
+    const updates = { fontSize: 24 }
+    const res = await request(app)
+      .post('/save-style-settings')
+      .send(updates)
+      .set('Content-Type', 'application/json')
+    expect(res.status).toBe(200)
+    expect(res.body.styles.fontSize).toBe(24)
+  })
+})
+

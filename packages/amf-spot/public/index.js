@@ -1,108 +1,51 @@
-(() => {
-  const ARTIST_ID = 'hudson-ingram';
-  const log = msg => console.debug(`${new Date().toISOString()} – ${msg}`);
-  let allCovers = [], covers = [], activeIndex = 0;
+(function(){
+  // Two static covers
+  var allCovers = [
+    { id: 'first',  title: 'First' },
+    { id: 'second', title: 'Second' }
+  ];
+  var covers = allCovers.slice();
+  var activeIndex = 0;
 
-  const container = document.getElementById('coverflow');
-  const filterUI = document.getElementById('filter-ui');
-  const input = filterUI.querySelector('input');
-  const headers = { 'X-Artist-ID': ARTIST_ID };
+  var container = document.getElementById('coverflow');
+  var input = document.querySelector('#filter-ui input');
 
-  // Fetch styles
-  fetch(`/api/styles?ts=${Date.now()}`, { headers })
-    .then(r => r.json())
-    .then(styles => {
-      const styleEl = document.createElement('style');
-      let css = '';
-      styles.fonts.forEach(f => {
-        css += `
-@font-face {
-  font-family: '${f.name}';
-  src: url('${f.url}');
-}
-`;
-      });
-      css += `
-body {
-  font-family: '${styles.fontFamily}';
-  font-size: ${styles.fontSize}px;
-}
-`;
-      styleEl.textContent = css;
-      document.head.appendChild(styleEl);
-      log('styles applied');
-    });
-
-  // Fetch covers
-  fetch(`/api/covers?ts=${Date.now()}`, { headers })
-    .then(r => r.json())
-    .then(data => {
-      allCovers = data.length ? data : [{ id:'empty', title:'No covers' }];
-      covers = allCovers.slice();
-      renderCoverFlow();
-      log('covers rendered');
-    });
-
-  // render function
-  function renderCoverFlow() {
+  // Render function
+  function render(){
     container.innerHTML = '';
-    covers.forEach((c,i) => {
-      const div = document.createElement('div');
-      div.className = i===activeIndex ? 'cover active' : 'cover';
-      if(c.url) {
-        const img = document.createElement('img');
-        img.src = c.url;
-        img.alt = c.title;
-        div.appendChild(img);
-      } else {
-        div.textContent = c.title || c.id;
-      }
-      const x = (i - activeIndex)*220;
-      div.style.transform = `translateX(${x}px) scale(${i===activeIndex?1.2:0.8})`;
+    for(var i=0; i<covers.length; i++){
+      var c = covers[i];
+      var div = document.createElement('div');
+      div.className = (i===activeIndex)? 'cover active' : 'cover';
+      div.appendChild(document.createTextNode(c.title));
+      var x = (i - activeIndex) * 220;
+      div.style.transform = 'translateX(' + x + 'px) scale(' + (i===activeIndex?1.2:0.8) + ')';
       container.appendChild(div);
-    });
+    }
   }
 
-  // filter
-  input.addEventListener('input', e=>{
-    const term = e.target.value.toLowerCase();
-    covers = allCovers.filter(c=> (c.title||'').toLowerCase().includes(term));
+  // Initial render
+  render();
+
+  // Filter logic
+  input.addEventListener('input', function(e){
+    var term = e.target.value.toLowerCase();
+    covers = allCovers.filter(function(c){
+      return c.title.toLowerCase().indexOf(term) !== -1;
+    });
     activeIndex = 0;
-    renderCoverFlow();
-    log('filtered');
+    render();
   });
 
-  // keyboard
-  window.addEventListener('keydown', e=>{
-    if(e.key==='ArrowRight' && activeIndex<covers.length-1) {
-      activeIndex++; renderCoverFlow(); log('right');
+  // Keyboard nav
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowRight' && activeIndex < covers.length - 1){
+      activeIndex++;
+      render();
     }
-    if(e.key==='ArrowLeft' && activeIndex>0) {
-      activeIndex--; renderCoverFlow(); log('left');
+    if(e.key === 'ArrowLeft' && activeIndex > 0){
+      activeIndex--;
+      render();
     }
   });
-
-  // wheel
-  container.addEventListener('wheel', e=>{
-    e.preventDefault();
-    activeIndex = e.deltaY>0
-      ? Math.min(activeIndex+1, covers.length-1)
-      : Math.max(activeIndex-1, 0);
-    renderCoverFlow(); log('wheel');
-  },{passive:false});
-
-  // touch
-  let startX=null;
-  container.addEventListener('touchstart',e=> startX=e.touches[0].clientX);
-  container.addEventListener('touchend',e=>{
-    if(startX===null) return;
-    const diff = e.changedTouches[0].clientX - startX;
-    if(diff>50 && activeIndex>0) activeIndex--;
-    if(diff<-50 && activeIndex<covers.length-1) activeIndex++;
-    renderCoverFlow(); log('swipe');
-    startX=null;
-  });
-
-  // resize
-  window.addEventListener('resize',()=>{ renderCoverFlow(); log('resize'); });
 })();
