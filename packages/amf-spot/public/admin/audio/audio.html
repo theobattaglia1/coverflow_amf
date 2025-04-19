@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
   <meta charset="utf-8" />
   <title>Audio Commenting</title>
@@ -7,19 +7,35 @@
 </head>
 <body>
   <h1>Audio Commenting</h1>
-  <div>
-    <label for="audio-select">Choose file:</label>
-    <select id="audio-select"></select>
+
+  <!-- Upload UI -->
+  <div id="upload-ui">
+    <label for="fileInput">Select audio file:</label>
+    <input type="file" id="fileInput" />
+    <button id="uploadBtn">Upload</button>
   </div>
-  <div>
-    <audio id="audio-player" controls style="width:100%;margin:1rem 0;"></audio>
+
+  <!-- Picker -->
+  <div id="picker-ui">
+    <label for="audioSelect">Choose file:</label>
+    <select id="audioSelect"></select>
   </div>
-  <div>
-    <input id="timestamp-input" type="number" placeholder="Timestamp (s)" />
-    <input id="comment-input" type="text" placeholder="Comment" />
-    <button id="add-comment-btn">Add Comment</button>
+
+  <!-- Player -->
+  <div id="player-ui">
+    <audio id="audioPlayer" controls></audio>
   </div>
-  <ul id="comments-list"></ul>
-  <script src="audio.js" defer></script>
+
+  <hr/>
+
+  <!-- Comments UI -->
+  <div id="comments-ui">
+    <input id="timestampIn"   type="number" placeholder="Timestamp (s)" />
+    <input id="commentIn"     type="text"   placeholder="Comment" />
+    <button id="addCommentBtn">Add Comment</button>
+    <ul    id="commentsList"></ul>
+  </div>
+
+  <script src="audio.js"></script>
 </body>
 </html>
