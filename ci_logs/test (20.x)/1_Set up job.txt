@@ -1,0 +1,35 @@
+﻿2025-04-19T05:27:02.2301574Z Current runner version: '2.323.0'
+2025-04-19T05:27:02.2336269Z ##[group]Operating System
+2025-04-19T05:27:02.2337664Z Ubuntu
+2025-04-19T05:27:02.2338529Z 24.04.2
+2025-04-19T05:27:02.2339306Z LTS
+2025-04-19T05:27:02.2340198Z ##[endgroup]
+2025-04-19T05:27:02.2341044Z ##[group]Runner Image
+2025-04-19T05:27:02.2342025Z Image: ubuntu-24.04
+2025-04-19T05:27:02.2342974Z Version: 20250413.1.0
+2025-04-19T05:27:02.2344684Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250413.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-04-19T05:27:02.2347458Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250413.1
+2025-04-19T05:27:02.2349149Z ##[endgroup]
+2025-04-19T05:27:02.2350082Z ##[group]Runner Image Provisioner
+2025-04-19T05:27:02.2351028Z 2.0.422.1
+2025-04-19T05:27:02.2351825Z ##[endgroup]
+2025-04-19T05:27:02.2353589Z ##[group]GITHUB_TOKEN Permissions
+2025-04-19T05:27:02.2356340Z Contents: read
+2025-04-19T05:27:02.2358267Z Metadata: read
+2025-04-19T05:27:02.2359146Z Packages: read
+2025-04-19T05:27:02.2360466Z ##[endgroup]
+2025-04-19T05:27:02.2363935Z Secret source: Actions
+2025-04-19T05:27:02.2365001Z Prepare workflow directory
+2025-04-19T05:27:02.2813699Z Prepare all required actions
+2025-04-19T05:27:02.2869007Z Getting action download info
+2025-04-19T05:27:02.6669762Z ##[group]Download immutable action package 'actions/checkout@v3'
+2025-04-19T05:27:02.6670859Z Version: 3.6.0
+2025-04-19T05:27:02.6671975Z Digest: sha256:942562b9c7d4b1f2557f1da21f4d3eb4eb4fd01f2ad78b2a6e187d1b193e0a0f
+2025-04-19T05:27:02.6673307Z Source commit SHA: f43a0e5ff2bd294095638e18286ca9a3d1956744
+2025-04-19T05:27:02.6674117Z ##[endgroup]
+2025-04-19T05:27:02.7719953Z ##[group]Download immutable action package 'actions/setup-node@v3'
+2025-04-19T05:27:02.7720795Z Version: 3.9.1
+2025-04-19T05:27:02.7721647Z Digest: sha256:d8c8dbd6e63927801f9de42620f961a361b03be6034dcc11e83ca01f50cb9f40
+2025-04-19T05:27:02.7722638Z Source commit SHA: 3235b876344d2a9aa001b8d1453c930bba69e610
+2025-04-19T05:27:02.7723397Z ##[endgroup]
+2025-04-19T05:27:03.1136043Z Complete job name: test (20.x)

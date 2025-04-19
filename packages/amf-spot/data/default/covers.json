@@ -1,5 +1,11 @@
 [
-  { "id": "first",  "title": "First Cover"  },
-  { "id": "second", "title": "Second Cover" },
-  { "id": "third",  "title": "Third Cover"  }
+  {
+    "id": "first"
+  },
+  {
+    "id": "second"
+  },
+  {
+    "id": "third"
+  }
 ]

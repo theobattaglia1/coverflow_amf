@@ -1,0 +1,175 @@
+﻿2025-04-19T05:27:19.7277435Z ##[group]Run cd packages/amf-spot && npm test
+2025-04-19T05:27:19.7277835Z [36;1mcd packages/amf-spot && npm test[0m
+2025-04-19T05:27:19.7325335Z shell: /usr/bin/bash -e {0}
+2025-04-19T05:27:19.7325610Z ##[endgroup]
+2025-04-19T05:27:19.8830402Z 
+2025-04-19T05:27:19.8830812Z > amf-spot@0.1.0 test
+2025-04-19T05:27:19.8831186Z > jest
+2025-04-19T05:27:19.8831360Z 
+2025-04-19T05:27:21.1522505Z FAIL ./api.push.test.js
+2025-04-19T05:27:21.1633233Z   ● Console
+2025-04-19T05:27:21.1635722Z 
+2025-04-19T05:27:21.1635901Z     console.log
+2025-04-19T05:27:21.1636460Z       2025-04-19T05:27:21.080Z [info] Using data path: /data
+2025-04-19T05:27:21.1637199Z 
+2025-04-19T05:27:21.1637711Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1638167Z 
+2025-04-19T05:27:21.1638265Z     console.log
+2025-04-19T05:27:21.1638967Z       2025-04-19T05:27:21.116Z [error] POST /push-to-test error: Error: EACCES: permission denied, mkdir '/data/pushTestArtist'
+2025-04-19T05:27:21.1639486Z 
+2025-04-19T05:27:21.1639757Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1640055Z 
+2025-04-19T05:27:21.1640479Z     console.log
+2025-04-19T05:27:21.1640989Z       2025-04-19T05:27:21.132Z [error] POST /push-to-live error: Error: EACCES: permission denied, mkdir '/data/pushTestArtist'
+2025-04-19T05:27:21.1641412Z 
+2025-04-19T05:27:21.1641672Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1642005Z 
+2025-04-19T05:27:21.1642359Z   ● Push endpoints › POST /push-to-test copies covers & styles to test files
+2025-04-19T05:27:21.1642635Z 
+2025-04-19T05:27:21.1642811Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1643026Z 
+2025-04-19T05:27:21.1643105Z     Expected: 200
+2025-04-19T05:27:21.1643296Z     Received: 500
+2025-04-19T05:27:21.1643404Z 
+2025-04-19T05:27:21.1643647Z     [0m [90m 32 |[39m       [33m.[39mpost([32m'/push-to-test'[39m)
+2025-04-19T05:27:21.1644194Z      [90m 33 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artist)
+2025-04-19T05:27:21.1644766Z     [31m[1m>[22m[39m[90m 34 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1645239Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1645783Z      [90m 35 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1646169Z      [90m 36 |[39m
+2025-04-19T05:27:21.1646621Z      [90m 37 |[39m     [36mconst[39m tc [33m=[39m [36mawait[39m fs[33m.[39mreadJson(testCovers)[0m
+2025-04-19T05:27:21.1646911Z 
+2025-04-19T05:27:21.1647285Z       at Object.toBe (api.push.test.js:34:24)
+2025-04-19T05:27:21.1647488Z 
+2025-04-19T05:27:21.1647788Z   ● Push endpoints › POST /push-to-live copies test files back to live files
+2025-04-19T05:27:21.1648075Z 
+2025-04-19T05:27:21.1648267Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1648496Z 
+2025-04-19T05:27:21.1648579Z     Expected: 200
+2025-04-19T05:27:21.1648760Z     Received: 500
+2025-04-19T05:27:21.1648869Z 
+2025-04-19T05:27:21.1649112Z     [0m [90m 52 |[39m       [33m.[39mpost([32m'/push-to-live'[39m)
+2025-04-19T05:27:21.1649601Z      [90m 53 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artist)
+2025-04-19T05:27:21.1650152Z     [31m[1m>[22m[39m[90m 54 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1650601Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1651127Z      [90m 55 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1651516Z      [90m 56 |[39m
+2025-04-19T05:27:21.1651969Z      [90m 57 |[39m     [36mconst[39m liveC [33m=[39m [36mawait[39m fs[33m.[39mreadJson(coversFile)[0m
+2025-04-19T05:27:21.1652272Z 
+2025-04-19T05:27:21.1652408Z       at Object.toBe (api.push.test.js:54:24)
+2025-04-19T05:27:21.1652828Z 
+2025-04-19T05:27:21.1705123Z FAIL ./api.test.js
+2025-04-19T05:27:21.1752347Z   ● Console
+2025-04-19T05:27:21.1752615Z 
+2025-04-19T05:27:21.1752792Z     console.log
+2025-04-19T05:27:21.1753374Z       2025-04-19T05:27:21.079Z [info] Using data path: /data
+2025-04-19T05:27:21.1753826Z 
+2025-04-19T05:27:21.1754336Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1754714Z 
+2025-04-19T05:27:21.1754820Z     console.log
+2025-04-19T05:27:21.1755655Z       2025-04-19T05:27:21.116Z [error] GET /api/styles error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1756447Z 
+2025-04-19T05:27:21.1757275Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1757799Z 
+2025-04-19T05:27:21.1757945Z     console.log
+2025-04-19T05:27:21.1758809Z       2025-04-19T05:27:21.132Z [error] GET /api/covers error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1759476Z 
+2025-04-19T05:27:21.1759945Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1760741Z 
+2025-04-19T05:27:21.1760894Z     console.log
+2025-04-19T05:27:21.1761722Z       2025-04-19T05:27:21.143Z [error] POST /save-cover error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1762377Z 
+2025-04-19T05:27:21.1762854Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1763401Z 
+2025-04-19T05:27:21.1763544Z     console.log
+2025-04-19T05:27:21.1764346Z       2025-04-19T05:27:21.147Z [error] POST /save-covers error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1765041Z 
+2025-04-19T05:27:21.1765535Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1766079Z 
+2025-04-19T05:27:21.1766606Z   ● AMF‑Spot API › GET /api/styles returns default styles
+2025-04-19T05:27:21.1767256Z 
+2025-04-19T05:27:21.1767572Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1767967Z 
+2025-04-19T05:27:21.1768142Z     Expected: 200
+2025-04-19T05:27:21.1768475Z     Received: 500
+2025-04-19T05:27:21.1768693Z 
+2025-04-19T05:27:21.1769192Z     [0m [90m 23 |[39m       [33m.[39m[36mget[39m([32m'/api/styles'[39m)
+2025-04-19T05:27:21.1770141Z      [90m 24 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1771191Z     [31m[1m>[22m[39m[90m 25 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1772001Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1773436Z      [90m 26 |[39m     expect(res[33m.[39mbody)[33m.[39mtoMatchObject({ fontFamily[33m:[39m [32m'GT America'[39m[33m,[39m fontSize[33m:[39m [35m16[39m })
+2025-04-19T05:27:21.1774502Z      [90m 27 |[39m   })
+2025-04-19T05:27:21.1774975Z      [90m 28 |[39m[0m
+2025-04-19T05:27:21.1775220Z 
+2025-04-19T05:27:21.1775447Z       at Object.toBe (api.test.js:25:24)
+2025-04-19T05:27:21.1775766Z 
+2025-04-19T05:27:21.1776182Z   ● AMF‑Spot API › GET /api/covers returns empty array
+2025-04-19T05:27:21.1776549Z 
+2025-04-19T05:27:21.1776842Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1777408Z 
+2025-04-19T05:27:21.1777534Z     Expected: 200
+2025-04-19T05:27:21.1777837Z     Received: 500
+2025-04-19T05:27:21.1778022Z 
+2025-04-19T05:27:21.1778465Z     [0m [90m 31 |[39m       [33m.[39m[36mget[39m([32m'/api/covers'[39m)
+2025-04-19T05:27:21.1779308Z      [90m 32 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1780258Z     [31m[1m>[22m[39m[90m 33 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1781035Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1781725Z      [90m 34 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual([])
+2025-04-19T05:27:21.1782567Z      [90m 35 |[39m   })
+2025-04-19T05:27:21.1782962Z      [90m 36 |[39m[0m
+2025-04-19T05:27:21.1783182Z 
+2025-04-19T05:27:21.1783389Z       at Object.toBe (api.test.js:33:24)
+2025-04-19T05:27:21.1783692Z 
+2025-04-19T05:27:21.1784063Z   ● AMF‑Spot API › POST /save-cover appends a new cover
+2025-04-19T05:27:21.1784427Z 
+2025-04-19T05:27:21.1784697Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1785049Z 
+2025-04-19T05:27:21.1785179Z     Expected: 200
+2025-04-19T05:27:21.1785502Z     Received: 500
+2025-04-19T05:27:21.1785699Z 
+2025-04-19T05:27:21.1786031Z     [0m [90m 41 |[39m       [33m.[39msend(cover)
+2025-04-19T05:27:21.1786850Z      [90m 42 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1788072Z     [31m[1m>[22m[39m[90m 43 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1788852Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1789693Z      [90m 44 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1790566Z      [90m 45 |[39m
+2025-04-19T05:27:21.1791622Z      [90m 46 |[39m     [36mconst[39m covers [33m=[39m [36mawait[39m fs[33m.[39mreadJson(path[33m.[39mjoin(artistDir[33m,[39m [32m'covers.json'[39m))[0m
+2025-04-19T05:27:21.1792315Z 
+2025-04-19T05:27:21.1792504Z       at Object.toBe (api.test.js:43:24)
+2025-04-19T05:27:21.1792773Z 
+2025-04-19T05:27:21.1793160Z   ● AMF‑Spot API › POST /save-covers replaces covers array
+2025-04-19T05:27:21.1793508Z 
+2025-04-19T05:27:21.1793781Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1794110Z 
+2025-04-19T05:27:21.1794236Z     Expected: 200
+2025-04-19T05:27:21.1794539Z     Received: 500
+2025-04-19T05:27:21.1794720Z 
+2025-04-19T05:27:21.1795058Z     [0m [90m 54 |[39m       [33m.[39msend(coversArray)
+2025-04-19T05:27:21.1795880Z      [90m 55 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1796833Z     [31m[1m>[22m[39m[90m 56 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1797804Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1798705Z      [90m 57 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1799350Z      [90m 58 |[39m
+2025-04-19T05:27:21.1800485Z      [90m 59 |[39m     [36mconst[39m covers [33m=[39m [36mawait[39m fs[33m.[39mreadJson(path[33m.[39mjoin(artistDir[33m,[39m [32m'covers.json'[39m))[0m
+2025-04-19T05:27:21.1801232Z 
+2025-04-19T05:27:21.1801439Z       at Object.toBe (api.test.js:56:24)
+2025-04-19T05:27:21.1801724Z 
+2025-04-19T05:27:21.1802120Z   ● AMF‑Spot API › POST /delete-cover removes specified cover
+2025-04-19T05:27:21.1802505Z 
+2025-04-19T05:27:21.1803271Z     ENOENT: no such file or directory, open '/home/runner/work/coverflow_amf/coverflow_amf/packages/amf-spot/data/testArtist/covers.json'
+2025-04-19T05:27:21.1804008Z 
+2025-04-19T05:27:21.1804028Z 
+2025-04-19T05:27:21.1804040Z 
+2025-04-19T05:27:21.1913129Z Test Suites: 2 failed, 2 total
+2025-04-19T05:27:21.1913706Z Tests:       7 failed, 7 total
+2025-04-19T05:27:21.1914185Z Snapshots:   0 total
+2025-04-19T05:27:21.1914607Z Time:        0.955 s
+2025-04-19T05:27:21.1915011Z Ran all test suites.
+2025-04-19T05:27:21.2383226Z npm error Lifecycle script `test` failed with error:
+2025-04-19T05:27:21.2388594Z npm error code 1
+2025-04-19T05:27:21.2390223Z npm error path /home/runner/work/coverflow_amf/coverflow_amf/packages/amf-spot
+2025-04-19T05:27:21.2391107Z npm error workspace amf-spot@0.1.0
+2025-04-19T05:27:21.2392132Z npm error location /home/runner/work/coverflow_amf/coverflow_amf/packages/amf-spot
+2025-04-19T05:27:21.2392924Z npm error command failed
+2025-04-19T05:27:21.2393415Z npm error command sh -c jest
+2025-04-19T05:27:21.2458353Z ##[error]Process completed with exit code 1.

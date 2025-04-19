@@ -1,0 +1,500 @@
+﻿2025-04-19T05:27:02.2302245Z Current runner version: '2.323.0'
+2025-04-19T05:27:02.2336296Z ##[group]Operating System
+2025-04-19T05:27:02.2337686Z Ubuntu
+2025-04-19T05:27:02.2338544Z 24.04.2
+2025-04-19T05:27:02.2339322Z LTS
+2025-04-19T05:27:02.2340217Z ##[endgroup]
+2025-04-19T05:27:02.2341057Z ##[group]Runner Image
+2025-04-19T05:27:02.2342041Z Image: ubuntu-24.04
+2025-04-19T05:27:02.2342989Z Version: 20250413.1.0
+2025-04-19T05:27:02.2344702Z Included Software: https://github.com/actions/runner-images/blob/ubuntu24/20250413.1/images/ubuntu/Ubuntu2404-Readme.md
+2025-04-19T05:27:02.2347484Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu24%2F20250413.1
+2025-04-19T05:27:02.2349174Z ##[endgroup]
+2025-04-19T05:27:02.2350095Z ##[group]Runner Image Provisioner
+2025-04-19T05:27:02.2351035Z 2.0.422.1
+2025-04-19T05:27:02.2351830Z ##[endgroup]
+2025-04-19T05:27:02.2353610Z ##[group]GITHUB_TOKEN Permissions
+2025-04-19T05:27:02.2356367Z Contents: read
+2025-04-19T05:27:02.2358293Z Metadata: read
+2025-04-19T05:27:02.2359478Z Packages: read
+2025-04-19T05:27:02.2360483Z ##[endgroup]
+2025-04-19T05:27:02.2363961Z Secret source: Actions
+2025-04-19T05:27:02.2365018Z Prepare workflow directory
+2025-04-19T05:27:02.2813724Z Prepare all required actions
+2025-04-19T05:27:02.2869034Z Getting action download info
+2025-04-19T05:27:02.6669791Z ##[group]Download immutable action package 'actions/checkout@v3'
+2025-04-19T05:27:02.6670871Z Version: 3.6.0
+2025-04-19T05:27:02.6671987Z Digest: sha256:942562b9c7d4b1f2557f1da21f4d3eb4eb4fd01f2ad78b2a6e187d1b193e0a0f
+2025-04-19T05:27:02.6673320Z Source commit SHA: f43a0e5ff2bd294095638e18286ca9a3d1956744
+2025-04-19T05:27:02.6674121Z ##[endgroup]
+2025-04-19T05:27:02.7719977Z ##[group]Download immutable action package 'actions/setup-node@v3'
+2025-04-19T05:27:02.7720799Z Version: 3.9.1
+2025-04-19T05:27:02.7721653Z Digest: sha256:d8c8dbd6e63927801f9de42620f961a361b03be6034dcc11e83ca01f50cb9f40
+2025-04-19T05:27:02.7722663Z Source commit SHA: 3235b876344d2a9aa001b8d1453c930bba69e610
+2025-04-19T05:27:02.7723401Z ##[endgroup]
+2025-04-19T05:27:03.1136067Z Complete job name: test (20.x)
+2025-04-19T05:27:03.1740579Z ##[group]Run actions/checkout@v3
+2025-04-19T05:27:03.1741471Z with:
+2025-04-19T05:27:03.1741933Z   repository: theobattaglia1/coverflow_amf
+2025-04-19T05:27:03.1742692Z   token: ***
+2025-04-19T05:27:03.1743247Z   ssh-strict: true
+2025-04-19T05:27:03.1743863Z   persist-credentials: true
+2025-04-19T05:27:03.1744425Z   clean: true
+2025-04-19T05:27:03.1744863Z   sparse-checkout-cone-mode: true
+2025-04-19T05:27:03.1745382Z   fetch-depth: 1
+2025-04-19T05:27:03.1745804Z   fetch-tags: false
+2025-04-19T05:27:03.1746220Z   lfs: false
+2025-04-19T05:27:03.1746606Z   submodules: false
+2025-04-19T05:27:03.1747179Z   set-safe-directory: true
+2025-04-19T05:27:03.1747942Z ##[endgroup]
+2025-04-19T05:27:03.3594618Z Syncing repository: theobattaglia1/coverflow_amf
+2025-04-19T05:27:03.3596405Z ##[group]Getting Git version info
+2025-04-19T05:27:03.3597728Z Working directory is '/home/runner/work/coverflow_amf/coverflow_amf'
+2025-04-19T05:27:03.3598879Z [command]/usr/bin/git version
+2025-04-19T05:27:03.3669931Z git version 2.49.0
+2025-04-19T05:27:03.3701676Z ##[endgroup]
+2025-04-19T05:27:03.3719162Z Temporarily overriding HOME='/home/runner/work/_temp/1aeb4970-1a57-4592-9e7e-91a53a56f238' before making global git config changes
+2025-04-19T05:27:03.3721962Z Adding repository directory to the temporary git global config as a safe directory
+2025-04-19T05:27:03.3724380Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/coverflow_amf/coverflow_amf
+2025-04-19T05:27:03.3756655Z Deleting the contents of '/home/runner/work/coverflow_amf/coverflow_amf'
+2025-04-19T05:27:03.3760718Z ##[group]Initializing the repository
+2025-04-19T05:27:03.3764668Z [command]/usr/bin/git init /home/runner/work/coverflow_amf/coverflow_amf
+2025-04-19T05:27:03.3829504Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-04-19T05:27:03.3830849Z hint: is subject to change. To configure the initial branch name to use in all
+2025-04-19T05:27:03.3832128Z hint: of your new repositories, which will suppress this warning, call:
+2025-04-19T05:27:03.3832836Z hint:
+2025-04-19T05:27:03.3833609Z hint: 	git config --global init.defaultBranch <name>
+2025-04-19T05:27:03.3834666Z hint:
+2025-04-19T05:27:03.3835324Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-04-19T05:27:03.3837397Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-04-19T05:27:03.3838926Z hint:
+2025-04-19T05:27:03.3839712Z hint: 	git branch -m <name>
+2025-04-19T05:27:03.3841350Z Initialized empty Git repository in /home/runner/work/coverflow_amf/coverflow_amf/.git/
+2025-04-19T05:27:03.3846450Z [command]/usr/bin/git remote add origin https://github.com/theobattaglia1/coverflow_amf
+2025-04-19T05:27:03.3879190Z ##[endgroup]
+2025-04-19T05:27:03.3880532Z ##[group]Disabling automatic garbage collection
+2025-04-19T05:27:03.3882226Z [command]/usr/bin/git config --local gc.auto 0
+2025-04-19T05:27:03.3909519Z ##[endgroup]
+2025-04-19T05:27:03.3910910Z ##[group]Setting up auth
+2025-04-19T05:27:03.3915689Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-04-19T05:27:03.3943706Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-04-19T05:27:03.4232566Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-04-19T05:27:03.4260815Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-04-19T05:27:03.4481868Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-04-19T05:27:03.4514223Z ##[endgroup]
+2025-04-19T05:27:03.4515648Z ##[group]Fetching the repository
+2025-04-19T05:27:03.4523892Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --progress --no-recurse-submodules --depth=1 origin +595a2aecbfe82f4a813c8fc5d642b5a75ad4a0e3:refs/remotes/origin/main
+2025-04-19T05:27:03.7118974Z remote: Enumerating objects: 99, done.        
+2025-04-19T05:27:03.7120704Z remote: Counting objects:   1% (1/99)        
+2025-04-19T05:27:03.7121640Z remote: Counting objects:   2% (2/99)        
+2025-04-19T05:27:03.7122494Z remote: Counting objects:   3% (3/99)        
+2025-04-19T05:27:03.7123351Z remote: Counting objects:   4% (4/99)        
+2025-04-19T05:27:03.7124191Z remote: Counting objects:   5% (5/99)        
+2025-04-19T05:27:03.7125056Z remote: Counting objects:   6% (6/99)        
+2025-04-19T05:27:03.7125913Z remote: Counting objects:   7% (7/99)        
+2025-04-19T05:27:03.7126756Z remote: Counting objects:   8% (8/99)        
+2025-04-19T05:27:03.7127968Z remote: Counting objects:   9% (9/99)        
+2025-04-19T05:27:03.7128835Z remote: Counting objects:  10% (10/99)        
+2025-04-19T05:27:03.7129808Z remote: Counting objects:  11% (11/99)        
+2025-04-19T05:27:03.7130667Z remote: Counting objects:  12% (12/99)        
+2025-04-19T05:27:03.7131618Z remote: Counting objects:  13% (13/99)        
+2025-04-19T05:27:03.7132553Z remote: Counting objects:  14% (14/99)        
+2025-04-19T05:27:03.7133564Z remote: Counting objects:  15% (15/99)        
+2025-04-19T05:27:03.7134556Z remote: Counting objects:  16% (16/99)        
+2025-04-19T05:27:03.7135551Z remote: Counting objects:  17% (17/99)        
+2025-04-19T05:27:03.7136563Z remote: Counting objects:  18% (18/99)        
+2025-04-19T05:27:03.7137699Z remote: Counting objects:  19% (19/99)        
+2025-04-19T05:27:03.7138728Z remote: Counting objects:  20% (20/99)        
+2025-04-19T05:27:03.7139742Z remote: Counting objects:  21% (21/99)        
+2025-04-19T05:27:03.7140757Z remote: Counting objects:  22% (22/99)        
+2025-04-19T05:27:03.7141770Z remote: Counting objects:  23% (23/99)        
+2025-04-19T05:27:03.7142790Z remote: Counting objects:  24% (24/99)        
+2025-04-19T05:27:03.7144051Z remote: Counting objects:  25% (25/99)        
+2025-04-19T05:27:03.7145247Z remote: Counting objects:  26% (26/99)        
+2025-04-19T05:27:03.7146613Z remote: Counting objects:  27% (27/99)        
+2025-04-19T05:27:03.7148036Z remote: Counting objects:  28% (28/99)        
+2025-04-19T05:27:03.7149403Z remote: Counting objects:  29% (29/99)        
+2025-04-19T05:27:03.7150749Z remote: Counting objects:  30% (30/99)        
+2025-04-19T05:27:03.7152111Z remote: Counting objects:  31% (31/99)        
+2025-04-19T05:27:03.7153451Z remote: Counting objects:  32% (32/99)        
+2025-04-19T05:27:03.7154802Z remote: Counting objects:  33% (33/99)        
+2025-04-19T05:27:03.7156135Z remote: Counting objects:  34% (34/99)        
+2025-04-19T05:27:03.7157758Z remote: Counting objects:  35% (35/99)        
+2025-04-19T05:27:03.7159162Z remote: Counting objects:  36% (36/99)        
+2025-04-19T05:27:03.7160540Z remote: Counting objects:  37% (37/99)        
+2025-04-19T05:27:03.7161942Z remote: Counting objects:  38% (38/99)        
+2025-04-19T05:27:03.7163314Z remote: Counting objects:  39% (39/99)        
+2025-04-19T05:27:03.7164704Z remote: Counting objects:  40% (40/99)        
+2025-04-19T05:27:03.7166101Z remote: Counting objects:  41% (41/99)        
+2025-04-19T05:27:03.7167811Z remote: Counting objects:  42% (42/99)        
+2025-04-19T05:27:03.7169761Z remote: Counting objects:  43% (43/99)        
+2025-04-19T05:27:03.7171632Z remote: Counting objects:  44% (44/99)        
+2025-04-19T05:27:03.7173388Z remote: Counting objects:  45% (45/99)        
+2025-04-19T05:27:03.7174874Z remote: Counting objects:  46% (46/99)        
+2025-04-19T05:27:03.7176356Z remote: Counting objects:  47% (47/99)        
+2025-04-19T05:27:03.7177964Z remote: Counting objects:  48% (48/99)        
+2025-04-19T05:27:03.7179444Z remote: Counting objects:  49% (49/99)        
+2025-04-19T05:27:03.7180924Z remote: Counting objects:  50% (50/99)        
+2025-04-19T05:27:03.7182406Z remote: Counting objects:  51% (51/99)        
+2025-04-19T05:27:03.7184038Z remote: Counting objects:  52% (52/99)        
+2025-04-19T05:27:03.7185546Z remote: Counting objects:  53% (53/99)        
+2025-04-19T05:27:03.7187409Z remote: Counting objects:  54% (54/99)        
+2025-04-19T05:27:03.7188809Z remote: Counting objects:  55% (55/99)        
+2025-04-19T05:27:03.7190201Z remote: Counting objects:  56% (56/99)        
+2025-04-19T05:27:03.7191581Z remote: Counting objects:  57% (57/99)        
+2025-04-19T05:27:03.7192955Z remote: Counting objects:  58% (58/99)        
+2025-04-19T05:27:03.7194334Z remote: Counting objects:  59% (59/99)        
+2025-04-19T05:27:03.7195692Z remote: Counting objects:  60% (60/99)        
+2025-04-19T05:27:03.7197189Z remote: Counting objects:  61% (61/99)        
+2025-04-19T05:27:03.7198553Z remote: Counting objects:  62% (62/99)        
+2025-04-19T05:27:03.7199891Z remote: Counting objects:  63% (63/99)        
+2025-04-19T05:27:03.7201243Z remote: Counting objects:  64% (64/99)        
+2025-04-19T05:27:03.7202627Z remote: Counting objects:  65% (65/99)        
+2025-04-19T05:27:03.7203980Z remote: Counting objects:  66% (66/99)        
+2025-04-19T05:27:03.7205339Z remote: Counting objects:  67% (67/99)        
+2025-04-19T05:27:03.7206703Z remote: Counting objects:  68% (68/99)        
+2025-04-19T05:27:03.7208145Z remote: Counting objects:  69% (69/99)        
+2025-04-19T05:27:03.7209535Z remote: Counting objects:  70% (70/99)        
+2025-04-19T05:27:03.7210872Z remote: Counting objects:  71% (71/99)        
+2025-04-19T05:27:03.7212195Z remote: Counting objects:  72% (72/99)        
+2025-04-19T05:27:03.7213520Z remote: Counting objects:  73% (73/99)        
+2025-04-19T05:27:03.7214875Z remote: Counting objects:  74% (74/99)        
+2025-04-19T05:27:03.7216227Z remote: Counting objects:  75% (75/99)        
+2025-04-19T05:27:03.7217684Z remote: Counting objects:  76% (76/99)        
+2025-04-19T05:27:03.7219060Z remote: Counting objects:  77% (77/99)        
+2025-04-19T05:27:03.7220595Z remote: Counting objects:  78% (78/99)        
+2025-04-19T05:27:03.7221976Z remote: Counting objects:  79% (79/99)        
+2025-04-19T05:27:03.7223340Z remote: Counting objects:  80% (80/99)        
+2025-04-19T05:27:03.7224711Z remote: Counting objects:  81% (81/99)        
+2025-04-19T05:27:03.7226061Z remote: Counting objects:  82% (82/99)        
+2025-04-19T05:27:03.7227511Z remote: Counting objects:  83% (83/99)        
+2025-04-19T05:27:03.7228865Z remote: Counting objects:  84% (84/99)        
+2025-04-19T05:27:03.7230912Z remote: Counting objects:  85% (85/99)        
+2025-04-19T05:27:03.7232500Z remote: Counting objects:  86% (86/99)        
+2025-04-19T05:27:03.7233835Z remote: Counting objects:  87% (87/99)        
+2025-04-19T05:27:03.7235173Z remote: Counting objects:  88% (88/99)        
+2025-04-19T05:27:03.7236484Z remote: Counting objects:  89% (89/99)        
+2025-04-19T05:27:03.7237947Z remote: Counting objects:  90% (90/99)        
+2025-04-19T05:27:03.7239262Z remote: Counting objects:  91% (91/99)        
+2025-04-19T05:27:03.7240613Z remote: Counting objects:  92% (92/99)        
+2025-04-19T05:27:03.7241949Z remote: Counting objects:  93% (93/99)        
+2025-04-19T05:27:03.7243280Z remote: Counting objects:  94% (94/99)        
+2025-04-19T05:27:03.7244615Z remote: Counting objects:  95% (95/99)        
+2025-04-19T05:27:03.7245976Z remote: Counting objects:  96% (96/99)        
+2025-04-19T05:27:03.7247441Z remote: Counting objects:  97% (97/99)        
+2025-04-19T05:27:03.7248791Z remote: Counting objects:  98% (98/99)        
+2025-04-19T05:27:03.7250146Z remote: Counting objects: 100% (99/99)        
+2025-04-19T05:27:03.7251545Z remote: Counting objects: 100% (99/99), done.        
+2025-04-19T05:27:03.7252986Z remote: Compressing objects:   1% (1/85)        
+2025-04-19T05:27:03.7254374Z remote: Compressing objects:   2% (2/85)        
+2025-04-19T05:27:03.7255760Z remote: Compressing objects:   3% (3/85)        
+2025-04-19T05:27:03.7257203Z remote: Compressing objects:   4% (4/85)        
+2025-04-19T05:27:03.7258572Z remote: Compressing objects:   5% (5/85)        
+2025-04-19T05:27:03.7260062Z remote: Compressing objects:   7% (6/85)        
+2025-04-19T05:27:03.7261405Z remote: Compressing objects:   8% (7/85)        
+2025-04-19T05:27:03.7262741Z remote: Compressing objects:   9% (8/85)        
+2025-04-19T05:27:03.7264060Z remote: Compressing objects:  10% (9/85)        
+2025-04-19T05:27:03.7265408Z remote: Compressing objects:  11% (10/85)        
+2025-04-19T05:27:03.7266737Z remote: Compressing objects:  12% (11/85)        
+2025-04-19T05:27:03.7268174Z remote: Compressing objects:  14% (12/85)        
+2025-04-19T05:27:03.7269509Z remote: Compressing objects:  15% (13/85)        
+2025-04-19T05:27:03.7270841Z remote: Compressing objects:  16% (14/85)        
+2025-04-19T05:27:03.7272265Z remote: Compressing objects:  17% (15/85)        
+2025-04-19T05:27:03.7273597Z remote: Compressing objects:  18% (16/85)        
+2025-04-19T05:27:03.7274927Z remote: Compressing objects:  20% (17/85)        
+2025-04-19T05:27:03.7276254Z remote: Compressing objects:  21% (18/85)        
+2025-04-19T05:27:03.7277699Z remote: Compressing objects:  22% (19/85)        
+2025-04-19T05:27:03.7279051Z remote: Compressing objects:  23% (20/85)        
+2025-04-19T05:27:03.7280399Z remote: Compressing objects:  24% (21/85)        
+2025-04-19T05:27:03.7281747Z remote: Compressing objects:  25% (22/85)        
+2025-04-19T05:27:03.7283082Z remote: Compressing objects:  27% (23/85)        
+2025-04-19T05:27:03.7284427Z remote: Compressing objects:  28% (24/85)        
+2025-04-19T05:27:03.7285780Z remote: Compressing objects:  29% (25/85)        
+2025-04-19T05:27:03.7287226Z remote: Compressing objects:  30% (26/85)        
+2025-04-19T05:27:03.7288597Z remote: Compressing objects:  31% (27/85)        
+2025-04-19T05:27:03.7289961Z remote: Compressing objects:  32% (28/85)        
+2025-04-19T05:27:03.7291315Z remote: Compressing objects:  34% (29/85)        
+2025-04-19T05:27:03.7292667Z remote: Compressing objects:  35% (30/85)        
+2025-04-19T05:27:03.7294147Z remote: Compressing objects:  36% (31/85)        
+2025-04-19T05:27:03.7295477Z remote: Compressing objects:  37% (32/85)        
+2025-04-19T05:27:03.7296820Z remote: Compressing objects:  38% (33/85)        
+2025-04-19T05:27:03.7298239Z remote: Compressing objects:  40% (34/85)        
+2025-04-19T05:27:03.7299572Z remote: Compressing objects:  41% (35/85)        
+2025-04-19T05:27:03.7300892Z remote: Compressing objects:  42% (36/85)        
+2025-04-19T05:27:03.7302242Z remote: Compressing objects:  43% (37/85)        
+2025-04-19T05:27:03.7303551Z remote: Compressing objects:  44% (38/85)        
+2025-04-19T05:27:03.7896932Z remote: Compressing objects:  45% (39/85)        
+2025-04-19T05:27:03.7901001Z remote: Compressing objects:  47% (40/85)        
+2025-04-19T05:27:03.7903239Z remote: Compressing objects:  48% (41/85)        
+2025-04-19T05:27:03.7905339Z remote: Compressing objects:  49% (42/85)        
+2025-04-19T05:27:03.7906694Z remote: Compressing objects:  50% (43/85)        
+2025-04-19T05:27:03.7927229Z remote: Compressing objects:  51% (44/85)        
+2025-04-19T05:27:03.7929615Z remote: Compressing objects:  52% (45/85)        
+2025-04-19T05:27:03.7931962Z remote: Compressing objects:  54% (46/85)        
+2025-04-19T05:27:03.7933356Z remote: Compressing objects:  55% (47/85)        
+2025-04-19T05:27:03.7934684Z remote: Compressing objects:  56% (48/85)        
+2025-04-19T05:27:03.7936066Z remote: Compressing objects:  57% (49/85)        
+2025-04-19T05:27:03.7937557Z remote: Compressing objects:  58% (50/85)        
+2025-04-19T05:27:03.7938908Z remote: Compressing objects:  60% (51/85)        
+2025-04-19T05:27:03.7940231Z remote: Compressing objects:  61% (52/85)        
+2025-04-19T05:27:03.7941554Z remote: Compressing objects:  62% (53/85)        
+2025-04-19T05:27:03.7942862Z remote: Compressing objects:  63% (54/85)        
+2025-04-19T05:27:03.7944210Z remote: Compressing objects:  64% (55/85)        
+2025-04-19T05:27:03.7945524Z remote: Compressing objects:  65% (56/85)        
+2025-04-19T05:27:03.7947155Z remote: Compressing objects:  67% (57/85)        
+2025-04-19T05:27:03.7948520Z remote: Compressing objects:  68% (58/85)        
+2025-04-19T05:27:03.7949817Z remote: Compressing objects:  69% (59/85)        
+2025-04-19T05:27:03.7951140Z remote: Compressing objects:  70% (60/85)        
+2025-04-19T05:27:03.7952463Z remote: Compressing objects:  71% (61/85)        
+2025-04-19T05:27:03.7953759Z remote: Compressing objects:  72% (62/85)        
+2025-04-19T05:27:03.7955032Z remote: Compressing objects:  74% (63/85)        
+2025-04-19T05:27:03.7956317Z remote: Compressing objects:  75% (64/85)        
+2025-04-19T05:27:03.7957707Z remote: Compressing objects:  76% (65/85)        
+2025-04-19T05:27:03.7958971Z remote: Compressing objects:  77% (66/85)        
+2025-04-19T05:27:03.7960248Z remote: Compressing objects:  78% (67/85)        
+2025-04-19T05:27:03.7961520Z remote: Compressing objects:  80% (68/85)        
+2025-04-19T05:27:03.7962797Z remote: Compressing objects:  81% (69/85)        
+2025-04-19T05:27:03.7964091Z remote: Compressing objects:  82% (70/85)        
+2025-04-19T05:27:03.7965386Z remote: Compressing objects:  83% (71/85)        
+2025-04-19T05:27:03.7966673Z remote: Compressing objects:  84% (72/85)        
+2025-04-19T05:27:03.7968041Z remote: Compressing objects:  85% (73/85)        
+2025-04-19T05:27:03.7969318Z remote: Compressing objects:  87% (74/85)        
+2025-04-19T05:27:03.7970606Z remote: Compressing objects:  88% (75/85)        
+2025-04-19T05:27:03.7971903Z remote: Compressing objects:  89% (76/85)        
+2025-04-19T05:27:03.7973178Z remote: Compressing objects:  90% (77/85)        
+2025-04-19T05:27:03.7974457Z remote: Compressing objects:  91% (78/85)        
+2025-04-19T05:27:03.7975745Z remote: Compressing objects:  92% (79/85)        
+2025-04-19T05:27:03.7977104Z remote: Compressing objects:  94% (80/85)        
+2025-04-19T05:27:03.7978400Z remote: Compressing objects:  95% (81/85)        
+2025-04-19T05:27:03.7979680Z remote: Compressing objects:  96% (82/85)        
+2025-04-19T05:27:03.7981141Z remote: Compressing objects:  97% (83/85)        
+2025-04-19T05:27:03.7982429Z remote: Compressing objects:  98% (84/85)        
+2025-04-19T05:27:03.7983710Z remote: Compressing objects: 100% (85/85)        
+2025-04-19T05:27:03.7985146Z remote: Compressing objects: 100% (85/85), done.        
+2025-04-19T05:27:04.5341959Z remote: Total 99 (delta 10), reused 67 (delta 4), pack-reused 0 (from 0)        
+2025-04-19T05:27:04.6052361Z From https://github.com/theobattaglia1/coverflow_amf
+2025-04-19T05:27:04.6054740Z  * [new ref]         595a2aecbfe82f4a813c8fc5d642b5a75ad4a0e3 -> origin/main
+2025-04-19T05:27:04.6080843Z ##[endgroup]
+2025-04-19T05:27:04.6082604Z ##[group]Determining the checkout info
+2025-04-19T05:27:04.6084232Z ##[endgroup]
+2025-04-19T05:27:04.6085712Z ##[group]Checking out the ref
+2025-04-19T05:27:04.6087799Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-04-19T05:27:04.7086661Z Switched to a new branch 'main'
+2025-04-19T05:27:04.7088774Z branch 'main' set up to track 'origin/main'.
+2025-04-19T05:27:04.7096690Z ##[endgroup]
+2025-04-19T05:27:04.7131703Z [command]/usr/bin/git log -1 --format='%H'
+2025-04-19T05:27:04.7152436Z '595a2aecbfe82f4a813c8fc5d642b5a75ad4a0e3'
+2025-04-19T05:27:04.7426474Z ##[group]Run actions/setup-node@v3
+2025-04-19T05:27:04.7427594Z with:
+2025-04-19T05:27:04.7428273Z   node-version: 20.x
+2025-04-19T05:27:04.7429061Z   always-auth: false
+2025-04-19T05:27:04.7429834Z   check-latest: false
+2025-04-19T05:27:04.7430861Z   token: ***
+2025-04-19T05:27:04.7431545Z ##[endgroup]
+2025-04-19T05:27:04.9334461Z Found in cache @ /opt/hostedtoolcache/node/20.19.0/x64
+2025-04-19T05:27:04.9341111Z ##[group]Environment details
+2025-04-19T05:27:05.3172822Z node: v20.19.0
+2025-04-19T05:27:05.3173218Z npm: 10.8.2
+2025-04-19T05:27:05.3173514Z yarn: 1.22.22
+2025-04-19T05:27:05.3175874Z ##[endgroup]
+2025-04-19T05:27:05.3319857Z ##[group]Run npm install
+2025-04-19T05:27:05.3320169Z [36;1mnpm install[0m
+2025-04-19T05:27:05.3373686Z shell: /usr/bin/bash -e {0}
+2025-04-19T05:27:05.3373941Z ##[endgroup]
+2025-04-19T05:27:08.0768967Z npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+2025-04-19T05:27:08.0779351Z npm warn deprecated glob@7.2.3: Glob versions prior to v9 are no longer supported
+2025-04-19T05:27:19.7024150Z 
+2025-04-19T05:27:19.7025022Z added 559 packages, and audited 562 packages in 14s
+2025-04-19T05:27:19.7025533Z 
+2025-04-19T05:27:19.7025850Z 71 packages are looking for funding
+2025-04-19T05:27:19.7026376Z   run `npm fund` for details
+2025-04-19T05:27:19.7035367Z 
+2025-04-19T05:27:19.7035690Z found 0 vulnerabilities
+2025-04-19T05:27:19.7277450Z ##[group]Run cd packages/amf-spot && npm test
+2025-04-19T05:27:19.7277839Z [36;1mcd packages/amf-spot && npm test[0m
+2025-04-19T05:27:19.7325342Z shell: /usr/bin/bash -e {0}
+2025-04-19T05:27:19.7325613Z ##[endgroup]
+2025-04-19T05:27:19.8830422Z 
+2025-04-19T05:27:19.8830818Z > amf-spot@0.1.0 test
+2025-04-19T05:27:19.8831190Z > jest
+2025-04-19T05:27:19.8831364Z 
+2025-04-19T05:27:21.1522542Z FAIL ./api.push.test.js
+2025-04-19T05:27:21.1633250Z   ● Console
+2025-04-19T05:27:21.1635733Z 
+2025-04-19T05:27:21.1635906Z     console.log
+2025-04-19T05:27:21.1636468Z       2025-04-19T05:27:21.080Z [info] Using data path: /data
+2025-04-19T05:27:21.1637207Z 
+2025-04-19T05:27:21.1637715Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1638170Z 
+2025-04-19T05:27:21.1638271Z     console.log
+2025-04-19T05:27:21.1639063Z       2025-04-19T05:27:21.116Z [error] POST /push-to-test error: Error: EACCES: permission denied, mkdir '/data/pushTestArtist'
+2025-04-19T05:27:21.1639489Z 
+2025-04-19T05:27:21.1639760Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1640057Z 
+2025-04-19T05:27:21.1640483Z     console.log
+2025-04-19T05:27:21.1640992Z       2025-04-19T05:27:21.132Z [error] POST /push-to-live error: Error: EACCES: permission denied, mkdir '/data/pushTestArtist'
+2025-04-19T05:27:21.1641415Z 
+2025-04-19T05:27:21.1641675Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1642007Z 
+2025-04-19T05:27:21.1642362Z   ● Push endpoints › POST /push-to-test copies covers & styles to test files
+2025-04-19T05:27:21.1642638Z 
+2025-04-19T05:27:21.1642814Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1643028Z 
+2025-04-19T05:27:21.1643107Z     Expected: 200
+2025-04-19T05:27:21.1643298Z     Received: 500
+2025-04-19T05:27:21.1643406Z 
+2025-04-19T05:27:21.1643657Z     [0m [90m 32 |[39m       [33m.[39mpost([32m'/push-to-test'[39m)
+2025-04-19T05:27:21.1644196Z      [90m 33 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artist)
+2025-04-19T05:27:21.1644769Z     [31m[1m>[22m[39m[90m 34 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1645242Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1645786Z      [90m 35 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1646172Z      [90m 36 |[39m
+2025-04-19T05:27:21.1646624Z      [90m 37 |[39m     [36mconst[39m tc [33m=[39m [36mawait[39m fs[33m.[39mreadJson(testCovers)[0m
+2025-04-19T05:27:21.1646913Z 
+2025-04-19T05:27:21.1647290Z       at Object.toBe (api.push.test.js:34:24)
+2025-04-19T05:27:21.1647490Z 
+2025-04-19T05:27:21.1647792Z   ● Push endpoints › POST /push-to-live copies test files back to live files
+2025-04-19T05:27:21.1648077Z 
+2025-04-19T05:27:21.1648277Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1648498Z 
+2025-04-19T05:27:21.1648582Z     Expected: 200
+2025-04-19T05:27:21.1648762Z     Received: 500
+2025-04-19T05:27:21.1648871Z 
+2025-04-19T05:27:21.1649115Z     [0m [90m 52 |[39m       [33m.[39mpost([32m'/push-to-live'[39m)
+2025-04-19T05:27:21.1649603Z      [90m 53 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artist)
+2025-04-19T05:27:21.1650155Z     [31m[1m>[22m[39m[90m 54 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1650610Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1651129Z      [90m 55 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1651518Z      [90m 56 |[39m
+2025-04-19T05:27:21.1651971Z      [90m 57 |[39m     [36mconst[39m liveC [33m=[39m [36mawait[39m fs[33m.[39mreadJson(coversFile)[0m
+2025-04-19T05:27:21.1652274Z 
+2025-04-19T05:27:21.1652618Z       at Object.toBe (api.push.test.js:54:24)
+2025-04-19T05:27:21.1652830Z 
+2025-04-19T05:27:21.1705136Z FAIL ./api.test.js
+2025-04-19T05:27:21.1752361Z   ● Console
+2025-04-19T05:27:21.1752622Z 
+2025-04-19T05:27:21.1752797Z     console.log
+2025-04-19T05:27:21.1753379Z       2025-04-19T05:27:21.079Z [info] Using data path: /data
+2025-04-19T05:27:21.1753831Z 
+2025-04-19T05:27:21.1754341Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1754717Z 
+2025-04-19T05:27:21.1754823Z     console.log
+2025-04-19T05:27:21.1755665Z       2025-04-19T05:27:21.116Z [error] GET /api/styles error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1756456Z 
+2025-04-19T05:27:21.1757284Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1757803Z 
+2025-04-19T05:27:21.1757950Z     console.log
+2025-04-19T05:27:21.1758832Z       2025-04-19T05:27:21.132Z [error] GET /api/covers error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1759483Z 
+2025-04-19T05:27:21.1759954Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1760750Z 
+2025-04-19T05:27:21.1760898Z     console.log
+2025-04-19T05:27:21.1761729Z       2025-04-19T05:27:21.143Z [error] POST /save-cover error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1762383Z 
+2025-04-19T05:27:21.1762860Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1763406Z 
+2025-04-19T05:27:21.1763548Z     console.log
+2025-04-19T05:27:21.1764354Z       2025-04-19T05:27:21.147Z [error] POST /save-covers error: Error: EACCES: permission denied, mkdir '/data/testArtist'
+2025-04-19T05:27:21.1765059Z 
+2025-04-19T05:27:21.1765542Z       at Console.log (../../node_modules/winston/lib/winston/transports/console.js:87:23)
+2025-04-19T05:27:21.1766085Z 
+2025-04-19T05:27:21.1766633Z   ● AMF‑Spot API › GET /api/styles returns default styles
+2025-04-19T05:27:21.1767265Z 
+2025-04-19T05:27:21.1767578Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1767973Z 
+2025-04-19T05:27:21.1768146Z     Expected: 200
+2025-04-19T05:27:21.1768481Z     Received: 500
+2025-04-19T05:27:21.1768698Z 
+2025-04-19T05:27:21.1769198Z     [0m [90m 23 |[39m       [33m.[39m[36mget[39m([32m'/api/styles'[39m)
+2025-04-19T05:27:21.1770146Z      [90m 24 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1771196Z     [31m[1m>[22m[39m[90m 25 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1772008Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1773448Z      [90m 26 |[39m     expect(res[33m.[39mbody)[33m.[39mtoMatchObject({ fontFamily[33m:[39m [32m'GT America'[39m[33m,[39m fontSize[33m:[39m [35m16[39m })
+2025-04-19T05:27:21.1774528Z      [90m 27 |[39m   })
+2025-04-19T05:27:21.1774982Z      [90m 28 |[39m[0m
+2025-04-19T05:27:21.1775226Z 
+2025-04-19T05:27:21.1775453Z       at Object.toBe (api.test.js:25:24)
+2025-04-19T05:27:21.1775772Z 
+2025-04-19T05:27:21.1776189Z   ● AMF‑Spot API › GET /api/covers returns empty array
+2025-04-19T05:27:21.1776553Z 
+2025-04-19T05:27:21.1776846Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1777414Z 
+2025-04-19T05:27:21.1777537Z     Expected: 200
+2025-04-19T05:27:21.1777840Z     Received: 500
+2025-04-19T05:27:21.1778025Z 
+2025-04-19T05:27:21.1778470Z     [0m [90m 31 |[39m       [33m.[39m[36mget[39m([32m'/api/covers'[39m)
+2025-04-19T05:27:21.1779314Z      [90m 32 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1780263Z     [31m[1m>[22m[39m[90m 33 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1781039Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1781970Z      [90m 34 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual([])
+2025-04-19T05:27:21.1782572Z      [90m 35 |[39m   })
+2025-04-19T05:27:21.1782965Z      [90m 36 |[39m[0m
+2025-04-19T05:27:21.1783186Z 
+2025-04-19T05:27:21.1783393Z       at Object.toBe (api.test.js:33:24)
+2025-04-19T05:27:21.1783695Z 
+2025-04-19T05:27:21.1784069Z   ● AMF‑Spot API › POST /save-cover appends a new cover
+2025-04-19T05:27:21.1784430Z 
+2025-04-19T05:27:21.1784701Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1785053Z 
+2025-04-19T05:27:21.1785184Z     Expected: 200
+2025-04-19T05:27:21.1785506Z     Received: 500
+2025-04-19T05:27:21.1785703Z 
+2025-04-19T05:27:21.1786036Z     [0m [90m 41 |[39m       [33m.[39msend(cover)
+2025-04-19T05:27:21.1786858Z      [90m 42 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1788101Z     [31m[1m>[22m[39m[90m 43 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1788858Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1789698Z      [90m 44 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1790571Z      [90m 45 |[39m
+2025-04-19T05:27:21.1791627Z      [90m 46 |[39m     [36mconst[39m covers [33m=[39m [36mawait[39m fs[33m.[39mreadJson(path[33m.[39mjoin(artistDir[33m,[39m [32m'covers.json'[39m))[0m
+2025-04-19T05:27:21.1792320Z 
+2025-04-19T05:27:21.1792507Z       at Object.toBe (api.test.js:43:24)
+2025-04-19T05:27:21.1792776Z 
+2025-04-19T05:27:21.1793165Z   ● AMF‑Spot API › POST /save-covers replaces covers array
+2025-04-19T05:27:21.1793511Z 
+2025-04-19T05:27:21.1793785Z     expect(received).toBe(expected) // Object.is equality
+2025-04-19T05:27:21.1794114Z 
+2025-04-19T05:27:21.1794239Z     Expected: 200
+2025-04-19T05:27:21.1794542Z     Received: 500
+2025-04-19T05:27:21.1794723Z 
+2025-04-19T05:27:21.1795081Z     [0m [90m 54 |[39m       [33m.[39msend(coversArray)
+2025-04-19T05:27:21.1795885Z      [90m 55 |[39m       [33m.[39m[36mset[39m([32m'X-Artist-ID'[39m[33m,[39m artistID)
+2025-04-19T05:27:21.1796838Z     [31m[1m>[22m[39m[90m 56 |[39m     expect(res[33m.[39mstatus)[33m.[39mtoBe([35m200[39m)
+2025-04-19T05:27:21.1797809Z      [90m    |[39m                        [31m[1m^[22m[39m
+2025-04-19T05:27:21.1798709Z      [90m 57 |[39m     expect(res[33m.[39mbody)[33m.[39mtoEqual({ success[33m:[39m [36mtrue[39m })
+2025-04-19T05:27:21.1799354Z      [90m 58 |[39m
+2025-04-19T05:27:21.1800490Z      [90m 59 |[39m     [36mconst[39m covers [33m=[39m [36mawait[39m fs[33m.[39mreadJson(path[33m.[39mjoin(artistDir[33m,[39m [32m'covers.json'[39m))[0m
+2025-04-19T05:27:21.1801235Z 
+2025-04-19T05:27:21.1801442Z       at Object.toBe (api.test.js:56:24)
+2025-04-19T05:27:21.1801728Z 
+2025-04-19T05:27:21.1802125Z   ● AMF‑Spot API › POST /delete-cover removes specified cover
+2025-04-19T05:27:21.1802519Z 
+2025-04-19T05:27:21.1803275Z     ENOENT: no such file or directory, open '/home/runner/work/coverflow_amf/coverflow_amf/packages/amf-spot/data/testArtist/covers.json'
+2025-04-19T05:27:21.1804011Z 
+2025-04-19T05:27:21.1804031Z 
+2025-04-19T05:27:21.1804049Z 
+2025-04-19T05:27:21.1913143Z Test Suites: 2 failed, 2 total
+2025-04-19T05:27:21.1913713Z Tests:       7 failed, 7 total
+2025-04-19T05:27:21.1914191Z Snapshots:   0 total
+2025-04-19T05:27:21.1914612Z Time:        0.955 s
+2025-04-19T05:27:21.1915017Z Ran all test suites.
+2025-04-19T05:27:21.2383242Z npm error Lifecycle script `test` failed with error:
+2025-04-19T05:27:21.2388606Z npm error code 1
+2025-04-19T05:27:21.2390238Z npm error path /home/runner/work/coverflow_amf/coverflow_amf/packages/amf-spot
+2025-04-19T05:27:21.2391119Z npm error workspace amf-spot@0.1.0
+2025-04-19T05:27:21.2392144Z npm error location /home/runner/work/coverflow_amf/coverflow_amf/packages/amf-spot
+2025-04-19T05:27:21.2392932Z npm error command failed
+2025-04-19T05:27:21.2393736Z npm error command sh -c jest
+2025-04-19T05:27:21.2458366Z ##[error]Process completed with exit code 1.
+2025-04-19T05:27:21.2554355Z Post job cleanup.
+2025-04-19T05:27:21.3259912Z [command]/usr/bin/git version
+2025-04-19T05:27:21.3292537Z git version 2.49.0
+2025-04-19T05:27:21.3335281Z Temporarily overriding HOME='/home/runner/work/_temp/1b75f348-2941-4912-8616-1ed2969b9f82' before making global git config changes
+2025-04-19T05:27:21.3336778Z Adding repository directory to the temporary git global config as a safe directory
+2025-04-19T05:27:21.3340541Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/coverflow_amf/coverflow_amf
+2025-04-19T05:27:21.3374583Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-04-19T05:27:21.3404287Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-04-19T05:27:21.3629583Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-04-19T05:27:21.3648877Z http.https://github.com/.extraheader
+2025-04-19T05:27:21.3660146Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-04-19T05:27:21.3687559Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-04-19T05:27:21.4001505Z Cleaning up orphan processes
