@@ -1,36 +1,6 @@
-body {
-  margin:0; padding:0;
-  display:flex; flex-direction:column; align-items:center;
-}
-header {
-  width:100%; padding:1rem; text-align:center;
-}
-#filter-ui { margin-top:.5rem; }
-#coverflow {
-  width:100%; height:360px; overflow:hidden;
-  margin:2rem 0; white-space:nowrap;
-}
-.cover {
-  display:inline-block; margin:0 1rem;
-  transition:transform .3s ease;
-}
-.cover img {
-  width:200px; height:auto; border-radius:8px;
-}
-.cover.active { z-index:1; }
-@media(max-width:600px){
-  .cover img { width:120px; }
-}
-
-#covers-container {
-  margin-top: 2rem;
-}
-.cover {
-  padding: 0.5rem;
-  margin: 0.25rem 0;
-  font-size: 1.25rem;
-}
-.cover.active {
-  background: #def;
-  font-weight: bold;
-}
+body { font-family: sans-serif; text-align: center; padding: 2rem; }
+#filter-ui { margin: 1rem 0; }
+#filter-ui input { padding: 0.5rem; width: 200px; }
+#covers-container { display: flex; justify-content: center; gap: 1rem; margin-top: 2rem; }
+.cover { padding: 0.5rem 1rem; border: 1px solid #ccc; border-radius: 4px; }
+.cover.active { background: #def; font-weight: bold; }
