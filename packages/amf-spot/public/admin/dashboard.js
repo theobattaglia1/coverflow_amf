@@ -1,115 +1,159 @@
-;(async function(){
-    const headers = { 'X-Artist-ID': 'default' }
-  
-    // Helper to log
-    function log(msg){ console.debug(new Date().toISOString(), msg) }
-  
-    // Fetch & render styles
-    const styleFamIn = document.getElementById('style-fontFamily')
-    const styleSizeIn = document.getElementById('style-fontSize')
-    async function loadStyles(){
-      const res = await fetch(`/api/styles?ts=${Date.now()}`, { headers })
-      const s = await res.json()
-      log('Loaded styles → ' + JSON.stringify(s))
-      styleFamIn.value = s.fontFamily
-      styleSizeIn.value = s.fontSize
-    }
-    document.getElementById('save-styles-btn')
-      .addEventListener('click', async ()=>{
-        const payload = {
-          fontFamily: styleFamIn.value,
-          fontSize: +styleSizeIn.value,
-          fonts: [], overrides: {}
-        }
-        const res = await fetch('/save-style-settings', {
-          method:'POST',
-          headers: { ...headers, 'Content-Type':'application/json' },
-          body: JSON.stringify(payload)
-        })
-        const body = await res.json()
-        log('Saved styles → ' + JSON.stringify(body))
-        alert(body.success ? 'Styles saved!' : 'Error')
-      })
-  
-    // Fetch & render covers list
-    const coverList = document.getElementById('cover-list')
-    let covers = []
-    async function loadCovers(){
-      const res = await fetch(`/api/covers?ts=${Date.now()}`, { headers })
-      covers = await res.json()
-      log('Loaded covers → ' + JSON.stringify(covers))
-      coverList.innerHTML = ''
-      covers.forEach((c,i)=>{
-        const li = document.createElement('li')
-        li.draggable = true
-        li.textContent = c.id
-        li.dataset.idx = i
-        coverList.appendChild(li)
-      })
-      enableDragAndDrop()
-    }
-  
-    // Drag‑and‑drop reordering
-    function enableDragAndDrop(){
-      let dragEl = null
-      coverList.querySelectorAll('li').forEach(li=>{
-        li.addEventListener('dragstart', e=>{
-          dragEl = li; li.classList.add('dragging')
-        })
-        li.addEventListener('dragend', e=>{
-          li.classList.remove('dragging'); dragEl=null
-        })
-        li.addEventListener('dragover', e=>{
-          e.preventDefault()
-          const over = e.target.closest('li')
-          if (!over || over===dragEl) return
-          const rect = over.getBoundingClientRect()
-          const after = e.clientY > rect.top + rect.height/2
-          over.parentNode.insertBefore(dragEl, after ? over.nextSibling : over)
-        })
-      })
-    }
-  
-    document.getElementById('save-covers-btn')
-      .addEventListener('click', async ()=>{
-        // build new order
-        const newOrder = Array.from(coverList.children).map(li=>{
-          const idx = +li.dataset.idx
-          return covers[idx]
-        })
-        const res = await fetch('/save-covers', {
-          method:'POST',
-          headers: { ...headers, 'Content-Type':'application/json' },
-          body: JSON.stringify(newOrder)
-        })
-        const b = await res.json(); log('Saved covers order → '+JSON.stringify(b))
-        alert(b.success ? 'Order saved!' : 'Error')
-      })
-  
-    // Image upload
-    document.getElementById('upload-image-btn')
-      .addEventListener('click', async ()=>{
-        const file = document.getElementById('image-file').files[0]
-        if (!file) return alert('Pick a file!')
-        const fd = new FormData(); fd.append('file', file)
-        const res = await fetch('/upload-image', { method:'POST', headers, body: fd })
-        const j = await res.json(); log('Image upload → '+JSON.stringify(j))
-        alert(j.url ? 'Image uploaded!' : 'Error')
-      })
-  
-    // Font upload
-    document.getElementById('upload-font-btn')
-      .addEventListener('click', async ()=>{
-        const file = document.getElementById('font-file').files[0]
-        if (!file) return alert('Pick a font!')
-        const fd = new FormData(); fd.append('file', file)
-        const res = await fetch('/upload-font', { method:'POST', headers, body: fd })
-        const j = await res.json(); log('Font upload → '+JSON.stringify(j))
-        alert(j.url ? 'Font uploaded!' : 'Error')
-      })
-  
-    // Initialize dashboard
+;(async () => {
+  const logEl = document.getElementById('log-output')
+  const log = msg => {
+    console.debug(msg)
+    logEl.textContent += msg + '\n'
+    logEl.scrollTop = logEl.scrollHeight
+  }
+
+  let artistID = ''
+
+  // STEP 1: Artist ID form
+  document.getElementById('set-artist-id-button').addEventListener('click', () => {
+    const val = document.getElementById('artist-id-input').value.trim()
+    if (!val) return alert('Please enter an Artist ID')
+    artistID = val
+    document.getElementById('artist-id-prompt').classList.add('hidden')
+    document.getElementById('dashboard').classList.remove('hidden')
+    init()
+  })
+
+  async function init() {
+    log(`Dashboard initialized at ${new Date().toISOString()}`)
     await loadStyles()
     await loadCovers()
-  })();
-  
+  }
+
+  // LOAD & POPULATE STYLES
+  async function loadStyles() {
+    try {
+      const res = await fetch(`/api/styles?ts=${Date.now()}`, {
+        headers: { 'X-Artist-ID': artistID }
+      })
+      const styles = await res.json()
+      log(`Fetched styles → ${JSON.stringify(styles)}`)
+      document.querySelector('#style-form [name=fontFamily]').value = styles.fontFamily
+      document.querySelector('#style-form [name=fontSize]').value = styles.fontSize
+    } catch (e) {
+      log(`Error loading styles: ${e}`)
+    }
+  }
+  document.getElementById('style-form').addEventListener('submit', async e => {
+    e.preventDefault()
+    const data = {
+      fontFamily: e.target.fontFamily.value,
+      fontSize: parseInt(e.target.fontSize.value, 10)
+    }
+    try {
+      const res = await fetch('/save-style-settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Artist-ID': artistID
+        },
+        body: JSON.stringify(data)
+      })
+      const json = await res.json()
+      log(`Saved styles → ${JSON.stringify(json)}`)
+    } catch (e) {
+      log(`Error saving styles: ${e}`)
+    }
+  })
+
+  // LOAD & RENDER COVERS
+  async function loadCovers() {
+    try {
+      const res = await fetch(`/api/covers?ts=${Date.now()}`, {
+        headers: { 'X-Artist-ID': artistID }
+      })
+      window.covers = await res.json()
+      log(`Fetched covers → ${JSON.stringify(covers)}`)
+      renderCovers()
+    } catch (e) {
+      log(`Error loading covers: ${e}`)
+    }
+  }
+
+  function renderCovers() {
+    const ul = document.getElementById('covers-list')
+    ul.innerHTML = ''
+    covers.forEach((c, i) => {
+      const li = document.createElement('li')
+      li.textContent = c.id
+      li.draggable = true
+      li.dataset.index = i
+      // drag & drop handlers
+      li.addEventListener('dragstart', e =>
+        e.dataTransfer.setData('text/plain', e.target.dataset.index)
+      )
+      li.addEventListener('dragover', e => e.preventDefault())
+      li.addEventListener('drop', e => {
+        const from = +e.dataTransfer.getData('text/plain')
+        const to = +e.target.dataset.index
+        covers.splice(to, 0, covers.splice(from, 1)[0])
+        renderCovers()
+      })
+      ul.appendChild(li)
+    })
+  }
+
+  // SAVE NEW COVERS ORDER
+  document
+    .getElementById('save-covers-button')
+    .addEventListener('click', async () => {
+      try {
+        const res = await fetch('/save-covers', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Artist-ID': artistID
+          },
+          body: JSON.stringify(covers)
+        })
+        const json = await res.json()
+        log(`Saved covers order → ${JSON.stringify(json)}`)
+      } catch (e) {
+        log(`Error saving covers: ${e}`)
+      }
+    })
+
+  // UPLOAD FORMS (cover, image, font)
+  ;['cover', 'image', 'font'].forEach(type => {
+    const form = document.getElementById(`upload-${type}-form`)
+    form.addEventListener('submit', async e => {
+      e.preventDefault()
+      const fd = new FormData(form)
+      try {
+        const url =
+          type === 'cover' ? '/admin/upload-cover' : `/upload-${type}`
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'X-Artist-ID': artistID },
+          body: fd
+        })
+        const json = await res.json()
+        log(`Uploaded ${type} → ${JSON.stringify(json)}`)
+      } catch (err) {
+        log(`Error uploading ${type}: ${err}`)
+      }
+    })
+  })
+
+  // PUSH TO TEST / LIVE
+  document.getElementById('push-test-button').addEventListener('click', async () => {
+    const res = await fetch('/push-to-test', {
+      method: 'POST',
+      headers: { 'X-Artist-ID': artistID }
+    })
+    const json = await res.json()
+    log(`Pushed to TEST → ${JSON.stringify(json)}`)
+  })
+  document.getElementById('push-live-button').addEventListener('click', async () => {
+    const res = await fetch('/push-to-live', {
+      method: 'POST',
+      headers: { 'X-Artist-ID': artistID }
+    })
+    const json = await res.json()
+    log(`Pushed to LIVE → ${JSON.stringify(json)}`)
+  })
+})()
