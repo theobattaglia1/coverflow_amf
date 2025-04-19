@@ -1,79 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>AMF Spot Admin Dashboard</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta charset="UTF-8">
+  <title>AMF Admin Dashboard</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>AMF Spot Admin Dashboard</h1>
-
-  <!-- STEP 1: Pick your Artist ID -->
-  <div id="artist-id-prompt">
-    <label>
-      Artist ID:
-      <input type="text" id="artist-id-input" placeholder="Enter Artist ID" />
-    </label>
-    <button id="set-artist-id-button">Set Artist</button>
-  </div>
-
-  <!-- MAIN DASHBOARD (hidden until Artist ID is set) -->
-  <div id="dashboard" class="hidden">
-
-    <!-- UPLOAD SECTION -->
-    <section id="upload-section">
-      <h2>Upload Cover</h2>
-      <form id="upload-cover-form" enctype="multipart/form-data">
-        <input type="file" name="cover" required />
-        <button type="submit">Upload Cover</button>
-      </form>
-
-      <h2>Upload Image</h2>
-      <form id="upload-image-form" enctype="multipart/form-data">
-        <input type="file" name="file" required />
-        <button type="submit">Upload Image</button>
-      </form>
-
-      <h2>Upload Font</h2>
-      <form id="upload-font-form" enctype="multipart/form-data">
-        <input type="file" name="file" required />
-        <button type="submit">Upload Font</button>
-      </form>
-    </section>
-
-    <!-- STYLE SETTINGS -->
-    <section id="style-section">
-      <h2>Style Settings</h2>
-      <form id="style-form">
-        <label>
-          Font Family:
-          <input type="text" name="fontFamily" />
-        </label>
-        <label>
-          Font Size:
-          <input type="number" name="fontSize" />
-        </label>
-        <button type="submit">Save Styles</button>
-      </form>
-    </section>
-
-    <!-- COVERS LIST & REORDER -->
-    <section id="covers-section">
-      <h2>Covers List (drag to reorder)</h2>
-      <ul id="covers-list"></ul>
-      <button id="save-covers-button">Save Covers Order</button>
-    </section>
-
-    <!-- PUSH TO ENVIRONMENTS -->
-    <section id="push-section">
-      <button id="push-test-button">Push to Test</button>
-      <button id="push-live-button">Push to Live</button>
-    </section>
-
-    <!-- LOG OUTPUT -->
-    <pre id="log-output"></pre>
-  </div>
-
+  <nav>
+    <ul>
+      <li><a href="#" data-page="covers">Covers</a></li>
+      <li><a href="#" data-page="styles">Styles</a></li>
+      <li><a href="#" data-page="assets">Assets</a></li>
+      <li><a href="#" data-page="planning">Planning</a></li>
+      <li><a href="#" data-page="settings">Settings</a></li>
+    </ul>
+  </nav>
+  <main id="app"></main>
   <script src="dashboard.js"></script>
 </body>
 </html>
