@@ -1,34 +1,17 @@
-/* public/admin/styles.css */
-body {
-  font-family: sans-serif;
-  margin: 0;
-  padding: 1rem;
-  background: #f5f5f5;
-}
-header h1 { margin-bottom: 1rem; }
+body { font-family: sans-serif; padding: 20px; }
+h1 { margin-bottom: 1rem; }
 section { margin-bottom: 2rem; }
-#showcase { 
+#coverflow { display: flex; gap: 10px; overflow-x: auto; padding: 10px; border: 1px solid #ccc; }
+.cover { 
+  flex: 0 0 auto; 
+  width: 100px; 
+  height: 100px; 
+  background: #eee; 
   display: flex; 
-  overflow-x: auto; 
-  gap: 1rem; 
-  padding: 1rem 0;
+  align-items: center; 
+  justify-content: center; 
+  cursor: grab; 
+  user-select: none;
 }
-.cover {
-  flex: 0 0 auto;
-  width: 120px;
-  position: relative;
-  cursor: grab;
-}
-.cover img {
-  width: 100%;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-}
-.cover .title {
-  text-align: center;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-}
-.cover.dragging { opacity: 0.5; }
-.cover.over { outline: 2px dashed #007bff; }
-#upload-container { display: flex; gap: 0.5rem; align-items: center; }
+.cover.active { outline: 3px solid #007bff; }
+#save-order { margin-top: 10px; padding: 5px 10px; }

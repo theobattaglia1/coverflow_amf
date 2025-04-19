@@ -1,0 +1,5 @@
+/* public/admin/audio.css */
+body { font-family:sans-serif; padding:1rem; }
+#audio-select, audio, #comment-text, button { display:block; margin:0.5rem 0; }
+#comments-list { list-style:none; padding:0; }
+#comments-list li { margin-bottom:0.5rem; }
