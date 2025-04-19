@@ -6,7 +6,7 @@ const path = require('path');
 const winston = require('winston');
 const basicAuth = require('express-basic-auth');
 
-//─── Logger (ES5 function, no template literals) ─────────────────────────────
+//─── Logger ────────────────────────────────────────────────────────────────────
 const logger = winston.createLogger({
   level: 'info',
   format: winston.format.combine(
@@ -15,13 +15,11 @@ const logger = winston.createLogger({
       return log.timestamp + ' [' + log.level + '] ' + log.message;
     })
   ),
-  transports: [
-    new winston.transports.Console()
-  ]
+  transports: [new winston.transports.Console()]
 });
 
-//─── Data directory detection ──────────────────────────────────────────────────
-var dataDir = '/data';
+//─── Data dir detection ──────────────────────────────────────────────────────────
+let dataDir = '/data';
 if (!fs.existsSync(dataDir)) {
   dataDir = path.join(__dirname, 'data');
 }
@@ -29,14 +27,14 @@ logger.info('Using data path: ' + dataDir);
 
 //─── Helpers ───────────────────────────────────────────────────────────────────
 async function ensureDirectoryExists(dir) {
-  if (!await fs.pathExists(dir)) {
+  if (!(await fs.pathExists(dir))) {
     await fs.mkdirp(dir);
     logger.info('Created directory: ' + dir);
   }
 }
 
 async function ensureFileExists(filePath, defaultContent) {
-  if (!await fs.pathExists(filePath)) {
+  if (!(await fs.pathExists(filePath))) {
     await fs.writeJson(filePath, defaultContent, { spaces: 2 });
     logger.info('Created missing file: ' + filePath);
   }
@@ -46,23 +44,19 @@ async function ensureFileExists(filePath, defaultContent) {
 const app = express();
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Protect /admin if needed
 app.use('/admin', basicAuth({
   users: { [process.env.ADMIN_USERNAME]: process.env.ADMIN_PASSWORD },
   challenge: true
 }));
-
-// Multi‑tenant middleware (X-Artist-ID header)
-app.use(function(req, res, next) {
-  var artist = req.header('X-Artist-ID') || 'default';
+app.use((req, res, next) => {
+  const artist = req.header('X-Artist-ID') || 'default';
   req.artistDir = path.join(dataDir, artist);
   next();
 });
 
 //─── GET /api/styles ──────────────────────────────────────────────────────────
-app.get('/api/styles', async function(req, res) {
-  var styleFile = path.join(req.artistDir, 'styles.json');
+app.get('/api/styles', async (req, res) => {
+  const styleFile = path.join(req.artistDir, 'styles.json');
   try {
     await ensureDirectoryExists(req.artistDir);
     await ensureFileExists(styleFile, {
@@ -71,7 +65,7 @@ app.get('/api/styles', async function(req, res) {
       fonts: [],
       overrides: {}
     });
-    var styles = await fs.readJson(styleFile);
+    const styles = await fs.readJson(styleFile);
     logger.info('Fetched styles for ' + path.basename(req.artistDir));
     res.json(styles);
   } catch (err) {
@@ -81,12 +75,12 @@ app.get('/api/styles', async function(req, res) {
 });
 
 //─── GET /api/covers ──────────────────────────────────────────────────────────
-app.get('/api/covers', async function(req, res) {
-  var coversFile = path.join(req.artistDir, 'covers.json');
+app.get('/api/covers', async (req, res) => {
+  const coversFile = path.join(req.artistDir, 'covers.json');
   try {
     await ensureDirectoryExists(req.artistDir);
     await ensureFileExists(coversFile, []);
-    var covers = await fs.readJson(coversFile);
+    const covers = await fs.readJson(coversFile);
     logger.info('Fetched covers for ' + path.basename(req.artistDir));
     res.json(covers);
   } catch (err) {
@@ -96,14 +90,14 @@ app.get('/api/covers', async function(req, res) {
 });
 
 //─── POST /save-cover ─────────────────────────────────────────────────────────
-app.post('/save-cover', async function(req, res) {
-  var coversFile = path.join(req.artistDir, 'covers.json');
+app.post('/save-cover', async (req, res) => {
+  const coversFile = path.join(req.artistDir, 'covers.json');
   try {
     await ensureDirectoryExists(req.artistDir);
     await ensureFileExists(coversFile, []);
-    var covers = await fs.readJson(coversFile);
-    var incoming = req.body;
-    var idx = covers.findIndex(function(c) { return c.id === incoming.id; });
+    const covers = await fs.readJson(coversFile);
+    const incoming = req.body;
+    const idx = covers.findIndex(c => c.id === incoming.id);
     if (idx >= 0) covers[idx] = incoming;
     else covers.push(incoming);
     await fs.writeJson(coversFile, covers, { spaces: 2 });
@@ -116,11 +110,11 @@ app.post('/save-cover', async function(req, res) {
 });
 
 //─── POST /save-covers ────────────────────────────────────────────────────────
-app.post('/save-covers', async function(req, res) {
-  var coversFile = path.join(req.artistDir, 'covers.json');
+app.post('/save-covers', async (req, res) => {
+  const coversFile = path.join(req.artistDir, 'covers.json');
   try {
     await ensureDirectoryExists(req.artistDir);
-    var coversArray = req.body;
+    const coversArray = req.body;
     if (!Array.isArray(coversArray)) {
       return res.status(400).json({ error: 'Invalid format' });
     }
@@ -134,17 +128,17 @@ app.post('/save-covers', async function(req, res) {
 });
 
 //─── POST /delete-cover ───────────────────────────────────────────────────────
-app.post('/delete-cover', async function(req, res) {
-  var coversFile = path.join(req.artistDir, 'covers.json');
+app.post('/delete-cover', async (req, res) => {
+  const coversFile = path.join(req.artistDir, 'covers.json');
   try {
     await ensureDirectoryExists(req.artistDir);
     await ensureFileExists(coversFile, []);
-    var covers = await fs.readJson(coversFile);
-    var coverID = req.body.coverID || req.body.id;
+    const covers = await fs.readJson(coversFile);
+    const coverID = req.body.coverID || req.body.id;
     if (!coverID) {
       return res.status(400).json({ error: 'Missing cover ID' });
     }
-    var filtered = covers.filter(function(c) { return c.id !== coverID; });
+    const filtered = covers.filter(c => c.id !== coverID);
     await fs.writeJson(coversFile, filtered, { spaces: 2 });
     logger.info('Deleted cover ' + coverID + ' for ' + path.basename(req.artistDir));
     res.json({ success: true });
@@ -154,13 +148,63 @@ app.post('/delete-cover', async function(req, res) {
   }
 });
 
-//─── Export for tests ─────────────────────────────────────────────────────────
-module.exports = app;
+//─── POST /push-to-test ────────────────────────────────────────────────────────
+app.post('/push-to-test', async (req, res) => {
+  const dir = req.artistDir;
+  const coversFile = path.join(dir, 'covers.json');
+  const stylesFile = path.join(dir, 'styles.json');
+  const testCovers = path.join(dir, 'test-covers.json');
+  const testStyles = path.join(dir, 'test-styles.json');
+  try {
+    await ensureDirectoryExists(dir);
+    await ensureFileExists(coversFile, []);
+    await ensureFileExists(stylesFile, {
+      fontFamily: 'GT America',
+      fontSize: 16,
+      fonts: [],
+      overrides: {}
+    });
+    await fs.copy(coversFile, testCovers);
+    await fs.copy(stylesFile, testStyles);
+    logger.info('Pushed to test for ' + path.basename(dir));
+    res.json({ success: true });
+  } catch (err) {
+    logger.error('POST /push-to-test error: ' + err.stack);
+    res.status(500).json({ error: 'Push to test failed' });
+  }
+});
 
-//─── Start server if run directly ────────────────────────────────────────────
+//─── POST /push-to-live ───────────────────────────────────────────────────────
+app.post('/push-to-live', async (req, res) => {
+  const dir = req.artistDir;
+  const coversFile = path.join(dir, 'covers.json');
+  const stylesFile = path.join(dir, 'styles.json');
+  const testCovers = path.join(dir, 'test-covers.json');
+  const testStyles = path.join(dir, 'test-styles.json');
+  try {
+    await ensureDirectoryExists(dir);
+    await ensureFileExists(testCovers, []);
+    await ensureFileExists(testStyles, {
+      fontFamily: 'GT America',
+      fontSize: 16,
+      fonts: [],
+      overrides: {}
+    });
+    await fs.copy(testCovers, coversFile);
+    await fs.copy(testStyles, stylesFile);
+    logger.info('Pushed to live for ' + path.basename(dir));
+    res.json({ success: true });
+  } catch (err) {
+    logger.error('POST /push-to-live error: ' + err.stack);
+    res.status(500).json({ error: 'Push to live failed' });
+  }
+});
+
+//─── Export & listen ──────────────────────────────────────────────────────────
+module.exports = app;
 if (require.main === module) {
-  var PORT = process.env.PORT || 3000;
-  app.listen(PORT, function() {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
     logger.info('Server listening on port ' + PORT);
   });
 }
