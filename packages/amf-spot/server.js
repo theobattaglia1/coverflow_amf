@@ -1,240 +1,183 @@
-#!/usr/bin/env node
 require('dotenv').config();
+const express      = require('express');
+const path         = require('path');
+const bodyParser   = require('body-parser');
+const cookieParser = require('cookie-parser');
+const basicAuth    = require('express-basic-auth');
+const multer       = require('multer');
+const fs           = require('fs');
+const { google }   = require('googleapis');
+const logger       = require('./utils/logger');
 
-const express       = require('express');
-const path          = require('path');
-const fs            = require('fs-extra');
-const multer        = require('multer');
-const basicAuth     = require('express-basic-auth');
-const cookieParser  = require('cookie-parser');
-const { google }    = require('googleapis');
+const app  = express();
+const PORT = process.env.PORT || 3000;
 
-// ── Simple console logger ────────────────────────────────────────────────
-const logger = {
-  info:  console.log,
-  error: console.error,
-  debug: console.debug
-};
-
-const app = express();
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// Admin UI
-app.use(
-  '/admin',
-  basicAuth({
-    users: { [process.env.ADMIN_USERNAME]: process.env.ADMIN_PASSWORD },
-    challenge: true
-  }),
-  express.static(path.join(__dirname, 'public', 'admin'))
-);
-
-// identify artist
+// Logging + parsers + Basic‑Auth
 app.use(function(req, res, next) {
-  var artist = req.header('X-Artist-ID') || 'default';
-  req.artistDir = path.join(__dirname, 'data', artist);
+  logger.info(req.method + ' ' + req.url);
   next();
 });
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(
+  ['/admin', '/admin/*'],
+  basicAuth({
+    users: { [process.env.ADMIN_USERNAME]: process.env.ADMIN_PASSWORD },
+    challenge: true,
+    unauthorizedResponse: function(req) {
+      logger.error('Unauthorized attempt to ' + req.url);
+      return 'Authentication required';
+    }
+  })
+);
 
-// multer setup
-var audioUpload = multer({ dest: path.join(__dirname, 'tmp') });
-var imageUpload = multer({ dest: path.join(__dirname, 'tmp') });
+// Static + Admin UI
+app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
 
-// ── AUDIO ────────────────────────────────────────────────────────────────
-app.post('/upload-audio', audioUpload.single('file'), async function(req, res) {
-  try {
-    var artist = req.header('X-Artist-ID') || 'default';
-    var dest = path.join(__dirname, 'uploads', 'audio', artist);
-    await fs.mkdirp(dest);
-    var filename = Date.now() + '-' + req.file.originalname;
-    await fs.move(req.file.path, path.join(dest, filename));
-    logger.info('[POST /upload-audio] saved ' + filename + ' for ' + artist);
-    res.json({ url: '/uploads/audio/' + artist + '/' + filename });
-  } catch (err) {
-    logger.error('[POST /upload-audio] error: ' + err.stack);
-    res.status(500).json({ error: 'Audio upload failed' });
-  }
+// In‑memory Tasks API
+let tasks = [];
+let nextTaskId = 1;
+app.get('/api/tasks', function(req, res) {
+  logger.info('GET /api/tasks');
+  res.json(tasks);
+});
+app.post('/api/tasks', (req, res) => {
+  logger.info('POST /api/tasks');
+  const data = req.body || {};
+  const t = { id: nextTaskId++, title: data.title || data.text || '', date: data.date || new Date().toISOString(), status: 'all' };
+  tasks.push(t);
+  res.status(201).json(t);
+});
+app.delete('/api/tasks/:id', function(req, res) {
+  const id = parseInt(req.params.id, 10);
+  logger.info('DELETE /api/tasks/' + id);
+  tasks = tasks.filter(x => x.id !== id);
+  res.status(204).send();
 });
 
-app.get('/audio-files', async function(req, res) {
-  try {
-    var artist = req.header('X-Artist-ID') || 'default';
-    var dir = path.join(__dirname, 'uploads', 'audio', artist);
-    await fs.mkdirp(dir);
-    var files = (await fs.readdir(dir)).map(function(f) {
-      return '/uploads/audio/' + artist + '/' + f;
-    });
-    res.json(files);
-  } catch (err) {
-    logger.error('[GET /audio-files] error: ' + err.stack);
-    res.status(500).json({ error: 'List audio failed' });
-  }
+// Comments & Captions
+app.get('/api/comments', function(req, res) {
+  logger.info('GET /api/comments');
+  res.json([]);
+});
+app.post('/api/comments', function(req, res) {
+  logger.info('POST /api/comments');
+  res.status(201).json(req.body);
+});
+app.get('/api/captions', function(req, res) {
+  logger.info('GET /api/captions');
+  res.json([]);
+});
+app.post('/api/captions', function(req, res) {
+  logger.info('POST /api/captions');
+  res.status(201).json(req.body);
 });
 
-// ── COMMENTS ─────────────────────────────────────────────────────────────
-app.get('/api/comments', async function(req, res) {
-  try {
-    var file = path.join(req.artistDir, 'comments.json');
-    await fs.ensureFile(file);
-    var list = await fs.readJson(file);
-    res.json(list);
-  } catch (err) {
-    logger.error('[GET /api/comments] error: ' + err.stack);
-    res.status(500).json({ error: 'Load comments failed' });
-  }
+// Health check
+app.get('/ping', function(req, res) {
+  logger.info('GET /ping -> 200');
+  res.send('pong');
 });
 
-app.post('/api/comments', async function(req, res) {
-  try {
-    var body = req.body;
-    var file = path.join(req.artistDir, 'comments.json');
-    await fs.ensureFile(file);
-    var list = await fs.readJson(file);
-    list.push({ timestamp: body.timestamp, text: body.text });
-    await fs.writeJson(file, list, { spaces: 2 });
-    logger.info('[POST /api/comments] saved comment at ' + body.timestamp);
-    res.json({ success: true });
-  } catch (err) {
-    logger.error('[POST /api/comments] error: ' + err.stack);
-    res.status(500).json({ error: 'Save comment failed' });
-  }
-});
-
-// ── CAPTIONS ─────────────────────────────────────────────────────────────
-app.get('/api/captions', async function(req, res) {
-  try {
-    var asset = req.query.asset;
-    var file  = path.join(req.artistDir, asset + '-captions.json');
-    await fs.ensureFile(file);
-    res.json(await fs.readJson(file));
-  } catch (err) {
-    logger.error('[GET /api/captions] error: ' + err.stack);
-    res.status(500).json({ error: 'Load captions failed' });
-  }
-});
-
-app.post('/api/captions', async function(req, res) {
-  try {
-    var body = req.body;
-    var file = path.join(req.artistDir, body.asset + '-captions.json');
-    await fs.ensureFile(file);
-    var arr = await fs.readJson(file);
-    arr.push({ timestamp: body.timestamp, text: body.text });
-    await fs.writeJson(file, arr, { spaces: 2 });
-    logger.info('[POST /api/captions] added for ' + body.asset);
-    res.json({ success: true });
-  } catch (err) {
-    logger.error('[POST /api/captions] error: ' + err.stack);
-    res.status(500).json({ error: 'Save caption failed' });
-  }
-});
-
-// ── TASKS ────────────────────────────────────────────────────────────────
-app.get('/api/tasks', async function(req, res) {
-  try {
-    var file = path.join(req.artistDir, 'tasks.json');
-    await fs.ensureFile(file);
-    res.json(await fs.readJson(file));
-  } catch (err) {
-    logger.error('[GET /api/tasks] error: ' + err.stack);
-    res.status(500).json({ error: 'Fetch tasks failed' });
-  }
-});
-
-app.post('/api/tasks', async function(req, res) {
-  try {
-    var body = req.body;
-    var file = path.join(req.artistDir, 'tasks.json');
-    await fs.ensureFile(file);
-    var arr  = await fs.readJson(file);
-    arr.push({ id: body.id, text: body.text });
-    await fs.writeJson(file, arr, { spaces: 2 });
-    logger.info('[POST /api/tasks] created ' + body.id);
-    res.json({ success: true });
-  } catch (err) {
-    logger.error('[POST /api/tasks] error: ' + err.stack);
-    res.status(500).json({ error: 'Create task failed' });
-  }
-});
-
-app.delete('/api/tasks/:id', async function(req, res) {
-  try {
-    var file = path.join(req.artistDir, 'tasks.json');
-    await fs.ensureFile(file);
-    var arr  = await fs.readJson(file);
-    arr = arr.filter(function(t) { return t.id !== req.params.id; });
-    await fs.writeJson(file, arr, { spaces: 2 });
-    logger.info('[DELETE /api/tasks] removed ' + req.params.id);
-    res.json({ success: true });
-  } catch (err) {
-    logger.error('[DELETE /api/tasks] error: ' + err.stack);
-    res.status(500).json({ error: 'Delete task failed' });
-  }
-});
-
-// ── GOOGLE CALENDAR ──────────────────────────────────────────────────────
+// Google OAuth2 & Calendar
 const oauth2Client = new google.auth.OAuth2(
   process.env.GOOGLE_CLIENT_ID,
   process.env.GOOGLE_CLIENT_SECRET,
   process.env.GOOGLE_REDIRECT_URI
 );
+const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
 
 app.get('/auth/google', function(req, res) {
-  logger.info('[auth/google] redirecting');
-  var url = oauth2Client.generateAuthUrl({
-    access_type: 'offline',
-    prompt:      'consent',
-    scope:       ['https://www.googleapis.com/auth/calendar.readonly']
-  });
+  logger.info('GET /auth/google → redirect to consent');
+  const url = oauth2Client.generateAuthUrl({ access_type: 'offline', scope: SCOPES });
   res.redirect(url);
 });
-
 app.get('/oauth2callback', async function(req, res) {
+  logger.info('GET /oauth2callback → exchanging code');
   try {
-    var code   = req.query.code;
-    var tokens = (await oauth2Client.getToken(code)).tokens;
-    res.cookie('google_tokens', tokens, { httpOnly: true });
-    logger.info('[oauth2callback] tokens saved');
-    res.redirect('/admin/calendar/index.html');
+    const { tokens } = await oauth2Client.getToken(req.query.code);
+    res.cookie('google_tokens', JSON.stringify(tokens), { httpOnly: true });
+    logger.info('Tokens stored; redirect to /admin/calendar');
+    res.redirect('/admin/calendar');
   } catch (err) {
-    logger.error('[oauth2callback] error: ' + err.stack);
-    res.status(500).send('Authentication failed');
+    logger.error('OAuth2 error', err);
+    res.status(500).send('OAuth2 error');
   }
 });
-
 app.get('/api/calendar-events', async function(req, res) {
+  logger.info('GET /api/calendar-events');
+  const raw = req.cookies.google_tokens;
+  if (!raw) return res.status(401).json({ error: 'Unauthorized' });
   try {
-    var tokens = req.cookies.google_tokens;
-    if (!tokens) {
-      res.status(401).json({ error: 'Not authorized' });
-      return;
-    }
+    const tokens = JSON.parse(raw);
     oauth2Client.setCredentials(tokens);
-    var calendar = google.calendar({ version: 'v3', auth: oauth2Client });
-    var result   = await calendar.events.list({
-      calendarId:  'primary',
-      timeMin:      (new Date()).toISOString(),
-      maxResults:   10,
+    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+    const resp = await calendar.events.list({
+      calendarId: 'primary',
+      timeMin: new Date().toISOString(),
+      maxResults: 10,
       singleEvents: true,
-      orderBy:      'startTime'
+      orderBy: 'startTime'
     });
-    var items = result.data.items || [];
-    logger.debug('[GET /api/calendar-events] count=' + items.length);
-    res.json(items);
+    const items = resp.data.items || [];
+    const events = items.map(e => ({
+      summary: e.summary,
+      start: e.start.dateTime || e.start.date,
+      end:   e.end.dateTime   || e.end.date
+    }));
+    res.json(events);
   } catch (err) {
-    logger.error('[GET /api/calendar-events] error: ' + err.stack);
-    res.status(500).json({ error: 'Fetch events failed' });
+    logger.error('Calendar fetch error', err);
+    res.status(500).json({ error: 'Calendar fetch failed' });
   }
 });
 
-// ── EXPORT & LISTEN ────────────────────────────────────────────────────────
-module.exports = app;
-if (require.main === module) {
-  var PORT = parseInt(process.env.PORT, 10) || 3000;
-  app.listen(PORT, function() {
-    logger.info('Server listening on port ' + PORT);
+// Audio endpoints
+fs.mkdirSync(path.join(__dirname,'uploads','audio'),{ recursive:true });
+const audioUpload = multer({ dest: path.join(__dirname,'uploads','audio') });
+app.post('/upload-audio', audioUpload.single('file'), function(req, res) {
+  logger.info('POST /upload-audio');
+  if (!req.file) return res.status(400).json({ error: 'No file' });
+  res.status(201).json({ filename: req.file.filename, original: req.file.originalname });
+});
+app.get('/audio-files', function(req, res) {
+  logger.info('GET /audio-files');
+  fs.readdir(path.join(__dirname,'uploads','audio'), (err, files) => {
+    if (err) return res.status(500).json([]);
+    res.json(files);
   });
-}
+});
+
+// Image endpoints
+fs.mkdirSync(path.join(__dirname,'uploads','images'),{ recursive:true });
+const imgUpload = multer({ dest: path.join(__dirname,'uploads','images') });
+app.post('/upload-image', imgUpload.single('file'), function(req, res) {
+  logger.info('POST /upload-image');
+  if (!req.file) return res.status(400).json({ error: 'No file' });
+  res.status(201).json({ filename: req.file.filename, original: req.file.originalname });
+});
+app.get('/image-files', function(req, res) {
+  logger.info('GET /image-files');
+  fs.readdir(path.join(__dirname,'uploads','images'), (err, files) => {
+    if (err) return res.status(500).json([]);
+    res.json(files);
+  });
+});
+
+// 404 & error handlers
+app.use(function(req, res) {
+  logger.info('404 ' + req.method + ' ' + req.url);
+  res.status(404).send('Not found');
+});
+app.use(function(err, req, res, next) {
+  logger.error('ERROR ' + req.method + ' ' + req.url + ' - ' + err.stack);
+  res.status(500).send('Server error');
+});
+
+// Start
+app.listen(PORT, function() {
+  logger.info('Server listening on port ' + PORT);
+});

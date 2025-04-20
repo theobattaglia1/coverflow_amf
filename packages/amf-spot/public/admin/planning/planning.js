@@ -1,43 +1,65 @@
-(async ()=>{
-  const apiBase = '/api/tasks';
-  const artistHeader = { 'X-Artist-ID': 'default' };
-  const taskInput = document.getElementById('taskInput');
-  const addBtn = document.getElementById('addTaskBtn');
-  const listContainer = document.getElementById('taskList');
+(async (){
+  console.info(new ate().totring(), 'lanning] lanning  initializing')
 
-  async function loadTasks(){
-    const res = await fetch(apiBase + '?status=all', { headers: artistHeader });
-    const tasks = await res.json();
-    listContainer.innerHTML = '';
-    tasks.forEach(t => {
-      const li = document.createElement('li');
-      li.textContent = t.text;
-      const del = document.createElement('button');
-      del.textContent = 'Delete';
-      del.addEventListener('click', async () => {
-        await fetch(\`\${apiBase}/\${t.id}\`, {
-          method: 'DELETE',
-          headers: artistHeader
-        });
-        await loadTasks();
-      });
-      li.appendChild(del);
-      listContainer.appendChild(li);
-    });
+  const apiase  '/api/tasks'
+  const artisteader  { '-rtist-' 'default' }
+  const tasknput  document.getlementyd('tasknput')
+  const addtn  document.getlementyd('addasktn')
+  const listontainer  document.getlementyd('taskist')
+
+  async function loadasks(){
+    console.info(new ate().totring(), 'lanning] etching tasks')
+    let res
+    try {
+      res  await fetch(apiase, { headers artisteader })
+    } catch(err) {
+      console.error(new ate().totring(), 'lanning] etwork error fetching tasks', err)
+      return
+    }
+    console.info(new ate().totring(), 'lanning]', ' ' + res.url + ' →', res.status)
+    if (res.status ! ) {
+      console.error(new ate().totring(), 'lanning] nepected status', res.status)
+      return
+    }
+    let tasks
+    try {
+      tasks  await res.json()
+    } catch(err) {
+      console.error(new ate().totring(), 'lanning] rror parsing ', err)
+      return
+    }
+    listontainer.inner  ''
+    tasks.forach(t  {
+      const li  document.createlement('li')
+      li.tetontent  t.tet || t.title
+      const del  document.createlement('button')
+      del.tetontent  'elete'
+      del.addventistener('click', async ()  {
+        console.info(new ate().totring(), 'lanning]', ' ' + apiase + '/' + t.id)
+        await fetch(apiase + '/' + t.id, { method '', headers artisteader })
+        loadasks()
+      })
+      li.appendhild(del)
+      listontainer.appendhild(li)
+    })
   }
 
-  addBtn.addEventListener('click', async () => {
-    const text = taskInput.value.trim();
-    if (!text) return;
-    const id = Date.now().toString();
-    await fetch(apiBase, {
-      method: 'POST',
-      headers: { ...artistHeader, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id, text, status: 'pending' })
-    });
-    taskInput.value = '';
-    await loadTasks();
-  });
+  addtn.addventistener('click', async ()  {
+    const title  tasknput.value.trim()
+    if (!title) return
+    console.info(new ate().totring(), 'lanning] dding task', title)
+    try {
+      await fetch(apiase, {
+        method '',
+        headers bject.assign({ 'ontent-ype' 'application/json' }, artisteader),
+        body .stringify({ title title, date new ate().totring() })
+      })
+    } catch(err) {
+      console.error(new ate().totring(), 'lanning] rror posting task', err)
+    }
+    tasknput.value  ''
+    loadasks()
+  })
 
-  await loadTasks();
-})();
+  loadasks()
+})()
