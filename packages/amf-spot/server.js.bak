@@ -1,53 +1,45 @@
 require('dotenv').config();
+const express      = require('express');
+const path         = require('path');
+const fs           = require('fs-extra');
+const multer       = require('multer');
+const basicAuth    = require('express-basic-auth');
+const cookieParser = require('cookie-parser');
+const { google }   = require('googleapis');
+const winston      = require('winston');
 
-const express   = require('express');
-const fs        = require('fs-extra');
-const path      = require('path');
-const winston   = require('winston');
-const basicAuth = require('express-basic-auth');
-const multer    = require('multer');
-
-// Multer setup
-const upload      = multer({ dest: path.join(__dirname, 'tmp-uploads') });
-const audioUpload = multer({ dest: path.join(__dirname, 'uploads', 'audio') });
-
-//─── Logger ────────────────────────────────────────────────────────────────────
+// -- Logger with timestamps --
 const logger = winston.createLogger({
-  level: 'info',
+  level: 'debug',
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.printf(({ timestamp, level, message }) => {
-      return \`\${timestamp} [\${level}] \${message}\`;
+      return \`\${timestamp} [\${level.toUpperCase()}] \${message}\`;
     })
   ),
   transports: [ new winston.transports.Console() ]
 });
 
-//─── Data dir detection ──────────────────────────────────────────────────────────
-let dataDir = '/data';
-if (!fs.existsSync(dataDir)) {
-  dataDir = path.join(__dirname, 'data');
-}
-logger.info(\`Using data path: \${dataDir}\`);
+logger.debug('Loaded ENV:', JSON.stringify({
+  PORT: process.env.PORT,
+  GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI
+}));
 
-//─── Helpers ───────────────────────────────────────────────────────────────────
-async function ensureDirectoryExists(dir) {
-  if (!(await fs.pathExists(dir))) {
-    await fs.mkdirp(dir);
-    logger.info(\`Created directory: \${dir}\`);
-  }
-}
-async function ensureFileExists(filePath, defaultContent) {
-  if (!(await fs.pathExists(filePath))) {
-    await fs.writeJson(filePath, defaultContent, { spaces: 2 });
-    logger.info(\`Created missing file: \${filePath}\`);
-  }
-}
-
-//─── Express setup ─────────────────────────────────────────────────────────────
 const app = express();
+
+// -- GLOBAL MIDDLEWARE FOR DEBUGGING --
+app.use((req, res, next) => {
+  logger.debug(\`[REQ] \${req.method} \${req.url} HEADERS=\${JSON.stringify(req.headers)}\`);
+  next();
+});
+
 app.use(express.json());
+app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Admin & uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(
   '/admin',
   basicAuth({
@@ -56,47 +48,103 @@ app.use(
   }),
   express.static(path.join(__dirname, 'public', 'admin'))
 );
+
+// Artist isolation
 app.use((req, res, next) => {
-  const artist = req.header('X-Artist-ID') || 'default';
-  req.artistDir = path.join(dataDir, artist);
+  req.artist = req.header('X-Artist-ID') || 'default';
+  req.artistDir = path.join(__dirname, 'data', req.artist);
+  logger.debug(\`[ARTIST] Using folder \${req.artistDir}\`);
   next();
 });
 
-//─── AUDIO UPLOAD & LISTING API ────────────────────────────────────────────────
-app.post('/upload-audio', audioUpload.single('file'), async (req, res) => {
+// Multer
+const upload = multer({ dest: path.join(__dirname, 'tmp') });
+
+// -- Example audio endpoint (logs) --
+app.post('/upload-audio', upload.single('file'), async (req, res) => {
+  logger.debug('[upload-audio] file:', req.file);
   try {
-    const artist = req.header('X-Artist-ID') || 'default';
-    const destDir = path.join(__dirname, 'uploads', 'audio', artist);
+    const destDir = path.join(__dirname, 'uploads', 'audio', req.artist);
     await fs.mkdirp(destDir);
     const filename = \`\${Date.now()}-\${req.file.originalname}\`;
     await fs.move(req.file.path, path.join(destDir, filename));
-    logger.info(\`Saved audio \${filename} for \${artist}\`);
-    res.json({ url: \`/uploads/audio/\${artist}/\${filename}\` });
+    logger.info(\`[upload-audio] saved \${filename} for \${req.artist}\`);
+    res.json({ url: \`/uploads/audio/\${req.artist}/\${filename}\` });
   } catch (err) {
-    logger.error(\`POST /upload-audio error: \${err.stack}\`);
-    res.status(500).json({ error: 'Audio upload failed' });
+    logger.error('[upload-audio] ERROR:', err.stack);
+    res.status(500).json({ error: err.message });
   }
 });
 
-app.get('/audio-files', async (req, res) => {
+// -- GOOGLE OAUTH2 CLIENT --
+const oauth2Client = new google.auth.OAuth2(
+  process.env.GOOGLE_CLIENT_ID,
+  process.env.GOOGLE_CLIENT_SECRET,
+  process.env.GOOGLE_REDIRECT_URI
+);
+
+// Kick off OAuth flow
+app.get('/auth/google', (req, res) => {
+  logger.info('[auth/google] start');
+  const url = oauth2Client.generateAuthUrl({
+    access_type: 'offline',
+    prompt: 'consent',
+    scope: ['https://www.googleapis.com/auth/calendar.readonly']
+  });
+  logger.debug('[auth/google] redirecting to:', url);
+  res.redirect(url);
+});
+
+// OAuth callback
+app.get('/oauth2callback', async (req, res) => {
+  const code = req.query.code;
+  logger.info('[oauth2callback] code:', code);
   try {
-    const artist = req.header('X-Artist-ID') || 'default';
-    const dir = path.join(__dirname, 'uploads', 'audio', artist);
-    await fs.mkdirp(dir);
-    const files = (await fs.readdir(dir)).map(f => \`/uploads/audio/\${artist}/\${f}\`);
-    res.json(files);
+    const { tokens } = await oauth2Client.getToken(code);
+    logger.debug('[oauth2callback] received tokens:', JSON.stringify(tokens).substring(0,200));
+    oauth2Client.setCredentials(tokens);
+    // Also save in cookie
+    res.cookie('google_tokens', tokens, { httpOnly: true });
+    logger.info('[oauth2callback] tokens saved to cookie, redirecting to UI');
+    res.redirect('/admin/calendar/index.html');
   } catch (err) {
-    logger.error(\`GET /audio-files error: \${err.stack}\`);
-    res.status(500).json({ error: 'List audio files failed' });
+    logger.error('[oauth2callback] ERROR getting tokens:', err.stack);
+    res.status(500).send('Authentication failed: ' + err.message);
   }
 });
 
-//─── (keep ALL your existing /api/covers, /api/styles, /save-cover, /save-covers,
-//      /delete-cover, /push-to-test, /push-to-live here unchanged) ─────────────
+// Calendar events
+app.get('/api/calendar-events', async (req, res) => {
+  logger.info('[GET /api/calendar-events] called');
+  const tokens = req.cookies.google_tokens;
+  logger.debug('[GET /api/calendar-events] cookie tokens present?:', !!tokens);
+  if (!tokens) {
+    logger.warn('[GET /api/calendar-events] no tokens → 401');
+    return res.status(401).json({ error: 'Not signed in' });
+  }
+  oauth2Client.setCredentials(tokens);
+  try {
+    const cal = google.calendar({ version: 'v3', auth: oauth2Client });
+    const result = await cal.events.list({
+      calendarId: 'primary',
+      timeMin: new Date().toISOString(),
+      singleEvents: true,
+      orderBy: 'startTime',
+      maxResults: 10
+    });
+    logger.debug('[GET /api/calendar-events] got items count=', (result.data.items||[]).length);
+    res.json(result.data.items || []);
+  } catch (err) {
+    logger.error('[GET /api/calendar-events] ERROR:', err.stack);
+    res.status(500).json({ error: err.message });
+  }
+});
 
-//─── Export & listen ──────────────────────────────────────────────────────────
+// -- YOUR OTHER ENDPOINTS --
+
+// Export/listen
 module.exports = app;
 if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => logger.info(\`Server listening on port \${PORT}\`));
+  const port = parseInt(process.env.PORT, 10) || 3000;
+  app.listen(port, () => logger.info(\`Server up on port \${port}\`));
 }

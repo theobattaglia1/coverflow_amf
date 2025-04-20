@@ -1,104 +1,43 @@
-;(async function() {
-  const apiBase = '/api/tasks'
-  const artistHeader = { 'X-Artist-ID': 'default', 'Content-Type': 'application/json' }
+(async ()=>{
+  const apiBase = '/api/tasks';
+  const artistHeader = { 'X-Artist-ID': 'default' };
+  const taskInput = document.getElementById('taskInput');
+  const addBtn = document.getElementById('addTaskBtn');
+  const listContainer = document.getElementById('taskList');
 
-  // DOM refs
-  const form      = document.getElementById('task-form')
-  const titleIn   = document.getElementById('task-title')
-  const descIn    = document.getElementById('task-desc')
-  const dueIn     = document.getElementById('task-due')
-  const listEl    = document.getElementById('task-list')
-  const statusEl  = document.getElementById('task-status')
-
-  // Load & render all tasks
-  async function loadTasks() {
-    statusEl.textContent = 'Loading…'
-    try {
-      const res = await fetch(apiBase, { headers: { 'X-Artist-ID': 'default' } })
-      const tasks = await res.json()
-      renderTasks(tasks)
-      statusEl.textContent = ''
-    } catch (err) {
-      console.error('Failed to load tasks', err)
-      statusEl.textContent = 'Error loading tasks'
-    }
-  }
-
-  // Render task list
-  function renderTasks(tasks) {
-    listEl.innerHTML = ''
-    if (!tasks.length) {
-      listEl.innerHTML = '<li>No tasks yet</li>'
-      return
-    }
+  async function loadTasks(){
+    const res = await fetch(apiBase + '?status=all', { headers: artistHeader });
+    const tasks = await res.json();
+    listContainer.innerHTML = '';
     tasks.forEach(t => {
-      const li = document.createElement('li')
-      li.dataset.id = t.id
-      li.innerHTML = `
-        <strong>${t.title}</strong><br/>
-        <span>${t.description || ''}</span><br/>
-        <em>Due: ${t.dueDate || '—'}</em>
-        <div class="actions">
-          <button class="edit">Edit</button>
-          <button class="delete">Delete</button>
-        </div>
-      `
-      listEl.appendChild(li)
-    })
+      const li = document.createElement('li');
+      li.textContent = t.text;
+      const del = document.createElement('button');
+      del.textContent = 'Delete';
+      del.addEventListener('click', async () => {
+        await fetch(\`\${apiBase}/\${t.id}\`, {
+          method: 'DELETE',
+          headers: artistHeader
+        });
+        await loadTasks();
+      });
+      li.appendChild(del);
+      listContainer.appendChild(li);
+    });
   }
 
-  // Handle Edit/Delete clicks
-  listEl.addEventListener('click', async (e) => {
-    const li = e.target.closest('li')
-    if (!li) return
-    const id = li.dataset.id
-
-    // Delete
-    if (e.target.classList.contains('delete')) {
-      if (!confirm('Delete this task?')) return
-      await fetch(`${apiBase}/${id}`, {
-        method: 'DELETE',
-        headers: { 'X-Artist-ID': 'default' }
-      })
-      return loadTasks()
-    }
-
-    // Edit
-    if (e.target.classList.contains('edit')) {
-      const newTitle = prompt('Title', li.querySelector('strong').textContent)
-      if (newTitle == null) return
-      const newDesc  = prompt('Description', li.querySelector('span').textContent)
-      const newDue   = prompt('Due date', li.querySelector('em').textContent.replace(/^Due:\s*/, ''))
-      await fetch(`${apiBase}/${id}`, {
-        method: 'PUT',
-        headers: artistHeader,
-        body: JSON.stringify({ title: newTitle, description: newDesc, dueDate: newDue })
-      })
-      return loadTasks()
-    }
-  })
-
-  // Handle new‐task form submission
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault()
-    const payload = {
-      title:       titleIn.value.trim(),
-      description: descIn.value.trim(),
-      dueDate:     dueIn.value.trim()
-    }
-    if (!payload.title) {
-      alert('Title is required')
-      return
-    }
+  addBtn.addEventListener('click', async () => {
+    const text = taskInput.value.trim();
+    if (!text) return;
+    const id = Date.now().toString();
     await fetch(apiBase, {
       method: 'POST',
-      headers: artistHeader,
-      body: JSON.stringify(payload)
-    })
-    titleIn.value = descIn.value = dueIn.value = ''
-    loadTasks()
-  })
+      headers: { ...artistHeader, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, text, status: 'pending' })
+    });
+    taskInput.value = '';
+    await loadTasks();
+  });
 
-  // Initial load
-  loadTasks()
-})()
+  await loadTasks();
+})();

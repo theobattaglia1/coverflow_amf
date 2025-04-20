@@ -1,0 +1,40 @@
+(async () => {
+  const signInBtn = document.getElementById('signInBtn');
+  const eventsContainer = document.getElementById('events');
+
+  // When clicked, kick off OAuth flow
+  signInBtn.addEventListener('click', () => {
+    window.location.href = '/auth/google';
+  });
+
+  // If we already have tokens (cookie), hide the button and load events
+  if (document.cookie.includes('google_tokens')) {
+    signInBtn.style.display = 'none';
+    eventsContainer.innerHTML = '<p>Loading events…</p>';
+
+    try {
+      const res = await fetch('/api/calendar-events', {
+        credentials: 'include'
+      });
+      if (!res.ok) throw new Error(await res.text());
+      const events = await res.json();
+
+      if (events.length === 0) {
+        eventsContainer.innerHTML = '<p>No upcoming events found.</p>';
+      } else {
+        const ul = document.createElement('ul');
+        events.forEach(e => {
+          const when = e.start.dateTime || e.start.date || '—';
+          const li = document.createElement('li');
+          li.textContent = `${new Date(when).toLocaleString()} — ${e.summary || '(No title)'}`;
+          ul.appendChild(li);
+        });
+        eventsContainer.innerHTML = '';
+        eventsContainer.appendChild(ul);
+      }
+    } catch (err) {
+      console.error(err);
+      eventsContainer.innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
+    }
+  }
+})();

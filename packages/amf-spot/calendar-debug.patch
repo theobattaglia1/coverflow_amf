@@ -1,0 +1,41 @@
+*** Begin Patch
+*** Update File: public/admin/calendar/calendar.js
+
+@@ (async () => {
+-  const btn = document.getElementById('googleSignInBtn');
++  console.log('[client] calendar.js loaded, cookies=', document.cookie);
++  const btn = document.getElementById('googleSignInBtn');
+   const list = document.getElementById('eventsList');
+
++  // debug sign‑in click
+@@ btn.addEventListener('click', () => {
+-    window.location.href = '/auth/google';
++    console.log('[client] redirecting to /auth/google');
++    window.location.href = '/auth/google';
+   });
+
++  // after sign‑in, check for tokens
+   if (document.cookie.includes('google_tokens')) {
++    console.log('[client] found google_tokens cookie, fetching events');
+     btn.style.display = 'none';
+     list.innerHTML = '<li>Loading events…</li>';
+     try {
++      console.log('[client] fetch → GET /api/calendar-events');
+       const res = await fetch('/api/calendar-events', { credentials: 'include' });
++      console.log('[client] response status:', res.status);
+       const events = await res.json();
++      console.log('[client] parsed events:', events);
+       list.innerHTML = '';
+       events.forEach(e => {
+         const when = e.start.dateTime || e.start.date || 'Unknown time';
+         const li = document.createElement('li');
+         li.textContent = `${when} — ${e.summary || '(no title)'}`;
+         list.appendChild(li);
+       });
+     } catch (err) {
++      console.error('[client] error fetching events:', err);
+       list.innerHTML = '<li style="color:red">Error loading events</li>';
+     }
+   }
+})();
+*** End Patch

@@ -1,0 +1,32 @@
+*** Begin Patch
+*** Update File: server.js
+
+@@ app.get('/oauth2callback', async (req, res) => {
+-  try {
++  console.log('[server] /oauth2callback → query:', req.query);
++  try {
+     const { code } = req.query;
+     const { tokens } = await oauth2Client.getToken(code);
++    console.log('[server] /oauth2callback → tokens:', tokens);
+     res.cookie('google_tokens', tokens, { httpOnly: true });
+     res.redirect('/admin/calendar/index.html');
+@@ app.get('/api/calendar-events', async (req, res) => {
+-  try {
++  console.log('[server] GET /api/calendar-events → cookies:', req.cookies);
++  console.log('[server] GET /api/calendar-events → starting fetch');
++  try {
+     const tokens = req.cookies.google_tokens;
+     if (!tokens) return res.status(401).json({ error: 'Not signed in' });
+     oauth2Client.setCredentials(tokens);
+     const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+     const { data } = await calendar.events.list({
+@@
+     });
++    console.log('[server] GET /api/calendar-events → fetched items:', Array.isArray(data.items) ? data.items.length : 0);
+     res.json(data.items || []);
+   } catch (err) {
++    console.error('[server] GET /api/calendar-events → ERROR', err.stack || err);
+     logger.error('GET /api/calendar-events error:', err);
+     res.status(500).json({ error: 'Failed to fetch events' });
+   }
+*** End Patch
