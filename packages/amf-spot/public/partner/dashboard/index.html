@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Partner Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css"/>
+  <link rel="stylesheet" href="coverflow.css"/>
+  <script defer src="coverflow.js"></script>
+  <script defer src="dashboard.js"></script>
+</head>
+<body>
+  <section id="coverflow-hero">
+    <div id="coverflow" class="coverflow"></div>
+  </section>
+  <main>
+    <h1>Dashboard</h1>
+    <section><h2>Tasks</h2><ul id="tasks-list"></ul></section>
+    <section><h2>Comments</h2><ul id="comments-list"></ul></section>
+    <section><h2>Audio</h2><ul id="audio-list"></ul></section>
+    <section><h2>Images</h2><ul id="images-list"></ul></section>
+    <section>
+      <h2>Events</h2>
+      <button id="refresh-events">Refresh</button>
+      <ul id="events-list"></ul>
+    </section>
+  </main>
+</body>
+</html>

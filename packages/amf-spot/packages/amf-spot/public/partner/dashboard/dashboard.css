@@ -1,0 +1,8 @@
+body { font:16px/1.5 sans-serif; margin:20px; }
+h1 { font-size:1.8em; margin-bottom:1em; }
+section { margin-bottom:1.5em; }
+ul { list-style:none; padding:0; display:flex; flex-wrap:wrap; gap:1em; }
+li { border:1px solid #ddd; padding:.5em; }
+img { display:block; }
+audio { width:200px; }
+form { margin-bottom:.5em; }

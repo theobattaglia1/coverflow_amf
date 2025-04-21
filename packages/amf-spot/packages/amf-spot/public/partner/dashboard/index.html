@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Public Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <h1>📊 Dashboard for <span id="artist-name"></span></h1>
+
+  <section>
+    <h2>Timeline</h2>
+    <ul id="tasks-list"></ul>
+  </section>
+
+  <section>
+    <h2>Comments</h2>
+    <form id="comments-form">
+      <input id="comment-author" placeholder="Your name" required>
+      <input id="comment-text" placeholder="Your comment" required>
+      <button>Post</button>
+    </form>
+    <ul id="comments-list"></ul>
+  </section>
+
+  <section>
+    <h2>Audio</h2>
+    <ul id="audio-list"></ul>
+  </section>
+
+  <section>
+    <h2>Images</h2>
+    <ul id="images-list"></ul>
+  </section>
+
+  <section>
+    <h2>Upcoming Events</h2>
+    <button id="refresh-events">Refresh</button>
+    <ul id="events-list"></ul>
+  </section>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

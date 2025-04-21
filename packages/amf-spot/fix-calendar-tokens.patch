@@ -1,0 +1,50 @@
+*** Begin Patch
+*** Update File: server.js
+@@ app.get('/auth/google', (req, res) => {
+-  const url = oauth2Client.generateAuthUrl({ access_type: 'offline', scope: SCOPES });
++  const url = oauth2Client.generateAuthUrl({
++    access_type: 'offline',
++    scope: SCOPES,
++    prompt: 'consent'
++  });
+*** End Patch Part 1
+
+*** Update File: server.js
+@@ app.get('/oauth2callback', async (req, res) => {
+-  const { tokens } = await oauth2Client.getToken(req.query.code);
+-  res.cookie('google_tokens', JSON.stringify(tokens), { httpOnly: true });
++  // exchange code & merge in any existing refresh token
++  const newResp = await oauth2Client.getToken(req.query.code);
++  let tokens    = newResp.tokens;
++  const rawOld  = req.cookies.google_tokens;
++  if (!tokens.refresh_token && rawOld) {
++    try {
++      const old = JSON.parse(rawOld);
++      if (old.refresh_token) tokens.refresh_token = old.refresh_token;
++    } catch (_) {}
++  }
++  oauth2Client.setCredentials(tokens);
++  res.cookie('google_tokens',
++             JSON.stringify(tokens),
++             { httpOnly: true,
++               secure: process.env.NODE_ENV==='production' });
+*** End Patch Part 2
+
+*** Update File: server.js
+@@ app.get('/api/:artist/calendar-events', async (req, res) => {
+-  } catch (err) {
+-    logger.error(`Calendar fetch error for ${req.params.artist}`, err);
+-    res.status(500).json({ error: 'Failed to fetch events' });
+-  }
++  } catch (err) {
++    logger.error(`Calendar fetch error for ${req.params.artist}`, err);
++    // if no refresh token, force the user to re‑auth
++    if (err.message && err.message.includes('No refresh token')) {
++      return res.status(401).json({
++        error: 'No refresh token—please <a href="/auth/google">sign in with Google</a> again.'
++      });
++    }
++    res.status(500).json({ error: 'Failed to fetch events' });
++  }
+*** End Patch Part 3
+

@@ -1,0 +1,29 @@
+diff --git a/server.js b/server.js
+index e.g.1234567..e.g.89abcde 100644
+--- a/server.js
++++ b/server.js
+@@ -55,22 +55,6 @@ app.use(cookieParser());
+
+// — admin basic‑auth (unchanged credentials)
+-app.use(
+-  // artist chooser (no auth)
+-  '/admin$',
+-  (req, res, next) => {
+-    const list = artistNames.map(n => {
+-      const slug = slugify(n);
+-      return \`<li><a href="/admin/\${slug}/dashboard/">\${n}</a></li>\`;
+-    }).join('');
+-    res.send(\`
+-      <html>
+-        <head><title>Choose Artist</title></head>
+-        <body>
+-          <h1>Select Your Dashboard</h1>
+-          <ul>\${list}</ul>
+-        </body>
+-      </html>
+-    \`);
+-  }
+-);
+ 
+ // — per‑artist admin UI
+ app.use(

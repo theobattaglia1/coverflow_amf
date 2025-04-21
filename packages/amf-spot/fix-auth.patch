@@ -1,0 +1,15 @@
+*** Begin Patch
+*** Update File: server.js
+@@
+-app.use(bodyParser.urlencoded({ extended: false }));
+-app.use(cookieParser());
+-app.use(basicAuth({ users: { [process.env.ADMIN_USER||'admin']: process.env.ADMIN_PASS||'password' }, challenge: true }));
++app.use(bodyParser.urlencoded({ extended: false }));
++app.use(cookieParser());
++// — only protect ADMIN routes with Basic Auth
++app.use('/admin', basicAuth({
++  users: { [process.env.ADMIN_USER||'admin']: process.env.ADMIN_PASS||'password' },
++  challenge: true
++}));
+
+*** End Patch

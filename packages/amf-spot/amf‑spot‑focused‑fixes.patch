@@ -1,0 +1,2195 @@
+diff --git a/packages/amf-spot/api.push.test.js b/packages/amf-spot/api.push.test.js
+index 5f20945..5234c20 100644
+--- a/packages/amf-spot/api.push.test.js
++++ b/packages/amf-spot/api.push.test.js
+@@ -1,62 +1,62 @@
+-const fs = require('fs-extra')
+-const path = require('path')
+-const request = require('supertest')
+-const app = require('./server')
+-
+-describe('Push endpoints', () => {
+-  // use a separate artist so core tests (testArtist) aren’t affected
+-  const artist = 'pushTestArtist'
+-  const dir = path.join(__dirname, 'data', artist)
+-  const coversFile = path.join(dir, 'covers.json')
+-  const stylesFile = path.join(dir, 'styles.json')
+-  const testCovers = path.join(dir, 'test-covers.json')
+-  const testStyles = path.join(dir, 'test-styles.json')
+-
+-  beforeAll(async () => {
++const fs  require('fs-etra')
++const path  require('path')
++const request  require('supertest')
++const app  require('./server')
++
++describe('ush endpoints', ()  {
++  // use a separate artist so core tests (testrtist) aren""'t affected
++  const artist  'pushestrtist'
++  const dir  path.join(__dirname, 'data', artist)
++  const coversile  path.join(dir, 'covers.json')
++  const stylesile  path.join(dir, 'styles.json')
++  const testovers  path.join(dir, 'test-covers.json')
++  const testtyles  path.join(dir, 'test-styles.json')
++
++  beforell(async ()  {
+     await fs.remove(dir)
+     await fs.mkdirp(dir)
+-    await fs.writeJson(coversFile, [{ id: 'x' }], { spaces: 2 })
+-    await fs.writeJson(
+-      stylesFile,
+-      { fontFamily: 'A', fontSize: 10, fonts: [], overrides: {} },
+-      { spaces: 2 }
++    await fs.writeson(coversile, { id '' }], { spaces  })
++    await fs.writeson(
++      stylesile,
++      { fontamily '', fontize , fonts ], overrides {} },
++      { spaces  }
+     )
+   })
+ 
+-  afterAll(async () => {
++  afterll(async ()  {
+     await fs.remove(dir)
+   })
+ 
+-  it('POST /push-to-test copies covers & styles to test files', async () => {
+-    const res = await request(app)
++  it(' /push-to-test copies covers & styles to test files', async ()  {
++    const res  await request(app)
+       .post('/push-to-test')
+-      .set('X-Artist-ID', artist)
+-    expect(res.status).toBe(200)
+-    expect(res.body).toEqual({ success: true })
+-
+-    const tc = await fs.readJson(testCovers)
+-    const ts = await fs.readJson(testStyles)
+-    expect(tc).toEqual([{ id: 'x' }])
+-    expect(ts.fontFamily).toBe('A')
++      .set('-rtist-', artist)
++    epect(res.status).toe()
++    epect(res.body).toqual({ success true })
++
++    const tc  await fs.readson(testovers)
++    const ts  await fs.readson(testtyles)
++    epect(tc).toqual({ id '' }])
++    epect(ts.fontamily).toe('')
+   })
+ 
+-  it('POST /push-to-live copies test files back to live files', async () => {
+-    await fs.writeJson(testCovers, [{ id: 'y' }], { spaces: 2 })
+-    await fs.writeJson(
+-      testStyles,
+-      { fontFamily: 'B', fontSize: 12, fonts: [], overrides: {} },
+-      { spaces: 2 }
++  it(' /push-to-live copies test files back to live files', async ()  {
++    await fs.writeson(testovers, { id 'y' }], { spaces  })
++    await fs.writeson(
++      testtyles,
++      { fontamily '', fontize , fonts ], overrides {} },
++      { spaces  }
+     )
+ 
+-    const res = await request(app)
++    const res  await request(app)
+       .post('/push-to-live')
+-      .set('X-Artist-ID', artist)
+-    expect(res.status).toBe(200)
+-    expect(res.body).toEqual({ success: true })
+-
+-    const liveC = await fs.readJson(coversFile)
+-    const liveS = await fs.readJson(stylesFile)
+-    expect(liveC).toEqual([{ id: 'y' }])
+-    expect(liveS.fontFamily).toBe('B')
++      .set('-rtist-', artist)
++    epect(res.status).toe()
++    epect(res.body).toqual({ success true })
++
++    const live  await fs.readson(coversile)
++    const live  await fs.readson(stylesile)
++    epect(live).toqual({ id 'y' }])
++    epect(live.fontamily).toe('')
+   })
+ })
+diff --git a/packages/amf-spot/api.test.js b/packages/amf-spot/api.test.js
+index 5f5cde4..6276b26 100644
+--- a/packages/amf-spot/api.test.js
++++ b/packages/amf-spot/api.test.js
+@@ -1,76 +1,76 @@
+ // packages/amf-spot/api.test.js
+-const fs = require('fs-extra')
+-const path = require('path')
+-const request = require('supertest')
+-const app = require('./server')
++const fs  require('fs-etra')
++const path  require('path')
++const request  require('supertest')
++const app  require('./server')
+ 
+-describe('AMF‑Spot API', () => {
+-  const artistID = 'testArtist'
+-  const artistDir = path.join(__dirname, 'data', artistID)
++describe('""�pot ', ()  {
++  const artist  'testrtist'
++  const artistir  path.join(__dirname, 'data', artist)
+ 
+-  beforeAll(async () => {
+-    // Clean slate
+-    await fs.remove(artistDir)
++  beforell(async ()  {
++    // lean slate
++    await fs.remove(artistir)
+   })
+ 
+-  afterAll(async () => {
+-    // Remove test data
+-    await fs.remove(artistDir)
++  afterll(async ()  {
++    // emove test data
++    await fs.remove(artistir)
+   })
+ 
+-  test('GET /api/styles returns default styles', async () => {
+-    const res = await request(app)
++  test(' /api/styles returns default styles', async ()  {
++    const res  await request(app)
+       .get('/api/styles')
+-      .set('X-Artist-ID', artistID)
+-    expect(res.status).toBe(200)
+-    expect(res.body).toMatchObject({ fontFamily: 'GT America', fontSize: 16 })
++      .set('-rtist-', artist)
++    epect(res.status).toe()
++    epect(res.body).toatchbject({ fontamily ' merica', fontize  })
+   })
+ 
+-  test('GET /api/covers returns empty array', async () => {
+-    const res = await request(app)
++  test(' /api/covers returns empty array', async ()  {
++    const res  await request(app)
+       .get('/api/covers')
+-      .set('X-Artist-ID', artistID)
+-    expect(res.status).toBe(200)
+-    expect(res.body).toEqual([])
++      .set('-rtist-', artist)
++    epect(res.status).toe()
++    epect(res.body).toqual(])
+   })
+ 
+-  test('POST /save-cover appends a new cover', async () => {
+-    const cover = { id: 'abc', title: 'My Cover' }
+-    const res = await request(app)
++  test(' /save-cover appends a new cover', async ()  {
++    const cover  { id 'abc', title 'y over' }
++    const res  await request(app)
+       .post('/save-cover')
+       .send(cover)
+-      .set('X-Artist-ID', artistID)
+-    expect(res.status).toBe(200)
+-    expect(res.body).toEqual({ success: true })
++      .set('-rtist-', artist)
++    epect(res.status).toe()
++    epect(res.body).toqual({ success true })
+ 
+-    const covers = await fs.readJson(path.join(artistDir, 'covers.json'))
+-    expect(covers).toContainEqual(cover)
++    const covers  await fs.readson(path.join(artistir, 'covers.json'))
++    epect(covers).toontainqual(cover)
+   })
+ 
+-  test('POST /save-covers replaces covers array', async () => {
+-    const coversArray = [{ id: 'one' }, { id: 'two' }]
+-    const res = await request(app)
++  test(' /save-covers replaces covers array', async ()  {
++    const coversrray  { id 'one' }, { id 'two' }]
++    const res  await request(app)
+       .post('/save-covers')
+-      .send(coversArray)
+-      .set('X-Artist-ID', artistID)
+-    expect(res.status).toBe(200)
+-    expect(res.body).toEqual({ success: true })
++      .send(coversrray)
++      .set('-rtist-', artist)
++    epect(res.status).toe()
++    epect(res.body).toqual({ success true })
+ 
+-    const covers = await fs.readJson(path.join(artistDir, 'covers.json'))
+-    expect(covers).toEqual(coversArray)
++    const covers  await fs.readson(path.join(artistir, 'covers.json'))
++    epect(covers).toqual(coversrray)
+   })
+ 
+-  test('POST /delete-cover removes specified cover', async () => {
++  test(' /delete-cover removes specified cover', async ()  {
+     // start with two covers
+-    await fs.writeJson(path.join(artistDir, 'covers.json'), [{ id: 'x' }, { id: 'y' }])
+-    const res = await request(app)
++    await fs.writeson(path.join(artistir, 'covers.json'), { id '' }, { id 'y' }])
++    const res  await request(app)
+       .post('/delete-cover')
+-      .send({ coverID: 'x' })
+-      .set('X-Artist-ID', artistID)
+-    expect(res.status).toBe(200)
++      .send({ cover '' })
++      .set('-rtist-', artist)
++    epect(res.status).toe()
+ 
+-    const covers = await fs.readJson(path.join(artistDir, 'covers.json'))
+-    expect(covers).toEqual([{ id: 'y' }])
++    const covers  await fs.readson(path.join(artistir, 'covers.json'))
++    epect(covers).toqual({ id 'y' }])
+   })
+ })
+ 
+diff --git a/packages/amf-spot/cypress.config.js b/packages/amf-spot/cypress.config.js
+index e1a8e11..a7e6026 100644
+--- a/packages/amf-spot/cypress.config.js
++++ b/packages/amf-spot/cypress.config.js
+@@ -1,8 +1,8 @@
+-const { defineConfig } = require('cypress')
++const { defineonfig }  require('cypress')
+ 
+-module.exports = defineConfig({
+-  e2e: {
+-    baseUrl: 'http://localhost:3000',
+-    specPattern: 'cypress/e2e/**/*.cy.js'
++module.eports  defineonfig({
++  ee {
++    baserl 'http//localhost',
++    specattern 'cypress/ee/**/*.cy.js'
+   }
+ })
+diff --git a/packages/amf-spot/cypress/e2e/public.cy.js b/packages/amf-spot/cypress/e2e/public.cy.js
+index 555e0e8..5ece8fa 100644
+--- a/packages/amf-spot/cypress/e2e/public.cy.js
++++ b/packages/amf-spot/cypress/e2e/public.cy.js
+@@ -1,24 +1,24 @@
+-describe('Public SPA', () => {
+-  before(() => {
+-    cy.visit('/');
+-    cy.wait(500);
+-  });
++describe('ublic ', ()  {
++  before(()  {
++    cy.visit('/')
++    cy.wait()
++  })
+ 
+-  it('displays cover elements', () => {
+-    cy.get('.cover', { timeout: 10000 }).should('exist');
+-  });
++  it('displays cover elements', ()  {
++    cy.get('.cover', { timeout  }).should('eist')
++  })
+ 
+-  it.skip('changes active cover with ArrowRight', () => {
+-    cy.get('.cover.active', { timeout: 10000 }).should('exist').then($a1 => {
+-      cy.get('body').type('{rightarrow}');
+-      cy.get('.cover.active', { timeout: 10000 }).should($a2 => {
+-        expect($a2[0]).not.to.equal($a1[0]);
+-      });
+-    });
+-  });
++  it.skip('changes active cover with rrowight', ()  {
++    cy.get('.cover.active', { timeout  }).should('eist').then($a  {
++      cy.get('body').type('{rightarrow}')
++      cy.get('.cover.active', { timeout  }).should($a  {
++        epect($a]).not.to.equal($a])
++      })
++    })
++  })
+ 
+-  it.skip('filter input narrows results', () => {
+-    cy.get('input', { timeout: 10000 }).should('exist').clear().type('nope');
+-    cy.get('.cover', { timeout: 10000 }).should('have.length', 0);
+-  });
+-});
++  it.skip('filter input narrows results', ()  {
++    cy.get('input', { timeout  }).should('eist').clear().type('nope')
++    cy.get('.cover', { timeout  }).should('have.length', )
++  })
++})
+diff --git a/packages/amf-spot/cypress/support/commands.js b/packages/amf-spot/cypress/support/commands.js
+index 66ea16e..499b47d 100644
+--- a/packages/amf-spot/cypress/support/commands.js
++++ b/packages/amf-spot/cypress/support/commands.js
+@@ -1,25 +1,25 @@
+ // ***********************************************
+-// This example commands.js shows you how to
++// his eample commands.js shows you how to
+ // create various custom commands and overwrite
+-// existing commands.
++// eisting commands.
+ //
+-// For more comprehensive examples of custom
+-// commands please read more here:
+-// https://on.cypress.io/custom-commands
++// or more comprehensive eamples of custom
++// commands please read more here
++// https//on.cypress.io/custom-commands
+ // ***********************************************
+ //
+ //
+-// -- This is a parent command --
+-// Cypress.Commands.add('login', (email, password) => { ... })
++// -- his is a parent command --
++// ypress.ommands.add('login', (email, password)  { ... })
+ //
+ //
+-// -- This is a child command --
+-// Cypress.Commands.add('drag', { prevSubject: 'element'}, (subject, options) => { ... })
++// -- his is a child command --
++// ypress.ommands.add('drag', { prevubject 'element'}, (subject, options)  { ... })
+ //
+ //
+-// -- This is a dual command --
+-// Cypress.Commands.add('dismiss', { prevSubject: 'optional'}, (subject, options) => { ... })
++// -- his is a dual command --
++// ypress.ommands.add('dismiss', { prevubject 'optional'}, (subject, options)  { ... })
+ //
+ //
+-// -- This will overwrite an existing command --
+-// Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
+\ No newline at end of file
++// -- his will overwrite an eisting command --
++// ypress.ommands.overwrite('visit', (originaln, url, options)  { ... })
+\ No newline at end of file
+diff --git a/packages/amf-spot/cypress/support/e2e.js b/packages/amf-spot/cypress/support/e2e.js
+index 3eaffff..50b1897 100644
+--- a/packages/amf-spot/cypress/support/e2e.js
++++ b/packages/amf-spot/cypress/support/e2e.js
+@@ -1,17 +1,17 @@
+ // ***********************************************************
+-// This example support/e2e.js is processed and
++// his eample support/ee.js is processed and
+ // loaded automatically before your test files.
+ //
+-// This is a great place to put global configuration and
+-// behavior that modifies Cypress.
++// his is a great place to put global configuration and
++// behavior that modifies ypress.
+ //
+-// You can change the location of this file or turn off
++// ou can change the location of this file or turn off
+ // automatically serving support files with the
+-// 'supportFile' configuration option.
++// 'supportile' configuration option.
+ //
+-// You can read more here:
+-// https://on.cypress.io/configuration
++// ou can read more here
++// https//on.cypress.io/configuration
+ // ***********************************************************
+ 
+-// Import commands.js using ES2015 syntax:
++// mport commands.js using  synta
+ import './commands'
+\ No newline at end of file
+diff --git a/packages/amf-spot/package.json b/packages/amf-spot/package.json
+index c306683..d7660f2 100644
+--- a/packages/amf-spot/package.json
++++ b/packages/amf-spot/package.json
+@@ -7,10 +7,13 @@
+     "test": "jest"
+   },
+   "dependencies": {
++    "@sentry/browser": "^9.13.0",
++    "axios": "^1.8.4",
+     "cookie-parser": "^1.4.7",
+     "dotenv": "^10.0.0",
+-    "express": "^4.18.2",
++    "express": "^4.21.2",
+     "express-basic-auth": "^1.2.1",
++    "form-data": "^4.0.2",
+     "googleapis": "^148.0.0",
+     "multer": "^1.4.5-lts.2",
+     "winston": "^3.17.0"
+diff --git a/packages/amf-spot/public/admin/assets/assets.html b/packages/amf-spot/public/admin/assets/assets.html
+deleted file mode 100644
+index d169223..0000000
+--- a/packages/amf-spot/public/admin/assets/assets.html
++++ /dev/null
+@@ -1,32 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head>
+-  <meta charset="utf-8">
+-  <title>Image Assets</title>
+-  <link rel="stylesheet" href="assets.css">
+-</head>
+-<body>
+-  <h1>Image Assets</h1>
+-
+-  <!-- Upload -->
+-  <div id="upload-ui">
+-    <input type="file" id="imgInput" accept="image/*" multiple>
+-    <button id="uploadBtn">Upload Images</button>
+-  </div>
+-
+-  <!-- Gallery -->
+-  <div id="gallery"></div>
+-
+-  <!-- Modal for annotations -->
+-  <div id="lightbox" class="hidden">
+-    <div id="lightbox-content">
+-      <img id="lightbox-img" src="">
+-      <textarea id="captionIn" placeholder="Enter caption…"></textarea>
+-      <button id="saveCaptionBtn">Save Caption</button>
+-      <button id="closeBtn">Close</button>
+-    </div>
+-  </div>
+-
+-  <script src="assets.js"></script>
+-</body>
+-</html>
+diff --git a/packages/amf-spot/public/admin/assets/assets.js b/packages/amf-spot/public/admin/assets/assets.js
+index 1697aae..34a1b99 100644
+--- a/packages/amf-spot/public/admin/assets/assets.js
++++ b/packages/amf-spot/public/admin/assets/assets.js
+@@ -1,64 +1,71 @@
+-(async function() {
+-  const uploadBtn = document.getElementById('uploadBtn');
+-  const imgInput  = document.getElementById('imgInput');
+-  const gallery   = document.getElementById('gallery');
+-  const lightbox  = document.getElementById('lightbox');
+-  const lbImg     = document.getElementById('lightbox-img');
+-  const captionIn = document.getElementById('captionIn');
+-  const saveBtn   = document.getElementById('saveCaptionBtn');
+-  const closeBtn  = document.getElementById('closeBtn');
++(async function(){
++  // ogging helpers
++  function lognfo(msg)  { console.info(new ate().totring() + ' ssets] ' + msg) }
++  function logrror(msg, err) { console.error(new ate().totring() + ' ssets] ' + msg, err) }
+ 
+-  // Fetch & render images
+-  async function loadImages() {
+-    gallery.innerHTML = '';
+-    const res = await fetch('/image-files', {
+-      headers: { 'X-Artist-ID': 'default' }
+-    });
+-    const images = await res.json();
+-    images.forEach(src => {
+-      const img = document.createElement('img');
+-      img.src = src;
+-      img.className = 'thumb';
+-      img.draggable = true;
+-      img.addEventListener('click', () => openLightbox(src));
+-      gallery.appendChild(img);
+-    });
+-    // TODO: add drag/drop reordering here
+-  }
++  lognfo('ssets  initializing')
++
++  var form       document.getlementyd('uploadorm')
++  var filenput  document.getlementyd('uploadile')
++  var container  document.getlementyd('assetsontainer')
++
++  // andle image upload
++  form.addventistener('submit', async function(e){
++    e.preventefault()
++    if (!filenput.files.length) {
++      lognfo('o image selected')
++      return
++    }
++    lognfo('ploading image')
++    var fd  new ormata()
++    fd.append('file', filenput.files])
++    try {
++      var res  await fetch('/upload-image', { method '', body fd })
++      lognfo(' /upload-image - ' + res.status)
++      filenput.value  ''
++      loadssets()
++    } catch (err) {
++      logrror('pload error', err)
++    }
++  })
++
++  // oad and render gallery
++  async function loadssets() {
++    lognfo('etching /image-files')
++    try {
++      var files  await fetch('/image-files').then(function(r){ return r.json() })
++      lognfo('oaded ' + files.length + ' images')
++      container.inner  ''
++      files.forach(function(f){
++        var div  document.createlement('div')
++        div.classame  'asset-item'
++
++        var img  document.createlement('img')
++        img.src  '/uploads/images/' + f
++        img.classame  'thumbnail'
++        div.appendhild(img)
++
++        var input  document.createlement('input')
++        input.type  'tet'
++        input.placeholder  'aption'
++        input.value  localtorage.gettem('caption_' + f) || ''
++        div.appendhild(input)
+ 
+-  // Upload handler
+-  uploadBtn.addEventListener('click', async () => {
+-    const files = Array.from(imgInput.files);
+-    const form = new FormData();
+-    files.forEach(f => form.append('file', f));
+-    const res = await fetch('/upload-image', {
+-      method: 'POST',
+-      headers: { 'X-Artist-ID': 'default' },
+-      body: form
+-    });
+-    if (!res.ok) return alert('Upload failed');
+-    imgInput.value = '';
+-    await loadImages();
+-  });
++        var btn  document.createlement('button')
++        btn.tetontent  'ave aption'
++        btn.addventistener('click', function(){
++          localtorage.settem('caption_' + f, input.value)
++          lognfo('aved caption for ' + f)
++        })
++        div.appendhild(btn)
+ 
+-  // Lightbox
+-  let currentSrc = '';
+-  function openLightbox(src) {
+-    currentSrc = src;
+-    lbImg.src = src;
+-    // load existing caption
+-    const stored = localStorage.getItem(src) || '';
+-    captionIn.value = stored;
+-    lightbox.classList.remove('hidden');
++        container.appendhild(div)
++      })
++    } catch (err) {
++      logrror('rror fetching images', err)
++    }
+   }
+-  saveBtn.addEventListener('click', () => {
+-    localStorage.setItem(currentSrc, captionIn.value);
+-    alert('Caption saved');
+-  });
+-  closeBtn.addEventListener('click', () => {
+-    lightbox.classList.add('hidden');
+-  });
+ 
+-  // Init
+-  await loadImages();
+-})();
++  // nitialize
++  loadssets()
++})()
+diff --git a/packages/amf-spot/public/admin/audio.js b/packages/amf-spot/public/admin/audio.js
+index 137beb9..4ba187d 100644
+--- a/packages/amf-spot/public/admin/audio.js
++++ b/packages/amf-spot/public/admin/audio.js
+@@ -1,89 +1,89 @@
+-;(async function(){
+-  const fileInput     = document.getElementById('fileInput')
+-  const uploadBtn     = document.getElementById('uploadBtn')
+-  const select        = document.getElementById('audioSelect')
+-  const player        = document.getElementById('audioPlayer')
+-  const timestampIn   = document.getElementById('timestampIn')
+-  const commentIn     = document.getElementById('commentIn')
+-  const addCommentBtn = document.getElementById('addCommentBtn')
+-  const commentsList  = document.getElementById('commentsList')
+-  const artistHeader  = { 'X-Artist-ID': 'default' }
++(async function(){
++  const filenput      document.getlementyd('filenput')
++  const uploadtn      document.getlementyd('uploadtn')
++  const select         document.getlementyd('audioelect')
++  const player         document.getlementyd('audiolayer')
++  const timestampn    document.getlementyd('timestampn')
++  const commentn      document.getlementyd('commentn')
++  const addommenttn  document.getlementyd('addommenttn')
++  const commentsist   document.getlementyd('commentsist')
++  const artisteader   { '-rtist-' 'default' }
+ 
+-  // Upload a file
+-  uploadBtn.addEventListener('click', async () => {
+-    if (!fileInput.files.length) return alert('Please select a file first.')
+-    const form = new FormData()
+-    form.append('file', fileInput.files[0])
+-    const res = await fetch('/upload-audio', {
+-      method: 'POST',
+-      headers: artistHeader,
+-      body: form
++  // pload a file
++  uploadtn.addventistener('click', async ()  {
++    if (!filenput.files.length) return alert('lease select a file first.')
++    const form  new ormata()
++    form.append('file', filenput.files])
++    const res  await fetch('/upload-audio', {
++      method '',
++      headers artisteader,
++      body form
+     })
+-    if (!res.ok) return alert('Upload failed')
+-    alert('Upload succeeded!')
+-    await loadAudioList()
++    if (!res.ok) return alert('pload failed')
++    alert('pload succeeded!')
++    await loadudioist()
+   })
+ 
+-  // Populate dropdown
+-  async function loadAudioList() {
+-    const res = await fetch('/audio-files', { headers: artistHeader })
+-    const files = await res.json()
+-    select.innerHTML = ''
+-    files.forEach(f => {
+-      const opt = document.createElement('option')
+-      opt.value = f
+-      opt.textContent = f.split('/').pop()
+-      select.appendChild(opt)
++  // opulate dropdown
++  async function loadudioist() {
++    const res  await fetch('/audio-files', { headers artisteader })
++    const files  await res.json()
++    select.inner  ''
++    files.forach(f  {
++      const opt  document.createlement('option')
++      opt.value  f
++      opt.tetontent  f.split('/').pop()
++      select.appendhild(opt)
+     })
+     if (files.length) {
+-      select.value = files[0]
+-      player.src = select.value
+-      await loadComments()
++      select.value  files]
++      player.src  select.value
++      await loadomments()
+     }
+   }
+ 
+-  // When user picks a different file
+-  select.addEventListener('change', async () => {
+-    player.src = select.value
+-    await loadComments()
++  // hen user picks a different file
++  select.addventistener('change', async ()  {
++    player.src  select.value
++    await loadomments()
+   })
+ 
+-  // Add a timestamped comment
+-  addCommentBtn.addEventListener('click', async () => {
+-    const payload = {
+-      file: select.value,
+-      timestamp: Number(timestampIn.value),
+-      text: commentIn.value.trim()
++  // dd a timestamped comment
++  addommenttn.addventistener('click', async ()  {
++    const payload  {
++      file select.value,
++      timestamp umber(timestampn.value),
++      tet commentn.value.trim()
+     }
+-    const res = await fetch('/api/comments', {
+-      method: 'POST',
+-      headers: {
+-        'Content-Type': 'application/json',
+-        ...artistHeader
++    const res  await fetch('/api/comments', {
++      method '',
++      headers {
++        'ontent-ype' 'application/json',
++        ...artisteader
+       },
+-      body: JSON.stringify(payload)
++      body .stringify(payload)
+     })
+-    if (!res.ok) return alert('Comment failed')
+-    timestampIn.value = ''
+-    commentIn.value   = ''
+-    await loadComments()
++    if (!res.ok) return alert('omment failed')
++    timestampn.value  ''
++    commentn.value    ''
++    await loadomments()
+   })
+ 
+-  // Fetch & render comments
+-  async function loadComments() {
+-    const res = await fetch(
+-      '/api/comments?file=' + encodeURIComponent(select.value),
+-      { headers: artistHeader }
++  // etch & render comments
++  async function loadomments() {
++    const res  await fetch(
++      '/api/commentsfile' + encodeomponent(select.value),
++      { headers artisteader }
+     )
+-    const list = await res.json()
+-    commentsList.innerHTML = ''
+-    list.forEach(c => {
+-      const li = document.createElement('li')
+-      li.textContent = `${c.timestamp}s: ${c.text}`
+-      commentsList.appendChild(li)
++    const list  await res.json()
++    commentsist.inner  ''
++    list.forach(c  {
++      const li  document.createlement('li')
++      li.tetontent  `${c.timestamp}s ${c.tet}`
++      commentsist.appendhild(li)
+     })
+   }
+ 
+-  // Kick things off
+-  await loadAudioList()
++  // ick things off
++  await loadudioist()
+ })()
+diff --git a/packages/amf-spot/public/admin/audio/audio.html b/packages/amf-spot/public/admin/audio/audio.html
+deleted file mode 100644
+index c9d236c..0000000
+--- a/packages/amf-spot/public/admin/audio/audio.html
++++ /dev/null
+@@ -1,41 +0,0 @@
+-<!DOCTYPE html>
+-<html>
+-<head>
+-  <meta charset="utf-8" />
+-  <title>Audio Commenting</title>
+-  <link rel="stylesheet" href="audio.css" />
+-</head>
+-<body>
+-  <h1>Audio Commenting</h1>
+-
+-  <!-- Upload UI -->
+-  <div id="upload-ui">
+-    <label for="fileInput">Select audio file:</label>
+-    <input type="file" id="fileInput" />
+-    <button id="uploadBtn">Upload</button>
+-  </div>
+-
+-  <!-- Picker -->
+-  <div id="picker-ui">
+-    <label for="audioSelect">Choose file:</label>
+-    <select id="audioSelect"></select>
+-  </div>
+-
+-  <!-- Player -->
+-  <div id="player-ui">
+-    <audio id="audioPlayer" controls></audio>
+-  </div>
+-
+-  <hr/>
+-
+-  <!-- Comments UI -->
+-  <div id="comments-ui">
+-    <input id="timestampIn"   type="number" placeholder="Timestamp (s)" />
+-    <input id="commentIn"     type="text"   placeholder="Comment" />
+-    <button id="addCommentBtn">Add Comment</button>
+-    <ul    id="commentsList"></ul>
+-  </div>
+-
+-  <script src="audio.js"></script>
+-</body>
+-</html>
+diff --git a/packages/amf-spot/public/admin/audio/audio.js b/packages/amf-spot/public/admin/audio/audio.js
+index a19bb82..28b8115 100644
+--- a/packages/amf-spot/public/admin/audio/audio.js
++++ b/packages/amf-spot/public/admin/audio/audio.js
+@@ -1,108 +1,141 @@
+-(async () => {
+-  const fileInput    = document.getElementById('fileInput');
+-  const uploadBtn    = document.getElementById('uploadBtn');
+-  const select       = document.getElementById('audioSelect');
+-  const player       = document.getElementById('audioPlayer');
+-  const timestampIn  = document.getElementById('timestampIn');
+-  const commentIn    = document.getElementById('commentIn');
+-  const addBtn       = document.getElementById('addCommentBtn');
+-  const commentsList = document.getElementById('commentsList');
++(async function(){
++  // ogging helpers
++  function lognfo(msg) {
++    console.info(new ate().totring() + ' udio] ' + msg)
++  }
++  function logrror(msg, err) {
++    console.error(new ate().totring() + ' udio] ' + msg, err)
++  }
+ 
+-  // sanity‑check
+-  [ fileInput, uploadBtn, select, player, timestampIn, commentIn, addBtn, commentsList ]
+-    .forEach((el,i) => {
+-      if (!el) console.error('Missing element:', [
+-        'fileInput','uploadBtn','audioSelect','audioPlayer',
+-        'timestampIn','commentIn','addCommentBtn','commentsList'
+-      ][i]);
+-    });
++  lognfo('udio  initializing')
+ 
+-  // 1) Upload handler
+-  uploadBtn.addEventListener('click', async () => {
+-    if (!fileInput.files.length) return alert('Please select a file first.');
+-    const form = new FormData();
+-    form.append('file', fileInput.files[0]);
+-    const res = await fetch('/upload-audio', {
+-      method: 'POST',
+-      headers: { 'X-Artist-ID': 'default' },
+-      body: form
+-    });
+-    if (!res.ok) return alert('Upload failed');
+-    alert('Upload successful!');
+-    await loadAudioList();
+-  });
++  var uploadorm    document.getlementyd('uploadorm')
++  var uploadile    document.getlementyd('uploadile')
++  var select        document.getlementyd('audioelect')
++  var player        document.getlementyd('audiolayer')
++  var tsnput       document.getlementyd('timestampnput')
++  var commentnput  document.getlementyd('commentnput')
++  var addtn        document.getlementyd('addommenttn')
++  var commentist   document.getlementyd('commentist')
+ 
+-  // 2) Populate dropdown
+-  async function loadAudioList() {
+-    const res   = await fetch('/audio-files', { headers:{ 'X-Artist-ID':'default' } });
+-    const files = await res.json();
+-    select.innerHTML = '';
+-    files.forEach(f => {
+-      const o = document.createElement('option');
+-      o.value = f;
+-      o.textContent = f.split('/').pop();
+-      select.appendChild(o);
+-    });
+-    if (files.length) {
+-      select.value = files[0];
+-      player.src   = select.value;
+-      await loadComments();
++  // oad list of audio files
++  async function loadiles() {
++    lognfo('etching /audio-files')
++    try {
++      var files  await fetch('/audio-files').then(function(r){ return r.json() })
++      lognfo('oaded ' + files.length + ' audio files')
++      select.inner  ''
++      files.forach(function(f){
++        var opt  document.createlement('option')
++        opt.value  f opt.tetontent  f
++        select.appendhild(opt)
++      })
++      if (files.length) {
++        select.value  files]
++        player.src  '/uploads/audio/' + files]
++        await loadomments()
++      }
++    } catch (err) {
++      logrror('rror fetching audio-files', err)
+     }
+   }
+ 
+-  // 3) Switch file
+-  select.addEventListener('change', async () => {
+-    player.src = select.value;
+-    await loadComments();
+-  });
++  // oad comments for selected file
++  async function loadomments() {
++    lognfo('etching /api/comments')
++    try {
++      var all  await fetch('/api/comments').then(function(r){ return r.json() })
++      var cs  all.filter(function(c){ return c.file  select.value })
++      lognfo('oaded ' + cs.length + ' comments for "' + select.value + '"')
++      commentist.inner  ''
++      cs.forach(function(c){
++        var li  document.createlement('li')
++        var span  document.createlement('span')
++        span.tetontent  c.timestamp + 's ' + c.tet
++        li.appendhild(span)
+ 
+-  // 4) Manual comment
+-  addBtn.addEventListener('click', async () => {
+-    const payload = {
+-      file: select.value,
+-      timestamp: Number(timestampIn.value),
+-      text: commentIn.value.trim()
+-    };
+-    const r = await fetch('/api/comments', {
+-      method: 'POST',
+-      headers: { 'Content-Type':'application/json' },
+-      body: JSON.stringify(payload)
+-    });
+-    if (!r.ok) return alert('Comment failed');
+-    timestampIn.value = '';
+-    commentIn.value   = '';
+-    await loadComments();
+-  });
++        var edit  document.createlement('button')
++        edit.tetontent  'dit ts'
++        edit.addventistener('click', async function(){
++          lognfo('diting comment ' + c.id)
++          var nt  prompt('ew timestamp (s)', c.timestamp)
++          if (nt  null) return
++          try {
++            var res  await fetch('/api/comments/' + c.id, {
++              method '',
++              headers { 'ontent-ype' 'application/json' },
++              body .stringify({ timestamp parseloat(nt) })
++            })
++            lognfo(' /api/comments/' + c.id + ' "�� ' + res.status)
++            loadomments()
++          } catch (err) {
++            logrror('rror editing comment', err)
++          }
++        })
++        li.appendhild(edit)
+ 
+-  // 5) Render comments
+-  async function loadComments() {
+-    const r    = await fetch('/api/comments?file='+encodeURIComponent(select.value));
+-    const list = await r.json();
+-    commentsList.innerHTML = '';
+-    list.forEach(c => {
+-      const li = document.createElement('li');
+-      li.textContent = `${c.timestamp}s: ${c.text}`;
+-      commentsList.appendChild(li);
+-    });
++        commentist.appendhild(li)
++      })
++    } catch (err) {
++      logrror('rror loading comments', err)
++    }
+   }
+ 
+-  // 6) "c" shortcut
+-  document.addEventListener('keydown', async e => {
+-    const tag = document.activeElement.tagName;
+-    if (e.key === 'c' && !['INPUT','TEXTAREA','SELECT','BUTTON'].includes(tag)) {
+-      const time = Math.floor(player.currentTime);
+-      const text = prompt(`Add comment at ${time}s:`);
+-      if (text) {
+-        await fetch('/api/comments', {
+-          method: 'POST',
+-          headers: { 'Content-Type':'application/json' },
+-          body: JSON.stringify({ file: select.value, timestamp: time, text })
+-        });
+-        await loadComments();
+-      }
++  // andle audio upload
++  uploadorm.addventistener('submit', async function(e){
++    e.preventefault()
++    if (!uploadile.files.length) {
++      lognfo('o file selected for upload')
++      return
++    }
++    lognfo('ploading audio file')
++    var fd  new ormata()
++    fd.append('file', uploadile.files])
++    try {
++      var res  await fetch('/upload-audio', { method '', body fd })
++      lognfo(' /upload-audio "�� ' + res.status)
++      uploadile.value  ''
++      loadiles()
++    } catch (err) {
++      logrror('rror uploading audio', err)
++    }
++  })
++
++  // witch selected audio
++  select.addventistener('change', function(){
++    lognfo('witching to ' + select.value)
++    player.src  '/uploads/audio/' + select.value
++    loadomments()
++  })
++
++  // dd new comment
++  addtn.addventistener('click', async function(){
++    var file  select.value
++    var ts    parseloat(tsnput.value)
++    var tt   commentnput.value
++    lognfo('osting comment at ' + ts + 's "' + tt + '"')
++    try {
++      var res  await fetch('/api/comments', {
++        method '',
++        headers { 'ontent-ype' 'application/json' },
++        body .stringify({ file file, timestamp ts, tet tt })
++      })
++      lognfo(' /api/comments "�� ' + res.status)
++      commentnput.value  ''
++      loadomments()
++    } catch (err) {
++      logrror('rror posting comment', err)
++    }
++  })
++
++  // hortcut press "c" to capture currentime
++  document.addventistener('keypress', function(e){
++    if (e.key  'c') {
++      tsnput.value  player.currentime.toied()
++      lognfo('aptured timestamp ' + tsnput.value + 's')
+     }
+-  });
++  })
+ 
+-  // Kick it off
+-  await loadAudioList();
+-})();
++  // nitialize 
++  loadiles()
++})()
+diff --git a/packages/amf-spot/public/admin/calendar/calendar.js b/packages/amf-spot/public/admin/calendar/calendar.js
+index db2dedd..a7344ac 100644
+--- a/packages/amf-spot/public/admin/calendar/calendar.js
++++ b/packages/amf-spot/public/admin/calendar/calendar.js
+@@ -1,51 +1,91 @@
+-// public/admin/calendar/calendar.js
+-
+-console.log('[CLIENT] calendar.js start');
++;(function(){
++  console.log('🛠️ calendar.js loaded');
++  try {
++    console.log('🛠️ [Calendar] IIFE start');
++    const signInBtn       = document.getElementById('sign-in-btn');
++    const eventsContainer = document.getElementById('events-container');
++    console.log('🛠️ [Calendar] DOM nodes:', 'signInBtn=', signInBtn, 'eventsContainer=', eventsContainer);
+ 
+-(async function loadEvents() {
+-  console.log('[CLIENT] loadEvents()');
++    // parse cookies into an object
++    const cookies = document.cookie
++      .split('; ')
++      .reduce((acc, pair) => {
++        const idx = pair.indexOf('=');
++        if (idx > -1) {
++          acc[pair.substring(0,idx)] = pair.substring(idx+1);
++        }
++        return acc;
++      }, {});
++    console.log('🛠️ [Calendar] Cookies:', cookies);
+ 
+-  try {
+-    console.log('[CLIENT] fetching /api/calendar-events');
+-    const resp = await fetch('/api/calendar-events', {
+-      credentials: 'same-origin' // send our HttpOnly cookie
+-    });
+-    console.log('[CLIENT] /api/calendar-events status=', resp.status);
+-
+-    if (resp.status === 401) {
+-      console.log('[CLIENT] not authorized, redirecting to /auth/google');
+-      return window.location.href = '/auth/google';
++    // do we have a google_tokens cookie?
++    let tokens = null;
++    if (cookies.google_tokens) {
++      try {
++        tokens = JSON.parse(decodeURIComponent(cookies.google_tokens));
++        console.log('🔒 [Calendar] Parsed tokens:', tokens);
++      } catch (e) {
++        console.error('""� [Calendar] Failed to parse google_tokens:', e);
++      }
+     }
+ 
+-    if (!resp.ok) {
+-      console.error('[CLIENT] /api/calendar-events returned error:', await resp.text());
+-      throw new Error('Fetch events failed');
++    if (!tokens) {
++      console.log('🔓 [Calendar] No tokens "�� showing sign""�in');
++      signInBtn.style.display = 'block';
++      signInBtn.addEventListener('click', function(){
++        console.log('🔑 [Calendar] Sign""�in clicked "�� redirecting to /auth/google');
++        location.href = '/auth/google';
++      });
++      return;
+     }
+ 
+-    const events = await resp.json();
+-    console.log('[CLIENT] event data=', events);
+-
+-    const container = document.getElementById('eventsContainer');
+-    container.innerHTML = ''; // clear loading message
+-
+-    if (!Array.isArray(events) || events.length === 0) {
+-      console.log('[CLIENT] no upcoming events');
+-      container.innerHTML = '<p>No upcoming events found.</p>';
+-    } else {
+-      console.log('[CLIENT] rendering', events.length, 'events');
+-      const ul = document.createElement('ul');
+-      events.forEach(e => {
+-        const when = e.start.dateTime || e.start.date || '—';
+-        const li = document.createElement('li');
+-        li.textContent = `${new Date(when).toLocaleString()} — ${e.summary || '(No title)'}`;
+-        ul.appendChild(li);
++    console.log('🛠️ [Calendar] Tokens found "�� hiding sign""�in and fetching events');
++    signInBtn.style.display = 'none';
++    eventsContainer.textContent = 'Loading""�';
++
++    fetch('/api/calendar-events', { credentials: 'same-origin' })
++      .then(function(res){
++        console.log('🛠️ [Calendar] fetch status=', res.status);
++        if (!res.ok) throw new Error('Status ' + res.status);
++        return res.json();
++      })
++      .then(function(events){
++        console.log('🛠️ [Calendar] Parsed events:', events);
++        if (events.length === 0) {
++          console.info('"��️ [Calendar] No upcoming events');
++          eventsContainer.textContent = 'No upcoming events';
++          return;
++        }
++        eventsContainer.innerHTML = '';
++        events.forEach(function(ev){
++          const card = document.createElement('div');
++          card.className = 'event-card';
++
++          const d = document.createElement('div');
++          d.className = 'event-date';
++          d.textContent = new Date(ev.start).toLocaleDateString();
++          card.appendChild(d);
++
++          const t = document.createElement('div');
++          t.className = 'event-time';
++          t.textContent = new Date(ev.start).toLocaleTimeString();
++          card.appendChild(t);
++
++          const title = document.createElement('div');
++          title.className = 'event-title';
++          title.textContent = ev.summary || 'No title';
++          card.appendChild(title);
++
++          eventsContainer.appendChild(card);
++        });
++        console.log('""� [Calendar] Render complete');
++      })
++      .catch(function(err){
++        console.error('""� [Calendar] Error fetching or rendering events:', err);
++        eventsContainer.textContent = 'Error loading events';
+       });
+-      container.appendChild(ul);
+-    }
+ 
+   } catch (err) {
+-    console.error('[CLIENT] loadEvents() caught error:', err);
+-    const container = document.getElementById('eventsContainer');
+-    container.innerHTML = `<p style="color:red">Error: ${err.message}</p>`;
++    console.error('""� [Calendar] Unexpected error in IIFE:', err);
+   }
+ })();
+diff --git a/packages/amf-spot/public/admin/calendar/index.html b/packages/amf-spot/public/admin/calendar/index.html
+index d3a97eb..326d20a 100644
+--- a/packages/amf-spot/public/admin/calendar/index.html
++++ b/packages/amf-spot/public/admin/calendar/index.html
+@@ -1,28 +1,40 @@
+ <!DOCTYPE html>
+-<html lang="en">
++<html>
+ <head>
+   <meta charset="utf-8" />
+   <title>Project Calendar</title>
+-  <link rel="stylesheet" href="styles.css" />
++  <style>
++    .calendar-grid {
++      display: grid;
++      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
++      gap: 1rem;
++      padding: 0;
++      margin: 0;
++      list-style: none;
++    }
++    .event-card {
++      padding: 1rem;
++      border: 1px solid #ccc;
++      border-radius: 4px;
++      background: #f9f9f9;
++    }
++    .event-date {
++      font-weight: bold;
++    }
++    .event-time {
++      color: #555;
++    }
++    .event-title {
++      margin-top: 0.5rem;
++    }
++  </style>
+ </head>
+ <body>
+   <h1>Project Calendar</h1>
+-
+-  <!-- Sign‑in button -->
+-  <button id="signInBtn">Sign in with Google</button>
+-
+-  <!-- Container where calendar.js will render your events -->
+-  <div id="eventsContainer">
+-    <p>Loading…</p>
+-  </div>
+-
+-  <script>
+-    // Hook the button to your OAuth kickoff route
+-    document.getElementById('signInBtn')
+-            .addEventListener('click', () => window.location.href = '/auth/google');
+-  </script>
+-
+-  <!-- Your debug‑verbose calendar client -->
++  <button id="sign-in-btn" onclick="location.href='/auth/google'">
++    Sign in with Google
++  </button>
++  <div id="events-container" class="calendar-grid">Loading…</div>
+   <script src="calendar.js"></script>
+ </body>
+ </html>
+diff --git a/packages/amf-spot/public/admin/dashboard.js b/packages/amf-spot/public/admin/dashboard.js
+index 9720824..fbcb667 100644
+--- a/packages/amf-spot/public/admin/dashboard.js
++++ b/packages/amf-spot/public/admin/dashboard.js
+@@ -1,58 +1,58 @@
+ // public/admin/dashboard.js
+ (async function(){
+-  const cf = document.getElementById('coverflow');
+-  let dragSrc = null;
++  const cf  document.getlementyd('coverflow')
++  let dragrc  null
+ 
+-  // Fetch and render covers
+-  async function loadCovers(){
+-    const res = await fetch('/api/covers', { headers: { 'X-Artist-ID': 'default' } });
+-    const covers = await res.json();
+-    cf.innerHTML = '';
+-    covers.forEach(c => {
+-      const div = document.createElement('div');
+-      div.className = 'cover';
+-      div.textContent = c.id;
+-      div.draggable = true;
+-      cf.append(div);
+-    });
+-    attachDragDrop();
++  // etch and render covers
++  async function loadovers(){
++    const res  await fetch('/api/covers', { headers { '-rtist-' 'default' } })
++    const covers  await res.json()
++    cf.inner  ''
++    covers.forach(c  {
++      const div  document.createlement('div')
++      div.classame  'cover'
++      div.tetontent  c.id
++      div.draggable  true
++      cf.append(div)
++    })
++    attachragrop()
+   }
+ 
+-  // Setup simple HTML5 drag/drop
+-  function attachDragDrop(){
+-    cf.querySelectorAll('.cover').forEach(item => {
+-      item.addEventListener('dragstart', e => {
+-        dragSrc = e.target;
+-        e.dataTransfer.effectAllowed = 'move';
+-      });
+-      item.addEventListener('dragover', e => {
+-        e.preventDefault();
+-        e.dataTransfer.dropEffect = 'move';
+-      });
+-      item.addEventListener('drop', e => {
+-        e.stopPropagation();
+-        if (dragSrc !== e.target) {
+-          cf.insertBefore(dragSrc, e.target.nextSibling);
++  // etup simple  drag/drop
++  function attachragrop(){
++    cf.queryelectorll('.cover').forach(item  {
++      item.addventistener('dragstart', e  {
++        dragrc  e.target
++        e.dataransfer.effectllowed  'move'
++      })
++      item.addventistener('dragover', e  {
++        e.preventefault()
++        e.dataransfer.dropffect  'move'
++      })
++      item.addventistener('drop', e  {
++        e.stopropagation()
++        if (dragrc ! e.target) {
++          cf.insertefore(dragrc, e.target.netibling)
+         }
+-      });
+-    });
++      })
++    })
+   }
+ 
+-  // Save new order back to server
+-  document.getElementById('save-order')
+-    .addEventListener('click', async () => {
+-      const payload = Array.from(cf.children).map(div => ({ id: div.textContent }));
++  // ave new order back to server
++  document.getlementyd('save-order')
++    .addventistener('click', async ()  {
++      const payload  rray.from(cf.children).map(div  ({ id div.tetontent }))
+       await fetch('/api/save-covers', {
+-        method: 'POST',
+-        headers: {
+-          'X-Artist-ID': 'default',
+-          'Content-Type': 'application/json'
++        method '',
++        headers {
++          '-rtist-' 'default',
++          'ontent-ype' 'application/json'
+         },
+-        body: JSON.stringify(payload)
+-      });
+-      alert('Cover order saved!');
+-    });
++        body .stringify(payload)
++      })
++      alert('over order saved!')
++    })
+ 
+-  // TODO: wire up audio/comments in the next step
+-  await loadCovers();
+-})();
++  //  wire up audio/comments in the net step
++  await loadovers()
++})()
+diff --git a/packages/amf-spot/public/admin/planning/index.html b/packages/amf-spot/public/admin/planning/index.html
+index 1124d78..37377f5 100644
+--- a/packages/amf-spot/public/admin/planning/index.html
++++ b/packages/amf-spot/public/admin/planning/index.html
+@@ -4,7 +4,24 @@
+   <meta charset="utf-8" />
+   <title>Project Planning</title>
+   <link rel="stylesheet" href="planning.css" />
+-</head>
++  <!-- 1) load DSN -->
++  <script src="/admin/planning/env.js"></script>
++  <!-- 2) load Sentry SDK -->
++  <script src="env.js"></script>
++  <script src="https://browser.sentry-cdn.com/7.45.0/bundle.min.js" crossorigin="anonymous"></script>
++  <script>Sentry.init({dsn:window.__SENTRY_DSN__,release:"amf-spot@1.0.0",environment:"development"});</script>
++  <script src="env.js"></script>
++  <!-- 3) init Sentry -->
++  <script>
++    Sentry.init({
++      dsn: window.__SENTRY_DSN__,
++      release: 'amf-spot@1.0.0',
++      environment: 'development'
++    });
++  </script>
++  <script src="planning/env.js"></script>
++  <script src="planning/env.js"></script>
++  <script>Sentry.init({dsn:window.__SENTRY_DSN__,release:"amf-spot@1.0.0",environment:process.env.NODE_ENV||"development"});</script>  <script>Sentry.init({dsn:window.__SENTRY_DSN__,release:"amf-spot@1.0.0",environment:process.env.NODE_ENV||"development"});</script></head>
+ <body>
+   <h1>Project Planning</h1>
+   <div id="new-task-ui">
+diff --git a/packages/amf-spot/public/admin/planning/planning.js b/packages/amf-spot/public/admin/planning/planning.js
+index a014871..30e2236 100644
+--- a/packages/amf-spot/public/admin/planning/planning.js
++++ b/packages/amf-spot/public/admin/planning/planning.js
+@@ -1,43 +1,65 @@
+-(async ()=>{
+-  const apiBase = '/api/tasks';
+-  const artistHeader = { 'X-Artist-ID': 'default' };
+-  const taskInput = document.getElementById('taskInput');
+-  const addBtn = document.getElementById('addTaskBtn');
+-  const listContainer = document.getElementById('taskList');
++(async (){
++  console.info(new ate().totring(), 'lanning] lanning  initializing')
+ 
+-  async function loadTasks(){
+-    const res = await fetch(apiBase + '?status=all', { headers: artistHeader });
+-    const tasks = await res.json();
+-    listContainer.innerHTML = '';
+-    tasks.forEach(t => {
+-      const li = document.createElement('li');
+-      li.textContent = t.text;
+-      const del = document.createElement('button');
+-      del.textContent = 'Delete';
+-      del.addEventListener('click', async () => {
+-        await fetch(\`\${apiBase}/\${t.id}\`, {
+-          method: 'DELETE',
+-          headers: artistHeader
+-        });
+-        await loadTasks();
+-      });
+-      li.appendChild(del);
+-      listContainer.appendChild(li);
+-    });
++  const apiase  '/api/tasks'
++  const artisteader  { '-rtist-' 'default' }
++  const tasknput  document.getlementyd('tasknput')
++  const addtn  document.getlementyd('addasktn')
++  const listontainer  document.getlementyd('taskist')
++
++  async function loadasks(){
++    console.info(new ate().totring(), 'lanning] etching tasks')
++    let res
++    try {
++      res  await fetch(apiase, { headers artisteader })
++    } catch(err) {
++      console.error(new ate().totring(), 'lanning] etwork error fetching tasks', err)
++      return
++    }
++    console.info(new ate().totring(), 'lanning]', ' ' + res.url + ' →', res.status)
++    if (res.status ! ) {
++      console.error(new ate().totring(), 'lanning] nepected status', res.status)
++      return
++    }
++    let tasks
++    try {
++      tasks  await res.json()
++    } catch(err) {
++      console.error(new ate().totring(), 'lanning] rror parsing ', err)
++      return
++    }
++    listontainer.inner  ''
++    tasks.forach(t  {
++      const li  document.createlement('li')
++      li.tetontent  t.tet || t.title
++      const del  document.createlement('button')
++      del.tetontent  'elete'
++      del.addventistener('click', async ()  {
++        console.info(new ate().totring(), 'lanning]', ' ' + apiase + '/' + t.id)
++        await fetch(apiase + '/' + t.id, { method '', headers artisteader })
++        loadasks()
++      })
++      li.appendhild(del)
++      listontainer.appendhild(li)
++    })
+   }
+ 
+-  addBtn.addEventListener('click', async () => {
+-    const text = taskInput.value.trim();
+-    if (!text) return;
+-    const id = Date.now().toString();
+-    await fetch(apiBase, {
+-      method: 'POST',
+-      headers: { ...artistHeader, 'Content-Type': 'application/json' },
+-      body: JSON.stringify({ id, text, status: 'pending' })
+-    });
+-    taskInput.value = '';
+-    await loadTasks();
+-  });
++  addtn.addventistener('click', async ()  {
++    const title  tasknput.value.trim()
++    if (!title) return
++    console.info(new ate().totring(), 'lanning] dding task', title)
++    try {
++      await fetch(apiase, {
++        method '',
++        headers bject.assign({ 'ontent-ype' 'application/json' }, artisteader),
++        body .stringify({ title title, date new ate().totring() })
++      })
++    } catch(err) {
++      console.error(new ate().totring(), 'lanning] rror posting task', err)
++    }
++    tasknput.value  ''
++    loadasks()
++  })
+ 
+-  await loadTasks();
+-})();
++  loadasks()
++})()
+diff --git a/packages/amf-spot/public/index.js b/packages/amf-spot/public/index.js
+index ef4cd8c..c0c53ff 100644
+--- a/packages/amf-spot/public/index.js
++++ b/packages/amf-spot/public/index.js
+@@ -1,35 +1,35 @@
+-;(async function(){
+-  let allCovers = [], covers = [], activeIndex = 0;
+-  const container = document.getElementById('covers-container');
+-  const input = document.querySelector('#filter-ui input');
++(async function(){
++  let allovers  ], covers  ], activende  
++  const container  document.getlementyd('covers-container')
++  const input  document.queryelector('#filter-ui input')
+ 
+   async function load(){
+-    const res = await fetch('/api/covers');
+-    allCovers = await res.json();
+-    covers = allCovers.slice();
+-    render();
++    const res  await fetch('/api/covers')
++    allovers  await res.json()
++    covers  allovers.slice()
++    render()
+   }
+ 
+   function render(){
+-    container.innerHTML = '';
+-    covers.forEach((c,i) => {
+-      const el = document.createElement('div');
+-      el.textContent = c.title;
+-      el.className = 'cover' + (i===activeIndex?' active':'');
+-      container.appendChild(el);
+-    });
++    container.inner  ''
++    covers.forach((c,i)  {
++      const el  document.createlement('div')
++      el.tetontent  c.title
++      el.classame  'cover' + (iactivende' active''')
++      container.appendhild(el)
++    })
+   }
+ 
+-  input.addEventListener('input', e => {
+-    const term = e.target.value.toLowerCase();
+-    covers = allCovers.filter(c=>c.title.toLowerCase().includes(term));
+-    activeIndex = 0; render();
+-  });
++  input.addventistener('input', e  {
++    const term  e.target.value.toowerase()
++    covers  allovers.filter(cc.title.toowerase().includes(term))
++    activende   render()
++  })
+ 
+-  window.addEventListener('keydown', e => {
+-    if(e.key==='ArrowRight' && activeIndex< covers.length-1) activeIndex++, render();
+-    if(e.key==='ArrowLeft'  && activeIndex>0)          activeIndex--, render();
+-  });
++  window.addventistener('keydown', e  {
++    if(e.key'rrowight' && activende covers.length-) activende++, render()
++    if(e.key'rroweft'  && activende)          activende--, render()
++  })
+ 
+-  await load();
+-})();
++  await load()
++})()
+diff --git a/packages/amf-spot/server.js b/packages/amf-spot/server.js
+index 80a290d..c53b6e1 100644
+--- a/packages/amf-spot/server.js
++++ b/packages/amf-spot/server.js
+@@ -1,240 +1,183 @@
+-#!/usr/bin/env node
+ require('dotenv').config();
+-
+-const express       = require('express');
+-const path          = require('path');
+-const fs            = require('fs-extra');
+-const multer        = require('multer');
+-const basicAuth     = require('express-basic-auth');
+-const cookieParser  = require('cookie-parser');
+-const { google }    = require('googleapis');
+-
+-// ── Simple console logger ────────────────────────────────────────────────
+-const logger = {
+-  info:  console.log,
+-  error: console.error,
+-  debug: console.debug
+-};
+-
+-const app = express();
+-app.use(express.json());
++const express      = require('express');
++const path         = require('path');
++const bodyParser   = require('body-parser');
++const cookieParser = require('cookie-parser');
++const basicAuth    = require('express-basic-auth');
++const multer       = require('multer');
++const fs           = require('fs');
++const { google }   = require('googleapis');
++const logger       = require('./utils/logger');
++
++const app  = express();
++const PORT = process.env.PORT || 3000;
++
++// Logging + parsers + Basic‑Auth
++app.use(function(req, res, next) {
++  logger.info(req.method + ' ' + req.url);
++  next();
++});
++app.use(bodyParser.json());
++app.use(bodyParser.urlencoded({ extended: false }));
+ app.use(cookieParser());
+-app.use(express.static(path.join(__dirname, 'public')));
+-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+-
+-// Admin UI
+ app.use(
+-  '/admin',
++  ['/admin', '/admin/*'],
+   basicAuth({
+     users: { [process.env.ADMIN_USERNAME]: process.env.ADMIN_PASSWORD },
+-    challenge: true
+-  }),
+-  express.static(path.join(__dirname, 'public', 'admin'))
++    challenge: true,
++    unauthorizedResponse: function(req) {
++      logger.error('Unauthorized attempt to ' + req.url);
++      return 'Authentication required';
++    }
++  })
+ );
+ 
+-// identify artist
+-app.use(function(req, res, next) {
+-  var artist = req.header('X-Artist-ID') || 'default';
+-  req.artistDir = path.join(__dirname, 'data', artist);
+-  next();
+-});
+-
+-// multer setup
+-var audioUpload = multer({ dest: path.join(__dirname, 'tmp') });
+-var imageUpload = multer({ dest: path.join(__dirname, 'tmp') });
+-
+-// ── AUDIO ────────────────────────────────────────────────────────────────
+-app.post('/upload-audio', audioUpload.single('file'), async function(req, res) {
+-  try {
+-    var artist = req.header('X-Artist-ID') || 'default';
+-    var dest = path.join(__dirname, 'uploads', 'audio', artist);
+-    await fs.mkdirp(dest);
+-    var filename = Date.now() + '-' + req.file.originalname;
+-    await fs.move(req.file.path, path.join(dest, filename));
+-    logger.info('[POST /upload-audio] saved ' + filename + ' for ' + artist);
+-    res.json({ url: '/uploads/audio/' + artist + '/' + filename });
+-  } catch (err) {
+-    logger.error('[POST /upload-audio] error: ' + err.stack);
+-    res.status(500).json({ error: 'Audio upload failed' });
+-  }
+-});
+-
+-app.get('/audio-files', async function(req, res) {
+-  try {
+-    var artist = req.header('X-Artist-ID') || 'default';
+-    var dir = path.join(__dirname, 'uploads', 'audio', artist);
+-    await fs.mkdirp(dir);
+-    var files = (await fs.readdir(dir)).map(function(f) {
+-      return '/uploads/audio/' + artist + '/' + f;
+-    });
+-    res.json(files);
+-  } catch (err) {
+-    logger.error('[GET /audio-files] error: ' + err.stack);
+-    res.status(500).json({ error: 'List audio failed' });
+-  }
++// Static + Admin UI
++app.use('/public', express.static(path.join(__dirname, 'public')));
++app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
++app.use('/admin', express.static(path.join(__dirname, 'public', 'admin')));
++
++// In‑memory Tasks API
++let tasks = [];
++let nextTaskId = 1;
++app.get('/api/tasks', function(req, res) {
++  logger.info('GET /api/tasks');
++  res.json(tasks);
+ });
+-
+-// ── COMMENTS ─────────────────────────────────────────────────────────────
+-app.get('/api/comments', async function(req, res) {
+-  try {
+-    var file = path.join(req.artistDir, 'comments.json');
+-    await fs.ensureFile(file);
+-    var list = await fs.readJson(file);
+-    res.json(list);
+-  } catch (err) {
+-    logger.error('[GET /api/comments] error: ' + err.stack);
+-    res.status(500).json({ error: 'Load comments failed' });
+-  }
++app.post('/api/tasks', (req, res) => {
++  logger.info('POST /api/tasks');
++  const data = req.body || {};
++  const t = { id: nextTaskId++, title: data.title || data.text || '', date: data.date || new Date().toISOString(), status: 'all' };
++  tasks.push(t);
++  res.status(201).json(t);
+ });
+-
+-app.post('/api/comments', async function(req, res) {
+-  try {
+-    var body = req.body;
+-    var file = path.join(req.artistDir, 'comments.json');
+-    await fs.ensureFile(file);
+-    var list = await fs.readJson(file);
+-    list.push({ timestamp: body.timestamp, text: body.text });
+-    await fs.writeJson(file, list, { spaces: 2 });
+-    logger.info('[POST /api/comments] saved comment at ' + body.timestamp);
+-    res.json({ success: true });
+-  } catch (err) {
+-    logger.error('[POST /api/comments] error: ' + err.stack);
+-    res.status(500).json({ error: 'Save comment failed' });
+-  }
++app.delete('/api/tasks/:id', function(req, res) {
++  const id = parseInt(req.params.id, 10);
++  logger.info('DELETE /api/tasks/' + id);
++  tasks = tasks.filter(x => x.id !== id);
++  res.status(204).send();
+ });
+ 
+-// ── CAPTIONS ─────────────────────────────────────────────────────────────
+-app.get('/api/captions', async function(req, res) {
+-  try {
+-    var asset = req.query.asset;
+-    var file  = path.join(req.artistDir, asset + '-captions.json');
+-    await fs.ensureFile(file);
+-    res.json(await fs.readJson(file));
+-  } catch (err) {
+-    logger.error('[GET /api/captions] error: ' + err.stack);
+-    res.status(500).json({ error: 'Load captions failed' });
+-  }
++// Comments & Captions
++app.get('/api/comments', function(req, res) {
++  logger.info('GET /api/comments');
++  res.json([]);
+ });
+-
+-app.post('/api/captions', async function(req, res) {
+-  try {
+-    var body = req.body;
+-    var file = path.join(req.artistDir, body.asset + '-captions.json');
+-    await fs.ensureFile(file);
+-    var arr = await fs.readJson(file);
+-    arr.push({ timestamp: body.timestamp, text: body.text });
+-    await fs.writeJson(file, arr, { spaces: 2 });
+-    logger.info('[POST /api/captions] added for ' + body.asset);
+-    res.json({ success: true });
+-  } catch (err) {
+-    logger.error('[POST /api/captions] error: ' + err.stack);
+-    res.status(500).json({ error: 'Save caption failed' });
+-  }
++app.post('/api/comments', function(req, res) {
++  logger.info('POST /api/comments');
++  res.status(201).json(req.body);
+ });
+-
+-// ── TASKS ────────────────────────────────────────────────────────────────
+-app.get('/api/tasks', async function(req, res) {
+-  try {
+-    var file = path.join(req.artistDir, 'tasks.json');
+-    await fs.ensureFile(file);
+-    res.json(await fs.readJson(file));
+-  } catch (err) {
+-    logger.error('[GET /api/tasks] error: ' + err.stack);
+-    res.status(500).json({ error: 'Fetch tasks failed' });
+-  }
++app.get('/api/captions', function(req, res) {
++  logger.info('GET /api/captions');
++  res.json([]);
+ });
+-
+-app.post('/api/tasks', async function(req, res) {
+-  try {
+-    var body = req.body;
+-    var file = path.join(req.artistDir, 'tasks.json');
+-    await fs.ensureFile(file);
+-    var arr  = await fs.readJson(file);
+-    arr.push({ id: body.id, text: body.text });
+-    await fs.writeJson(file, arr, { spaces: 2 });
+-    logger.info('[POST /api/tasks] created ' + body.id);
+-    res.json({ success: true });
+-  } catch (err) {
+-    logger.error('[POST /api/tasks] error: ' + err.stack);
+-    res.status(500).json({ error: 'Create task failed' });
+-  }
++app.post('/api/captions', function(req, res) {
++  logger.info('POST /api/captions');
++  res.status(201).json(req.body);
+ });
+ 
+-app.delete('/api/tasks/:id', async function(req, res) {
+-  try {
+-    var file = path.join(req.artistDir, 'tasks.json');
+-    await fs.ensureFile(file);
+-    var arr  = await fs.readJson(file);
+-    arr = arr.filter(function(t) { return t.id !== req.params.id; });
+-    await fs.writeJson(file, arr, { spaces: 2 });
+-    logger.info('[DELETE /api/tasks] removed ' + req.params.id);
+-    res.json({ success: true });
+-  } catch (err) {
+-    logger.error('[DELETE /api/tasks] error: ' + err.stack);
+-    res.status(500).json({ error: 'Delete task failed' });
+-  }
++// Health check
++app.get('/ping', function(req, res) {
++  logger.info('GET /ping -> 200');
++  res.send('pong');
+ });
+ 
+-// ── GOOGLE CALENDAR ──────────────────────────────────────────────────────
++// Google OAuth2 & Calendar
+ const oauth2Client = new google.auth.OAuth2(
+   process.env.GOOGLE_CLIENT_ID,
+   process.env.GOOGLE_CLIENT_SECRET,
+   process.env.GOOGLE_REDIRECT_URI
+ );
++const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
+ 
+ app.get('/auth/google', function(req, res) {
+-  logger.info('[auth/google] redirecting');
+-  var url = oauth2Client.generateAuthUrl({
+-    access_type: 'offline',
+-    prompt:      'consent',
+-    scope:       ['https://www.googleapis.com/auth/calendar.readonly']
+-  });
++  logger.info('GET /auth/google → redirect to consent');
++  const url = oauth2Client.generateAuthUrl({ access_type: 'offline', scope: SCOPES });
+   res.redirect(url);
+ });
+-
+ app.get('/oauth2callback', async function(req, res) {
++  logger.info('GET /oauth2callback → exchanging code');
+   try {
+-    var code   = req.query.code;
+-    var tokens = (await oauth2Client.getToken(code)).tokens;
+-    res.cookie('google_tokens', tokens, { httpOnly: true });
+-    logger.info('[oauth2callback] tokens saved');
+-    res.redirect('/admin/calendar/index.html');
++    const { tokens } = await oauth2Client.getToken(req.query.code);
++    res.cookie('google_tokens', JSON.stringify(tokens), { httpOnly: true });
++    logger.info('Tokens stored; redirect to /admin/calendar');
++    res.redirect('/admin/calendar');
+   } catch (err) {
+-    logger.error('[oauth2callback] error: ' + err.stack);
+-    res.status(500).send('Authentication failed');
++    logger.error('OAuth2 error', err);
++    res.status(500).send('OAuth2 error');
+   }
+ });
+-
+ app.get('/api/calendar-events', async function(req, res) {
++  logger.info('GET /api/calendar-events');
++  const raw = req.cookies.google_tokens;
++  if (!raw) return res.status(401).json({ error: 'Unauthorized' });
+   try {
+-    var tokens = req.cookies.google_tokens;
+-    if (!tokens) {
+-      res.status(401).json({ error: 'Not authorized' });
+-      return;
+-    }
++    const tokens = JSON.parse(raw);
+     oauth2Client.setCredentials(tokens);
+-    var calendar = google.calendar({ version: 'v3', auth: oauth2Client });
+-    var result   = await calendar.events.list({
+-      calendarId:  'primary',
+-      timeMin:      (new Date()).toISOString(),
+-      maxResults:   10,
++    const calendar = google.calendar({ version: 'v3', auth: oauth2Client });
++    const resp = await calendar.events.list({
++      calendarId: 'primary',
++      timeMin: new Date().toISOString(),
++      maxResults: 10,
+       singleEvents: true,
+-      orderBy:      'startTime'
++      orderBy: 'startTime'
+     });
+-    var items = result.data.items || [];
+-    logger.debug('[GET /api/calendar-events] count=' + items.length);
+-    res.json(items);
++    const items = resp.data.items || [];
++    const events = items.map(e => ({
++      summary: e.summary,
++      start: e.start.dateTime || e.start.date,
++      end:   e.end.dateTime   || e.end.date
++    }));
++    res.json(events);
+   } catch (err) {
+-    logger.error('[GET /api/calendar-events] error: ' + err.stack);
+-    res.status(500).json({ error: 'Fetch events failed' });
++    logger.error('Calendar fetch error', err);
++    res.status(500).json({ error: 'Calendar fetch failed' });
+   }
+ });
+ 
+-// ── EXPORT & LISTEN ────────────────────────────────────────────────────────
+-module.exports = app;
+-if (require.main === module) {
+-  var PORT = parseInt(process.env.PORT, 10) || 3000;
+-  app.listen(PORT, function() {
+-    logger.info('Server listening on port ' + PORT);
++// Audio endpoints
++fs.mkdirSync(path.join(__dirname,'uploads','audio'),{ recursive:true });
++const audioUpload = multer({ dest: path.join(__dirname,'uploads','audio') });
++app.post('/upload-audio', audioUpload.single('file'), function(req, res) {
++  logger.info('POST /upload-audio');
++  if (!req.file) return res.status(400).json({ error: 'No file' });
++  res.status(201).json({ filename: req.file.filename, original: req.file.originalname });
++});
++app.get('/audio-files', function(req, res) {
++  logger.info('GET /audio-files');
++  fs.readdir(path.join(__dirname,'uploads','audio'), (err, files) => {
++    if (err) return res.status(500).json([]);
++    res.json(files);
+   });
+-}
++});
++
++// Image endpoints
++fs.mkdirSync(path.join(__dirname,'uploads','images'),{ recursive:true });
++const imgUpload = multer({ dest: path.join(__dirname,'uploads','images') });
++app.post('/upload-image', imgUpload.single('file'), function(req, res) {
++  logger.info('POST /upload-image');
++  if (!req.file) return res.status(400).json({ error: 'No file' });
++  res.status(201).json({ filename: req.file.filename, original: req.file.originalname });
++});
++app.get('/image-files', function(req, res) {
++  logger.info('GET /image-files');
++  fs.readdir(path.join(__dirname,'uploads','images'), (err, files) => {
++    if (err) return res.status(500).json([]);
++    res.json(files);
++  });
++});
++
++// 404 & error handlers
++app.use(function(req, res) {
++  logger.info('404 ' + req.method + ' ' + req.url);
++  res.status(404).send('Not found');
++});
++app.use(function(err, req, res, next) {
++  logger.error('ERROR ' + req.method + ' ' + req.url + ' - ' + err.stack);
++  res.status(500).send('Server error');
++});
++
++// Start
++app.listen(PORT, function() {
++  logger.info('Server listening on port ' + PORT);
++});
+diff --git a/packages/amf-spot/server.js.bak b/packages/amf-spot/server.js.bak
+index 96266fa..2946f96 100644
+--- a/packages/amf-spot/server.js.bak
++++ b/packages/amf-spot/server.js.bak
+@@ -1,150 +1,128 @@
+-require('dotenv').config();
+-const express      = require('express');
+-const path         = require('path');
+-const fs           = require('fs-extra');
+-const multer       = require('multer');
+-const basicAuth    = require('express-basic-auth');
+-const cookieParser = require('cookie-parser');
+-const { google }   = require('googleapis');
+-const winston      = require('winston');
++require('dotenv').config()
++const epress       require('epress')
++const path          require('path')
++const bodyarser    require('body-parser')
++const cookiearser  require('cookie-parser')
++const basicuth     require('epress-basic-auth')
++const multer        require('multer')
++const fs            require('fs')
++const logger        require('./utils/logger')
++const { google }    require('googleapis')
+ 
+-// -- Logger with timestamps --
+-const logger = winston.createLogger({
+-  level: 'debug',
+-  format: winston.format.combine(
+-    winston.format.timestamp(),
+-    winston.format.printf(({ timestamp, level, message }) => {
+-      return \`\${timestamp} [\${level.toUpperCase()}] \${message}\`;
+-    })
+-  ),
+-  transports: [ new winston.transports.Console() ]
+-});
++const app   epress()
++const   process.env. || 
+ 
+-logger.debug('Loaded ENV:', JSON.stringify({
+-  PORT: process.env.PORT,
+-  GOOGLE_CLIENT_ID: !!process.env.GOOGLE_CLIENT_ID,
+-  GOOGLE_REDIRECT_URI: process.env.GOOGLE_REDIRECT_URI
+-}));
++// — ogging, parsers, auth
++app.use((req,res,net){ logger.info(`${req.method} ${req.url}`) net() })
++app.use(bodyarser.json())
++app.use(bodyarser.urlencoded({ etendedfalse }))
++app.use(cookiearser())
++app.use(
++  '/admin','/admin/*'],
++  basicuth({
++    users { process.env._] process.env._ },
++    challenge true,
++    unauthorizedesponse req  {
++      logger.error('nauthorized attempt to ' + req.url)
++      return 'uthentication required'
++    }
++  })
++)
+ 
+-const app = express();
++// — tatic & dmin 
++app.use('/public',  epress.static(path.join(__dirname,'public')))
++app.use('/uploads', epress.static(path.join(__dirname,'uploads')))
++app.use('/admin',   epress.static(path.join(__dirname,'public','admin')))
+ 
+-// -- GLOBAL MIDDLEWARE FOR DEBUGGING --
+-app.use((req, res, next) => {
+-  logger.debug(\`[REQ] \${req.method} \${req.url} HEADERS=\${JSON.stringify(req.headers)}\`);
+-  next();
+-});
++// — n‑memory asks (unchanged) …
++let tasks  ], netaskd  
++app.get('/api/tasks',    (req,res){ logger.info(' /api/tasks') res.json(tasks) })
++app.post('/api/tasks',   (req,res){ logger.info(' /api/tasks') const dreq.body||{} const t{idnetaskd++,titled.title||d.tet||'',dated.date||new ate().totring(),status'all'} tasks.push(t) res.status().json(t) })
++app.delete('/api/tasks/id',(req,res){ const id+req.params.id logger.info(' /api/tasks/'+id) taskstasks.filter(.id!id) res.status().send() })
+ 
+-app.use(express.json());
+-app.use(cookieParser());
+-app.use(express.static(path.join(__dirname, 'public')));
++// — omments & aptions (unchanged)
++app.get('/api/comments', (req,res){ logger.info(' /api/comments') res.json(]) })
++app.post('/api/comments',(req,res){ logger.info(' /api/comments') res.status().json(req.body) })
++app.get('/api/captions', (req,res){ logger.info(' /api/captions') res.json(]) })
++app.post('/api/captions',(req,res){ logger.info(' /api/captions') res.status().json(req.body) })
+ 
+-// Admin & uploads
+-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+-app.use(
+-  '/admin',
+-  basicAuth({
+-    users: { [process.env.ADMIN_USERNAME]: process.env.ADMIN_PASSWORD },
+-    challenge: true
+-  }),
+-  express.static(path.join(__dirname, 'public', 'admin'))
+-);
++// — ealth check
++app.get('/ping',(req,res){ logger.info(' /ping → ') res.send('pong') })
+ 
+-// Artist isolation
+-app.use((req, res, next) => {
+-  req.artist = req.header('X-Artist-ID') || 'default';
+-  req.artistDir = path.join(__dirname, 'data', req.artist);
+-  logger.debug(\`[ARTIST] Using folder \${req.artistDir}\`);
+-  next();
+-});
++// —————————————————————————
++// eal oogle uth & alendar flow
++// —————————————————————————
++const oauthlient  new google.auth.uth(
++  process.env.__,
++  process.env.__,
++  process.env.__
++)
++const _  'https//www.googleapis.com/auth/calendar.readonly']
+ 
+-// Multer
+-const upload = multer({ dest: path.join(__dirname, 'tmp') });
++app.get('/auth/google', (req, res)  {
++  logger.info(' /auth/google → redirecting to oogle consent')
++  const url  oauthlient.generateuthrl({
++    access_type 'offline',
++    scope _,
++  })
++  res.redirect(url)
++})
+ 
+-// -- Example audio endpoint (logs) --
+-app.post('/upload-audio', upload.single('file'), async (req, res) => {
+-  logger.debug('[upload-audio] file:', req.file);
++app.get('/oauthcallback', async (req, res)  {
++  logger.info(' /oauthcallback → echanging code')
++  const { code }  req.query
+   try {
+-    const destDir = path.join(__dirname, 'uploads', 'audio', req.artist);
+-    await fs.mkdirp(destDir);
+-    const filename = \`\${Date.now()}-\${req.file.originalname}\`;
+-    await fs.move(req.file.path, path.join(destDir, filename));
+-    logger.info(\`[upload-audio] saved \${filename} for \${req.artist}\`);
+-    res.json({ url: \`/uploads/audio/\${req.artist}/\${filename}\` });
+-  } catch (err) {
+-    logger.error('[upload-audio] ERROR:', err.stack);
+-    res.status(500).json({ error: err.message });
++    const { tokens }  await oauthlient.getoken(code)
++    // store tokens in a cookie
++    res.cookie('google_tokens', .stringify(tokens), { httpnly true })
++    logger.info('uth tokens stored redirecting to /admin/calendar')
++    res.redirect('/admin/calendar')
++  } catch (e) {
++    logger.error('uth echange error', e)
++    res.status().send('uth error')
+   }
+-});
+-
+-// -- GOOGLE OAUTH2 CLIENT --
+-const oauth2Client = new google.auth.OAuth2(
+-  process.env.GOOGLE_CLIENT_ID,
+-  process.env.GOOGLE_CLIENT_SECRET,
+-  process.env.GOOGLE_REDIRECT_URI
+-);
+-
+-// Kick off OAuth flow
+-app.get('/auth/google', (req, res) => {
+-  logger.info('[auth/google] start');
+-  const url = oauth2Client.generateAuthUrl({
+-    access_type: 'offline',
+-    prompt: 'consent',
+-    scope: ['https://www.googleapis.com/auth/calendar.readonly']
+-  });
+-  logger.debug('[auth/google] redirecting to:', url);
+-  res.redirect(url);
+-});
++})
+ 
+-// OAuth callback
+-app.get('/oauth2callback', async (req, res) => {
+-  const code = req.query.code;
+-  logger.info('[oauth2callback] code:', code);
++app.get('/api/calendar-events', async (req, res)  {
++  logger.info(' /api/calendar-events')
++  const raw  req.cookies.google_tokens
++  if (!raw) return res.status().json({ error 'nauthorized' })
+   try {
+-    const { tokens } = await oauth2Client.getToken(code);
+-    logger.debug('[oauth2callback] received tokens:', JSON.stringify(tokens).substring(0,200));
+-    oauth2Client.setCredentials(tokens);
+-    // Also save in cookie
+-    res.cookie('google_tokens', tokens, { httpOnly: true });
+-    logger.info('[oauth2callback] tokens saved to cookie, redirecting to UI');
+-    res.redirect('/admin/calendar/index.html');
+-  } catch (err) {
+-    logger.error('[oauth2callback] ERROR getting tokens:', err.stack);
+-    res.status(500).send('Authentication failed: ' + err.message);
++    const tokens  .parse(raw)
++    oauthlient.setredentials(tokens)
++    const calendar  google.calendar({ version 'v', auth oauthlient })
++    const resp  await calendar.events.list({
++      calendard 'primary',
++      timein new ate().totring(),
++      maesults ,
++      singlevents true,
++      ordery 'startime',
++    })
++    const items  resp.data.items || ]
++    const events  items.map(e  ({
++      summary e.summary,
++      start e.start.dateime || e.start.date,
++      end   e.end.dateime   || e.end.date,
++    }))
++    res.json(events)
++  } catch (e) {
++    logger.error('alendar  error', e)
++    res.status().json({ error 'alendar fetch failed' })
+   }
+-});
++})
+ 
+-// Calendar events
+-app.get('/api/calendar-events', async (req, res) => {
+-  logger.info('[GET /api/calendar-events] called');
+-  const tokens = req.cookies.google_tokens;
+-  logger.debug('[GET /api/calendar-events] cookie tokens present?:', !!tokens);
+-  if (!tokens) {
+-    logger.warn('[GET /api/calendar-events] no tokens → 401');
+-    return res.status(401).json({ error: 'Not signed in' });
+-  }
+-  oauth2Client.setCredentials(tokens);
+-  try {
+-    const cal = google.calendar({ version: 'v3', auth: oauth2Client });
+-    const result = await cal.events.list({
+-      calendarId: 'primary',
+-      timeMin: new Date().toISOString(),
+-      singleEvents: true,
+-      orderBy: 'startTime',
+-      maxResults: 10
+-    });
+-    logger.debug('[GET /api/calendar-events] got items count=', (result.data.items||[]).length);
+-    res.json(result.data.items || []);
+-  } catch (err) {
+-    logger.error('[GET /api/calendar-events] ERROR:', err.stack);
+-    res.status(500).json({ error: err.message });
+-  }
+-});
++// — udio, mage endpoints (unchanged) …
++// … keep your eisting multer + upload‐listing code …
+ 
+-// -- YOUR OTHER ENDPOINTS --
++// —  & rror handlers
++app.use((req,res){
++  logger.info(' '+req.method+' '+req.url)
++  res.status().send('ot found')
++})
++app.use((err,req,res,net){
++  logger.error(' '+req.method+' '+req.url+' – '+err.stack)
++  res.status().send('erver error')
++})
+ 
+-// Export/listen
+-module.exports = app;
+-if (require.main === module) {
+-  const port = parseInt(process.env.PORT, 10) || 3000;
+-  app.listen(port, () => logger.info(\`Server up on port \${port}\`));
+-}
++// — tart
++app.listen(, ()  logger.info('erver listening on port '+))

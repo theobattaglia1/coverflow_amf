@@ -1,0 +1,50 @@
+// — Partner Coverflow Hero
+;(async function(){
+  console.debug('[Coverflow] init');
+  const data = await fetch('/api/coverflow').then(r=>r.json());
+  const cont = document.getElementById('coverflow');
+  let current = 0;
+
+  data.forEach((s,i)=>{
+    const el = document.createElement('div');
+    el.className = 'coverflow__item';
+    el.innerHTML = \`
+      <img src="\${s.image}" alt="\${s.title}"/>
+      <div class="coverflow__caption">
+        <h3>\${s.title}</h3>
+        <p>\${s.subtitle}</p>
+      </div>\`;
+    el.onclick = ()=> window.location.href = s.link;
+    cont.appendChild(el);
+  });
+
+  function update(){
+    Array.from(cont.children).forEach((el,i)=>{
+      const offset = i - current;
+      const angle  = offset * 30;
+      const x      = offset * 200;
+      el.style.opacity = Math.abs(offset)>3 ? 0 : 1;
+      el.style.transform = \`
+        translateX(\${x}px)
+        translateZ(\${-Math.abs(offset)*150}px)
+        rotateY(\${angle}deg)\`;
+    });
+  }
+  update();
+
+  document.addEventListener('keydown',e=>{
+    if(e.key==='ArrowRight' && current<data.length-1) current++;
+    if(e.key==='ArrowLeft'  && current>0)             current--;
+    update();
+  });
+  let startX;
+  cont.addEventListener('pointerdown',e=>startX=e.clientX);
+  cont.addEventListener('pointerup',e=>{
+    const dx = e.clientX - startX;
+    if(dx>50 && current>0)              current--;
+    if(dx<-50 && current<data.length-1) current++;
+    update();
+  });
+
+  console.debug('[Coverflow] ready');
+})();

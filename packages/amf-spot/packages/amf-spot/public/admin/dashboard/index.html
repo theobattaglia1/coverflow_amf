@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <h1>Admin Dashboard — <span id="artist-name"></span></h1>
+
+  <section>
+    <h2>Tasks</h2>
+    <form id="tasks-form">
+      <input id="task-title" placeholder="Title" required>
+      <input id="task-date" type="datetime-local" required>
+      <button>Add</button>
+    </form>
+    <ul id="tasks-list"></ul>
+  </section>
+
+  <section>
+    <h2>Comments</h2>
+    <form id="comments-form">
+      <input id="comment-author" placeholder="Author" required>
+      <input id="comment-text" placeholder="Comment" required>
+      <button>Post</button>
+    </form>
+    <ul id="comments-list"></ul>
+  </section>
+
+  <section>
+    <h2>Audio</h2>
+    <form id="audio-form">
+      <input id="audio-file" type="file" accept="audio/*" required>
+      <button>Upload</button>
+    </form>
+    <ul id="audio-list"></ul>
+  </section>
+
+  <section>
+    <h2>Images</h2>
+    <form id="images-form">
+      <input id="image-file" type="file" accept="image/*" required>
+      <button>Upload</button>
+    </form>
+    <ul id="images-list"></ul>
+  </section>
+
+  <section>
+    <h2>Calendar</h2>
+    <button id="refresh-events">Refresh</button>
+    <ul id="events-list"></ul>
+  </section>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
