@@ -1,18 +1,36 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>All My Friends Spot</title>
-  <link rel="stylesheet" href="styles.css" />
-</head>
-<body>
-  <header>
-    <h1>All My Friends Spot</h1>
-    <div id="filter-ui">
-      <input type="text" placeholder="Filter covers…" />
-    </div>
-  </header>
-  <div id="covers-container"></div>
-  <script src="index.js"></script>
-</body>
-</html>
+<main>
+  <h1>Dashboard</h1>
+
+  <div class="dashboard-grid">
+
+    <section id="tasks-section" class="tasks-section">
+      <h2>Tasks</h2>
+      <ul id="tasks-list"></ul>
+    </section>
+
+    <section id="comments-section" class="comments-section">
+      <h2>Comments</h2>
+      <ul id="comments-list"></ul>
+      <form id="comment-form" class="comment-form">
+         <textarea id="comment-input" class="comment-input" placeholder="Add a comment…"></textarea>
+         <button type="submit" class="submit-comment">Post Basic Comment</button>
+      </form>
+    </section>
+
+    <section id="audio-section" class="audio-section">
+      <h2>Audio</h2>
+      <ul id="audio-list"></ul>
+    </section>
+
+    <section id="images-section" class="images-section">
+      <h2>Images</h2>
+      <ul id="images-list"></ul>
+    </section>
+
+    <section id="events-section" class="events-section">
+      <h2>Events</h2>
+      <button id="refresh-events">Refresh</button>
+      <ul id="events-list"></ul>
+    </section>
+
+  </div> </main>

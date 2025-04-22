@@ -1,0 +1,141 @@
+/* Reset & base */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; font-family: sans-serif; color: #333; }
+
+/* Make main content area take up reasonable space */
+main {
+  max-width: 1200px; /* Adjust as needed */
+  margin: 20px auto; /* Center the main content area */
+  padding: 1rem;
+}
+
+/* Header & footer (If you add them later) */
+header {
+  background: #222;
+  color: #fff;
+  padding: 1rem;
+  text-align: center;
+  margin-bottom: 1rem; /* Add space below header */
+}
+header .brand { font-size: 1.5rem; }
+footer {
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  background: #f0f0f0;
+  margin-top: 1rem;
+}
+
+/* Container & grid */
+.dashboard-grid {
+  display: grid;
+  /* Ensure columns wrap correctly */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); /* Adjust minmax for desired size */
+  gap: 1.5rem; /* Increase gap slightly */
+}
+
+/* Section styling */
+section {
+  background: #ffffff; /* Use white for better contrast? */
+  border: 1px solid #e0e0e0;
+  border-radius: 6px; /* Slightly rounder corners */
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px; /* Give sections a minimum height */
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow */
+}
+section h2 {
+  margin-bottom: 0.75rem; /* More space below heading */
+  font-size: 1.1rem; /* Slightly smaller heading */
+  font-weight: 600;
+  color: #444;
+  border-bottom: 1px solid #eee; /* Separator line */
+  padding-bottom: 0.5rem;
+}
+
+/* Styling for form elements inside sections (e.g., events refresh) */
+section form,
+section button#refresh-events { /* Target refresh button specifically */
+  margin-top: auto; /* Push forms/buttons to the bottom if section grows */
+  padding-top: 1rem; /* Add space above buttons */
+}
+
+section button { /* General button styling within sections */
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #007bff;
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+section button:hover {
+  background: #0056b3;
+}
+button#refresh-events { /* Specific style for refresh */
+  background: #28a745;
+  display: block; /* Make it full width */
+  width: 100%;
+}
+button#refresh-events:hover {
+  background: #1e7e34;
+}
+
+
+/* Lists */
+ul {
+  list-style: none;
+  flex-grow: 1; /* Allow list to fill space */
+  overflow-y: auto; /* Enable scrolling if content overflows */
+  padding: 0 0.5rem 0 0; /* Adjust padding */
+  max-height: 400px; /* Prevent lists from becoming excessively long */
+}
+li {
+  padding: 0.6rem 0; /* Increase padding */
+  border-bottom: 1px solid #f0f0f0; /* Lighter border */
+  font-size: 0.9rem;
+  display: flex; /* Use flex for alignment within items */
+  align-items: center;
+  gap: 8px;
+}
+li:last-child { border-bottom: none; }
+
+li.empty {
+    color: #888;
+    font-style: italic;
+}
+li.error {
+    color: #d9534f; /* Bootstrap danger color */
+    font-weight: bold;
+}
+
+/* Ensure images in lists don't break layout */
+li img {
+    flex-shrink: 0; /* Prevent image from shrinking */
+}
+
+
+/* Events full‐width (adjust span if needed based on column count) */
+#events-section {
+  /* Make events section span across grid columns if desired */
+  /* grid-column: 1 / -1; */ /* Uncomment this to make it full width */
+}
+
+
+/* Scrollbar hint */
+ul::-webkit-scrollbar {
+  width: 8px;
+}
+ul::-webkit-scrollbar-track {
+  background: #f8f8f8;
+  border-radius: 4px;
+}
+ul::-webkit-scrollbar-thumb {
+  background: #d8d8d8;
+  border-radius: 4px;
+  border: 2px solid #f8f8f8; /* Creates padding around thumb */
+}
+ul::-webkit-scrollbar-thumb:hover {
+  background: #b8b8b8;
+}
