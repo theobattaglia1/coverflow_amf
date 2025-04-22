@@ -6,6 +6,7 @@ const multer = require('multer');
 
 // Configuration
 const app = express();
+require('./server/upload-audio')(app);
 const PORT = process.env.PORT || 3000;
 
 // Middleware
@@ -81,10 +82,10 @@ app.get('/api/:artist/audio-files', (req, res) => {
     res.json({
       artist,
       files: [
-        { id: 1, title: 'Do You Remember?', artist: 'AMF Studio', duration: '3:42', url: '/audio/do-you-remember.m4a YOU REMEMBER.m4a', playlist: 'showcase' },
+        { id: 1, title: 'Do You Remember?', artist: 'AMF Studio', duration: '3:42', url: '/audio/do-you-remember.m4a', playlist: 'showcase' },
         { id: 2, title: 'Get Out Of Town', artist: 'AMF Studio', duration: '4:15', url: '/audio/getoutoftown.v1.m4a', playlist: 'showcase' },
-        { id: 3, title: 'linger-v1.m4a', artist: 'AMF Studio', duration: '3:28', url: '/audio/linger-v1.m4a v1.m4a', playlist: 'showcase' },
-        { id: 4, title: 'Real Life', artist: 'AMF Studio', duration: '5:10', url: '/audio/real-life.wav LIFE.wav', playlist: 'showcase' },
+        { id: 3, title: 'linger-v1.m4a', artist: 'AMF Studio', duration: '3:28', url: '/audio/linger-v1.m4a', playlist: 'showcase' },
+        { id: 4, title: 'Real Life', artist: 'AMF Studio', duration: '5:10', url: '/audio/real-life.wav', playlist: 'showcase' },
         { id: 5, title: 'Texas', artist: 'AMF Studio', duration: '3:55', url: '/audio/texas.m4a', playlist: 'showcase' }
       ]
     });
@@ -176,19 +177,66 @@ app.use('/admin', adminAuth);
 // Admin routes - protected by basic auth
 app.use('/admin/:artist/dashboard', express.static(path.join(__dirname, 'public/admin/dashboard')));
 
+// Fallback showcase route
+app.get("/api/:artist/showcase", (req, res) => {
+  console.log(`[Server] Serving fallback showcase for ${req.params.artist}`);
+  res.json({
+    artist: req.params.artist,
+    media: [
+      {
+        type: "image",
+        title: "Fallback Image",
+        src: "https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15"
+      },
+      {
+        type: "video",
+        title: "Fallback Video",
+        src: "/video/sample.mp4"
+      },
+      {
+        type: "image",
+        title: "Artwork A",
+        src: "https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15"
+      }
+    ]
+  });
+});
+
+
+
 // Catch-all for undefined routes
 app.use((req, res) => {
   console.log(`[Server] 404 - Route not found: ${req.url}`);
   res.status(404).send('Not Found');
 });
 
-// Error handler
-app.use((err, req, res, next) => {
-  console.error(`[Server] Error: ${err.stack}`);
-  res.status(500).send('Something broke!');
-});
 
 // Start the server
 app.listen(PORT, () => {
   console.log(`[Server] Server running on port ${PORT}`);
+});
+
+// TEMP: Showcase fallback route
+app.get('/api/:artist/showcase', (req, res) => {
+  console.log(`[Server] Serving fallback showcase for ${req.params.artist}`);
+  res.json({
+    artist: req.params.artist,
+    media: [
+      {
+        type: 'image',
+        title: 'Fallback Image',
+        src: 'https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15'
+      },
+      {
+        type: 'video',
+        title: 'Fallback Video',
+        src: '/video/sample.mp4'
+      },
+      {
+        type: 'image',
+        title: 'Artwork A',
+        src: 'https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15'
+      }
+    ]
+  });
 });

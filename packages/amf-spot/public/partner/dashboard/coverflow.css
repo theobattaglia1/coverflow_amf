@@ -1,100 +1,40 @@
-#coverflow-hero {
-  position: relative;
-  width: 100%;
-  height: 300px;
-  margin: 20px 0;
-  padding: 20px 0;
-  perspective: 1000px;
-  overflow: hidden;
-  background-color: #f5f5f5;
-  border-radius: 4px;
-}
+/* File: public/partner/dashboard/coverflow.css */
 
-.coverflow-container {
-  position: relative;
-  width: 100%;
-  height: 100%;
+.coverflow {
   display: flex;
-  align-items: center;
   justify-content: center;
-  transform-style: preserve-3d;
+  align-items: center;
+  overflow-x: auto;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  scroll-behavior: smooth;
 }
 
-.coverflow-item {
-  position: absolute;
-  width: 200px;
-  height: 200px;
-  transition: transform 0.5s ease, z-index 0.5s;
+.coverflow::-webkit-scrollbar {
+  display: none;
+}
+
+.coverflow-image {
+  position: relative;
+  flex: 0 0 auto;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  transform: scale(0.95);
+  opacity: 0.8;
   cursor: pointer;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-  border-radius: 5px;
+  border-radius: 12px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.coverflow-item img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.coverflow-title {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 10px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  text-align: center;
-  font-size: 14px;
-  transform: translateY(100%);
-  transition: transform 0.3s ease;
-}
-
-.coverflow-item:hover .coverflow-title {
-  transform: translateY(0);
-}
-
-.coverflow-active {
+.coverflow-image:hover {
+  transform: scale(1.05);
+  opacity: 1;
   z-index: 10;
-  transform: translateZ(50px) !important;
 }
 
-.coverflow-left {
-  transform-origin: left center;
-}
-
-.coverflow-right {
-  transform-origin: right center;
-}
-
-.coverflow-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 20;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  font-size: 20px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.coverflow-nav:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.coverflow-prev {
-  left: 20px;
-}
-
-.coverflow-next {
-  right: 20px;
+.coverflow-image img {
+  max-height: 260px;
+  display: block;
+  object-fit: cover;
+  border-radius: 12px;
 }

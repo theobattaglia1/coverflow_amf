@@ -1,65 +1,61 @@
-<!do-you-remember.m4aCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <title>Partner Dashboard</title>
 
-  <!-- Core styles -->
+  <!-- Styles -->
   <link rel="stylesheet" href="dashboard.css" />
-  <link rel="stylesheet" href="coverflow.css" />
   <link rel="stylesheet" href="audioplayer.css" />
-
-  <!-- Comment section styles -->
   <link rel="stylesheet" href="comment-styles.css" />
-
-  <!-- Core scripts (deferred) -->
-  <script defer src="coverflow.js"></script>
-  <script defer src="dashboard.js"></script>
-  <script defer src="audioplayer.js"></script>
+  <link rel="stylesheet" href="coverflow.css" />
+  <link rel="stylesheet" href="showcase.css" />
 </head>
-
 <body>
-  <section id="coverflow-hero">
-    <div id="coverflow" class="coverflow"></div>
-  </section>
+  <main id="dashboard">
+    <!-- HEADER -->
+    <h1>Partner Dashboard</h1>
 
-  <main>
-    <h1>Dashboard</h1>
+    <!-- SHOWCASE (previously coverflow) -->
+    <section id="showcase-section">
+      <h2>Showcase</h2>
+      <div id="showcase"></div>
+    </section>
 
-    <section id="tasks-section" class="tasks-section">
+    <!-- AUDIO PLAYER -->
+    <section class="audio-section">
+      <h2>Audio Preview</h2>
+      <div id="audio-player"></div>
+    </section>
+
+    <!-- TASKS -->
+    <section id="tasks-section">
       <h2>Tasks</h2>
-      <ul id="tasks-list"></ul>
+      <div id="tasks"></div>
     </section>
 
-    <section id="comments-section" class="comments-section">
-      <h2>Comments</h2>
-      <ul id="comments-list"></ul>
-      <form id="comment-form" class="comment-form">
-        <div class="comment-input-container">
-          <textarea id="comment-input" class="comment-input" placeholder="Add a comment…"></textarea>
-          <div class="comment-input-actions">
-            <button type="button" class="timestamp-button" id="add-timestamp">⌚</button>
-            <button type="submit" class="submit-comment">Post</button>
-          </div>
-        </div>
-      </form>
+    <!-- COMMENTS -->
+    <section id="comments-section">
+      <h2>Team Comments</h2>
+      <div id="comments"></div>
     </section>
 
-    <section id="audio-section" class="audio-section">
-      <h2>Audio</h2>
-      <ul id="audio-list"></ul>
+    <!-- IMAGES -->
+    <section id="images-section">
+      <h2>Image Carousel</h2>
+      <div id="carousel"></div>
     </section>
 
-    <section id="images-section" class="images-section">
-      <h2>Images</h2>
-      <ul id="images-list"></ul>
-    </section>
-
-    <section id="events-section" class="events-section">
-      <h2>Events</h2>
-      <button id="refresh-events">Refresh</button>
-      <ul id="events-list"></ul>
+    <!-- EVENTS -->
+    <section id="events-section">
+      <h2>Upcoming Events</h2>
     </section>
   </main>
+
+  <!-- Scripts -->
+  <script src="coverflow.js"></script>
+  <script src="showcase.js"></script>
+  <script src="dashboard.js"></script>
+  <script src="audioplayer.js"></script>
 </body>
 </html>

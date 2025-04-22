@@ -1,426 +1,85 @@
-.audio-player-container {
-  margin: 30px 0;
-  padding: 20px;
-  background-color: #f8f8f8;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+/* File: public/partner/dashboard/audioplayer.css */
+
+.audio-section {
+  margin-top: 2rem;
+  padding: 1rem;
+  background: #fafafa;
+  border-radius: 12px;
+  border: 1px solid #ddd;
 }
 
-.audio-player-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.audio-player-title {
-  font-size: 18px;
+.audio-section h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
   font-weight: 600;
-  margin: 0;
+  color: #333;
 }
 
-.audio-player-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 20px;
+.audio-tracklist {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
 }
 
 .audio-track {
-  background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid #e0e0e0;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
-.audio-track:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
-}
-
-.audio-track-info {
-  padding: 15px;
-}
-
-.audio-track-title {
-  font-size: 16px;
-  font-weight: 500;
-  margin: 0 0 5px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.audio-track-meta {
-  font-size: 12px;
-  color: #777;
-  margin: 0;
-}
-
-.custom-audio-player {
-  width: 100%;
-  margin-top: 10px;
-}
-
-.audio-controls {
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.play-button {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #333;
-  color: white;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  margin-right: 10px;
-  transition: background 0.2s ease;
-}
-
-.play-button:hover {
-  background: #555;
-}
-
-.progress-bar {
-  flex: 1;
-  height: 4px;
-  background: #ddd;
-  border-radius: 2px;
-  position: relative;
-  cursor: pointer;
-}
-
-.progress-fill {
-  position: absolute;
-  height: 100%;
-  background: #333;
-  border-radius: 2px;
-  width: 0%;
-}
-
-.time-display {
-  font-size: 12px;
-  color: #777;
-  margin-left: 10px;
-  min-width: 45px;
-  text-align: right;
-}
-
-/* For the circular view option */
-.audio-player-circle {
-  display: none; /* Hidden by default, toggled via JS */
-  width: 500px;
-  height: 500px;
-  position: relative;
-  margin: 0 auto;
-}
-
-.circle-track {
-  position: absolute;
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: white;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  cursor: pointer;
-  overflow: hidden;
-}
-
-.circle-track:hover {
-  transform: scale(1.1);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-  z-index: 10;
-}
-
-.circle-track.active {
-  transform: scale(1.2);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-  z-index: 10;
-}
-
-.view-toggle {
-  background: none;
-  border: none;
-  color: #555;
-  cursor: pointer;
-  font-size: 14px;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: background 0.2s ease;
-}
-
-.view-toggle:hover {
-  background: #eee;
-}
-
-.view-toggle.active {
-  background: #ddd;
-  font-weight: bold;
-}
-/* Enhanced comment styles */
-
-.comments-section {
-  margin-top: 30px;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
-}
-
-.comments-list-header {
+.audio-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 16px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #eee;
-}
-
-.comments-count {
-  font-size: 14px;
-  font-weight: 600;
-  color: #666;
-}
-
-.comments-collapse-toggle {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  padding: 4px;
-  line-height: 0;
-}
-
-.comments-collapse-toggle svg {
-  width: 16px;
-  height: 16px;
-  transition: transform 0.2s ease;
-}
-
-.comments-collapse-toggle.collapsed svg {
-  transform: rotate(180deg);
-}
-
-.comments-container {
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-}
-
-.comments-container.collapsed {
-  max-height: 0;
-}
-
-.comment-item {
-  display: flex;
-  margin-bottom: 16px;
-  position: relative;
-  transition: background-color 0.2s ease;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-.comment-item:hover {
-  background-color: #f7f9fc;
-}
-
-.comment-avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #f0f0f5;
-  flex-shrink: 0;
-  margin-right: 12px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #666;
-  font-weight: 600;
-}
-
-.comment-content {
-  flex-grow: 1;
-  background: #f5f7fa;
-  border-radius: 0 12px 12px 12px;
-  padding: 12px 16px;
-  position: relative;
-}
-
-.comment-header {
-  display: flex;
   align-items: baseline;
-  margin-bottom: 4px;
-}
-
-.comment-author {
-  font-weight: 600;
-  font-size: 14px;
-  color: #333;
-  margin-right: 8px;
-}
-
-.comment-time {
-  font-size: 12px;
-  color: #888;
-}
-
-.comment-text {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #444;
-  margin: 0;
-}
-
-.comment-timestamp {
-  display: inline-flex;
-  align-items: center;
-  background: rgba(77, 101, 255, 0.1);
-  border-radius: 4px;
-  padding: 2px 8px;
-  margin-right: 8px;
-  cursor: pointer;
-  color: #4d65ff;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
   font-weight: 500;
-  font-size: 12px;
-  transition: background-color 0.2s ease;
+  color: #444;
 }
 
-.comment-timestamp:hover {
-  background: rgba(77, 101, 255, 0.2);
+.audio-track audio {
+  width: 100%;
+  margin-bottom: 0.75rem;
 }
 
-.comment-timestamp svg {
-  width: 12px;
-  height: 12px;
-  margin-right: 4px;
-}
-
-.comment-actions {
-  position: absolute;
-  right: 12px;
-  top: 12px;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-.comment-item:hover .comment-actions {
-  opacity: 1;
-}
-
-.comment-edit, 
-.comment-delete {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #888;
-  padding: 4px;
-  transition: color 0.2s ease;
-}
-
-.comment-edit:hover, 
-.comment-delete:hover {
-  color: #333;
-}
-
-.comment-form {
+.comment-box {
   display: flex;
-  margin-top: 16px;
-}
-
-.comment-input-container {
-  flex-grow: 1;
-  position: relative;
+  gap: 0.5rem;
 }
 
 .comment-input {
-  width: 100%;
-  border: 1px solid #e0e3eb;
-  border-radius: 12px;
-  padding: 12px 100px 12px 16px;
-  font-size: 14px;
-  line-height: 1.5;
-  transition: border-color 0.2s ease;
-  resize: none;
-  min-height: 24px;
-  max-height: 120px;
-  overflow-y: auto;
-  color: #333;
+  flex-grow: 1;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 0.9rem;
 }
 
-.comment-input:focus {
-  outline: none;
-  border-color: #4d65ff;
-}
-
-.comment-input-actions {
-  position: absolute;
-  right: 12px;
-  bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.timestamp-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 4px;
-  background: #f0f0f5;
-  border: none;
-  cursor: pointer;
-  color: #666;
-  transition: all 0.2s ease;
-}
-
-.timestamp-button:hover {
-  background: #e0e3eb;
-  color: #333;
-}
-
-.timestamp-button.active {
-  background: #4d65ff;
-  color: white;
-}
-
-.timestamp-button svg {
-  width: 14px;
-  height: 14px;
-}
-
-.submit-comment {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #4d65ff;
+.comment-btn {
+  background-color: #4d65ff;
   color: white;
   border: none;
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-weight: 500;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease;
 }
 
-.submit-comment:hover {
-  background: #3b50e0;
+.comment-btn:hover {
+  background-color: #3b50e0;
 }
 
-/* Empty comments state */
-.empty-comments {
-  text-align: center;
-  padding: 20px;
-  color: #888;
-  font-style: italic;
-  font-size: 14px;
+.comment-thread {
+  margin-top: 0.75rem;
+  padding-left: 0.5rem;
+  border-left: 2px solid #ddd;
+}
+
+.comment-thread p {
+  margin: 0.25rem 0;
+  font-size: 0.85rem;
+  color: #333;
 }
