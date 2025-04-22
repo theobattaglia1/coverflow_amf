@@ -31,7 +31,7 @@ app.get('/:artist/dashboard', (req, _res, next) => {
 
   if (!fs.existsSync(css)) {
     ensure(path.dirname(css));
-    fs.writeFileSync(css, '/* TODO: coverflow styles */');
+    fs.writeFileSync(css, '/* TOdo-you-remember.m4a: coverflow styles */');
   }
   if (fs.existsSync(html)) {
     let h = fs.readFileSync(html, 'utf8');

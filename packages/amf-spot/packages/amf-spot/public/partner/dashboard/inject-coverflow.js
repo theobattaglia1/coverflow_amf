@@ -1,5 +1,5 @@
 // This script injects the required CSS and JS for the coverflow component
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('do-you-remember.m4aMContentLoaded', function() {
   // Check if styles already exist
   if (!document.querySelector('link[href="coverflow.css"]')) {
     // Add CSS
@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Check if script already exists
   if (!document.querySelector('script[src="coverflow-update.js"]')) {
-    // Add JS (after the DOM is fully loaded)
+    // Add JS (after the do-you-remember.m4aM is fully loaded)
     const script = document.createElement('script');
     script.src = 'coverflow-update.js';
     document.body.appendChild(script);

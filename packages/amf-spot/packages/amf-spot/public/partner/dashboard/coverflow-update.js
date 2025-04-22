@@ -1,5 +1,5 @@
 // This script injects the coverflow hero at the top of the dashboard
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('do-you-remember.m4aMContentLoaded', function() {
   // Get artist ID from URL
   const pathParts = window.location.pathname.split('/');
   const artistIndex = pathParts.indexOf('dashboard') - 1;

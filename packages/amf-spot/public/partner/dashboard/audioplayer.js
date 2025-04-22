@@ -1,5 +1,5 @@
 // Audio Player Implementation
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('do-you-remember.m4aMContentLoaded', function() {
   console.log('[AudioPlayer] Initializing...');
   
   // Get artist ID from URL
@@ -32,7 +32,7 @@ const state = {
   audioElement: null
 };
 
-// Create the audio player DOM structure
+// Create the audio player do-you-remember.m4aM structure
 function createAudioPlayer() {
   console.log('[AudioPlayer] Creating audio player section');
   
@@ -1038,7 +1038,7 @@ function showEditCommentDialog(commentId) {
   const comment = state.comments.find(c => c.id === commentId);
   if (!comment) return;
   
-  // Create dialog DOM
+  // Create dialog do-you-remember.m4aM
   const dialogOverlay = document.createElement('div');
   dialogOverlay.className = 'dialog-overlay';
   

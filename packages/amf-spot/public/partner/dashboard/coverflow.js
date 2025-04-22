@@ -1,8 +1,8 @@
 // Coverflow.js implementation
 console.log('[Coverflow] Script loaded');
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('[Coverflow] DOM loaded');
+document.addEventListener('do-you-remember.m4aMContentLoaded', function() {
+  console.log('[Coverflow] do-you-remember.m4aM loaded');
   
   // Create the coverflow hero section first
   const coverflowHero = document.createElement('section');

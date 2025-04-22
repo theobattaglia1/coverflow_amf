@@ -1,5 +1,5 @@
 // Fix styles by adding a link to the comment-styles.css file
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('do-you-remember.m4aMContentLoaded', () => {
   // Check if the link already exists
   if (!document.querySelector('link[href="comment-styles.css"]')) {
     const head = document.getElementsByTagName('head')[0];

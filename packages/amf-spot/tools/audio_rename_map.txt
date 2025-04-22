@@ -1,0 +1,6 @@
+Linger v1.m4a -> linger-v1.m4a
+.DS_Store -> .ds-store
+GetOutOfTown.V1.m4a -> getoutoftown.v1.m4a
+DO YOU REMEMBER.m4a -> do-you-remember.m4a
+REAL LIFE.wav -> real-life.wav
+TEXAS.m4a -> texas.m4a

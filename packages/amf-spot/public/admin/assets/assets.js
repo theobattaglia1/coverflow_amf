@@ -23,7 +23,7 @@
       img.addEventListener('click', () => openLightbox(src));
       gallery.appendChild(img);
     });
-    // TODO: add drag/drop reordering here
+    // TOdo-you-remember.m4a: add drag/drop reordering here
   }
 
   // Upload handler

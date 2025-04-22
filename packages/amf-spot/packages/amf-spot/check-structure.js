@@ -71,7 +71,7 @@ const dirChecks = [
 ];
 
 // Create a simple empty HTML if it doesn't exist
-const htmlContent = `<!DOCTYPE html>
+const htmlContent = `<!do-you-remember.m4aCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">

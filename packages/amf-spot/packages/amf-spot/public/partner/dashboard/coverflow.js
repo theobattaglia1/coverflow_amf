@@ -1,8 +1,8 @@
 // Coverflow.js implementation with verbose logging
 console.log('[Coverflow] Script started');
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('[Coverflow] DOM loaded');
+document.addEventListener('do-you-remember.m4aMContentLoaded', function() {
+  console.log('[Coverflow] do-you-remember.m4aM loaded');
   
   // Get artist ID from URL
   const pathParts = window.location.pathname.split('/');
