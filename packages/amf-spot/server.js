@@ -1,115 +1,194 @@
-require('dotenv').config();
-const express      = require('express');
-const path         = require('path');
-const bodyParser   = require('body-parser');
-const cookieParser = require('cookie-parser');
-const basicAuth    = require('express-basic-auth');
-const multer       = require('multer');
-const fs           = require('fs');
-const { google }   = require('googleapis');
-const logger       = require('./utils/logger');
+const express = require('express');
+const path = require('path');
+const basicAuth = require('express-basic-auth');
+const fs = require('fs');
+const multer = require('multer');
 
-const app  = express();
+// Configuration
+const app = express();
 const PORT = process.env.PORT || 3000;
 
-// — artist slugs
-const slugify     = n=>n.toLowerCase().replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
-const artistNames = (process.env.ARTISTS||'').split(',').map(s=>s.trim()).filter(Boolean);
-const artists     = artistNames.map(slugify);
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
-// — logging & parsers
-app.use((req,res,next)=>{ logger.info(`→ ${req.method} ${req.url}`); next(); });
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended:false }));
-app.use(cookieParser());
+// Logger middleware
+const logger = (req, res, next) => {
+  console.log(`[Server] ${new Date().toISOString()} - ${req.method} ${req.url}`);
+  next();
+};
+app.use(logger);
 
-// — protect only the ADMIN dashboard
-app.use('/admin', basicAuth({
-  users: { [process.env.ADMIN_USER||'admin']: process.env.ADMIN_PASS||'password' },
-  challenge: true
-}));
+// Setup multer for file uploads
+const upload = multer({ dest: 'uploads/' });
 
-// — ADMIN (editable) dashboard
-app.get('/admin/:artist/dashboard', (req,res)=>{
-  const a = req.params.artist;
-  if (!artists.includes(a)) return res.status(404).send('Not found');
-  res.sendFile(path.join(__dirname,'public','admin','dashboard','index.html'));
-});
-app.use('/admin/:artist/dashboard', (req,res,next)=>{
-  const a = req.params.artist;
-  if (!artists.includes(a)) return next();
-  express.static(path.join(__dirname,'public','admin','dashboard'))(req,res,next);
-});
+// IMPORTANT: Public routes BEFORE admin auth middleware
+// Serve static files for partner dashboard
+app.use('/:artist/dashboard', express.static(path.join(__dirname, 'public/partner/dashboard')));
 
-// — PARTNER (read‑only) dashboard
-app.get('/:artist/dashboard', (req,res)=>{
-  const a = req.params.artist;
-  if (!artists.includes(a)) return res.status(404).send('Not found');
-  res.sendFile(path.join(__dirname,'public','partner','dashboard','index.html'));
-});
-app.use('/:artist/dashboard', (req,res,next)=>{
-  const a = req.params.artist;
-  if (!artists.includes(a)) return next();
-  express.static(path.join(__dirname,'public','partner','dashboard'))(req,res,next);
+// Serve audio files
+app.use('/audio', express.static(path.join(__dirname, 'public/audio')));
+
+// API routes for partner dashboard (public routes)
+app.get('/api/:artist/calendar-events', (req, res) => {
+  const artist = req.params.artist;
+  console.log(`[Server] Calendar events for artist: ${artist}`);
+  
+  // Return dummy data
+  res.json({ 
+    artist, 
+    events: [
+      { id: 1, title: 'Concert', date: '2023-06-15' },
+      { id: 2, title: 'Recording', date: '2023-06-20' }
+    ] 
+  });
 });
 
-// — uploads
-fs.mkdirSync(path.join(__dirname,'uploads','audio'),  { recursive:true });
-fs.mkdirSync(path.join(__dirname,'uploads','images'), { recursive:true });
-app.use('/uploads', express.static(path.join(__dirname,'uploads')));
+app.get('/api/:artist/tasks', (req, res) => {
+  const artist = req.params.artist;
+  console.log(`[Server] Tasks for artist: ${artist}`);
+  
+  // Return dummy data
+  res.json({ 
+    artist, 
+    tasks: [
+      { id: 1, title: 'Prepare setlist', completed: false },
+      { id: 2, title: 'Confirm venue', completed: true }
+    ] 
+  });
+});
 
-// — in‑memory stores
-const tasksByArtist       = {};
-const nextTaskIdByArtist = {};
-const commentsByArtist   = {};
+app.get('/api/:artist/comments', (req, res) => {
+  const artist = req.params.artist;
+  console.log(`[Server] Comments for artist: ${artist}`);
+  
+  // Return dummy data
+  res.json({ 
+    artist, 
+    comments: [
+      { id: 1, text: 'Great show last night!', author: 'Manager' },
+      { id: 2, text: 'New track sounds amazing', author: 'Producer' }
+    ] 
+  });
+});
 
-// — Tasks API
-app.get('/api/:artist/tasks',      (req,res)=>{ const a=req.params.artist; if(!artists.includes(a))return res.status(404).json({error:'Artist not found'}); res.json(tasksByArtist[a]||[]); });
-app.post('/api/:artist/tasks',     (req,res)=>{ const a=req.params.artist; if(!artists.includes(a))return res.status(404).json({error:'Artist not found'}); nextTaskIdByArtist[a]=nextTaskIdByArtist[a]||1; const t={ id:nextTaskIdByArtist[a]++, title:req.body.title||'', date:req.body.date||new Date().toISOString() }; tasksByArtist[a]=tasksByArtist[a]||[]; tasksByArtist[a].push(t); res.status(201).json(t); });
-app.delete('/api/:artist/tasks/:id',(req,res)=>{ const a=req.params.artist, id=+req.params.id; if(!artists.includes(a))return res.status(404).json({error:'Artist not found'}); tasksByArtist[a]=(tasksByArtist[a]||[]).filter(x=>x.id!==id); res.status(204).send(); });
-
-// — Comments API
-app.get ('/api/:artist/comments', (req,res)=>{ const a=req.params.artist; if(!artists.includes(a))return res.status(404).json({error:'Artist not found'}); res.json(commentsByArtist[a]||[]); });
-app.post('/api/:artist/comments', (req,res)=>{ const a=req.params.artist; if(!artists.includes(a))return res.status(404).json({error:'Artist not found'}); commentsByArtist[a]=commentsByArtist[a]||[]; commentsByArtist[a].push(req.body); res.status(201).json(req.body); });
-
-// — Calendar (Google OAuth2)
-const oauth2Client = new google.auth.OAuth2(process.env.GOOGLE_CLIENT_ID, process.env.GOOGLE_CLIENT_SECRET, process.env.GOOGLE_REDIRECT_URI);
-const SCOPES = ['https://www.googleapis.com/auth/calendar.readonly'];
-app.get('/auth/google', (req,res)=>{ res.redirect(oauth2Client.generateAuthUrl({ access_type:'offline', scope:SCOPES })); });
-app.get('/oauth2callback', async (req,res)=>{ const { tokens } = await oauth2Client.getToken(req.query.code); res.cookie('google_tokens', JSON.stringify(tokens), { httpOnly:true }); res.redirect(`/admin/${artists[0]}/dashboard`); });
-app.get('/api/:artist/calendar-events', async (req,res)=>{
-  const a = req.params.artist;
-  if (!artists.includes(a)) return res.status(404).json({error:'Artist not found'});
-  const raw = req.cookies.google_tokens;
-  if (!raw) return res.status(401).json({error:'Unauthorized'});
-  oauth2Client.setCredentials(JSON.parse(raw));
+app.get('/api/:artist/audio-files', (req, res) => {
+  const artist = req.params.artist;
+  console.log(`[Server] Handling audio files request for artist: ${artist}`);
+  
   try {
-    const cal  = google.calendar({version:'v3',auth:oauth2Client});
-    const resp = await cal.events.list({ calendarId:'primary', timeMin:new Date().toISOString(), maxResults:10, singleEvents:true, orderBy:'startTime' });
-    const items = resp.data.items||[];
-    res.json(items.map(e=>({ summary:e.summary, start:e.start.dateTime||e.start.date, end:e.end.dateTime||e.end.date })));
-  } catch(_) {
-    res.status(500).json({error:'Failed to fetch events'});
+    // Return data for your actual audio files
+    res.json({
+      artist,
+      files: [
+        { id: 1, title: 'Do You Remember?', artist: 'AMF Studio', duration: '3:42', url: '/audio/DO YOU REMEMBER?.m4a', playlist: 'showcase' },
+        { id: 2, title: 'Get Out Of Town', artist: 'AMF Studio', duration: '4:15', url: '/audio/GetOutOfTown.V1.m4a', playlist: 'showcase' },
+        { id: 3, title: 'Linger', artist: 'AMF Studio', duration: '3:28', url: '/audio/Linger v1.m4a', playlist: 'showcase' },
+        { id: 4, title: 'Real Life', artist: 'AMF Studio', duration: '5:10', url: '/audio/REAL LIFE.wav', playlist: 'showcase' },
+        { id: 5, title: 'Texas', artist: 'AMF Studio', duration: '3:55', url: '/audio/TEXAS.m4a', playlist: 'showcase' }
+      ]
+    });
+  } catch (error) {
+    console.error('[Server] Error handling audio files request:', error);
+    res.status(500).json({ error: 'Failed to load audio files' });
   }
 });
 
-// — File uploads
-const audioUpload = multer({ dest:path.join(__dirname,'uploads','audio') });
-app.post('/api/:artist/upload-audio', audioUpload.single('file'), (req,res)=>{ if(!req.file) return res.status(400).json({error:'No file'}); res.status(201).json({ filename:req.file.filename, original:req.file.originalname }); });
-const imgUpload = multer({ dest:path.join(__dirname,'uploads','images') });
-app.post('/api/:artist/upload-image', imgUpload.single('file'), (req,res)=>{ if(!req.file) return res.status(400).json({error:'No file'}); res.status(201).json({ filename:req.file.filename, original:req.file.originalname }); });
+app.get('/api/:artist/image-files', (req, res) => {
+  const artist = req.params.artist;
+  console.log(`[Server] Image files for artist: ${artist}`);
+  
+  // Return dummy data
+  res.json({ 
+    artist, 
+    files: [
+      { id: 1, title: 'Promo Photo', url: 'https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15' },
+      { id: 2, title: 'Album Cover', url: 'https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15' }
+    ] 
+  });
+});
 
-// — List uploaded files
-app.get('/api/:artist/audio-files', (req,res)=>{ const a=req.params.artist; if(!artists.includes(a)) return res.status(404).json({error:'Artist not found'}); fs.readdir(path.join(__dirname,'uploads','audio',a),(e,f)=>res.json(e?[]:f)); });
-app.get('/api/:artist/image-files',(req,res)=>{ const a=req.params.artist; if(!artists.includes(a)) return res.status(404).json({error:'Artist not found'}); fs.readdir(path.join(__dirname,'uploads','images',a),(e,f)=>res.json(e?[]:f)); });
+// API routes for track comments
+app.get('/api/:artist/track-comments', (req, res) => {
+  const artist = req.params.artist;
+  console.log(`[Server] Handling track comments request for artist: ${artist}`);
+  
+  try {
+    // Return placeholder comment data
+    res.json({
+      artist,
+      comments: [
+        {
+          id: 1,
+          trackId: 1,
+          author: 'Producer',
+          date: '2025-04-10T14:22:00Z',
+          text: 'Great melody, but we might need to adjust the bass levels a bit.',
+          timestamp: 45.5
+        },
+        {
+          id: 2,
+          trackId: 1,
+          author: 'Marketing',
+          date: '2025-04-12T10:15:00Z',
+          text: 'Love the transition here, this would be perfect for the video intro!',
+          timestamp: 92.3
+        },
+        {
+          id: 3,
+          trackId: 2,
+          author: 'Producer',
+          date: '2025-04-15T16:30:00Z',
+          text: 'The synth progression here is amazing!'
+        }
+      ]
+    });
+  } catch (error) {
+    console.error('[Server] Error handling track comments request:', error);
+    res.status(500).json({ error: 'Failed to load track comments' });
+  }
+});
 
-// — Coverflow API
-app.get('/api/coverflow',(req,res)=>{ const p=path.join(__dirname,'data','coverflow.json'); if(!fs.existsSync(p)) fs.writeFileSync(p,'[]'); res.json(JSON.parse(fs.readFileSync(p))); });
-app.post('/api/coverflow', express.json(), (req,res)=>{ const p=path.join(__dirname,'data','coverflow.json'); fs.writeFileSync(p, JSON.stringify(req.body,null,2)); res.json({status:'ok'}); });
+app.post('/api/:artist/track-comments', (req, res) => {
+  const artist = req.params.artist;
+  console.log(`[Server] Handling save comments request for artist: ${artist}`);
+  
+  try {
+    // Log the received comments data
+    console.log('[Server] Received comments data:', req.body);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('[Server] Error handling save comments request:', error);
+    res.status(500).json({ error: 'Failed to save comments' });
+  }
+});
 
-// — 404 & error
-app.use((req,res)=>res.status(404).send('Not found'));
-app.use((err,req,res,next)=>{ console.error(err.stack); res.status(500).send('Server error'); });
+// Admin auth middleware - AFTER the public routes
+const adminAuth = basicAuth({
+  users: { 'admin': 'password' },
+  challenge: true,
+  realm: 'AMF Admin Area'
+});
 
-// — start
-app.listen(PORT,()=>logger.info(`Server listening on port ${PORT}`));
+// Apply basic auth only to admin routes
+app.use('/admin', adminAuth);
+
+// Admin routes - protected by basic auth
+app.use('/admin/:artist/dashboard', express.static(path.join(__dirname, 'public/admin/dashboard')));
+
+// Catch-all for undefined routes
+app.use((req, res) => {
+  console.log(`[Server] 404 - Route not found: ${req.url}`);
+  res.status(404).send('Not Found');
+});
+
+// Error handler
+app.use((err, req, res, next) => {
+  console.error(`[Server] Error: ${err.stack}`);
+  res.status(500).send('Something broke!');
+});
+
+// Start the server
+app.listen(PORT, () => {
+  console.log(`[Server] Server running on port ${PORT}`);
+});

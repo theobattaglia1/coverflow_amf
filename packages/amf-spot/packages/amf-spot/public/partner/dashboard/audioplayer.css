@@ -1,0 +1,818 @@
+/* Audio Player Styling */
+.audio-section {
+  margin: 40px 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+.audio-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+  position: relative;
+}
+
+/* Header */
+.audio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.audio-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.audio-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Playlist selector */
+.playlist-selector {
+  position: relative;
+  user-select: none;
+}
+
+.playlist-selected {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.playlist-selected:hover {
+  background: #eef0f5;
+}
+
+.playlist-selected span {
+  font-weight: 500;
+}
+
+.playlist-selected svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.2s ease;
+}
+
+.playlist-selected.open svg {
+  transform: rotate(180deg);
+}
+
+.playlist-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  width: 240px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  z-index: 10;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.2s ease;
+}
+
+.playlist-dropdown.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.playlist-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.playlist-item:hover {
+  background: #f5f7fa;
+}
+
+.playlist-item.active {
+  background: #f0f2f7;
+  font-weight: 500;
+}
+
+/* View Toggle */
+.view-toggle {
+  display: flex;
+  background: #f5f7fa;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.view-toggle button {
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.view-toggle button.active {
+  background: white;
+  color: #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Player layouts */
+.player-layouts {
+  position: relative;
+  min-height: 300px;
+}
+
+/* Grid View */
+.grid-view {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 16px;
+  transition: opacity 0.3s ease;
+}
+
+.grid-view.hidden {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+/* Track Cards */
+.track-card {
+  background: #f9f9fb;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.track-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.track-info {
+  padding: 16px;
+}
+
+.track-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.track-artist {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 16px 0;
+}
+
+/* Player Controls */
+.player-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.play-button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4d65ff;
+  color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.play-button:hover {
+  background: #3b50e0;
+  transform: scale(1.05);
+}
+
+.play-button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.progress-container {
+  flex-grow: 1;
+  position: relative;
+}
+
+.progress-bar {
+  height: 4px;
+  background: #e0e3eb;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+
+.progress-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: #4d65ff;
+  border-radius: 2px;
+  width: 0;
+}
+
+.time-display {
+  font-size: 12px;
+  color: #666;
+  min-width: 35px;
+  text-align: right;
+}
+
+/* Comment Button */
+.comment-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f5;
+  color: #666;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: 4px;
+}
+
+.comment-button:hover {
+  background: #e0e3eb;
+  color: #333;
+}
+
+.comment-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Circle View */
+.circle-view {
+  height: 460px;
+  position: relative;
+  transition: opacity 0.3s ease;
+}
+
+.circle-view.hidden {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  width: 100%;
+}
+
+.circle-container {
+  position: absolute;
+  width: 460px;
+  height: 460px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.circle-track {
+  position: absolute;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 1;
+}
+
+.circle-track:hover {
+  transform: scale(1.15);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+  z-index: 2;
+}
+
+.circle-track.active {
+  transform: scale(1.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  background: #4d65ff;
+  color: white;
+  z-index: 3;
+}
+
+.circle-track span {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.center-player {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  z-index: 0;
+}
+
+.center-track-title {
+  font-weight: 600;
+  font-size: 16px;
+  margin: 0 0 4px 0;
+  color: #333;
+}
+
+.center-track-artist {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 12px 0;
+}
+
+.center-play-button {
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4d65ff;
+  color: white;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 12px;
+}
+
+.center-play-button:hover {
+  background: #3b50e0;
+  transform: scale(1.05);
+}
+
+.center-play-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+.center-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.center-comment-button {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f0f0f5;
+  color: #666;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.center-comment-button:hover {
+  background: #e0e3eb;
+  color: #333;
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 30px;
+  border-top: 1px solid #eee;
+  padding-top: 20px;
+}
+
+.comments-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.comments-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.comment-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.comment-item {
+  display: flex;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.comment-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f0f0f5;
+  flex-shrink: 0;
+  margin-right: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-weight: 600;
+}
+
+.comment-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comment-content {
+  flex-grow: 1;
+  background: #f5f7fa;
+  border-radius: 0 12px 12px 12px;
+  padding: 12px 16px;
+  position: relative;
+}
+
+.comment-header {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 4px;
+}
+
+.comment-author {
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-right: 8px;
+}
+
+.comment-time {
+  font-size: 12px;
+  color: #888;
+}
+
+.comment-text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+  margin: 0;
+}
+
+.comment-timestamp {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(77, 101, 255, 0.1);
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-right: 8px;
+  cursor: pointer;
+  color: #4d65ff;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.comment-timestamp svg {
+  width: 12px;
+  height: 12px;
+  margin-right: 4px;
+}
+
+.comment-timestamp:hover {
+  background: rgba(77, 101, 255, 0.15);
+}
+
+.comment-actions {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.comment-item:hover .comment-actions {
+  opacity: 1;
+}
+
+.comment-edit, 
+.comment-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #888;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.comment-edit:hover, 
+.comment-delete:hover {
+  color: #333;
+}
+
+/* Comment Form */
+.comment-form {
+  display: flex;
+  margin-top: 16px;
+}
+
+.comment-form .comment-avatar {
+  margin-right: 12px;
+}
+
+.comment-input-container {
+  flex-grow: 1;
+  position: relative;
+}
+
+.comment-input {
+  width: 100%;
+  border: 1px solid #e0e3eb;
+  border-radius: 12px;
+  padding: 12px 100px 12px 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  transition: border-color 0.2s ease;
+  resize: none;
+  min-height: 24px;
+  max-height: 120px;
+  overflow-y: auto;
+  color: #333;
+}
+
+.comment-input:focus {
+  outline: none;
+  border-color: #4d65ff;
+}
+
+.comment-input-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.timestamp-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  background: #f0f0f5;
+  border: none;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s ease;
+}
+
+.timestamp-button:hover {
+  background: #e0e3eb;
+  color: #333;
+}
+
+.timestamp-button svg {
+  width: 14px;
+  height: 14px;
+}
+
+.submit-comment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #4d65ff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submit-comment:hover {
+  background: #3b50e0;
+}
+
+/* Dialog */
+.dialog-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.dialog-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.dialog {
+  background: white;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  transform: translateY(-20px);
+  transition: transform 0.3s ease;
+  padding: 24px;
+}
+
+.dialog-overlay.open .dialog {
+  transform: translateY(0);
+}
+
+.dialog-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.dialog-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.dialog-close {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 4px;
+  transition: color 0.2s ease;
+}
+
+.dialog-close:hover {
+  color: #333;
+}
+
+.dialog-body {
+  margin-bottom: 24px;
+}
+
+.dialog-form-group {
+  margin-bottom: 16px;
+}
+
+.dialog-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #444;
+}
+
+.dialog-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e0e3eb;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+}
+
+.dialog-input:focus {
+  outline: none;
+  border-color: #4d65ff;
+}
+
+.dialog-textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #e0e3eb;
+  border-radius: 6px;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s ease;
+}
+
+.dialog-textarea:focus {
+  outline: none;
+  border-color: #4d65ff;
+}
+
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.dialog-button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.dialog-button-secondary {
+  background: #f0f0f5;
+  color: #666;
+  border: none;
+}
+
+.dialog-button-secondary:hover {
+  background: #e0e3eb;
+  color: #333;
+}
+
+.dialog-button-primary {
+  background: #4d65ff;
+  color: white;
+  border: none;
+}
+
+.dialog-button-primary:hover {
+  background: #3b50e0;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .audio-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .audio-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .circle-container {
+    width: 100%;
+    height: 340px;
+  }
+  
+  .circle-track {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .center-player {
+    width: 140px;
+    height: 140px;
+  }
+}

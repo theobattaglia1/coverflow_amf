@@ -1,44 +1,31 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Public Dashboard</title>
-  <link rel="stylesheet" href="dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Artist Dashboard</title>
+  
+  <!-- Add Coverflow CSS -->
+  <link rel="stylesheet" href="coverflow.css">
+  
+  <!-- Include any existing CSS files your dashboard might have -->
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <h1>📊 Dashboard for <span id="artist-name"></span></h1>
-
-  <section>
-    <h2>Timeline</h2>
-    <ul id="tasks-list"></ul>
+  <!-- Add Coverflow Hero Section -->
+  <section id="coverflow-hero">
+    <!-- Coverflow content will be dynamically inserted here by coverflow.js -->
   </section>
-
-  <section>
-    <h2>Comments</h2>
-    <form id="comments-form">
-      <input id="comment-author" placeholder="Your name" required>
-      <input id="comment-text" placeholder="Your comment" required>
-      <button>Post</button>
-    </form>
-    <ul id="comments-list"></ul>
-  </section>
-
-  <section>
-    <h2>Audio</h2>
-    <ul id="audio-list"></ul>
-  </section>
-
-  <section>
-    <h2>Images</h2>
-    <ul id="images-list"></ul>
-  </section>
-
-  <section>
-    <h2>Upcoming Events</h2>
-    <button id="refresh-events">Refresh</button>
-    <ul id="events-list"></ul>
-  </section>
-
+  
+  <!-- Existing dashboard content - keep any existing content structure -->
+  <div id="dashboard-content">
+    <!-- Your existing dashboard content -->
+  </div>
+  
+  <!-- Include any existing JS files your dashboard might have -->
   <script src="dashboard.js"></script>
+  
+  <!-- Add Coverflow JS at the end to ensure it loads after other scripts -->
+  <script src="coverflow.js"></script>
 </body>
 </html>

@@ -1,0 +1,100 @@
+#coverflow-hero {
+  position: relative;
+  width: 100%;
+  height: 300px;
+  margin: 30px 0;
+  perspective: 1000px;
+  overflow: hidden;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.coverflow-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-style: preserve-3d;
+}
+
+.coverflow-item {
+  position: absolute;
+  width: 200px;
+  height: 200px;
+  transition: transform 0.5s ease, z-index 0.5s;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.coverflow-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.coverflow-title {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  text-align: center;
+  font-size: 14px;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.coverflow-item:hover .coverflow-title {
+  transform: translateY(0);
+}
+
+.coverflow-active {
+  z-index: 10;
+  transform: translateZ(50px) !important;
+}
+
+.coverflow-left {
+  transform-origin: left center;
+}
+
+.coverflow-right {
+  transform-origin: right center;
+}
+
+.coverflow-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.coverflow-nav:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.coverflow-prev {
+  left: 20px;
+}
+
+.coverflow-next {
+  right: 20px;
+}
