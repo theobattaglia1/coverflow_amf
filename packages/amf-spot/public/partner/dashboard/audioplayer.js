@@ -1,357 +1,280 @@
-// Audio Player Implementation
-console.log('[AudioPlayer] Script started');
+// FILE: audioplayer.js (multi-track safe hover + timestamp + animation + waveform)
 
-document.addEventListener('DOMContentLoaded', function() {
-  console.log('[AudioPlayer] DOM loaded');
-  
-  // Get artist ID from URL
-  const pathParts = window.location.pathname.split('/');
-  const artistIndex = pathParts.indexOf('dashboard') - 1;
-  const artist = pathParts[artistIndex] || 'default-artist';
-  console.log('[AudioPlayer] Artist name:', artist);
-  
-  // Create audio player section
-  createAudioPlayerSection();
-  
-  // Fetch audio files
-  fetchAudioFiles(artist);
-  
-  console.log('[AudioPlayer] Initialization complete');
+console.log('[AudioPlayer] Initializing...');
+
+document.addEventListener('DOMContentLoaded', async function () {
+  var container = document.getElementById('audio-player');
+  if (!container) return;
+
+  var artist = getArtistFromURL();
+  var data = await fetchJSON('/api/' + artist + '/audio-files');
+  var comments = await loadComments(artist);
+  var tracks = data.files || [];
+
+  container.innerHTML = '';
+  tracks.forEach(function (track, index) {
+    renderTrack(container, track, index, artist, comments);
+  });
 });
 
-function createAudioPlayerSection() {
-  console.log('[AudioPlayer] Creating audio player section');
-  
-  // Find the audio section - either use existing one or create new
-  let audioSection = document.querySelector('.audio');
-  
-  if (!audioSection) {
-    console.log('[AudioPlayer] Audio section not found, creating new one');
-    audioSection = document.createElement('div');
-    audioSection.className = 'audio';
-    
-    // Find an insertion point - after coverflow or before the first section
-    const coverflowHero = document.getElementById('coverflow-hero');
-    const firstSection = document.querySelector('section, .dashboard section, .comments, .tasks');
-    
-    if (coverflowHero && coverflowHero.nextElementSibling) {
-      coverflowHero.parentNode.insertBefore(audioSection, coverflowHero.nextElementSibling);
-      console.log('[AudioPlayer] Inserted after coverflow hero');
-    } else if (firstSection && firstSection.parentNode) {
-      firstSection.parentNode.insertBefore(audioSection, firstSection);
-      console.log('[AudioPlayer] Inserted before first section');
-    } else {
-      document.body.appendChild(audioSection);
-      console.log('[AudioPlayer] Appended to body as fallback');
+function renderTrack(container, track, index, artist, comments) {
+  var card = document.createElement('div');
+  card.className = 'audio-track';
+
+  var title = document.createElement('h3');
+  title.textContent = (index + 1) + '. ' + (track.title || 'Untitled');
+
+  var wrapper = document.createElement('div');
+  wrapper.className = 'audio-wrapper';
+
+  var canvas = document.createElement('canvas');
+  canvas.className = 'waveform';
+  canvas.width = 600;
+  canvas.height = 40;
+
+  var overlay = document.createElement('div');
+  overlay.className = 'comment-marker-container';
+
+  var ghost = document.createElement('div');
+  ghost.className = 'comment-ghost';
+  overlay.appendChild(ghost);
+
+  var player = document.createElement('audio');
+  player.src = encodeURI(track.url).replace(/\?/g, '');
+  player.controls = true;
+
+  overlay.addEventListener('mousemove', function (e) {
+    var rect = overlay.getBoundingClientRect();
+    var x = e.clientX - rect.left;
+    var percent = x / rect.width;
+    if (player.duration) {
+      ghost.style.left = (percent * 100) + '%';
+      ghost.dataset.time = (percent * player.duration).toFixed(2);
     }
-  } else {
-    console.log('[AudioPlayer] Found existing audio section');
-    // Clear existing content
-    audioSection.innerHTML = '';
-  }
-  
-  // Create audio player container
-  const container = document.createElement('div');
-  container.className = 'audio-player-container';
-  
-  // Create header with title and view toggles
-  const header = document.createElement('div');
-  header.className = 'audio-player-header';
-  
-  const title = document.createElement('h2');
-  title.className = 'audio-player-title';
-  title.textContent = 'Audio';
-  
-  const viewControls = document.createElement('div');
-  viewControls.className = 'audio-view-controls';
-  
-  const gridToggle = document.createElement('button');
-  gridToggle.className = 'view-toggle active';
-  gridToggle.dataset.view = 'grid';
-  gridToggle.textContent = 'Grid';
-  
-  const circleToggle = document.createElement('button');
-  circleToggle.className = 'view-toggle';
-  circleToggle.dataset.view = 'circle';
-  circleToggle.textContent = 'Circle';
-  
-  viewControls.appendChild(gridToggle);
-  viewControls.appendChild(circleToggle);
-  
-  header.appendChild(title);
-  header.appendChild(viewControls);
-  
-  // Create grid container
-  const grid = document.createElement('div');
-  grid.className = 'audio-player-grid';
-  
-  // Create circle view container
-  const circle = document.createElement('div');
-  circle.className = 'audio-player-circle';
-  
-  // Loading message
-  const loading = document.createElement('p');
-  loading.className = 'audio-loading';
-  loading.textContent = 'Loading audio tracks...';
-  grid.appendChild(loading);
-  
-  // Append everything to the container
-  container.appendChild(header);
-  container.appendChild(grid);
-  container.appendChild(circle);
-  
-  // Add to the audio section
-  audioSection.appendChild(container);
-  
-  // Add event listeners for view toggles
-  gridToggle.addEventListener('click', () => switchView('grid'));
-  circleToggle.addEventListener('click', () => switchView('circle'));
-  
-  console.log('[AudioPlayer] Audio player section created');
+  });
+
+  overlay.addEventListener('mouseleave', function () {
+    ghost.style.left = '-9999px';
+  });
+
+  var commentBox = document.createElement('div');
+  commentBox.className = 'comment-box';
+  commentBox.innerHTML =
+    '<input type="text" class="comment-input" placeholder="Add comment...">' +
+    '<button class="comment-submit">Post</button>';
+
+  var thread = document.createElement('div');
+  thread.className = 'comment-thread';
+
+  var input = commentBox.querySelector('.comment-input');
+  var submit = commentBox.querySelector('.comment-submit');
+
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submit.click();
+    }
+  });
+
+  submit.onclick = function () {
+    var text = input.value.trim();
+    if (!text) return;
+
+    var t = parseFloat(input.dataset.timestamp || player.currentTime);
+
+    var comment = {
+      id: Date.now(),
+      trackId: track.id,
+      text: text,
+      timestamp: t,
+      author: 'User',
+      date: new Date().toISOString(),
+      parentId: input.dataset.replyTo ? parseInt(input.dataset.replyTo) : null
+    };
+
+    input.value = '';
+    delete input.dataset.replyTo;
+    delete input.dataset.timestamp;
+
+    comments.push(comment);
+    saveComments(artist, comments);
+    rerenderThread(thread, comments, artist, track.id);
+  };
+
+  drawFakeWaveform(canvas);
+
+  wrapper.append(canvas, overlay, player);
+  card.append(title, wrapper, commentBox, thread);
+  container.appendChild(card);
+
+  rerenderThread(thread, comments, artist, track.id);
+
+  // 👇 Key listener scoped per track (fixes multi-audio)
+  document.addEventListener('keydown', function (e) {
+    if (e.code === 'KeyC' && ghost && input) {
+      e.preventDefault();
+      var t = parseFloat(ghost.dataset.time);
+      if (!isNaN(t)) {
+        input.dataset.timestamp = t;
+        input.placeholder = 'Comment at ' + formatTime(t);
+        ghost.classList.add('active');
+        setTimeout(function () {
+          ghost.classList.remove('active');
+        }, 300);
+        input.focus();
+      }
+    }
+  });
 }
 
-function fetchAudioFiles(artist) {
-  console.log(`[AudioPlayer] Fetching audio files for artist: ${artist}`);
-  
-  fetch(`/api/${artist}/audio-files`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
+function rerenderThread(thread, comments, artist, trackId) {
+  thread.innerHTML = '';
+  comments
+    .filter(function (c) { return c.trackId === trackId && !c.parentId; })
+    .forEach(function (parent) {
+      var el = buildCommentEl(parent, comments, artist, thread, trackId);
+      thread.appendChild(el);
+
+      var replies = comments.filter(function (r) { return r.parentId === parent.id; });
+      if (replies.length > 0) {
+        var toggle = document.createElement('button');
+        toggle.textContent = 'Show ' + replies.length + ' replies';
+        toggle.className = 'reply-toggle';
+        toggle.onclick = function () {
+          toggle.remove();
+          replies.forEach(function (reply) {
+            thread.appendChild(buildCommentEl(reply, comments, artist, thread, trackId, true));
+          });
+        };
+        thread.appendChild(toggle);
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log('[AudioPlayer] Audio data received:', data);
-      
-      // If no audio files or empty response, use placeholder data
-      const audioFiles = data.files && data.files.length > 0 ? data.files : [
-        { id: 1, title: 'Demo Track 1', url: '/audio/track1.mp3', duration: '3:45', artist: 'Artist Name' },
-        { id: 2, title: 'Demo Track 2', url: '/audio/track2.mp3', duration: '2:58', artist: 'Artist Name' },
-        { id: 3, title: 'Demo Track 3', url: '/audio/track3.mp3', duration: '4:12', artist: 'Artist Name' },
-        { id: 4, title: 'Demo Track 4', url: '/audio/track4.mp3', duration: '3:24', artist: 'Artist Name' }
-      ];
-      
-      renderAudioTracks(audioFiles);
-    })
-    .catch(error => {
-      console.error('[AudioPlayer] Error fetching audio files:', error);
-      
-      // Use placeholder data on error
-      const placeholderFiles = [
-        { id: 1, title: 'Demo Track 1', url: '/audio/track1.mp3', duration: '3:45', artist: 'Artist Name' },
-        { id: 2, title: 'Demo Track 2', url: '/audio/track2.mp3', duration: '2:58', artist: 'Artist Name' },
-        { id: 3, title: 'Demo Track 3', url: '/audio/track3.mp3', duration: '4:12', artist: 'Artist Name' },
-        { id: 4, title: 'Demo Track 4', url: '/audio/track4.mp3', duration: '3:24', artist: 'Artist Name' }
-      ];
-      
-      renderAudioTracks(placeholderFiles);
+    });
+}
+
+function buildCommentEl(comment, comments, artist, thread, trackId, isReply) {
+  var el = document.createElement('div');
+  el.className = 'comment-item' + (isReply ? ' reply' : '');
+  el.dataset.id = comment.id;
+
+  var meta = document.createElement('small');
+  meta.textContent = '⏱️ ' + formatTime(comment.timestamp) + ' • ' + timeAgo(comment.date);
+
+  var text = document.createElement('p');
+  text.textContent = comment.text;
+
+  var replyBtn = document.createElement('button');
+  replyBtn.textContent = '↪️ Reply';
+  replyBtn.onclick = function () {
+    var input = thread.closest('.audio-track').querySelector('.comment-input');
+    input.dataset.replyTo = comment.id;
+    input.focus();
+  };
+
+  el.append(meta, text, replyBtn);
+  return el;
+}
+
+function timeAgo(dateStr) {
+  var seconds = Math.floor((Date.now() - new Date(dateStr)) / 1000);
+  var minutes = Math.floor(seconds / 60);
+  var hours = Math.floor(minutes / 60);
+  if (minutes < 1) return 'just now';
+  if (minutes < 60) return minutes + ' min ago';
+  if (hours < 24) return hours + ' hr ago';
+  return new Date(dateStr).toLocaleDateString();
+}
+
+function drawFakeWaveform(canvas) {
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#ddd';
+  for (var i = 0; i < canvas.width; i += 4) {
+    var h = 10 + Math.random() * 20;
+    ctx.fillRect(i, (canvas.height - h) / 2, 2, h);
+  }
+}
+
+function getArtistFromURL() {
+  var parts = window.location.pathname.split('/');
+  return parts[parts.indexOf('dashboard') - 1] || 'default-artist';
+}
+
+async function fetchJSON(url) {
+  var res = await fetch(url);
+  if (!res.ok) throw new Error('Failed to fetch ' + url);
+  return await res.json();
+}
+
+async function loadComments() {
+  return [];
+}
+
+function saveComments(artist, comments) {
+  // store via API or localStorage
+}
+
+function formatTime(sec) {
+  var m = Math.floor(sec / 60);
+  var s = Math.floor(sec % 60).toString().padStart(2, '0');
+  return m + ':' + s;
+}
+
+// Add this to rerenderThread() to create visible marker buttons
+function injectCommentMarkers(wrapper, comments, player, thread, trackId) {
+  // Remove old markers first
+  var oldMarkers = wrapper.querySelectorAll('.comment-jump-marker');
+  oldMarkers.forEach(function (m) { m.remove(); });
+
+  comments
+    .filter(function (c) { return c.trackId === trackId && c.timestamp !== null; })
+    .forEach(function (comment) {
+      var marker = document.createElement('div');
+      marker.className = 'comment-jump-marker';
+      marker.style.left = (comment.timestamp / player.duration * 100) + '%';
+      marker.title = comment.text;
+
+      marker.onclick = function () {
+        player.currentTime = comment.timestamp;
+        var target = thread.querySelector('[data-id="' + comment.id + '"]');
+        if (target) {
+          target.classList.add('highlight');
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(function () {
+            target.classList.remove('highlight');
+          }, 1000);
+        }
+      };
+
+      wrapper.querySelector('.comment-marker-container').appendChild(marker);
     });
 }
 
-function renderAudioTracks(tracks) {
-  console.log('[AudioPlayer] Rendering audio tracks:', tracks.length);
-  
-  const grid = document.querySelector('.audio-player-grid');
-  const circle = document.querySelector('.audio-player-circle');
-  
-  // Clear loading message and existing content
-  grid.innerHTML = '';
-  circle.innerHTML = '';
-  
-  // Create tracks for grid view
-  tracks.forEach(track => {
-    // Create track card for grid view
-    const trackCard = document.createElement('div');
-    trackCard.className = 'audio-track';
-    trackCard.dataset.id = track.id;
-    
-    const trackInfo = document.createElement('div');
-    trackInfo.className = 'audio-track-info';
-    
-    const trackTitle = document.createElement('h3');
-    trackTitle.className = 'audio-track-title';
-    trackTitle.textContent = track.title;
-    
-    const trackMeta = document.createElement('p');
-    trackMeta.className = 'audio-track-meta';
-    trackMeta.textContent = track.duration + ' · ' + (track.artist || 'Unknown Artist');
-    
-    // Create audio player
-    const audioPlayer = document.createElement('audio');
-    audioPlayer.className = 'custom-audio-player';
-    audioPlayer.src = track.url;
-    audioPlayer.preload = 'metadata';
-    
-    // Create custom controls
-    const controls = document.createElement('div');
-    controls.className = 'audio-controls';
-    
-    const playButton = document.createElement('button');
-    playButton.className = 'play-button';
-    playButton.innerHTML = '▶';
-    
-    const progressBar = document.createElement('div');
-    progressBar.className = 'progress-bar';
-    
-    const progressFill = document.createElement('div');
-    progressFill.className = 'progress-fill';
-    
-    const timeDisplay = document.createElement('div');
-    timeDisplay.className = 'time-display';
-    timeDisplay.textContent = '0:00';
-    
-    // Assemble controls
-    progressBar.appendChild(progressFill);
-    controls.appendChild(playButton);
-    controls.appendChild(progressBar);
-    controls.appendChild(timeDisplay);
-    
-    // Assemble track card
-    trackInfo.appendChild(trackTitle);
-    trackInfo.appendChild(trackMeta);
-    trackInfo.appendChild(audioPlayer);
-    trackInfo.appendChild(controls);
-    trackCard.appendChild(trackInfo);
-    
-    // Add to grid
-    grid.appendChild(trackCard);
-    
-    // Create circle view item
-    const circleItem = document.createElement('div');
-    circleItem.className = 'circle-track';
-    circleItem.dataset.id = track.id;
-    circleItem.dataset.title = track.title;
-    circleItem.dataset.url = track.url;
-    
-    // Position circle items in a circle
-    const angle = (2 * Math.PI * tracks.indexOf(track)) / tracks.length;
-    const radius = 180; // Circle radius
-    const centerX = 250;
-    const centerY = 250;
-    
-    const x = centerX + radius * Math.cos(angle);
-    const y = centerY + radius * Math.sin(angle);
-    
-    circleItem.style.left = `${x - 40}px`; // 40 = half of the item width
-    circleItem.style.top = `${y - 40}px`; // 40 = half of the item height
-    
-    // Add track number
-    circleItem.textContent = tracks.indexOf(track) + 1;
-    
-    // Add to circle view
-    circle.appendChild(circleItem);
-    
-    // Add event listeners
-    setupAudioEventListeners(trackCard, audioPlayer, playButton, progressBar, progressFill, timeDisplay);
-    
-    // Add click event for circle items
-    circleItem.addEventListener('click', function() {
-      // Remove active class from all items
-      document.querySelectorAll('.circle-track').forEach(item => {
-        item.classList.remove('active');
-      });
-      
-      // Add active class to clicked item
-      this.classList.add('active');
-      
-      // Play the corresponding audio
-      const audioId = this.dataset.id;
-      const gridItem = document.querySelector(`.audio-track[data-id="${audioId}"]`);
-      if (gridItem) {
-        const audio = gridItem.querySelector('audio');
-        const button = gridItem.querySelector('.play-button');
-        if (audio && button) {
-          if (audio.paused) {
-            playAudio(audio, button);
-          } else {
-            pauseAudio(audio, button);
-          }
-        }
+// Replace your rerenderThread() function with this updated version
+function rerenderThread(thread, comments, artist, trackId) {
+  thread.innerHTML = '';
+  var wrapper = thread.closest('.audio-track').querySelector('.audio-wrapper');
+  var player = wrapper.querySelector('audio');
+
+  comments
+    .filter(function (c) { return c.trackId === trackId && !c.parentId; })
+    .forEach(function (parent) {
+      var el = buildCommentEl(parent, comments, artist, thread, trackId);
+      thread.appendChild(el);
+
+      var replies = comments.filter(function (r) { return r.parentId === parent.id; });
+      if (replies.length > 0) {
+        var toggle = document.createElement('button');
+        toggle.textContent = 'Show ' + replies.length + ' replies';
+        toggle.className = 'reply-toggle';
+        toggle.onclick = function () {
+          toggle.remove();
+          replies.forEach(function (reply) {
+            thread.appendChild(buildCommentEl(reply, comments, artist, thread, trackId, true));
+          });
+        };
+        thread.appendChild(toggle);
       }
     });
-  });
-  
-  console.log('[AudioPlayer] Tracks rendered successfully');
-}
 
-function setupAudioEventListeners(trackCard, audio, playButton, progressBar, progressFill, timeDisplay) {
-  // Play/pause button
-  playButton.addEventListener('click', function() {
-    if (audio.paused) {
-      // Pause all other playing audio
-      document.querySelectorAll('.custom-audio-player').forEach(player => {
-        if (player !== audio && !player.paused) {
-          player.pause();
-          const btn = player.parentNode.querySelector('.play-button');
-          if (btn) btn.innerHTML = '▶';
-        }
-      });
-      
-      playAudio(audio, playButton);
-    } else {
-      pauseAudio(audio, playButton);
-    }
-  });
-  
-  // Update progress as audio plays
-  audio.addEventListener('timeupdate', function() {
-    if (audio.duration) {
-      const percent = (audio.currentTime / audio.duration) * 100;
-      progressFill.style.width = `${percent}%`;
-      
-      // Update time display
-      const currentMinutes = Math.floor(audio.currentTime / 60);
-      const currentSeconds = Math.floor(audio.currentTime % 60).toString().padStart(2, '0');
-      timeDisplay.textContent = `${currentMinutes}:${currentSeconds}`;
-    }
-  });
-  
-  // Click on progress bar to seek
-  progressBar.addEventListener('click', function(e) {
-    const rect = progressBar.getBoundingClientRect();
-    const pos = (e.clientX - rect.left) / rect.width;
-    audio.currentTime = pos * audio.duration;
-  });
-  
-  // When audio ends
-  audio.addEventListener('ended', function() {
-    playButton.innerHTML = '▶';
-    progressFill.style.width = '0%';
-    timeDisplay.textContent = '0:00';
-  });
-}
-
-function playAudio(audio, button) {
-  audio.play();
-  button.innerHTML = '❚❚';
-}
-
-function pauseAudio(audio, button) {
-  audio.pause();
-  button.innerHTML = '▶';
-}
-
-function switchView(viewType) {
-  console.log(`[AudioPlayer] Switching to ${viewType} view`);
-  
-  const grid = document.querySelector('.audio-player-grid');
-  const circle = document.querySelector('.audio-player-circle');
-  const gridToggle = document.querySelector('.view-toggle[data-view="grid"]');
-  const circleToggle = document.querySelector('.view-toggle[data-view="circle"]');
-  
-  // Update toggle buttons
-  gridToggle.classList.remove('active');
-  circleToggle.classList.remove('active');
-  
-  if (viewType === 'grid') {
-    grid.style.display = 'grid';
-    circle.style.display = 'none';
-    gridToggle.classList.add('active');
-  } else {
-    grid.style.display = 'none';
-    circle.style.display = 'block';
-    circleToggle.classList.add('active');
-  }
-  
-  console.log(`[AudioPlayer] View switched to ${viewType}`);
+  // Inject markers above waveform 🎯
+  injectCommentMarkers(wrapper, comments, player, thread, trackId);
 }

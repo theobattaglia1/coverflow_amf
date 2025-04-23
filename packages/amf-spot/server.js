@@ -191,7 +191,7 @@ app.get("/api/:artist/showcase", (req, res) => {
       {
         type: "video",
         title: "Fallback Video",
-        src: "/video/sample.mp4"
+        src: "https://www.youtube.com/watch?v=Qb9ljnyTxoM"
       },
       {
         type: "image",
@@ -230,7 +230,7 @@ app.get('/api/:artist/showcase', (req, res) => {
       {
         type: 'video',
         title: 'Fallback Video',
-        src: '/video/sample.mp4'
+        src: 'https://www.youtube.com/watch?v=Qb9ljnyTxoM'
       },
       {
         type: 'image',

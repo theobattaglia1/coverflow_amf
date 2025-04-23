@@ -1,1 +1,116 @@
-/* Your full comment styles CSS here */
+/* FILE: comment-styles.css */
+
+.comment-wrapper {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #eee;
+  align-items: flex-start;
+}
+
+.comment-wrapper.reply-comment {
+  margin-left: 1.5rem;
+  opacity: 0.85;
+}
+
+.comment-avatar {
+  background: #4d65ff;
+  color: #fff;
+  font-weight: 600;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  text-align: center;
+  line-height: 24px;
+  font-size: 0.75rem;
+}
+
+.comment-body {
+  flex: 1;
+}
+
+.comment-meta {
+  font-size: 0.75rem;
+  color: #999;
+  margin-bottom: 0.25rem;
+}
+
+.comment-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.comment-actions button {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.comment-actions button:hover {
+  color: #000;
+}
+
+.highlight {
+  background: #fffcdf;
+  transition: background 0.3s ease;
+}
+
+.comment-marker-container {
+  position: relative;
+  height: 6px;
+  background: #e0e0e0;
+  margin: 6px 0;
+  border-radius: 3px;
+}
+
+.comment-marker {
+  position: absolute;
+  top: 0;
+  width: 6px;
+  height: 6px;
+  background: #4d65ff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+}
+
+.comment-ghost {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #4d65ff;
+  transform: translateX(-50%);
+  opacity: 0.7;
+  transition: opacity 0.2s, background 0.2s;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.comment-ghost.active {
+  background: #6c84ff;
+  opacity: 1;
+  animation: ghostPulse 0.4s ease;
+}
+
+@keyframes ghostPulse {
+  0% { opacity: 0.5; }
+  50% { opacity: 1; background: #819dff; }
+  100% { opacity: 0.7; background: #4d65ff; }
+}
+
+.comment-jump-marker {
+  position: absolute;
+  top: -6px;
+  width: 6px;
+  height: 6px;
+  background: #4d65ff;
+  border-radius: 50%;
+  transform: translateX(-50%);
+  cursor: pointer;
+  z-index: 10;
+}

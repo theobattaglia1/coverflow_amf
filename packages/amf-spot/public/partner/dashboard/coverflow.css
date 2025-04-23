@@ -1,11 +1,11 @@
-/* File: public/partner/dashboard/coverflow.css */
+/* FILE: coverflow.css */
 
 .coverflow {
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow-x: auto;
   gap: 1.5rem;
+  overflow-x: auto;
   padding: 1rem 0;
   scroll-behavior: smooth;
 }
@@ -15,15 +15,13 @@
 }
 
 .coverflow-image {
-  position: relative;
   flex: 0 0 auto;
+  transform: scale(0.9);
   transition: transform 0.3s ease, opacity 0.3s ease;
-  transform: scale(0.95);
   opacity: 0.8;
-  cursor: pointer;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
 .coverflow-image:hover {
@@ -33,8 +31,8 @@
 }
 
 .coverflow-image img {
-  max-height: 260px;
   display: block;
+  max-height: 220px;
   object-fit: cover;
   border-radius: 12px;
 }

@@ -1,3 +1,11 @@
+#!/bin/bash
+
+echo '⚠️ Replacing all dashboard files with clean verified versions...'
+
+mkdir -p public/partner/dashboard
+
+# INDEX
+cat > public/partner/dashboard/index.html << 'HTML'
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -57,3 +65,4 @@
   <script src="audioplayer.js"></script>
 </body>
 </html>
+HTML

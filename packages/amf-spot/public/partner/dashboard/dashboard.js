@@ -1,8 +1,9 @@
+// FILE: dashboard.js
+
 console.log('[Dashboard] Script loaded');
 
 document.addEventListener('DOMContentLoaded', async () => {
   console.log('[Dashboard] DOM loaded');
-
   const artist = window.location.pathname.split('/')[1];
 
   try {
@@ -33,6 +34,7 @@ async function fetchJSON(url) {
 
 function renderTasks(tasks) {
   const container = document.querySelector('#tasks');
+  if (!container) return;
   container.innerHTML = '';
 
   (tasks?.slice(0, 5) || []).forEach(task => {
@@ -45,6 +47,7 @@ function renderTasks(tasks) {
 
 function renderComments(data) {
   const container = document.querySelector('#comments');
+  if (!container) return;
   container.innerHTML = '';
 
   const manager = document.createElement('div');
@@ -58,6 +61,7 @@ function renderComments(data) {
 
 function renderImages(imageData) {
   const container = document.querySelector('#carousel');
+  if (!container) return;
   container.innerHTML = '';
 
   if (!Array.isArray(imageData?.files)) {
@@ -66,9 +70,9 @@ function renderImages(imageData) {
   }
 
   imageData.files.forEach(file => {
-    const fileName = typeof file === 'string' ? file : file.url || file.filename;
+    const src = typeof file === 'string' ? `/images/${file}` : file.url || '/images/fallback.jpg';
     const img = document.createElement('img');
-    img.src = fileName.startsWith('http') ? fileName : `/images/${fileName}`;
+    img.src = src;
     img.className = 'carousel-img';
     container.appendChild(img);
   });
@@ -76,6 +80,7 @@ function renderImages(imageData) {
 
 function renderEvents(events) {
   const container = document.querySelector('#events-section');
+  if (!container) return;
   container.innerHTML = '';
 
   (events || []).forEach(ev => {
