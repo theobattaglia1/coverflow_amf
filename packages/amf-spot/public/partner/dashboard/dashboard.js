@@ -8,10 +8,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   try {
     const [tasksRes, comments, images, eventsRes] = await Promise.all([
-      fetchJSON(`/api/${artist}/tasks`),
-      fetchJSON(`/api/${artist}/comments`),
-      fetchJSON(`/api/${artist}/image-files`),
-      fetchJSON(`/api/${artist}/calendar-events`)
     ]);
 
     const tasks = tasksRes.tasks ?? tasksRes;

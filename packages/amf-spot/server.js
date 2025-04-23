@@ -13,162 +13,49 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Logger middleware
-const logger = (req, res, next) => {
+// Logger
+app.use((req, res, next) => {
   console.log(`[Server] ${new Date().toISOString()} - ${req.method} ${req.url}`);
   next();
-};
-app.use(logger);
+});
 
-// Setup multer for file uploads
+// File uploads
 const upload = multer({ dest: 'uploads/' });
 
-// IMPORTANT: Public routes BEFORE admin auth middleware
-// Serve static files for partner dashboard
+// Static routes BEFORE auth
 app.use('/:artist/dashboard', express.static(path.join(__dirname, 'public/partner/dashboard')));
-
-// Serve audio files
 app.use('/audio', express.static(path.join(__dirname, 'public/audio')));
 
-// API routes for partner dashboard (public routes)
-});
-
-});
-
-});
-
+// Audio API
 app.get('/api/:artist/audio-files', (req, res) => {
   const artist = req.params.artist;
   console.log(`[Server] Handling audio files request for artist: ${artist}`);
-  
-  try {
-    // Return data for your actual audio files
-    res.json({
-      artist,
-      files: [
-        { id: 1, title: 'Do You Remember?', artist: 'AMF Studio', duration: '3:42', url: '/audio/do-you-remember.m4a', playlist: 'showcase' },
-        { id: 2, title: 'Get Out Of Town', artist: 'AMF Studio', duration: '4:15', url: '/audio/getoutoftown.v1.m4a', playlist: 'showcase' },
-        { id: 3, title: 'linger-v1.m4a', artist: 'AMF Studio', duration: '3:28', url: '/audio/linger-v1.m4a', playlist: 'showcase' },
-        { id: 4, title: 'Real Life', artist: 'AMF Studio', duration: '5:10', url: '/audio/real-life.wav', playlist: 'showcase' },
-        { id: 5, title: 'Texas', artist: 'AMF Studio', duration: '3:55', url: '/audio/texas.m4a', playlist: 'showcase' }
-      ]
-    });
-  } catch (error) {
-    console.error('[Server] Error handling audio files request:', error);
-    res.status(500).json({ error: 'Failed to load audio files' });
-  }
-});
-
-});
-
-// API routes for track comments
-app.get('/api/:artist/track-comments', (req, res) => {
-  const artist = req.params.artist;
-  console.log(`[Server] Handling track comments request for artist: ${artist}`);
-  
-  try {
-    // Return placeholder comment data
-    res.json({
-      artist,
-      comments: [
-        {
-          id: 1,
-          trackId: 1,
-          author: 'Producer',
-          date: '2025-04-10T14:22:00Z',
-          text: 'Great melody, but we might need to adjust the bass levels a bit.',
-          timestamp: 45.5
-        },
-        {
-          id: 2,
-          trackId: 1,
-          author: 'Marketing',
-          date: '2025-04-12T10:15:00Z',
-          text: 'Love the transition here, this would be perfect for the video intro!',
-          timestamp: 92.3
-        },
-        {
-          id: 3,
-          trackId: 2,
-          author: 'Producer',
-          date: '2025-04-15T16:30:00Z',
-          text: 'The synth progression here is amazing!'
-        }
-      ]
-    });
-  } catch (error) {
-    console.error('[Server] Error handling track comments request:', error);
-    res.status(500).json({ error: 'Failed to load track comments' });
-  }
-});
-
-app.post('/api/:artist/track-comments', (req, res) => {
-  const artist = req.params.artist;
-  console.log(`[Server] Handling save comments request for artist: ${artist}`);
-  
-  try {
-    // Log the received comments data
-    console.log('[Server] Received comments data:', req.body);
-    res.json({ success: true });
-  } catch (error) {
-    console.error('[Server] Error handling save comments request:', error);
-    res.status(500).json({ error: 'Failed to save comments' });
-  }
-});
-
-// Admin auth middleware - AFTER the public routes
-const adminAuth = basicAuth({
-  users: { 'admin': 'password' },
-  challenge: true,
-  realm: 'AMF Admin Area'
-});
-
-// Apply basic auth only to admin routes
-app.use('/admin', adminAuth);
-
-// Admin routes - protected by basic auth
-app.use('/admin/:artist/dashboard', express.static(path.join(__dirname, 'public/admin/dashboard')));
-
-// Fallback showcase route
-app.get("/api/:artist/showcase", (req, res) => {
-  console.log(`[Server] Serving fallback showcase for ${req.params.artist}`);
   res.json({
-    artist: req.params.artist,
-    media: [
-      {
-        type: "image",
-        title: "Fallback Image",
-        src: "https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15"
-      },
-      {
-        type: "video",
-        title: "Fallback Video",
-        src: "https://www.youtube.com/watch?v=Qb9ljnyTxoM"
-      },
-      {
-        type: "image",
-        title: "Artwork A",
-        src: "https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15"
-      }
+    artist,
+    files: [
+      { id: 1, title: 'Do You Remember?', artist: 'AMF Studio', duration: '3:42', url: '/audio/do-you-remember.m4a' },
+      { id: 2, title: 'Get Out Of Town', artist: 'AMF Studio', duration: '4:15', url: '/audio/getoutoftown.v1.m4a' },
+      { id: 3, title: 'linger-v1.m4a', artist: 'AMF Studio', duration: '3:28', url: '/audio/linger-v1.m4a' },
+      { id: 4, title: 'Real Life', artist: 'AMF Studio', duration: '5:10', url: '/audio/real-life.wav' },
+      { id: 5, title: 'Texas', artist: 'AMF Studio', duration: '3:55', url: '/audio/texas.m4a' }
     ]
   });
 });
 
-
-
-// Catch-all for undefined routes
-app.use((req, res) => {
-  console.log(`[Server] 404 - Route not found: ${req.url}`);
-  res.status(404).send('Not Found');
+// Comments API
+app.get('/api/:artist/track-comments', (req, res) => {
+  res.json({
+    artist: req.params.artist,
+    comments: []
+  });
 });
 
-
-// Start the server
-app.listen(PORT, () => {
-  console.log(`[Server] Server running on port ${PORT}`);
+app.post('/api/:artist/track-comments', (req, res) => {
+  console.log('[Server] Received comments:', req.body);
+  res.json({ success: true });
 });
 
-// TEMP: Showcase fallback route
+// Showcase fallback
 app.get('/api/:artist/showcase', (req, res) => {
   console.log(`[Server] Serving fallback showcase for ${req.params.artist}`);
   res.json({
@@ -191,4 +78,25 @@ app.get('/api/:artist/showcase', (req, res) => {
       }
     ]
   });
+});
+
+// Admin auth + route
+const adminAuth = basicAuth({
+  users: { admin: 'password' },
+  challenge: true,
+  realm: 'AMF Admin Area'
+});
+
+app.use('/admin', adminAuth);
+app.use('/admin/:artist/dashboard', express.static(path.join(__dirname, 'public/admin/dashboard')));
+
+// Catch-all
+app.use((req, res) => {
+  console.log(`[Server] 404 - Route not found: ${req.url}`);
+  res.status(404).send('Not Found');
+});
+
+// Start server
+app.listen(PORT, () => {
+  console.log(`[Server] Server running on port ${PORT}`);
 });
