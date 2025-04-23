@@ -31,46 +31,10 @@ app.use('/:artist/dashboard', express.static(path.join(__dirname, 'public/partne
 app.use('/audio', express.static(path.join(__dirname, 'public/audio')));
 
 // API routes for partner dashboard (public routes)
-app.get('/api/:artist/calendar-events', (req, res) => {
-  const artist = req.params.artist;
-  console.log(`[Server] Calendar events for artist: ${artist}`);
-  
-  // Return dummy data
-  res.json({ 
-    artist, 
-    events: [
-      { id: 1, title: 'Concert', date: '2023-06-15' },
-      { id: 2, title: 'Recording', date: '2023-06-20' }
-    ] 
-  });
 });
 
-app.get('/api/:artist/tasks', (req, res) => {
-  const artist = req.params.artist;
-  console.log(`[Server] Tasks for artist: ${artist}`);
-  
-  // Return dummy data
-  res.json({ 
-    artist, 
-    tasks: [
-      { id: 1, title: 'Prepare setlist', completed: false },
-      { id: 2, title: 'Confirm venue', completed: true }
-    ] 
-  });
 });
 
-app.get('/api/:artist/comments', (req, res) => {
-  const artist = req.params.artist;
-  console.log(`[Server] Comments for artist: ${artist}`);
-  
-  // Return dummy data
-  res.json({ 
-    artist, 
-    comments: [
-      { id: 1, text: 'Great show last night!', author: 'Manager' },
-      { id: 2, text: 'New track sounds amazing', author: 'Producer' }
-    ] 
-  });
 });
 
 app.get('/api/:artist/audio-files', (req, res) => {
@@ -95,18 +59,6 @@ app.get('/api/:artist/audio-files', (req, res) => {
   }
 });
 
-app.get('/api/:artist/image-files', (req, res) => {
-  const artist = req.params.artist;
-  console.log(`[Server] Image files for artist: ${artist}`);
-  
-  // Return dummy data
-  res.json({ 
-    artist, 
-    files: [
-      { id: 1, title: 'Promo Photo', url: 'https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15' },
-      { id: 2, title: 'Album Cover', url: 'https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15' }
-    ] 
-  });
 });
 
 // API routes for track comments
