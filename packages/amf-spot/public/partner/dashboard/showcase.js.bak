@@ -1,0 +1,107 @@
+// 🚨 FULL DEBUG SHOWCASE.JS
+console.log('🚀 [SHOWCASE] script loaded from:', document.currentScript.src);
+document.addEventListener('DOMContentLoaded', function() {
+  console.log('🚀 [SHOWCASE] DOMContentLoaded');
+  var container = document.getElementById('showcase');
+  if (!container) {
+    console.error('❌ [SHOWCASE] #showcase not found');
+    return;
+  }
+  console.log('✅ [SHOWCASE] container:', container);
+
+  // style & dims
+  container.style.position = 'relative';
+  var W = container.clientWidth, H = container.clientHeight;
+  console.log('📐 container size:', W + '×' + H);
+  var CX = W/2, CY = H/2, R = Math.min(W,H)/2 * 0.85;
+  console.log('⚙️ center (CX,CY):', CX, CY, ' radius R:', R);
+
+  // fetch data
+  fetch('/api/hudson-ingram/showcase')
+    .then(function(r) {
+      console.log('🔄 fetch status', r.status);
+      return r.json();
+    })
+    .then(function(data) {
+      console.log('🎯 raw data:', data);
+      var items = Array.isArray(data.media) && data.media.length
+                  ? data.media
+                  : fallback(12);
+      console.log('🎯 items to render:', items);
+      render(items);
+    })
+    .catch(function(err) {
+      console.error('❗ fetch error:', err);
+      render(fallback(12));
+    });
+
+  function fallback(n) {
+    console.log('📦 using fallback x' + n);
+    var a = [];
+    for(var i=0;i<n;i++){
+      a.push({ title:'Fallback '+(i+1), thumbnail:null, uploadedAt:null });
+    }
+    return a;
+  }
+
+  function render(items) {
+    console.log('🎨 render()', items.length, 'items');
+    container.innerHTML = '';
+    var half = Math.floor(items.length/2),
+        left = items.slice(0,half+1),
+        right= items.slice(half+1);
+    console.log('↖ left:', left.length, '↗ right:', right.length);
+
+    var layer = document.createElement('div');
+    layer.className = 'art-circles-display';
+    container.appendChild(layer);
+
+    // left arc 135→225
+    left.forEach(function(item,i){
+      var deg = 135 + i*(90/(half||1));
+      place(item,deg,layer);
+    });
+    // right arc 45→−45
+    right.forEach(function(item,j){
+      var deg = 45 - j*(90/((right.length-1)||1));
+      place(item,deg,layer);
+    });
+
+    // labels
+    ['Curators','Collections'].forEach(function(txt, idx){
+      var d = document.createElement('div');
+      d.className = idx===0?'curators-label':'collections-label';
+      d.textContent = txt;
+      container.appendChild(d);
+      console.log('➕ label:',txt);
+    });
+
+    // center panel
+    var centerItem = items[half]||{};
+    var panel = document.createElement('div');
+    panel.className='center-panel';
+    panel.innerHTML =
+      '<h3>' + (centerItem.title||'Untitled') + '</h3>' +
+      '<p>Uploaded: ' + (centerItem.uploadedAt
+         ? new Date(centerItem.uploadedAt).toLocaleDateString()
+         : 'N/A') + '</p>' +
+      '<button>View Collection</button>';
+    container.appendChild(panel);
+    console.log('➕ center-panel:',centerItem);
+    console.log('✅ render() complete');
+  }
+
+  function place(item, deg, parent) {
+    var rad = deg*Math.PI/180,
+        x = CX + R*Math.cos(rad) - 40,
+        y = CY + R*Math.sin(rad) - 40;
+    console.log('   • place',item.title,'@',deg+'°→',x.toFixed(1),',',y.toFixed(1));
+    var e = document.createElement('div');
+    e.className = 'art-circles-item';
+    e.style.left = x + 'px';
+    e.style.top  = y + 'px';
+    if(item.thumbnail) e.style.backgroundImage = 'url('+item.thumbnail+')';
+    e.setAttribute('data-title', item.title||'');
+    parent.appendChild(e);
+  }
+});

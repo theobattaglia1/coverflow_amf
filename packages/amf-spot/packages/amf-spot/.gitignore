@@ -1,0 +1,15 @@
+# Ignore uploaded audio files
+public/audio/
+uploads/
+
+# Ignore OS files
+.DS_Store
+
+# Ignore npm logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore IDE/editor configs
+.vscode/
+.idea/

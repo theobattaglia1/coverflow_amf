@@ -1,83 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>Artist Dashboard</title>
-  <link rel="stylesheet" href="dashboard.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Art Circles</title>
+  <link rel="stylesheet" href="showcase.css">
 </head>
 <body>
-  <header>
-    <h1 class="brand">Artist Dashboard</h1>
-  </header>
-  <div class="container">
-    <div class="dashboard-grid">
-      <section id="tasks-section">
-        <h2>Tasks</h2>
-        <form id="tasks-form">
-          <input type="text" id="task-title" placeholder="New task title" required>
-          <input type="date" id="task-date">
-          <button type="submit">Add Task</button>
-        </form>
-        <ul id="tasks-list">
-          <li>Loading…</li>
-        </ul>
-      </section>
-
-      <section id="comments-section">
-        <h2>Comments</h2>
-        <form id="comments-form">
-          <input type="text" id="comment-author" placeholder="Author" required>
-          <input type="text" id="comment-text" placeholder="Comment" required>
-          <button type="submit">Add Comment</button>
-        </form>
-        <ul id="comments-list">
-          <li>Loading…</li>
-        </ul>
-      </section>
-
-      <section id="audio-section">
-        <h2>Audio Files</h2>
-        <form id="audio-form" enctype="multipart/form-data">
-          <input type="file" id="audio-file" accept="audio/*" required>
-          <button type="submit">Upload Audio</button>
-        </form>
-        <ul id="audio-list">
-          <li>Loading…</li>
-        </ul>
-      </section>
-
-      <section id="images-section">
-        <h2>Images</h2>
-        <form id="images-form" enctype="multipart/form-data">
-          <input type="file" id="image-file" accept="image/*" required>
-          <button type="submit">Upload Image</button>
-        </form>
-        <ul id="images-list">
-          <li>Loading…</li>
-        </ul>
-      </section>
-
-      <section id="events-section" style="grid-column: 1 / -1">
-        <h2>Calendar Events</h2>
-        <button id="refresh-events">Refresh Events</button>
-        <ul id="events-list">
-          <li>Loading…</li>
-        </ul>
-      </section>
-    </div>
-  </div>
-  <footer>
-    &copy; All My Friends Inc.
-  </footer>
-  <script src="dashboard.js"></script>
+  <h1>Art Circles</h1>
+  <div id="showcase"></div>
+  <!-- cache-buster on JS -->
+  <script src="showcase.js?v=99"></script>
 </body>
 </html>
-
-  <!-- coverflow hero includes -->
-  <link rel="stylesheet" href="coverflow.css">
-  <script defer src="coverflow.js"></script>
-
-  <!-- coverflow hero markup -->
-  <section id="coverflow-hero">
-    <div id="coverflow" class="coverflow"></div>
-  </section>
