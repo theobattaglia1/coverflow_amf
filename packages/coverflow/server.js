@@ -6,6 +6,15 @@ import multer from 'multer';
 import { Octokit } from '@octokit/rest';
 
 const app = express();
+const path = require('path');
+
+/* NEW – serve the built gallery */
+app.use(express.static(path.join(__dirname, 'public')));
+
+/* NEW – SPA fallback so deep links work */
+app.get('*', (_, res) =>
+  res.sendFile(path.join(__dirname, 'public', 'index.html')));
+
 const port = 3000;
 
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
