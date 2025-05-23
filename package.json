@@ -5,8 +5,22 @@
     "packages/amf-spot",
     "shared"
   ],
+
+  /* ----------  ⬇︎ add this  ---------- */
+  "scripts": {
+    "build": "npm --prefix packages/coverflow run build",
+    "start": "node packages/coverflow/server.js"
+  },
+  /* ----------------------------------- */
+
   "dependencies": {
     "fs-extra": "^11.3.0",
     "multer": "^1.4.5-lts.2"
+  },
+
+  /* (optional but helpful)  
+     Render will pick Node 20 instead of 22 if you pin it: */
+  "engines": {
+    "node": ">=20 <21"
   }
 }
