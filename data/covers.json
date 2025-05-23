@@ -102,12 +102,21 @@
   {
     "id": "1743801383738",
     "category": "",
-    "frontImage": "",
-    "albumTitle": "",
+    "frontImage": "/uploads/image-1748028572904.jpeg",
+    "albumTitle": "Kate Stephenson",
     "coverLabel": "",
+    "fontFamily": "",
+    "fontSize": "",
     "music": {
       "type": "embed",
-      "embedHtml": ""
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DZ06evO3siDPZ"
+    },
+    "artistDetails": {
+      "name": "KAte Stephenson",
+      "location": "Nashville, TN",
+      "bio": "Kate Stephenson is a Nashville-based folk-pop experimentalist from the Illinois suburbs. Raised by orchestral-musician parents and classically trained from childhood, she carries that precision in her bones—then deliberately bends it into spellbinding shapes, using detuned guitars, off-kilter drum loops, and cinematic lyric lines to conjure something distinctly her own.\n\nHer work lives where confessional storytelling meets sonic risk: finger-picked melodies collide with glitchy samples, strings swell into sudden dissonance, and off-the-cuff humor disarms before the next emotional gut punch lands. Recording, mixing, and mutating most tracks herself, Stephenson prizes autonomy over polish, chasing the imperfect take that feels undeniable. The result is a daring, true-artist catalogue that stretches folk honesty across pop’s elastic edges while always keeping the listener within whispered reach.",
+      "spotifyLink": "https://open.spotify.com/playlist/37i9dQZF1DZ06evO3siDPZ",
+      "image": "/uploads/image-1748028572904.jpeg"
     }
   }
 ]
