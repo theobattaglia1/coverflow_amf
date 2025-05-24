@@ -34,15 +34,16 @@ app.use(express.json());
 /* FIX: Better admin routing */
 app.use((req, res, next) => {
   // Only rewrite for admin subdomain on GET requests
-  if (req.hostname.startsWith('admin.') && req.method === 'GET') {
-    // Don't rewrite API routes
-    if (!req.path.startsWith('/save-') && 
-        !req.path.startsWith('/delete-') && 
-        !req.path.startsWith('/upload-') &&
-        !req.path.startsWith('/push-')) {
-      req.url = '/admin' + (req.url === '/' ? '/index.html' : req.url);
-    }
+if (req.hostname.startsWith('admin.') && req.method === 'GET') {
+  // Don't rewrite API routes or paths that already have /admin
+  if (!req.path.startsWith('/admin') &&
+      !req.path.startsWith('/save-') && 
+      !req.path.startsWith('/delete-') && 
+      !req.path.startsWith('/upload-') &&
+      !req.path.startsWith('/push-')) {
+    req.url = '/admin' + (req.url === '/' ? '/index.html' : req.url);
   }
+}
   next();
 });
 
