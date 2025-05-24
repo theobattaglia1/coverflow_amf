@@ -1,0 +1,9 @@
+{
+  "name": "allmyfriends-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "cd packages/coverflow && npm start",
+    "dev": "cd packages/coverflow && npm start"
+  }
+}

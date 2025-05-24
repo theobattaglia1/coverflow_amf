@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard - ALL MY FRIENDS ADMIN</title>
+  <link rel="stylesheet" href="/admin/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #121212;
+      color: #fff;
+      padding: 30px;
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .cover-card {
+      display: inline-block;
+      width: 180px;
+      margin: 10px;
+      padding: 10px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      text-align: center;
+      cursor: move;
+    }
+    .cover-card img {
+      width: 100%;
+      border-radius: 4px;
+    }
+    .cover-card button {
+      margin-top: 10px;
+      background: #18d860;
+      color: white;
+      padding: 6px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #coverDropzone {
+      padding: 20px;
+      background: #2a2a2a;
+      border-radius: 8px;
+      border: 2px dashed #777;
+      text-align: center;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    #coverDropzone.dragover {
+      border-color: #18d860;
+    }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .btn-save {
+      background: #18d860;
+      color: white;
+    }
+    .btn-live {
+      background: #007aff;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Dashboard</h1>
+
+<div id="coversContainer"></div>
+
+<div id="coverDropzone">Drag & drop image to add new cover</div>
+
+<button class="btn btn-save" onclick="saveChanges()">Save Changes</button>
+<button class="btn btn-live" onclick="pushLive()">Push Live</button>
+
+<script src="/admin/dashboard.js"></script>
+</body>
+</html>
