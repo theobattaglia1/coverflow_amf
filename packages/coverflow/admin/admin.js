@@ -70,7 +70,7 @@
   
       console.log("📬 [RESPONSE] Server responded:", result);
       alert("✅ Cover saved successfully!");
-      window.location.href = '/admin/';
+      window.location.href = '/admin/dashboard.html';
       
     } catch (error) {
       console.error("❌ [ERROR] Saving cover failed:", error);
