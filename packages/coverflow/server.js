@@ -35,8 +35,10 @@ app.use(express.json());
 app.use((req, res, next) => {
   // Only rewrite for admin subdomain on GET requests
 if (req.hostname.startsWith('admin.') && req.method === 'GET') {
-  // Don't rewrite API routes or paths that already have /admin
+  // Don't rewrite API routes, paths that already have /admin, or data/uploads files
   if (!req.path.startsWith('/admin') &&
+      !req.path.startsWith('/data/') &&     // Add this line
+      !req.path.startsWith('/uploads/') &&  // Add this line
       !req.path.startsWith('/save-') && 
       !req.path.startsWith('/delete-') && 
       !req.path.startsWith('/upload-') &&
