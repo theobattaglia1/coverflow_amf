@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Edit Cover - ALL MY FRIENDS ADMIN</title>
+  <link rel="stylesheet" href="/admin/admin.css">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #121212;
+      color: #fff;
+      padding: 30px;
+    }
+    h1 { font-size: 22px; font-weight: bold; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+    input, textarea, select {
+      width: 100%; padding: 8px; border-radius: 6px; border: none;
+      background: #2a2a2a; color: white; box-sizing: border-box;
+    }
+    .btn {
+      padding: 10px 20px; border: none; cursor: pointer;
+      border-radius: 6px; font-weight: bold;
+    }
+    .btn-save { background: #18d860; color: white; }
+    .btn-delete { background: #e63946; color: white; }
+    img.preview {
+      width: 250px; height: auto; margin-top: 15px;
+      border-radius: 8px; display: block;
+    }
+    .drop-area {
+      background: #333; padding: 20px; border-radius: 8px;
+      text-align: center; border: 2px dashed #777;
+      margin-bottom: 10px; cursor: pointer;
+    }
+    .drop-area.dragover { border-color: #18d860; }
+  </style>
+</head>
+<body>
+
+<h1>Edit Cover</h1>
+
+<form id="coverForm">
+  <div class="form-group">
+    <label>Category</label>
+    <input id="category" name="category">
+  </div>
+
+  <div class="form-group">
+    <label>Front Image URL</label>
+    <input id="frontImage" name="frontImage">
+  </div>
+
+  <div class="form-group">
+    <label>Upload New Cover Image</label>
+    <div class="drop-area" id="dropArea">Drag & drop or click to upload</div>
+    <input type="file" id="imageInput" style="display:none;" accept="image/*">
+  </div>
+
+  <div class="form-group">
+    <label>Artist or Title</label>
+    <input id="albumTitle" name="albumTitle">
+  </div>
+
+  <div class="form-group">
+    <label>Label or Role or Misc</label>
+    <input id="coverLabel" name="coverLabel">
+  </div>
+
+  <div class="form-group">
+    <label>Font Family</label>
+    <select id="fontFamily" name="fontFamily">
+      <option value="">Default (GT America)</option>
+      <option value="Inter">Inter</option>
+      <option value="Roboto">Roboto</option>
+      <option value="Space Mono">Space Mono</option>
+      <option value="CustomFont">CustomFont</option>
+    </select>
+  </div>
+
+  <div class="form-group">
+    <label>Font Size</label>
+    <input type="number" id="fontSize" name="fontSize" placeholder="14">
+  </div>
+
+  <div class="form-group">
+    <label>Music URL (Spotify or Apple Music)</label>
+    <input id="musicUrl" name="musicUrl" placeholder="https://open.spotify.com/...">
+  </div>
+
+  <hr>
+
+  <h2>Artist Details</h2>
+
+  <div class="form-group">
+    <label>Artist Name</label>
+    <input id="artistName" name="artistName">
+  </div>
+
+  <div class="form-group">
+    <label>Artist Location</label>
+    <input id="artistLocation" name="artistLocation">
+  </div>
+
+  <div class="form-group">
+    <label>Artist Biography</label>
+    <textarea id="artistBio" name="artistBio" rows="6"></textarea>
+  </div>
+
+  <div class="form-group">
+    <label>Artist Spotify Link</label>
+    <input id="artistSpotifyLink" name="artistSpotifyLink">
+  </div>
+
+  <div class="form-group">
+    <label>Artist Image URL</label>
+    <input id="artistImage" name="artistImage">
+  </div>
+
+  <img class="preview" id="imgPreview" src="">
+
+  <br>
+  <button class="btn btn-save" type="button" onclick="saveCover()">Save</button>
+  <button class="btn btn-delete" type="button" onclick="deleteCover()">Delete</button>
+</form>
+
+<script src="/admin/admin.js"></script>
+</body>
+</html>

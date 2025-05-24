@@ -1,0 +1,13 @@
+@font-face {
+    font-family: 'GT America';
+    src: url('/assets/fonts/GT-America-Standard-Regular.otf') format('opentype');
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: 'GT America';
+    src: url('/assets/fonts/GT-America-Standard-Bold.otf') format('opentype');
+    font-weight: 700;
+    font-style: normal;
+  }
+  
