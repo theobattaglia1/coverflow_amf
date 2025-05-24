@@ -1,75 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1"
-  />
-  <title>All My Friends — Coverflow</title>
-  <link rel="stylesheet" href="index.css" />
-  <link rel="stylesheet" href="/fonts.css" />
-  <style id="global-styles"></style>
+  <meta charset="UTF-8">
+  <title> Edit Dash - ALL MY FRIENDS </title>
+  <link rel="stylesheet" href="/admin/admin.css">
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #121212;
+      color: #fff;
+      padding: 30px;
+    }
+    h1, h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    .cover-card {
+      display: inline-block;
+      width: 180px;
+      margin: 10px;
+      padding: 10px;
+      background: #1e1e1e;
+      border-radius: 8px;
+      text-align: center;
+      cursor: move;
+    }
+    .cover-card img {
+      width: 100%;
+      border-radius: 4px;
+    }
+    .cover-card button {
+      margin-top: 10px;
+      background: #18d860;
+      color: white;
+      padding: 6px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #coverDropzone, #assetDropzone {
+      padding: 20px;
+      background: #2a2a2a;
+      border-radius: 8px;
+      border: 2px dashed #777;
+      text-align: center;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    #coverDropzone.dragover, #assetDropzone.dragover {
+      border-color: #18d860;
+    }
+    .btn {
+      padding: 12px 24px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      margin-top: 20px;
+      margin-right: 10px;
+    }
+    .btn-save {
+      background: #18d860;
+      color: white;
+    }
+    .btn-live {
+      background: #007aff;
+      color: white;
+    }
+    .section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background: #1a1a1a;
+      border-radius: 10px;
+    }
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .asset-item {
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .asset-item img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .asset-item input {
+      width: 100%;
+      background: #333;
+      border: 1px solid #444;
+      color: white;
+      padding: 5px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+    .asset-item button {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .url-display {
+      background: #333;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 11px;
+      word-break: break-all;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    .url-display:hover {
+      background: #444;
+    }
+  </style>
 </head>
 <body>
-  <div class="app-container">
-    <!-- Logo -->
-    <div class="top-logo">
-      <iframe
-        class="logo-frame"
-        src="/assets/logo.html"
-        frameborder="0"
-        scrolling="no"
-      ></iframe>
-    </div>
 
-    <!-- Accordion filter on mobile / inline & open on desktop -->
-    <details class="filter-accordion">
-      <summary>FILTER</summary>
-      <div class="filter-container">
-        <span class="filter-label active" data-filter="all">ALL</span>
-        <span class="filter-label" data-filter="artist">ARTISTS</span>
-        <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
-        <span class="filter-label" data-filter="producer">PRODUCERS</span>
-        <span class="filter-label" data-filter="about">ABOUT US</span>
-      </div>
-    </details>
+<div class="section">
+  <h1>Artist Covers</h1>
+  <div id="coversContainer"></div>
+  <div id="coverDropzone">Drag & drop image to add new cover</div>
+  <button class="btn btn-save" onclick="saveChanges()">Save Changes</button>
+  <button class="btn btn-live" onclick="pushLive()">Push Live</button>
+</div>
 
-    <!-- Coverflow -->
-    <div class="coverflow-container" id="coverflow-container">
-      <div id="ambient-light"></div>
-      <canvas id="trail-canvas"></canvas>
-      <div class="coverflow-content" id="coverflow"></div>
-    </div>
+<div class="section">
+  <h2>Image Repository</h2>
+  <p style="color: #888; font-size: 14px;">Upload images for thumbnails, logos, and other assets</p>
+  <div id="assetDropzone">Drag & drop images to upload</div>
+  <div id="assetsContainer" class="asset-grid"></div>
+</div>
 
-    <!-- Hover credits (optional) -->
-    <div id="hover-credits" class="hover-credits-container"></div>
-  </div>
-
-  <!-- Artist detail modal -->
-  <div class="artist-modal hidden">
-    <div class="modal-content">
-      <img class="artist-photo" src="ARTIST IMAGE URL" />
-      <button class="close-btn">✕</button>
-      <div class="artist-info">
-        <h1 class="artist-name">Artist Name</h1>
-        <div class="artist-location">Artist Location</div>
-        <div class="artist-bio">Artist Bio here...</div>
-        <a
-          class="spotify-button spotify-link"
-          href="SPOTIFY LINK"
-          target="_blank"
-          >Open in Spotify</a
-        >
-        <iframe
-          class="spotify-player"
-          src="SPOTIFY EMBED URL"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </div>
-  </div>
-
-  <script src="index.js"></script>
+<script src="/admin/dashboard.js"></script>
 </body>
 </html>
