@@ -256,7 +256,21 @@ app.post('/push-live', async (req, res) => {
   }
 });
 
-
+/* save assets - THIS WAS MISSING! */
+app.post('/save-assets', async (req, res) => {
+  try {
+    const assets = req.body;
+    const jsonPath = path.join(DATA_DIR, 'assets.json');
+    await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Save assets error:', err);
+    res.status(500).json({ 
+      error: 'Failed to save assets', 
+      details: err.message 
+    });
+  }
+});
 
 /* Error handling middleware */
 app.use((err, req, res, next) => {
