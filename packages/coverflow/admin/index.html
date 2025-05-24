@@ -12,7 +12,7 @@
       color: #fff;
       padding: 30px;
     }
-    h1 {
+    h1, h2 {
       font-size: 24px;
       margin-bottom: 20px;
     }
@@ -39,7 +39,7 @@
       border-radius: 4px;
       cursor: pointer;
     }
-    #coverDropzone {
+    #coverDropzone, #assetDropzone {
       padding: 20px;
       background: #2a2a2a;
       border-radius: 8px;
@@ -48,7 +48,7 @@
       margin-top: 20px;
       cursor: pointer;
     }
-    #coverDropzone.dragover {
+    #coverDropzone.dragover, #assetDropzone.dragover {
       border-color: #18d860;
     }
     .btn {
@@ -58,6 +58,7 @@
       cursor: pointer;
       font-weight: bold;
       margin-top: 20px;
+      margin-right: 10px;
     }
     .btn-save {
       background: #18d860;
@@ -67,18 +68,80 @@
       background: #007aff;
       color: white;
     }
+    .section {
+      margin-bottom: 40px;
+      padding: 20px;
+      background: #1a1a1a;
+      border-radius: 10px;
+    }
+    .asset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .asset-item {
+      background: #2a2a2a;
+      padding: 10px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .asset-item img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+    .asset-item input {
+      width: 100%;
+      background: #333;
+      border: 1px solid #444;
+      color: white;
+      padding: 5px;
+      border-radius: 4px;
+      margin-bottom: 5px;
+      font-size: 12px;
+    }
+    .asset-item button {
+      background: #e74c3c;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .url-display {
+      background: #333;
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 11px;
+      word-break: break-all;
+      margin-bottom: 5px;
+      cursor: pointer;
+    }
+    .url-display:hover {
+      background: #444;
+    }
   </style>
 </head>
 <body>
 
-<h1>Dashboard</h1>
+<div class="section">
+  <h1>Artist Covers</h1>
+  <div id="coversContainer"></div>
+  <div id="coverDropzone">Drag & drop image to add new cover</div>
+  <button class="btn btn-save" onclick="saveChanges()">Save Changes</button>
+  <button class="btn btn-live" onclick="pushLive()">Push Live</button>
+</div>
 
-<div id="coversContainer"></div>
-
-<div id="coverDropzone">Drag & drop image to add new cover</div>
-
-<button class="btn btn-save" onclick="saveChanges()">Save Changes</button>
-<button class="btn btn-live" onclick="pushLive()">Push Live</button>
+<div class="section">
+  <h2>Image Repository</h2>
+  <p style="color: #888; font-size: 14px;">Upload images for thumbnails, logos, and other assets</p>
+  <div id="assetDropzone">Drag & drop images to upload</div>
+  <div id="assetsContainer" class="asset-grid"></div>
+</div>
 
 <script src="/admin/dashboard.js"></script>
 </body>
