@@ -21,7 +21,7 @@ const ADMIN_DIR   = path.join(__dirname, 'admin');
 const DATA_DIR    = path.join(__dirname, 'data');
 
 /* persistent Render Disk lives here */
-const UPLOADS_DIR  = process.env.UPLOADS_DIR || '/data/uploads';
+const UPLOADS_DIR  = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 
 /* -------------------------------------------------- */
 /* 2 ▶ basic Express setup                            */
