@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  />
+  <title>All My Friends — Coverflow</title>
+  <link rel="stylesheet" href="index.css" />
+  <link rel="stylesheet" href="/fonts.css" />
+  <style id="global-styles"></style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Logo -->
+    <div class="top-logo">
+      <iframe
+        class="logo-frame"
+        src="/assets/logo.html"
+        frameborder="0"
+        scrolling="no"
+      ></iframe>
+    </div>
+
+    <!-- Accordion filter on mobile / inline & open on desktop -->
+    <details class="filter-accordion">
+      <summary>FILTER</summary>
+      <div class="filter-container">
+        <span class="filter-label active" data-filter="all">ALL</span>
+        <span class="filter-label" data-filter="artist">ARTISTS</span>
+        <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
+        <span class="filter-label" data-filter="producer">PRODUCERS</span>
+        <span class="filter-label" data-filter="about">ABOUT US</span>
+      </div>
+    </details>
+
+    <!-- Coverflow -->
+    <div class="coverflow-container" id="coverflow-container">
+      <div id="ambient-light"></div>
+      <canvas id="trail-canvas"></canvas>
+      <div class="coverflow-content" id="coverflow"></div>
+    </div>
+
+    <!-- Hover credits (optional) -->
+    <div id="hover-credits" class="hover-credits-container"></div>
+  </div>
+
+  <!-- Artist detail modal -->
+  <div class="artist-modal hidden">
+    <div class="modal-content">
+      <img class="artist-photo" src="ARTIST IMAGE URL" />
+      <button class="close-btn">✕</button>
+      <div class="artist-info">
+        <h1 class="artist-name">Artist Name</h1>
+        <div class="artist-location">Artist Location</div>
+        <div class="artist-bio">Artist Bio here...</div>
+        <a
+          class="spotify-button spotify-link"
+          href="SPOTIFY LINK"
+          target="_blank"
+          >Open in Spotify</a
+        >
+        <iframe
+          class="spotify-player"
+          src="SPOTIFY EMBED URL"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </div>
+  </div>
+
+  <script src="index.js"></script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+
+@font-face {
+  font-family: 'SerialStone-Stone';
+  src: url('/assets/fonts/SerialStone-Stone.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'SerialDTRIAL-Light';
+  src: url('/assets/fonts/SerialDTRIAL-Light.ttf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'ReformaSansTRIAL-Regular';
+  src: url('/assets/fonts/ReformaSansTRIAL-Regular.ttf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+}
