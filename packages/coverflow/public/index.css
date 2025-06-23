@@ -178,16 +178,19 @@ html, body {
   mask-image: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
 }
 .cover-back {
-  background: linear-gradient(145deg, #1e1e1e, #2e2e2e);
+  background: linear-gradient(145deg, #1a1a1a, #2a2a2a);
   transform: rotateY(180deg);
-  padding: 1rem;
+  padding: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  box-shadow: 0 6px 12px rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.1);
+  justify-content: flex-start;
+  border-radius: 16px;
+  box-shadow: 
+    0 8px 24px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  overflow: hidden;
 }
 .cover-back::after {
   content: "";
@@ -234,21 +237,121 @@ html, body {
   background: rgba(255,255,255,0.25);
 }
 
-/* ensure the back‑face’s inner wrapper fills card */
+/* ensure the back‑face's inner wrapper fills card */
 .cover-back .back-content {
-  padding-top: 0 !important;
+  padding: 0 !important;
   position: relative;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,0.2);
 }
+
+/* Custom Spotify embed wrapper */
+.spotify-embed-wrapper {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, rgba(30,215,96,0.1) 0%, rgba(0,0,0,0.3) 100%);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Style the iframe container */
+.spotify-embed-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  height: 80px;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 
+    0 4px 12px rgba(0,0,0,0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: all 0.3s ease;
+}
+
+/* Hover state for the embed container */
+.spotify-embed-container:hover {
+  transform: translate(-50%, -50%) scale(1.02);
+  box-shadow: 
+    0 6px 20px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.15);
+}
+
 /* absolutely stretch the Spotify iframe */
 .cover-back .back-content iframe {
   position: absolute;
-  top: 0; left: 0;
+  top: 0; 
+  left: 0;
   width: 100%;
   height: 100%;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
+  opacity: 0.95;
+}
+
+/* Add a subtle Spotify branding */
+.spotify-branding {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: rgba(30,215,96,0.15);
+  backdrop-filter: blur(8px);
+  border-radius: 20px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.7);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.spotify-branding svg {
+  width: 16px;
+  height: 16px;
+  fill: #1DB954;
+}
+
+/* Add album art preview */
+.album-art-preview {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  width: 60px;
+  height: 60px;
+  border-radius: 8px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Add a loading state */
+.spotify-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255,255,255,0.1);
+  border-top-color: #1DB954;
+  border-radius: 50%;
+  animation: spotify-spin 0.8s linear infinite;
+}
+
+@keyframes spotify-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 /* === COVER & BACK LABELS === */
@@ -435,6 +538,31 @@ html, body {
     height: clamp(240px, 70vw, 360px) !important;
   }
 
+  /* Mobile Spotify embed adjustments */
+  .spotify-embed-container {
+    width: 85%;
+    height: 70px;
+  }
+  
+  .album-art-preview {
+    width: 50px;
+    height: 50px;
+    top: 12px;
+    left: 12px;
+  }
+  
+  .spotify-branding {
+    bottom: 8px;
+    right: 8px;
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  
+  .spotify-branding svg {
+    width: 14px;
+    height: 14px;
+  }
+
   /* bottom‑pinned filter bar */
   .filter-container {
     position: fixed;
@@ -487,5 +615,16 @@ html, body {
   }
   .filter-accordion summary:hover {
     background: rgba(255,255,255,0.25);
+  }
+}
+
+/* Additional touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+  .spotify-embed-container {
+    height: 90px; /* Slightly taller for touch devices */
+  }
+  
+  .cover-back {
+    -webkit-tap-highlight-color: transparent;
   }
 }
