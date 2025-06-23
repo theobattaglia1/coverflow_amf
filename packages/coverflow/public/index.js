@@ -8,7 +8,7 @@ const maxAngle = 80,
 const coverflowEl   = document.getElementById('coverflow'),
       hoverDisplay  = document.getElementById('hover-credits');
 
-// 2) Trails
+// 2) Trails - Enhanced particle system
 const trailCanvas = document.getElementById('trail-canvas'),
       trailCtx    = trailCanvas.getContext('2d');
 let particles = [];
@@ -20,14 +20,16 @@ window.addEventListener('resize', resizeTrailCanvas, { passive: true });
 resizeTrailCanvas();
 
 function emitParticles(delta) {
-  const count = Math.min(Math.abs(delta) / 5, 10);
+  const count = Math.min(Math.abs(delta) / 3, 15);
   for (let i = 0; i < count; i++) {
     particles.push({
       x: trailCanvas.width / 2,
       y: trailCanvas.height / 2,
-      vx: delta * (Math.random() * 0.2 + 0.1),
-      vy: (Math.random() - 0.5) * 2,
-      life: 60
+      vx: delta * (Math.random() * 0.3 + 0.1),
+      vy: (Math.random() - 0.5) * 3,
+      size: Math.random() * 3 + 1,
+      life: 80,
+      color: `hsla(${Math.random() * 60 + 180}, 70%, 70%, 0.6)`
     });
   }
 }
@@ -35,18 +37,29 @@ function emitParticles(delta) {
 function animateTrails() {
   trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
   particles.forEach((p, i) => {
-    trailCtx.globalAlpha = p.life / 60;
+    trailCtx.globalAlpha = (p.life / 80) * 0.6;
+    trailCtx.fillStyle = p.color;
     trailCtx.beginPath();
-    trailCtx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+    trailCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
     trailCtx.fill();
-    p.x += p.vx; p.y += p.vy; p.life--;
+    
+    // Add subtle glow
+    trailCtx.shadowBlur = 10;
+    trailCtx.shadowColor = p.color;
+    trailCtx.fill();
+    trailCtx.shadowBlur = 0;
+    
+    p.x += p.vx; 
+    p.y += p.vy; 
+    p.vy += 0.1; // gravity
+    p.life--;
     if (p.life <= 0) particles.splice(i, 1);
   });
   requestAnimationFrame(animateTrails);
 }
 animateTrails();
 
-// 3) Ambient glow
+// 3) Ambient glow - Enhanced with logo integration
 function updateAmbient() {
   const img = new Image();
   img.crossOrigin = 'anonymous';
@@ -64,10 +77,46 @@ function updateAmbient() {
     const cx = c.getContext('2d');
     cx.drawImage(img, 0, 0, 10, 10);
     const [r, g, b] = cx.getImageData(0, 0, 10, 10).data;
+    
+    // Update ambient light
     document.getElementById('ambient-light')
       .style.backgroundColor = `rgba(${r},${g},${b},0.4)`;
+    
+    // Update logo glow to match
+    const logoGlow = document.querySelector('.logo-glow');
+    if (logoGlow) {
+      logoGlow.style.setProperty('--glow-color', `rgba(${r},${g},${b},0.1)`);
+    }
   };
 }
+
+// ===== Logo Parallax (desktop) =====
+(function initLogoParallax(){
+  const logo   = document.querySelector('.logo-frame');
+  const glow   = document.querySelector('.logo-glow');
+  if (!logo) return;
+
+  function parallax(nx, ny){
+    const maxShift = 6; // px
+    const gxShift  = 12;
+    logo.style.transform = `translate(${ -nx*maxShift }px, ${ -ny*maxShift }px)`;
+    glow.style.transform = `translate(calc(-50% + ${ -nx*gxShift }px), calc(-50% + ${ -ny*gxShift }px))`;
+  }
+
+  window.addEventListener('pointermove', e=>{
+    const nx = (e.clientX / window.innerWidth )*2 - 1; // -1..1
+    const ny = (e.clientY / window.innerHeight)*2 - 1;
+    parallax(nx, ny);
+  }, {passive:true});
+
+  // Mobile – use deviceorientation if available
+  window.addEventListener('deviceorientation', e=>{
+    if (e.gamma == null || e.beta == null) return;
+    const nx = e.gamma/45; // approx -1..1
+    const ny = e.beta /90; // approx -1..1
+    parallax(nx, ny);
+  }, {passive:true});
+})();
 
 // 4) Horizontal swipe/wheel only
 let wheelCooldown = false,
@@ -117,8 +166,8 @@ function updateLayoutParameters() {
     anglePerOffset = 50;
     minScale       = 0.45;
   } else {
-    // original desktop spacing
-    coverSpacing   = Math.max(120, vw * 0.18);
+    // original desktop spacing with better minimum
+    coverSpacing   = Math.max(150, vw * 0.18); // Increased minimum from 120 to 150
     anglePerOffset = vw < 600 ? 50 : 65;
     minScale       = vw < 600 ? 0.45 : 0.5;
   }
@@ -156,11 +205,11 @@ function renderCovers() {
     backContent.className = 'back-content';
 
     if (cover.albumTitle?.toLowerCase() === 'contact') {
-      const contactBtn = document.createElement('a');
-      contactBtn.href = 'mailto:hi@allmyfriendsinc.com';
-      contactBtn.innerText = 'Contact Us';
-      contactBtn.className = 'expand-btn contact-btn';
-      backContent.appendChild(contactBtn);
+      backContent.innerHTML = `
+        <a href="mailto:hi@allmyfriendsinc.com" class="contact-card">
+          <div class="contact-icon">✉️</div>
+          <span>Say&nbsp;Hello</span>
+        </a>`;
     } else {
       // Create an info button overlay for artist details
       const infoOverlay = document.createElement('div');
@@ -299,14 +348,32 @@ function renderCoverFlow() {
     const tx     = eff * coverSpacing;
     const ry     = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
 
-    cover.style.transform = `
-      translate(-50%,-50%)
-      translateX(${tx}px)
-      scale(${scale})
-      rotateY(${ry}deg)
-    `;
+    // Apply transform without breaking the breathing animation
+    if (offset === 0) {
+      cover.style.transform = `
+        translateX(${tx}px)
+        scale(${scale})
+        rotateY(${ry}deg)
+      `;
+    } else {
+      cover.style.transform = `
+        translate(-50%,-50%)
+        translateX(${tx}px)
+        scale(${scale})
+        rotateY(${ry}deg)
+      `;
+    }
+    
+    // Dynamic shadow opacity based on position
+    cover.style.setProperty('--shadow-opacity', 
+      offset === 0 ? '0.6' : `${0.3 - Math.abs(offset) * 0.05}`);
+    
     cover.style.filter = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset),4)}px)`;
-    cover.style.zIndex = covers.length - Math.abs(offset);
+    
+    // Enhanced z-index calculation to ensure proper layering
+    const baseZ = 1000; // Start with a high base to avoid conflicts
+    cover.style.zIndex = baseZ + (covers.length - Math.abs(offset)) * 10;
+    
     cover.querySelector('.flip-container')?.classList.remove('flipped');
     cover.classList.toggle('cover-active', offset === 0);
   });
@@ -470,10 +537,14 @@ function syncFilters() {
   updateFilterCounts();
 }
 
+let resizeTimeout;
 window.addEventListener('resize', () => {
-  updateLayoutParameters();
-  renderCoverFlow();
-  resizeTrailCanvas();
+  clearTimeout(resizeTimeout);
+  resizeTimeout = setTimeout(() => {
+    updateLayoutParameters();
+    renderCoverFlow();
+    resizeTrailCanvas();
+  }, 100); // Debounce resize events
 }, { passive: true });
 
 // Initialize
