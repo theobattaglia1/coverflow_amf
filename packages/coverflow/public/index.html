@@ -32,17 +32,31 @@
       ></iframe>
     </div>
 
-    <!-- Accordion filter on mobile / inline & open on desktop -->
-    <details class="filter-accordion">
-      <summary>FILTER</summary>
+    <!-- Elegant filter navigation -->
+    <nav class="filter-nav" role="navigation" aria-label="Filter options">
       <div class="filter-container">
-        <span class="filter-label active" data-filter="all">ALL</span>
-        <span class="filter-label" data-filter="artist">ARTISTS</span>
-        <span class="filter-label" data-filter="songwriter">SONGWRITERS</span>
-        <span class="filter-label" data-filter="producer">PRODUCERS</span>
-        <span class="filter-label" data-filter="about">ABOUT US</span>
+        <button class="filter-label active" data-filter="all" aria-pressed="true">
+          <span class="filter-text">ALL</span>
+          <span class="filter-count" data-count="all"></span>
+        </button>
+        <button class="filter-label" data-filter="artist" aria-pressed="false">
+          <span class="filter-text">ARTISTS</span>
+          <span class="filter-count" data-count="artist"></span>
+        </button>
+        <button class="filter-label" data-filter="songwriter" aria-pressed="false">
+          <span class="filter-text">SONGWRITERS</span>
+          <span class="filter-count" data-count="songwriter"></span>
+        </button>
+        <button class="filter-label" data-filter="producer" aria-pressed="false">
+          <span class="filter-text">PRODUCERS</span>
+          <span class="filter-count" data-count="producer"></span>
+        </button>
+        <button class="filter-label" data-filter="about" aria-pressed="false">
+          <span class="filter-text">ABOUT US</span>
+        </button>
       </div>
-    </details>
+      <div class="filter-indicator"></div>
+    </nav>
 
     <!-- Coverflow -->
     <div class="coverflow-container" id="coverflow-container">
