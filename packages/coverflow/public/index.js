@@ -50,7 +50,14 @@ animateTrails();
 function updateAmbient() {
   const img = new Image();
   img.crossOrigin = 'anonymous';
-  img.src = covers[activeIndex]?.frontImage;
+  const cover = covers[activeIndex];
+  if (!cover) return;
+  
+  // Use production URL for uploads
+  const imageUrl = cover.frontImage.startsWith('/uploads/') 
+    ? `https://allmyfriendsinc.com${cover.frontImage}`
+    : cover.frontImage;
+  img.src = imageUrl;
   img.onload = () => {
     const c = document.createElement('canvas');
     c.width = c.height = 10;
@@ -100,6 +107,265 @@ fetch('/data/styles.json')
     console.log('Using default styles');
   });
 
+// 6) Layout params
+function updateLayoutParameters() {
+  const vw = window.innerWidth;
+
+  if (isMobile) {
+    // on mobile, use larger spacing to accommodate bigger/flipped cards
+    coverSpacing   = Math.max(180, vw * 0.30);
+    anglePerOffset = 50;
+    minScale       = 0.45;
+  } else {
+    // original desktop spacing
+    coverSpacing   = Math.max(120, vw * 0.18);
+    anglePerOffset = vw < 600 ? 50 : 65;
+    minScale       = vw < 600 ? 0.45 : 0.5;
+  }
+}
+
+// 7) Render covers
+function renderCovers() {
+  if (!coverflowEl) {
+    console.error('Coverflow element not found!');
+    return;
+  }
+  coverflowEl.innerHTML = '';
+  covers.forEach((cover, i) => {
+    const wrapper = document.createElement('div');
+    wrapper.className = 'cover';
+    wrapper.dataset.index = i;
+    wrapper.dataset.originalIndex = cover.id;
+    wrapper.dataset.category = cover.category;
+
+    const flip = document.createElement('div');
+    flip.className = 'flip-container';
+
+    const front = document.createElement('div');
+    front.className = 'cover-front';
+    // If the image starts with /uploads, prepend the production URL
+    const imageUrl = cover.frontImage.startsWith('/uploads/') 
+      ? `https://allmyfriendsinc.com${cover.frontImage}`
+      : cover.frontImage;
+    front.style.backgroundImage = `url('${imageUrl}')`;
+
+    const back = document.createElement('div');
+    back.className = 'cover-back';
+
+    const backContent = document.createElement('div');
+    backContent.className = 'back-content';
+
+    if (cover.albumTitle?.toLowerCase() === 'contact') {
+      const contactBtn = document.createElement('a');
+      contactBtn.href = 'mailto:hi@allmyfriendsinc.com';
+      contactBtn.innerText = 'Contact Us';
+      contactBtn.className = 'expand-btn contact-btn';
+      backContent.appendChild(contactBtn);
+    } else {
+      // Create an info button overlay for artist details
+      const infoOverlay = document.createElement('div');
+      infoOverlay.className = 'artist-info-overlay';
+      infoOverlay.innerHTML = `
+        <button class="info-button" aria-label="View artist details">
+          <svg viewBox="0 0 24 24" width="24" height="24">
+            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
+          </svg>
+        </button>
+      `;
+      backContent.appendChild(infoOverlay);
+
+      // FRONT label
+      const coverLabel = document.createElement('div');
+      coverLabel.className = 'cover-label';
+      coverLabel.innerHTML = `
+        <strong>${cover.albumTitle || ''}</strong><br/>
+        ${cover.coverLabel   || ''}
+      `;
+      wrapper.appendChild(coverLabel);
+
+      // BACK label
+      const backLabel = document.createElement('div');
+      backLabel.className = 'back-label';
+      backLabel.innerHTML = coverLabel.innerHTML;
+      wrapper.appendChild(backLabel);
+
+      // Spotify embed
+      if (cover.music?.type === 'embed' && cover.music.url) {
+        // Create wrapper for elegant Spotify player
+        const embedWrapper = document.createElement('div');
+        embedWrapper.className = 'spotify-embed-wrapper';
+        
+        // Add loading indicator
+        const loadingIndicator = document.createElement('div');
+        loadingIndicator.className = 'spotify-loading';
+        embedWrapper.appendChild(loadingIndicator);
+        
+        // Create container for the iframe
+        const embedContainer = document.createElement('div');
+        embedContainer.className = 'spotify-embed-container';
+        
+        // Extract track/playlist ID from URL
+        const spotifyUrl = cover.music.url;
+        let embedUrl = spotifyUrl;
+        
+        // Convert regular Spotify URLs to embed URLs with compact player
+        if (spotifyUrl.includes('spotify.com/track/')) {
+          embedUrl = spotifyUrl.replace('spotify.com/', 'spotify.com/embed/');
+          embedUrl += embedUrl.includes('?') ? '&' : '?';
+          embedUrl += 'utm_source=generator&theme=0'; // dark theme
+        } else if (spotifyUrl.includes('spotify.com/playlist/') || spotifyUrl.includes('spotify.com/album/')) {
+          embedUrl = spotifyUrl.replace('spotify.com/', 'spotify.com/embed/');
+          embedUrl += embedUrl.includes('?') ? '&' : '?';
+          embedUrl += 'utm_source=generator&theme=0'; // dark theme
+        }
+        
+        // Create iframe
+        const iframe = document.createElement('iframe');
+        iframe.style.cssText = 'border-radius:12px';
+        iframe.src = embedUrl;
+        iframe.width = '100%';
+        iframe.height = '80'; // Compact height for single track
+        iframe.frameBorder = '0';
+        iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
+        iframe.loading = 'lazy';
+        
+        // Remove loading indicator when iframe loads
+        iframe.onload = () => {
+          loadingIndicator.remove();
+        };
+        
+        embedContainer.appendChild(iframe);
+        embedWrapper.appendChild(embedContainer);
+        
+        // Add album art preview if available
+        if (cover.frontImage) {
+          const albumArt = document.createElement('div');
+          albumArt.className = 'album-art-preview';
+          // Use the same imageUrl we calculated for the front
+          albumArt.style.backgroundImage = `url('${imageUrl}')`;
+          embedWrapper.appendChild(albumArt);
+        }
+        
+        // Add Spotify branding
+        const spotifyBranding = document.createElement('div');
+        spotifyBranding.className = 'spotify-branding';
+        spotifyBranding.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+          </svg>
+          <span>Spotify</span>
+        `;
+        embedWrapper.appendChild(spotifyBranding);
+        
+        backContent.appendChild(embedWrapper);
+      }
+    }
+
+    back.appendChild(backContent);
+    flip.appendChild(front);
+    flip.appendChild(back);
+    wrapper.appendChild(flip);
+
+    wrapper.addEventListener('click', (e) => {
+      // Don't flip if clicking on info button
+      if (e.target.closest('.info-button')) {
+        e.stopPropagation();
+        const cid = wrapper.dataset.originalIndex;
+        const cd = covers.find(c => c.id == cid);
+        if (cd?.artistDetails) {
+          openArtistModal(cd);
+        }
+        return;
+      }
+      
+      const idx = +wrapper.dataset.index;
+      const off = idx - activeIndex;
+      const fc = wrapper.querySelector('.flip-container');
+      if (off === 0 && fc) fc.classList.toggle('flipped');
+      else setActiveIndex(idx);
+    });
+
+    coverflowEl.appendChild(wrapper);
+  });
+}
+
+// 8) 3D layout
+function renderCoverFlow() {
+  document.querySelectorAll('.cover').forEach(cover => {
+    const i      = +cover.dataset.index;
+    const offset = i - activeIndex;
+    const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
+    const scale  = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
+    const tx     = eff * coverSpacing;
+    const ry     = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
+
+    cover.style.transform = `
+      translate(-50%,-50%)
+      translateX(${tx}px)
+      scale(${scale})
+      rotateY(${ry}deg)
+    `;
+    cover.style.filter = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset),4)}px)`;
+    cover.style.zIndex = covers.length - Math.abs(offset);
+    cover.querySelector('.flip-container')?.classList.remove('flipped');
+    cover.classList.toggle('cover-active', offset === 0);
+  });
+  updateAmbient();
+}
+
+// 9) Keyboard & ESC
+window.addEventListener('keydown', e => {
+  if (e.key === 'ArrowLeft')  setActiveIndex(activeIndex - 1);
+  if (e.key === 'ArrowRight') setActiveIndex(activeIndex + 1);
+  if (e.key === 'Escape')     document.querySelector('.artist-modal').classList.add('hidden');
+});
+
+// 10) Modal open function
+function openArtistModal(coverData) {
+  const modal = document.querySelector('.artist-modal'),
+        photo = modal.querySelector('.artist-photo'),
+        player= modal.querySelector('.spotify-player'),
+        link  = coverData.artistDetails.spotifyLink;
+
+  if (coverData.artistDetails.image) {
+    photo.src = coverData.artistDetails.image;
+    photo.style.display = '';
+  } else {
+    photo.style.display = 'none';
+  }
+
+  if (link?.includes('spotify.com')) {
+    player.src = link.replace('spotify.com/','spotify.com/embed/');
+    player.style.display = '';
+  } else {
+    player.style.display = 'none';
+  }
+
+  modal.querySelector('.artist-name').innerText     = coverData.artistDetails.name;
+  modal.querySelector('.artist-location').innerText = coverData.artistDetails.location;
+  modal.querySelector('.artist-bio').innerText      = coverData.artistDetails.bio;
+  modal.querySelector('.spotify-link').href         = link;
+  modal.classList.remove('hidden');
+}
+
+// 11) Modal close
+document.querySelector('.artist-modal')
+  .addEventListener('click', e => {
+    if (e.target.classList.contains('artist-modal')) {
+      const mc = e.target.querySelector('.modal-content');
+      mc.classList.add('pulse-dismiss');
+      setTimeout(() => {
+        e.target.classList.add('hidden');
+        mc.classList.remove('pulse-dismiss');
+      }, 250);
+    }
+  }, { passive: true });
+
+document.querySelector('.artist-modal .close-btn')
+  .addEventListener('click', () => {
+    document.querySelector('.artist-modal').classList.add('hidden');
+  }, { passive: true });
+
 // 12) Filter dropdown (hover & click)
 const filterButtons   = Array.from(document.querySelectorAll('.filter-label')),
       filterDropdown  = document.createElement('div');
@@ -131,8 +397,11 @@ filterContainer.addEventListener('mousemove', (e) => {
   filterContainer.style.setProperty('--mouse-y', `${y}%`);
 });
 
+let dropdownTimeout;
+
 filterButtons.forEach(btn => {
   btn.addEventListener('mouseenter', () => {
+    clearTimeout(dropdownTimeout);
     const f = btn.dataset.filter;
     const res = allCovers.filter(c => f === 'all' || c.category?.includes(f));
     filterDropdown.innerHTML = res.map(c =>
@@ -142,11 +411,13 @@ filterButtons.forEach(btn => {
     filterDropdown.style.display = 'block';
     const r = btn.getBoundingClientRect();
     filterDropdown.style.left = `${r.left}px`;
-    filterDropdown.style.top  = `${r.bottom + 5}px`;
+    filterDropdown.style.top  = `${r.bottom + 2}px`;
   }, { passive: true });
 
   btn.addEventListener('mouseleave', () => {
-    if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none';
+    dropdownTimeout = setTimeout(() => {
+      if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none';
+    }, 100); // Small delay to allow moving to dropdown
   }, { passive: true });
 
   btn.addEventListener('click', () => {
@@ -171,7 +442,13 @@ filterButtons.forEach(btn => {
   }, { passive: true });
 });
 
-filterDropdown.addEventListener('mouseleave', () => filterDropdown.style.display = 'none', { passive: true });
+filterDropdown.addEventListener('mouseenter', () => {
+  clearTimeout(dropdownTimeout);
+}, { passive: true });
+
+filterDropdown.addEventListener('mouseleave', () => {
+  filterDropdown.style.display = 'none';
+}, { passive: true });
 filterDropdown.addEventListener('click', e => {
   const id = e.target.dataset.id;
   if (!id) return;
@@ -211,4 +488,6 @@ fetch(`/data/covers.json?cb=${Date.now()}`)
     renderCoverFlow();
     syncFilters(); // Update counts after loading
   })
-  .catch(console.error);
+  .catch(err => {
+    console.error('Failed to load covers:', err);
+  });
