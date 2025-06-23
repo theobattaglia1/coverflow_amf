@@ -180,6 +180,17 @@ html, body {
   z-index: 999;
   border: 1px solid rgba(255,255,255,0.1);
 }
+
+/* Create invisible bridge to maintain hover */
+.filter-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+  background: transparent;
+}
 .dropdown-item {
   padding: 6px 8px;
   cursor: pointer;
@@ -304,6 +315,82 @@ html, body {
     0 4px 12px rgba(0,0,0,0.3);
   transition: all 0.3s ease;
   cursor: pointer;
+}
+
+/* Contact button styling */
+.expand-btn.contact-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 12px 24px;
+  background: rgba(255,255,255,0.9);
+  color: #111;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.expand-btn.contact-btn:hover {
+  background: white;
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+/* Artist info overlay */
+.artist-info-overlay {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 20;
+}
+
+.info-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.info-button:hover {
+  background: rgba(255,255,255,0.2);
+  color: white;
+  transform: scale(1.1);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.info-button:active {
+  transform: scale(0.95);
+}
+
+.info-button svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Pulse animation for info button */
+@keyframes info-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255,255,255,0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(255,255,255,0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255,255,255,0);
+  }
+}
+
+.cover-active .info-button {
+  animation: info-pulse 2s infinite;
 }
 
 /* back-face button positioning — float it above the card */
@@ -461,25 +548,53 @@ html, body {
 .artist-modal {
   position: fixed;
   inset: 0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(20px);
+  background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(30px) saturate(1.2);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  transition: opacity 0.25s ease;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+  pointer-events: none;
 }
+
+.artist-modal:not(.hidden) {
+  opacity: 1;
+  pointer-events: all;
+}
+
 .modal-content {
   position: relative;
   width: clamp(300px, 85vw, 800px);
   max-height: 90vh;
   overflow-y: auto;
   border-radius: 24px;
-  background-color: #111;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+  background: linear-gradient(145deg, #1a1a1a, #0a0a0a);
+  box-shadow: 
+    0 40px 80px rgba(0,0,0,0.7),
+    inset 0 1px 0 rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
   color: #fff;
   display: flex;
   flex-direction: column;
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.artist-modal:not(.hidden) .modal-content {
+  transform: scale(1) translateY(0);
+}
+
+/* Pulse dismiss animation */
+@keyframes pulse-dismiss {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.98); }
+  100% { transform: scale(1); }
+}
+
+.modal-content.pulse-dismiss {
+  animation: pulse-dismiss 0.25s ease;
 }
 .artist-photo {
   width: 100%;
