@@ -1,6 +1,7 @@
 /* packages/coverflow/server.js
-   FULL UPDATED VERSION — adds investors sub-domain + password gate
-   --------------------------------------------------------------- */
+   --------------------------------------------------
+   Production build — investor sub-domain added
+   -------------------------------------------------- */
 
 import express           from 'express';
 import path              from 'path';
@@ -19,7 +20,7 @@ const __dirname   = path.dirname(__filename);
 const PUBLIC_DIR   = path.join(__dirname, 'public');
 const ADMIN_DIR    = path.join(__dirname, 'admin');
 const DATA_DIR     = path.join(__dirname, 'data');
-+const INVESTORS_DIR = PUBLIC_DIR;              // serve root instead
+const INVESTORS_DIR = PUBLIC_DIR;                               // file lives in /public
 const UPLOADS_DIR  = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 
 /* -------------------------------------------------- */
@@ -31,17 +32,19 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 /* -------------------------------------------------- */
-/* 2.1 ▶ admin rewrite (unchanged)                    */
+/* 2.1 ▶ admin sub-domain rewrite                     */
 /* -------------------------------------------------- */
 app.use((req, res, next) => {
   if (req.hostname.startsWith('admin.') && req.method === 'GET') {
-    if (!req.path.startsWith('/admin') &&
-        !req.path.startsWith('/data/') &&
-        !req.path.startsWith('/uploads/') &&
-        !req.path.startsWith('/save-') &&
-        !req.path.startsWith('/delete-') &&
-        !req.path.startsWith('/upload-') &&
-        !req.path.startsWith('/push-')) {
+    if (
+      !req.path.startsWith('/admin') &&
+      !req.path.startsWith('/data/') &&
+      !req.path.startsWith('/uploads/') &&
+      !req.path.startsWith('/save-') &&
+      !req.path.startsWith('/delete-') &&
+      !req.path.startsWith('/upload-') &&
+      !req.path.startsWith('/push-')
+    ) {
       req.url = '/admin' + (req.url === '/' ? '/index.html' : req.url);
     }
   }
@@ -49,27 +52,21 @@ app.use((req, res, next) => {
 });
 
 /* -------------------------------------------------- */
-/* 2.2 ▶ investors rewrite + password gate  NEW       */
+/* 2.2 ▶ investors sub-domain auth + rewrite          */
 /* -------------------------------------------------- */
 app.use((req, res, next) => {
   const isInvestorsSub = req.hostname.startsWith('investors.');
-  if (isInvestorsSub && req.method === 'GET') {
-    if (!req.path.startsWith('/investors')) {
-      req.url = '/investors' + (req.url === '/' ? '/index.html' : req.url);
-    }
+  if (isInvestorsSub) {
+    if (req.url === '/' || req.url === '') req.url = '/index.html';
+
+    return basicAuth({
+      challenge : true,
+      realm     : 'AMF-Investors',
+      authorizer: (_u, pwd) => pwd === process.env.INVESTOR_PASS
+    })(req, res, next);
   }
   next();
 });
-
-app.use(
-  '/investors',
-  basicAuth({
-    challenge : true,
-    realm     : 'AMF-Investors',
-    authorizer: (_u, pwd) => pwd === process.env.INVESTOR_PASS
-  }),
-  express.static(INVESTORS_DIR, { extensions: ['html'] })
-);
 
 /* -------------------------------------------------- */
 /* 2.3 ▶ static assets                                */
@@ -152,8 +149,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({
   storage,
-  limits     : { fileSize: 10 * 1024 * 1024 },
-  fileFilter : (_req, file, cb) =>
+  limits    : { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (_req, file, cb) =>
     file.mimetype.startsWith('image/')
       ? cb(null, true)
       : cb(new Error('Only image files are allowed'))
@@ -162,23 +159,110 @@ const upload = multer({
 /* -------------------------------------------------- */
 /* 5 ▶ REST API routes                                */
 /* -------------------------------------------------- */
-/* … (all routes remain exactly as in your original file) … */
 
-/* save/update one cover */
-app.post('/save-cover', async (req, res) => { /* unchanged */ });
+/* save / update one cover */
+app.post('/save-cover', async (req, res) => {
+  try {
+    const cover = req.body;
+    if (!cover || !cover.id) {
+      return res.status(400).json({ error: 'Invalid cover data', details: 'Missing ID' });
+    }
 
-app.post('/save-covers', async (req, res) => { /* unchanged */ });
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    let covers = [];
 
-app.post('/delete-cover', async (req, res) => { /* unchanged */ });
+    try {
+      const data = await fs.promises.readFile(jsonPath, 'utf-8');
+      covers = JSON.parse(data);
+    } catch {
+      console.warn('Creating new covers.json');
+    }
 
-app.post('/upload-image', upload.single('image'), (req, res) => { /* unchanged */ });
+    const idx = covers.findIndex(c => String(c.id) === String(cover.id));
+    if (idx === -1) covers.push(cover);
+    else covers[idx] = cover;
 
-app.post('/push-live', async (req, res) => { /* unchanged */ });
+    await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
+    writeJsonToGitHub(JSON.stringify(covers, null, 2), `🔄 cover ${cover.id} via admin panel`);
+    res.json({ success: true, id: cover.id });
+  } catch (err) {
+    console.error('Save cover error:', err);
+    res.status(500).json({ error: 'Failed to save cover', details: err.message });
+  }
+});
 
-app.post('/save-assets', async (req, res) => { /* unchanged */ });
+/* bulk save / reorder covers */
+app.post('/save-covers', async (req, res) => {
+  try {
+    if (!Array.isArray(req.body)) {
+      return res.status(400).json({ error: 'Invalid format - expected array' });
+    }
 
-/* global error handler */
-app.use((err, req, res, _next) => {
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    await fs.promises.writeFile(jsonPath, JSON.stringify(req.body, null, 2));
+    writeJsonToGitHub(JSON.stringify(req.body, null, 2), '🔄 bulk covers update');
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Save covers error:', err);
+    res.status(500).json({ error: 'Failed to save covers', details: err.message });
+  }
+});
+
+/* delete cover */
+app.post('/delete-cover', async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ error: 'Missing id' });
+
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    const data = await fs.promises.readFile(jsonPath, 'utf-8');
+    const covers = JSON.parse(data).filter(c => String(c.id) !== String(id));
+
+    await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
+    writeJsonToGitHub(JSON.stringify(covers, null, 2), `🗑️ delete cover ${id}`);
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete cover error:', err);
+    res.status(500).json({ error: 'Failed to delete cover', details: err.message });
+  }
+});
+
+/* image upload */
+app.post('/upload-image', upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No image provided' });
+  res.json({ url: `/uploads/${req.file.filename}`, filename: req.file.filename });
+});
+
+/* push live placeholder */
+app.post('/push-live', async (req, res) => {
+  try {
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    const data = await fs.promises.readFile(jsonPath, 'utf-8');
+    await writeJsonToGitHub(data, '🚀 Push to production');
+    res.json({ success: true, message: 'Changes pushed to GitHub' });
+  } catch (err) {
+    console.error('Push live error:', err);
+    res.status(500).json({ error: 'Failed to push live', details: err.message });
+  }
+});
+
+/* save assets */
+app.post('/save-assets', async (req, res) => {
+  try {
+    const assets = req.body;
+    const jsonPath = path.join(DATA_DIR, 'assets.json');
+    await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Save assets error:', err);
+    res.status(500).json({ error: 'Failed to save assets', details: err.message });
+  }
+});
+
+/* -------------------------------------------------- */
+/* 5.5 ▶ global error handler                         */
+/* -------------------------------------------------- */
+app.use((err, _req, res, _next) => {
   console.error('Unhandled error:', err);
   res.status(500).json({
     error  : 'Internal server error',
