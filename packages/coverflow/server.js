@@ -19,7 +19,7 @@ const __dirname   = path.dirname(__filename);
 const PUBLIC_DIR   = path.join(__dirname, 'public');
 const ADMIN_DIR    = path.join(__dirname, 'admin');
 const DATA_DIR     = path.join(__dirname, 'data');
-const INVESTORS_DIR = path.join(PUBLIC_DIR, 'investors');          // ❶ NEW
++const INVESTORS_DIR = PUBLIC_DIR;              // serve root instead
 const UPLOADS_DIR  = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 
 /* -------------------------------------------------- */
