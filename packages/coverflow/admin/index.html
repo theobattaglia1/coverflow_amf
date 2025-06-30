@@ -12,6 +12,43 @@
       color: #fff;
       padding: 30px;
     }
+    
+    /* Navigation styles */
+    .admin-nav {
+      background: #1a1a1a;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+    
+    .admin-nav h1 {
+      margin: 0;
+      font-size: 20px;
+      color: #18d860;
+      margin-right: auto;
+    }
+    
+    .admin-nav a {
+      color: #fff;
+      text-decoration: none;
+      padding: 10px 20px;
+      background: #2a2a2a;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    
+    .admin-nav a:hover {
+      background: #18d860;
+      transform: translateY(-1px);
+    }
+    
+    .admin-nav a.active {
+      background: #18d860;
+    }
+    
     h1, h2 {
       font-size: 24px;
       margin-bottom: 20px;
@@ -127,6 +164,13 @@
   </style>
 </head>
 <body>
+
+<!-- Navigation -->
+<nav class="admin-nav">
+  <h1>AMF ADMIN</h1>
+  <a href="/admin/" class="active">Covers</a>
+  <a href="/admin/artist-audio.html">Artist Audio</a>
+</nav>
 
 <div class="section">
   <h1>Artist Covers</h1>
