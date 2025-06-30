@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   const isInvestorsSub = req.hostname.startsWith('investors.');
   if (isInvestorsSub) {
-    if (req.url === '/' || req.url === '') req.url = '/index.html';
+    if (req.url === '/' || req.url === '') req.url = '/investors.html';  // ← CHANGED THIS LINE
 
     return basicAuth({
       challenge : true,
