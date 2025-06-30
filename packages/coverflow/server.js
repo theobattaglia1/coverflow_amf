@@ -43,7 +43,8 @@ app.use((req, res, next) => {
       !req.path.startsWith('/save-') &&
       !req.path.startsWith('/delete-') &&
       !req.path.startsWith('/upload-') &&
-      !req.path.startsWith('/push-')
+      !req.path.startsWith('/push-') &&
+      !req.path.startsWith('/artist-tracks/')
     ) {
       req.url = '/admin' + (req.url === '/' ? '/index.html' : req.url);
     }
@@ -157,6 +158,35 @@ const upload = multer({
 });
 
 /* -------------------------------------------------- */
+/* 4.1 ▶ Audio Upload Configuration                   */
+/* -------------------------------------------------- */
+const audioStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    const audioDir = path.join(UPLOADS_DIR, 'audio');
+    fs.mkdirSync(audioDir, { recursive: true });
+    cb(null, audioDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `audio-${uniqueSuffix}${ext}`);
+  }
+});
+
+const audioUpload = multer({
+  storage: audioStorage,
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for audio
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/m4a'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only audio files are allowed'));
+    }
+  }
+});
+
+/* -------------------------------------------------- */
 /* 5 ▶ REST API routes                                */
 /* -------------------------------------------------- */
 
@@ -231,6 +261,54 @@ app.post('/delete-cover', async (req, res) => {
 app.post('/upload-image', upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image provided' });
   res.json({ url: `/uploads/${req.file.filename}`, filename: req.file.filename });
+});
+
+/* audio upload */
+app.post('/upload-audio', audioUpload.single('audio'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No audio file provided' });
+  res.json({ 
+    url: `/uploads/audio/${req.file.filename}`, 
+    filename: req.file.filename,
+    originalName: req.file.originalname 
+  });
+});
+
+/* save artist tracks */
+app.post('/save-artist-tracks', async (req, res) => {
+  try {
+    const { artistId, tracks } = req.body;
+    if (!artistId) return res.status(400).json({ error: 'Missing artistId' });
+
+    const jsonPath = path.join(DATA_DIR, 'artist-tracks.json');
+    let allTracks = {};
+
+    try {
+      const data = await fs.promises.readFile(jsonPath, 'utf-8');
+      allTracks = JSON.parse(data);
+    } catch {
+      console.log('Creating new artist-tracks.json');
+    }
+
+    allTracks[artistId] = tracks;
+    await fs.promises.writeFile(jsonPath, JSON.stringify(allTracks, null, 2));
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Save artist tracks error:', err);
+    res.status(500).json({ error: 'Failed to save tracks', details: err.message });
+  }
+});
+
+/* get artist tracks */
+app.get('/artist-tracks/:artistId', async (req, res) => {
+  try {
+    const jsonPath = path.join(DATA_DIR, 'artist-tracks.json');
+    const data = await fs.promises.readFile(jsonPath, 'utf-8');
+    const allTracks = JSON.parse(data);
+    res.json(allTracks[req.params.artistId] || []);
+  } catch {
+    res.json([]);
+  }
 });
 
 /* push live placeholder */
