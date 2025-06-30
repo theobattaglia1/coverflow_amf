@@ -147,6 +147,36 @@ async function writeJsonToGitHub(jsonString, commitMsg) {
   }
 }
 
+/* Add this function to sync artist tracks to GitHub */
+async function writeArtistTracksToGitHub(jsonString) {
+  try {
+    let sha;
+    try {
+      const { data } = await octokit.repos.getContent({
+        owner: GH_OWNER,
+        repo: GH_REPO,
+        path: 'data/artist-tracks.json'
+      });
+      sha = data.sha;
+    } catch (err) {
+      if (err.status !== 404) throw err;
+    }
+
+    await octokit.repos.createOrUpdateFileContents({
+      owner: GH_OWNER,
+      repo: GH_REPO,
+      path: 'data/artist-tracks.json',
+      message: '🎵 Update artist tracks',
+      content: Buffer.from(jsonString).toString('base64'),
+      sha
+    });
+
+    console.log('✅ pushed artist-tracks.json to GitHub');
+  } catch (err) {
+    console.error('❌ GitHub artist tracks push failed:', err);
+  }
+}
+
 /* -------------------------------------------------- */
 /* 4 ▶ Multer setup                                   */
 /* -------------------------------------------------- */
@@ -286,7 +316,7 @@ app.post('/upload-audio', audioUpload.single('audio'), (req, res) => {
   });
 });
 
-/* save artist tracks */
+/* save artist tracks - UPDATED to sync to GitHub */
 app.post('/save-artist-tracks', async (req, res) => {
   try {
     const { artistId, tracks } = req.body;
@@ -304,6 +334,9 @@ app.post('/save-artist-tracks', async (req, res) => {
 
     allTracks[artistId] = tracks;
     await fs.promises.writeFile(jsonPath, JSON.stringify(allTracks, null, 2));
+    
+    // Sync to GitHub
+    await writeArtistTracksToGitHub(JSON.stringify(allTracks, null, 2));
     
     res.json({ success: true });
   } catch (err) {
