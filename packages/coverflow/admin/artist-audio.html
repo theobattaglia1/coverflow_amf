@@ -111,19 +111,86 @@
             padding: 2rem;
             text-align: center;
             margin-top: 1rem;
+            transition: all 0.3s;
+            position: relative;
         }
         
-        input[type="file"] {
+        .upload-section.drag-over {
+            border-color: #FF4D00;
+            background: rgba(255, 77, 0, 0.1);
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
             margin: 1rem 0;
         }
         
-        input[type="text"] {
+        input[type="file"] {
+            position: absolute;
+            left: -9999px;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
             background: #333;
-            border: 1px solid #444;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        
+        .file-label:hover {
+            background: #444;
+        }
+        
+        .upload-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .upload-item {
+            background: #333;
+            padding: 1rem;
+            border-radius: 4px;
+            text-align: left;
+        }
+        
+        .upload-item input {
+            background: #444;
+            border: 1px solid #555;
             color: #fff;
             padding: 0.5rem;
             width: 100%;
             margin-bottom: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .upload-item .filename {
+            font-size: 0.875rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            word-break: break-all;
+        }
+        
+        .upload-progress {
+            width: 100%;
+            height: 4px;
+            background: #444;
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: 0.5rem;
+        }
+        
+        .upload-progress-bar {
+            height: 100%;
+            background: #FF4D00;
+            transition: width 0.3s;
         }
         
         .success {
@@ -134,6 +201,18 @@
         .error {
             color: #dc3545;
             margin-top: 1rem;
+        }
+        
+        .drop-message {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+        
+        .upload-all-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 2rem;
+            font-size: 1.1rem;
         }
     </style>
 </head>
@@ -158,6 +237,7 @@
         ];
 
         let artistTracks = {};
+        let pendingUploads = {};
 
         async function loadArtistTracks() {
             const container = document.getElementById('artists-container');
@@ -172,6 +252,9 @@
                     artistTracks[artist.id] = [];
                 }
                 
+                // Initialize pending uploads
+                pendingUploads[artist.id] = [];
+                
                 // Create artist section
                 const section = document.createElement('div');
                 section.className = 'artist-section';
@@ -183,16 +266,186 @@
                     <div class="track-list" id="tracks-${artist.id}">
                         ${renderTracks(artist.id, artistTracks[artist.id])}
                     </div>
-                    <div class="upload-section">
-                        <h3>Add New Track</h3>
-                        <input type="text" id="title-${artist.id}" placeholder="Track Title">
-                        <input type="file" id="file-${artist.id}" accept="audio/*">
-                        <button onclick="uploadTrack('${artist.id}')">Upload Track</button>
+                    <div class="upload-section" id="upload-section-${artist.id}">
+                        <div class="drop-message">
+                            🎵 Drag & drop audio files here or click to browse
+                        </div>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="file-${artist.id}" accept="audio/*,video/mp4" multiple>
+                            <label for="file-${artist.id}" class="file-label">Choose Files</label>
+                        </div>
+                        <div class="upload-grid" id="upload-grid-${artist.id}"></div>
+                        <button class="upload-all-btn" id="upload-btn-${artist.id}" style="display:none;" onclick="uploadAllTracks('${artist.id}')">
+                            Upload All Tracks
+                        </button>
                         <div id="status-${artist.id}"></div>
                     </div>
                 `;
                 container.appendChild(section);
+                
+                // Set up drag and drop
+                setupDragAndDrop(artist.id);
+                
+                // Set up file input
+                document.getElementById(`file-${artist.id}`).addEventListener('change', (e) => {
+                    handleFiles(artist.id, e.target.files);
+                });
             }
+        }
+
+        function setupDragAndDrop(artistId) {
+            const dropZone = document.getElementById(`upload-section-${artistId}`);
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                handleFiles(artistId, e.dataTransfer.files);
+            });
+        }
+
+        function handleFiles(artistId, files) {
+            const uploadGrid = document.getElementById(`upload-grid-${artistId}`);
+            const uploadBtn = document.getElementById(`upload-btn-${artistId}`);
+            
+            for (let file of files) {
+                // Check if it's an audio file
+                if (!file.type.startsWith('audio/') && !file.type.startsWith('video/mp4')) {
+                    continue;
+                }
+                
+                const fileId = Date.now() + '-' + Math.random();
+                const uploadItem = document.createElement('div');
+                uploadItem.className = 'upload-item';
+                uploadItem.id = `upload-${fileId}`;
+                
+                // Extract filename without extension for default title
+                const defaultTitle = file.name.replace(/\.[^/.]+$/, "");
+                
+                uploadItem.innerHTML = `
+                    <div class="filename">${file.name}</div>
+                    <input type="text" placeholder="Track Title" value="${defaultTitle}" id="title-${fileId}">
+                    <div class="upload-progress">
+                        <div class="upload-progress-bar" id="progress-${fileId}"></div>
+                    </div>
+                `;
+                
+                uploadGrid.appendChild(uploadItem);
+                
+                // Add to pending uploads
+                pendingUploads[artistId].push({
+                    id: fileId,
+                    file: file,
+                    titleId: `title-${fileId}`
+                });
+            }
+            
+            // Show upload button if there are pending uploads
+            if (pendingUploads[artistId].length > 0) {
+                uploadBtn.style.display = 'inline-block';
+            }
+        }
+
+        async function uploadAllTracks(artistId) {
+            const statusDiv = document.getElementById(`status-${artistId}`);
+            const uploadBtn = document.getElementById(`upload-btn-${artistId}`);
+            uploadBtn.disabled = true;
+            uploadBtn.textContent = 'Uploading...';
+            
+            let successCount = 0;
+            let errorCount = 0;
+            
+            for (const pending of pendingUploads[artistId]) {
+                const titleInput = document.getElementById(pending.titleId);
+                const title = titleInput.value.trim();
+                
+                if (!title) {
+                    document.getElementById(`upload-${pending.id}`).style.border = '2px solid #dc3545';
+                    errorCount++;
+                    continue;
+                }
+                
+                try {
+                    // Upload audio file
+                    const formData = new FormData();
+                    formData.append('audio', pending.file);
+                    
+                    const uploadResponse = await fetch('/upload-audio', {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    const uploadResult = await uploadResponse.json();
+                    
+                    if (!uploadResponse.ok) {
+                        throw new Error(uploadResult.error || 'Upload failed');
+                    }
+                    
+                    // Update progress bar
+                    document.getElementById(`progress-${pending.id}`).style.width = '100%';
+                    
+                    // Calculate duration (in real app, you'd read this from the audio file)
+                    const duration = '3:' + Math.floor(Math.random() * 60).toString().padStart(2, '0');
+                    
+                    // Add to tracks
+                    if (!artistTracks[artistId]) artistTracks[artistId] = [];
+                    artistTracks[artistId].push({
+                        title: title,
+                        url: uploadResult.url,
+                        filename: uploadResult.originalName,
+                        duration: duration
+                    });
+                    
+                    // Remove from upload grid
+                    document.getElementById(`upload-${pending.id}`).style.display = 'none';
+                    successCount++;
+                    
+                } catch (err) {
+                    document.getElementById(`upload-${pending.id}`).style.border = '2px solid #dc3545';
+                    errorCount++;
+                }
+            }
+            
+            // Save all tracks
+            if (successCount > 0) {
+                await fetch('/save-artist-tracks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        artistId: artistId,
+                        tracks: artistTracks[artistId]
+                    })
+                });
+                
+                // Update UI
+                document.getElementById(`tracks-${artistId}`).innerHTML = 
+                    renderTracks(artistId, artistTracks[artistId]);
+            }
+            
+            // Clear pending uploads
+            pendingUploads[artistId] = [];
+            document.getElementById(`upload-grid-${artistId}`).innerHTML = '';
+            
+            // Update status
+            statusDiv.innerHTML = `<p class="success">✓ ${successCount} tracks uploaded successfully${errorCount > 0 ? `, ${errorCount} failed` : ''}</p>`;
+            
+            // Hide upload button
+            uploadBtn.style.display = 'none';
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'Upload All Tracks';
+            
+            // Clear status after 5 seconds
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 5000);
         }
 
         function renderTracks(artistId, tracks) {
@@ -215,73 +468,6 @@
                     </div>
                 </div>
             `).join('');
-        }
-
-        async function uploadTrack(artistId) {
-            const titleInput = document.getElementById(`title-${artistId}`);
-            const fileInput = document.getElementById(`file-${artistId}`);
-            const statusDiv = document.getElementById(`status-${artistId}`);
-            
-            const title = titleInput.value.trim();
-            const file = fileInput.files[0];
-            
-            if (!title || !file) {
-                statusDiv.innerHTML = '<p class="error">Please provide both title and audio file</p>';
-                return;
-            }
-            
-            statusDiv.innerHTML = '<p>Uploading...</p>';
-            
-            try {
-                // Upload audio file
-                const formData = new FormData();
-                formData.append('audio', file);
-                
-                const uploadResponse = await fetch('/upload-audio', {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const uploadResult = await uploadResponse.json();
-                
-                if (!uploadResponse.ok) {
-                    throw new Error(uploadResult.error || 'Upload failed');
-                }
-                
-                // Calculate duration (in real app, you'd read this from the audio file)
-                const duration = '3:' + Math.floor(Math.random() * 60).toString().padStart(2, '0');
-                
-                // Add to tracks
-                if (!artistTracks[artistId]) artistTracks[artistId] = [];
-                artistTracks[artistId].push({
-                    title: title,
-                    url: uploadResult.url,
-                    filename: uploadResult.originalName,
-                    duration: duration
-                });
-                
-                // Save tracks
-                await fetch('/save-artist-tracks', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        artistId: artistId,
-                        tracks: artistTracks[artistId]
-                    })
-                });
-                
-                // Update UI
-                document.getElementById(`tracks-${artistId}`).innerHTML = 
-                    renderTracks(artistId, artistTracks[artistId]);
-                
-                // Clear inputs
-                titleInput.value = '';
-                fileInput.value = '';
-                statusDiv.innerHTML = '<p class="success">Track uploaded successfully!</p>';
-                
-            } catch (err) {
-                statusDiv.innerHTML = `<p class="error">Error: ${err.message}</p>`;
-            }
         }
 
         async function deleteTrack(artistId, trackIndex) {
