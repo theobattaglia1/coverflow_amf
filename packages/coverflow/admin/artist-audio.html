@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artist Audio Management</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #111;
+            color: #fff;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 3rem;
+            margin-bottom: 2rem;
+        }
+        
+        .artist-section {
+            background: #222;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 8px;
+        }
+        
+        .artist-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .artist-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        
+        .track-list {
+            margin-bottom: 1rem;
+        }
+        
+        .track-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #333;
+            margin-bottom: 0.5rem;
+            border-radius: 4px;
+        }
+        
+        .track-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            color: #FF4D00;
+        }
+        
+        .track-info {
+            flex: 1;
+        }
+        
+        .track-title {
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+        
+        .track-file {
+            font-size: 0.875rem;
+            color: #888;
+        }
+        
+        .track-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        button {
+            background: #FF4D00;
+            color: #111;
+            border: none;
+            padding: 0.5rem 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        
+        button:hover {
+            background: #ff6a00;
+            transform: translateY(-1px);
+        }
+        
+        .delete-btn {
+            background: #dc3545;
+        }
+        
+        .upload-section {
+            border: 2px dashed #444;
+            padding: 2rem;
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        input[type="file"] {
+            margin: 1rem 0;
+        }
+        
+        input[type="text"] {
+            background: #333;
+            border: 1px solid #444;
+            color: #fff;
+            padding: 0.5rem;
+            width: 100%;
+            margin-bottom: 0.5rem;
+        }
+        
+        .success {
+            color: #22C55E;
+            margin-top: 1rem;
+        }
+        
+        .error {
+            color: #dc3545;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Artist Audio Management</h1>
+        
+        <div id="artists-container">
+            <!-- Artists will be loaded here -->
+        </div>
+    </div>
+
+    <script>
+        const artists = [
+            { id: 'hudson', name: 'Hudson Ingram', image: 'https://allmyfriendsinc.com/uploads/upload-1748121117525-242753559.jpeg' },
+            { id: 'jack', name: 'Jack Schrepferman', image: 'https://allmyfriendsinc.com/uploads/upload-1748120927291-42815401.png' },
+            { id: 'ruby', name: 'Ruby Plume', image: 'https://allmyfriendsinc.com/uploads/upload-1748121131532-324221674.png' },
+            { id: 'kate', name: 'Kate Stephenson', image: 'https://allmyfriendsinc.com/uploads/upload-1748120863747-270939313.jpg' },
+            { id: 'leon', name: 'Leon Sharplin', image: 'https://allmyfriendsinc.com/uploads/upload-1751081737021-755156096.png' },
+            { id: 'conall', name: 'Conall Cafferty', image: 'https://allmyfriendsinc.com/uploads/upload-1748123456690-945730077.png' },
+            { id: 'tom', name: 'Tom Siletto', image: 'https://allmyfriendsinc.com/uploads/upload-1748121102073-915680969.png' }
+        ];
+
+        let artistTracks = {};
+
+        async function loadArtistTracks() {
+            const container = document.getElementById('artists-container');
+            
+            for (const artist of artists) {
+                // Fetch tracks for this artist
+                try {
+                    const response = await fetch(`/artist-tracks/${artist.id}`);
+                    const tracks = await response.json();
+                    artistTracks[artist.id] = tracks || [];
+                } catch (err) {
+                    artistTracks[artist.id] = [];
+                }
+                
+                // Create artist section
+                const section = document.createElement('div');
+                section.className = 'artist-section';
+                section.innerHTML = `
+                    <div class="artist-header">
+                        <img src="${artist.image}" alt="${artist.name}" class="artist-image">
+                        <h2>${artist.name}</h2>
+                    </div>
+                    <div class="track-list" id="tracks-${artist.id}">
+                        ${renderTracks(artist.id, artistTracks[artist.id])}
+                    </div>
+                    <div class="upload-section">
+                        <h3>Add New Track</h3>
+                        <input type="text" id="title-${artist.id}" placeholder="Track Title">
+                        <input type="file" id="file-${artist.id}" accept="audio/*">
+                        <button onclick="uploadTrack('${artist.id}')">Upload Track</button>
+                        <div id="status-${artist.id}"></div>
+                    </div>
+                `;
+                container.appendChild(section);
+            }
+        }
+
+        function renderTracks(artistId, tracks) {
+            if (!tracks || tracks.length === 0) {
+                return '<p style="color: #666;">No tracks uploaded yet</p>';
+            }
+            
+            return tracks.map((track, index) => `
+                <div class="track-item">
+                    <span class="track-number">${(index + 1).toString().padStart(2, '0')}</span>
+                    <div class="track-info">
+                        <div class="track-title">${track.title}</div>
+                        <div class="track-file">${track.filename || 'audio file'}</div>
+                    </div>
+                    <div class="track-actions">
+                        <audio controls style="height: 30px;">
+                            <source src="${track.url}" type="audio/mpeg">
+                        </audio>
+                        <button class="delete-btn" onclick="deleteTrack('${artistId}', ${index})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function uploadTrack(artistId) {
+            const titleInput = document.getElementById(`title-${artistId}`);
+            const fileInput = document.getElementById(`file-${artistId}`);
+            const statusDiv = document.getElementById(`status-${artistId}`);
+            
+            const title = titleInput.value.trim();
+            const file = fileInput.files[0];
+            
+            if (!title || !file) {
+                statusDiv.innerHTML = '<p class="error">Please provide both title and audio file</p>';
+                return;
+            }
+            
+            statusDiv.innerHTML = '<p>Uploading...</p>';
+            
+            try {
+                // Upload audio file
+                const formData = new FormData();
+                formData.append('audio', file);
+                
+                const uploadResponse = await fetch('/upload-audio', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const uploadResult = await uploadResponse.json();
+                
+                if (!uploadResponse.ok) {
+                    throw new Error(uploadResult.error || 'Upload failed');
+                }
+                
+                // Calculate duration (in real app, you'd read this from the audio file)
+                const duration = '3:' + Math.floor(Math.random() * 60).toString().padStart(2, '0');
+                
+                // Add to tracks
+                if (!artistTracks[artistId]) artistTracks[artistId] = [];
+                artistTracks[artistId].push({
+                    title: title,
+                    url: uploadResult.url,
+                    filename: uploadResult.originalName,
+                    duration: duration
+                });
+                
+                // Save tracks
+                await fetch('/save-artist-tracks', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        artistId: artistId,
+                        tracks: artistTracks[artistId]
+                    })
+                });
+                
+                // Update UI
+                document.getElementById(`tracks-${artistId}`).innerHTML = 
+                    renderTracks(artistId, artistTracks[artistId]);
+                
+                // Clear inputs
+                titleInput.value = '';
+                fileInput.value = '';
+                statusDiv.innerHTML = '<p class="success">Track uploaded successfully!</p>';
+                
+            } catch (err) {
+                statusDiv.innerHTML = `<p class="error">Error: ${err.message}</p>`;
+            }
+        }
+
+        async function deleteTrack(artistId, trackIndex) {
+            if (!confirm('Delete this track?')) return;
+            
+            artistTracks[artistId].splice(trackIndex, 1);
+            
+            await fetch('/save-artist-tracks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    artistId: artistId,
+                    tracks: artistTracks[artistId]
+                })
+            });
+            
+            document.getElementById(`tracks-${artistId}`).innerHTML = 
+                renderTracks(artistId, artistTracks[artistId]);
+        }
+
+        // Load on page load
+        loadArtistTracks();
+    </script>
+</body>
+</html>
