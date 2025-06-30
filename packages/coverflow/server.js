@@ -91,6 +91,19 @@ app.use(
 );
 
 app.use(
+  '/uploads/audio',
+  (req, res, next) => {
+    const isInvestorsSub = req.hostname.startsWith('investors.');
+    const isAdminSub = req.hostname.startsWith('admin.');
+    
+    if (!isInvestorsSub && !isAdminSub) {
+      return res.status(403).send('Access denied');
+    }
+    next();
+  }
+);
+
+app.use(
   '/uploads',
   express.static(UPLOADS_DIR, {
     setHeaders: res => res.setHeader('Cache-Control', 'no-store')
