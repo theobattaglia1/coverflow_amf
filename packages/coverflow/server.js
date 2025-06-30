@@ -58,7 +58,7 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   const isInvestorsSub = req.hostname.startsWith('investors.');
   if (isInvestorsSub) {
-    if (req.url === '/' || req.url === '') req.url = '/investors.html';  // ← CHANGED THIS LINE
+    if (req.url === '/' || req.url === '') req.url = '/investors.html';
 
     return basicAuth({
       challenge : true,
@@ -113,67 +113,74 @@ app.use(
 /* -------------------------------------------------- */
 /* 3 ▶ GitHub helper                                  */
 /* -------------------------------------------------- */
-const octokit      = new Octokit({ auth: process.env.GITHUB_TOKEN });
-const GH_OWNER     = 'theobattaglia1';
-const GH_REPO      = 'coverflow_amf';
-const GH_JSON_PATH = 'data/covers.json';
+const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
+const GH_OWNER = 'theobattaglia1';
+const GH_REPO = 'coverflow_amf';
 
-async function writeJsonToGitHub(jsonString, commitMsg) {
-  try {
-    let sha;
-    try {
-      const { data } = await octokit.repos.getContent({
-        owner: GH_OWNER,
-        repo : GH_REPO,
-        path : GH_JSON_PATH
-      });
-      sha = data.sha;
-    } catch (err) {
-      if (err.status !== 404) throw err;
-    }
-
-    await octokit.repos.createOrUpdateFileContents({
-      owner  : GH_OWNER,
-      repo   : GH_REPO,
-      path   : GH_JSON_PATH,
-      message: commitMsg,
-      content: Buffer.from(jsonString).toString('base64'),
-      sha
-    });
-
-    console.log('✅ pushed covers.json to GitHub');
-  } catch (err) {
-    console.error('❌ GitHub push failed:', err);
-  }
-}
-
-/* Add this function to sync artist tracks to GitHub */
-async function writeArtistTracksToGitHub(jsonString) {
+// Enhanced GitHub sync with better error handling
+async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
   try {
     let sha;
     try {
       const { data } = await octokit.repos.getContent({
         owner: GH_OWNER,
         repo: GH_REPO,
-        path: 'data/artist-tracks.json'
+        path: filePath
       });
       sha = data.sha;
     } catch (err) {
       if (err.status !== 404) throw err;
     }
 
-    await octokit.repos.createOrUpdateFileContents({
+    const result = await octokit.repos.createOrUpdateFileContents({
       owner: GH_OWNER,
       repo: GH_REPO,
-      path: 'data/artist-tracks.json',
-      message: '🎵 Update artist tracks',
+      path: filePath,
+      message: commitMsg,
       content: Buffer.from(jsonString).toString('base64'),
       sha
     });
 
-    console.log('✅ pushed artist-tracks.json to GitHub');
+    console.log(`✅ Successfully pushed ${filePath} to GitHub`);
+    return { success: true };
   } catch (err) {
-    console.error('❌ GitHub artist tracks push failed:', err);
+    console.error(`❌ GitHub push failed for ${filePath}:`, err.message);
+    throw err;
+  }
+}
+
+// Initialize data from GitHub on startup
+async function initializeFromGitHub() {
+  console.log('🔄 Initializing data from GitHub...');
+  
+  const filesToSync = [
+    'packages/coverflow/data/covers.json',
+    'packages/coverflow/data/artist-tracks.json',
+    'packages/coverflow/data/assets.json'
+  ];
+  
+  for (const filePath of filesToSync) {
+    try {
+      const { data } = await octokit.repos.getContent({
+        owner: GH_OWNER,
+        repo: GH_REPO,
+        path: filePath
+      });
+      
+      const content = Buffer.from(data.content, 'base64').toString();
+      const localPath = path.join(__dirname, ...filePath.split('/').slice(2));
+      
+      await fs.promises.mkdir(path.dirname(localPath), { recursive: true });
+      await fs.promises.writeFile(localPath, content);
+      
+      console.log(`✅ Synced ${filePath} from GitHub`);
+    } catch (err) {
+      if (err.status === 404) {
+        console.log(`⚠️  ${filePath} not found in GitHub (will be created on first save)`);
+      } else {
+        console.error(`❌ Failed to sync ${filePath}:`, err.message);
+      }
+    }
   }
 }
 
@@ -256,7 +263,14 @@ app.post('/save-cover', async (req, res) => {
     else covers[idx] = cover;
 
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    writeJsonToGitHub(JSON.stringify(covers, null, 2), `🔄 cover ${cover.id} via admin panel`);
+    
+    // GitHub sync with error handling
+    try {
+      await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `🔄 cover ${cover.id} via admin panel`);
+    } catch (githubError) {
+      console.error('GitHub sync failed but local save succeeded');
+    }
+    
     res.json({ success: true, id: cover.id });
   } catch (err) {
     console.error('Save cover error:', err);
@@ -273,7 +287,18 @@ app.post('/save-covers', async (req, res) => {
 
     const jsonPath = path.join(DATA_DIR, 'covers.json');
     await fs.promises.writeFile(jsonPath, JSON.stringify(req.body, null, 2));
-    writeJsonToGitHub(JSON.stringify(req.body, null, 2), '🔄 bulk covers update');
+    
+    // GitHub sync with error handling
+    try {
+      await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(req.body, null, 2), '🔄 bulk covers update');
+    } catch (githubError) {
+      return res.status(500).json({ 
+        error: 'Failed to sync to GitHub', 
+        details: githubError.message,
+        localSaveSuccess: true 
+      });
+    }
+    
     res.json({ success: true });
   } catch (err) {
     console.error('Save covers error:', err);
@@ -292,7 +317,14 @@ app.post('/delete-cover', async (req, res) => {
     const covers = JSON.parse(data).filter(c => String(c.id) !== String(id));
 
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    writeJsonToGitHub(JSON.stringify(covers, null, 2), `🗑️ delete cover ${id}`);
+    
+    // GitHub sync with error handling
+    try {
+      await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `🗑️ delete cover ${id}`);
+    } catch (githubError) {
+      console.error('GitHub sync failed but local delete succeeded');
+    }
+    
     res.json({ success: true });
   } catch (err) {
     console.error('Delete cover error:', err);
@@ -316,7 +348,7 @@ app.post('/upload-audio', audioUpload.single('audio'), (req, res) => {
   });
 });
 
-/* save artist tracks - UPDATED to sync to GitHub */
+/* save artist tracks */
 app.post('/save-artist-tracks', async (req, res) => {
   try {
     const { artistId, tracks } = req.body;
@@ -335,8 +367,16 @@ app.post('/save-artist-tracks', async (req, res) => {
     allTracks[artistId] = tracks;
     await fs.promises.writeFile(jsonPath, JSON.stringify(allTracks, null, 2));
     
-    // Sync to GitHub
-    await writeArtistTracksToGitHub(JSON.stringify(allTracks, null, 2));
+    // Sync to GitHub with error handling
+    try {
+      await writeJsonToGitHub('packages/coverflow/data/artist-tracks.json', JSON.stringify(allTracks, null, 2), '🎵 Update artist tracks');
+    } catch (githubError) {
+      return res.status(500).json({ 
+        error: 'Failed to sync to GitHub', 
+        details: githubError.message,
+        localSaveSuccess: true 
+      });
+    }
     
     res.json({ success: true });
   } catch (err) {
@@ -362,7 +402,7 @@ app.post('/push-live', async (req, res) => {
   try {
     const jsonPath = path.join(DATA_DIR, 'covers.json');
     const data = await fs.promises.readFile(jsonPath, 'utf-8');
-    await writeJsonToGitHub(data, '🚀 Push to production');
+    await writeJsonToGitHub('packages/coverflow/data/covers.json', data, '🚀 Push to production');
     res.json({ success: true, message: 'Changes pushed to GitHub' });
   } catch (err) {
     console.error('Push live error:', err);
@@ -376,10 +416,42 @@ app.post('/save-assets', async (req, res) => {
     const assets = req.body;
     const jsonPath = path.join(DATA_DIR, 'assets.json');
     await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
+    
+    // Sync to GitHub with error handling
+    try {
+      await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🎨 Update assets');
+    } catch (githubError) {
+      console.error('GitHub sync failed but local save succeeded');
+    }
+    
     res.json({ success: true });
   } catch (err) {
     console.error('Save assets error:', err);
     res.status(500).json({ error: 'Failed to save assets', details: err.message });
+  }
+});
+
+/* health check endpoint */
+app.get('/admin/health', async (req, res) => {
+  try {
+    // Test GitHub connection
+    await octokit.repos.get({
+      owner: GH_OWNER,
+      repo: GH_REPO
+    });
+    
+    res.json({
+      status: 'healthy',
+      github: 'connected',
+      dataDir: DATA_DIR,
+      uploadsDir: UPLOADS_DIR
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: 'unhealthy',
+      github: 'disconnected',
+      error: err.message
+    });
   }
 });
 
@@ -397,17 +469,23 @@ app.use((err, _req, res, _next) => {
 /* -------------------------------------------------- */
 /* 6 ▶ start server                                   */
 /* -------------------------------------------------- */
-const server = app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📁 Uploads directory: ${UPLOADS_DIR}`);
-  console.log(`🔐 Admin at: http://admin.localhost:${PORT}`);
-});
-
-/* graceful shutdown */
-process.on('SIGTERM', () => {
-  console.log('SIGTERM received, closing server…');
-  server.close(() => {
-    console.log('Server closed');
-    process.exit(0);
+// Initialize from GitHub before starting server
+initializeFromGitHub().then(() => {
+  const server = app.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log(`📁 Uploads directory: ${UPLOADS_DIR}`);
+    console.log(`🔐 Admin at: http://admin.localhost:${PORT}`);
   });
+
+  /* graceful shutdown */
+  process.on('SIGTERM', () => {
+    console.log('SIGTERM received, closing server…');
+    server.close(() => {
+      console.log('Server closed');
+      process.exit(0);
+    });
+  });
+}).catch(err => {
+  console.error('Failed to initialize from GitHub:', err);
+  process.exit(1);
 });
