@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ACCESS × ALL MY FRIENDS</title>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@800&family=IBM+Plex+Mono:wght@400;500&family=Literata&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #FFFFFF;
+      --ink: #111111;
+      --accent: #FF4D00;
+      --grey: #666666;
+      --transition: 120ms cubic-bezier(.16,1,.3,1);
+    }
+    
+    [data-theme="dark"] {
+      --bg: #0E0E0E;
+      --ink: #EEEEEE;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--bg);
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    /* Film grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZGVmcz48ZmlsdGVyIGlkPSJncmFpbiI+PGZlVHVyYnVsZW5jZSB0eXBlPSJ0dXJidWxlbmNlIiBiYXNlRnJlcXVlbmN5PSI5IiBudW1PY3RhdmVzPSI0IiByZXN1bHQ9InR1cmJ1bGVuY2UiLz48ZmVDb2xvck1hdHJpeCBpbj0idHVyYnVsZW5jZSIgdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjZ3JhaW4pIiBvcGFjaXR5PSIwLjA4Ii8+PC9zdmc+');
+      opacity: 0.08;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    
+    /* Grid lines background */
+    .grid-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+      background-size: 50px 50px;
+      z-index: 0;
+    }
+    
+    /* Rotating accent element */
+    .accent-element {
+      position: absolute;
+      width: 800px;
+      height: 800px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      opacity: 0.1;
+      animation: rotate 60s linear infinite;
+      z-index: 0;
+    }
+    
+    .accent-element:nth-child(2) {
+      width: 600px;
+      height: 600px;
+      animation-duration: 45s;
+      animation-direction: reverse;
+    }
+    
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    
+    .login-container {
+      position: relative;
+      z-index: 1;
+      border: 1px solid var(--ink);
+      padding: 64px;
+      width: 100%;
+      max-width: 480px;
+      background: var(--bg);
+      box-shadow: 24px 24px 0 var(--ink);
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+    
+    .login-header h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 48px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+    }
+    
+    .login-header .subtitle {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      opacity: 0.6;
+    }
+    
+    .form-group {
+      margin-bottom: 32px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 12px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 16px;
+      background: transparent;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      transition: all var(--transition);
+    }
+    
+    .form-group input:focus {
+      outline: 2px solid var(--accent);
+      outline-offset: -1px;
+      border-color: var(--accent);
+    }
+    
+    .password-wrapper {
+      position: relative;
+    }
+    
+    .password-toggle {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--grey);
+      cursor: pointer;
+      padding: 4px;
+      transition: color var(--transition);
+    }
+    
+    .password-toggle:hover {
+      color: var(--ink);
+    }
+    
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 32px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .remember-me input[type="checkbox"] {
+      width: 20px;
+      height: 20px;
+      accent-color: var(--accent);
+      cursor: pointer;
+    }
+    
+    .login-btn {
+      width: 100%;
+      padding: 20px;
+      background: var(--ink);
+      color: var(--bg);
+      border: none;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      cursor: pointer;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .login-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: var(--accent);
+      transition: left var(--transition);
+    }
+    
+    .login-btn:hover::before {
+      left: 0;
+    }
+    
+    .login-btn:hover {
+      transform: translate(-2px, -2px);
+      box-shadow: 2px 2px 0 var(--accent);
+    }
+    
+    .login-btn:active {
+      transform: translate(0, 0);
+      box-shadow: none;
+    }
+    
+    .login-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .login-btn .text {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .login-btn .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--bg);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 1;
+    }
+    
+    .login-btn.loading .text {
+      opacity: 0;
+    }
+    
+    .login-btn.loading .spinner {
+      display: block;
+    }
+    
+    @keyframes spin {
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    
+    .error-message {
+      background: var(--accent);
+      color: var(--bg);
+      padding: 16px;
+      margin-bottom: 32px;
+      font-size: 12px;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      display: none;
+    }
+    
+    .error-message.show {
+      display: block;
+      animation: glitch 0.3s ease-in-out;
+    }
+    
+    @keyframes glitch {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-2px); }
+      40% { transform: translateX(2px); }
+      60% { transform: translateX(-1px); }
+      80% { transform: translateX(1px); }
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 48px;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      opacity: 0.6;
+    }
+    
+    .footer a {
+      color: var(--accent);
+      text-decoration: none;
+      position: relative;
+    }
+    
+    .footer a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--accent);
+      transition: width var(--transition);
+    }
+    
+    .footer a:hover::after {
+      width: 100%;
+    }
+    
+    /* Responsive */
+    @media (max-width: 600px) {
+      .login-container {
+        padding: 32px;
+        margin: 20px;
+        box-shadow: 12px 12px 0 var(--ink);
+      }
+      
+      .login-header h1 {
+        font-size: 32px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Grid background -->
+  <div class="grid-bg"></div>
+  
+  <!-- Accent elements -->
+  <div class="accent-element"></div>
+  <div class="accent-element"></div>
+
+  <!-- Login form -->
+  <div class="login-container">
+    <div class="login-header">
+      <h1>ACCESS</h1>
+      <p class="subtitle">ALL MY FRIENDS × ADMIN</p>
+    </div>
+    
+    <div class="error-message" id="errorMessage"></div>
+    
+    <form id="loginForm">
+      <div class="form-group">
+        <label for="username">USERNAME</label>
+        <input 
+          type="text" 
+          id="username" 
+          name="username" 
+          required
+          autocomplete="username"
+          autofocus
+        >
+      </div>
+      
+      <div class="form-group">
+        <label for="password">PASSWORD</label>
+        <div class="password-wrapper">
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            required
+            autocomplete="current-password"
+          >
+          <button type="button" class="password-toggle" onclick="togglePassword()">
+            <svg id="eyeIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+          </button>
+        </div>
+      </div>
+      
+      <div class="remember-me">
+        <input type="checkbox" id="remember" name="remember">
+        <label for="remember">REMEMBER ME</label>
+      </div>
+      
+      <button type="submit" class="login-btn" id="loginBtn">
+        <span class="text">ENTER</span>
+        <span class="spinner"></span>
+      </button>
+    </form>
+    
+    <div class="footer">
+      <p>SECURE ACCESS • <a href="/">EXIT</a></p>
+    </div>
+  </div>
+
+  <script src="/admin/login.js"></script>
+</body>
+</html>

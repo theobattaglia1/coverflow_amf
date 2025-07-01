@@ -1,191 +1,469 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
-  <title>Dashboard - ALL MY FRIENDS ADMIN</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADMIN × ALL MY FRIENDS</title>
   <link rel="stylesheet" href="/admin/admin.css">
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   <style>
-    body {
-      font-family: 'Inter', sans-serif;
-      background: #121212;
-      color: #fff;
-      padding: 30px;
+    /* Specific overrides for dashboard */
+    .folder-tree {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: var(--gutter);
+      min-height: 600px;
     }
     
-    /* Navigation styles */
-    .admin-nav {
-      background: #1a1a1a;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 30px;
+    .folder-sidebar {
+      border: 1px solid var(--ink);
+      padding: var(--space-lg);
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .folder-sidebar::before {
+      content: 'FOLDERS';
+      position: absolute;
+      top: -12px;
+      left: var(--space-md);
+      background: var(--bg);
+      padding: 0 var(--space-sm);
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.2em;
+      font-weight: 500;
+    }
+    
+    .folder-content {
+      border: 1px solid var(--ink);
+      padding: var(--space-lg);
+      overflow-y: auto;
+      position: relative;
+    }
+    
+    .folder-content::before {
+      content: 'ASSETS';
+      position: absolute;
+      top: -12px;
+      left: var(--space-md);
+      background: var(--bg);
+      padding: 0 var(--space-sm);
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      letter-spacing: 0.2em;
+      font-weight: 500;
+    }
+    
+    .folder-item {
+      padding: var(--space-sm) var(--space-md);
+      cursor: pointer;
+      margin-bottom: 1px;
       display: flex;
-      gap: 20px;
       align-items: center;
+      gap: var(--space-sm);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      transition: all var(--transition);
+      border-left: 3px solid transparent;
     }
     
-    .admin-nav h1 {
-      margin: 0;
-      font-size: 20px;
-      color: #18d860;
-      margin-right: auto;
+    .folder-item:hover {
+      background: var(--accent-dim);
+      border-left-color: var(--accent);
     }
     
-    .admin-nav a {
-      color: #fff;
-      text-decoration: none;
-      padding: 10px 20px;
-      background: #2a2a2a;
-      border-radius: 6px;
-      transition: all 0.2s;
+    .folder-item.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-left-color: var(--accent);
     }
     
-    .admin-nav a:hover {
-      background: #18d860;
-      transform: translateY(-1px);
+    .folder-actions {
+      margin-left: auto;
+      display: flex;
+      gap: var(--space-xs);
+      opacity: 0;
+      transition: opacity var(--transition);
     }
     
-    .admin-nav a.active {
-      background: #18d860;
+    .folder-item:hover .folder-actions {
+      opacity: 1;
     }
     
-    h1, h2 {
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-    .cover-card {
-      display: inline-block;
-      width: 180px;
-      margin: 10px;
-      padding: 10px;
-      background: #1e1e1e;
-      border-radius: 8px;
-      text-align: center;
-      cursor: move;
-    }
-    .cover-card img {
-      width: 100%;
-      border-radius: 4px;
-    }
-    .cover-card button {
-      margin-top: 10px;
-      background: #18d860;
-      color: white;
-      padding: 6px;
+    .folder-actions button {
+      background: none;
       border: none;
-      border-radius: 4px;
+      color: currentColor;
       cursor: pointer;
+      padding: var(--space-xs);
+      opacity: 0.6;
+      transition: opacity var(--transition);
     }
-    #coverDropzone, #assetDropzone {
-      padding: 20px;
-      background: #2a2a2a;
-      border-radius: 8px;
-      border: 2px dashed #777;
-      text-align: center;
-      margin-top: 20px;
+    
+    .folder-actions button:hover {
+      opacity: 1;
+    }
+    
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      margin-bottom: var(--space-lg);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+    
+    .breadcrumb span {
       cursor: pointer;
+      opacity: 0.6;
+      transition: opacity var(--transition);
     }
-    #coverDropzone.dragover, #assetDropzone.dragover {
-      border-color: #18d860;
+    
+    .breadcrumb span:hover {
+      opacity: 1;
     }
-    .btn {
-      padding: 12px 24px;
-      border-radius: 6px;
-      border: none;
-      cursor: pointer;
-      font-weight: bold;
-      margin-top: 20px;
-      margin-right: 10px;
+    
+    .breadcrumb span:last-child {
+      opacity: 1;
+      cursor: default;
+      color: var(--accent);
     }
-    .btn-save {
-      background: #18d860;
-      color: white;
+    
+    .breadcrumb span:not(:last-child)::after {
+      content: '/';
+      margin-left: var(--space-sm);
+      opacity: 0.3;
     }
-    .btn-live {
-      background: #007aff;
-      color: white;
-    }
-    .section {
-      margin-bottom: 40px;
-      padding: 20px;
-      background: #1a1a1a;
-      border-radius: 10px;
-    }
+    
     .asset-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 15px;
-      margin-top: 20px;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: var(--space-lg);
     }
+    
     .asset-item {
-      background: #2a2a2a;
-      padding: 10px;
-      border-radius: 8px;
-      text-align: center;
+      border: 1px solid var(--grey);
+      padding: var(--space-md);
+      cursor: move;
+      transition: all var(--transition);
+      position: relative;
+      overflow: hidden;
     }
+    
+    .asset-item::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--accent-dim);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform var(--transition);
+      pointer-events: none;
+    }
+    
+    .asset-item:hover {
+      border-color: var(--ink);
+      transform: translateY(-2px);
+    }
+    
+    .asset-item:hover::before {
+      transform: scaleY(1);
+    }
+    
     .asset-item img {
       width: 100%;
-      height: 100px;
+      height: 120px;
       object-fit: cover;
-      border-radius: 4px;
-      margin-bottom: 10px;
+      margin-bottom: var(--space-md);
+      filter: grayscale(100%);
+      transition: filter var(--transition-slow);
     }
+    
+    .asset-item:hover img {
+      filter: grayscale(0%);
+    }
+    
     .asset-item input {
       width: 100%;
-      background: #333;
-      border: 1px solid #444;
-      color: white;
-      padding: 5px;
-      border-radius: 4px;
-      margin-bottom: 5px;
-      font-size: 12px;
-    }
-    .asset-item button {
-      background: #e74c3c;
-      color: white;
+      background: transparent;
       border: none;
-      padding: 5px 10px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 12px;
+      border-bottom: 1px solid var(--grey);
+      color: var(--ink);
+      padding: var(--space-xs) 0;
+      margin-bottom: var(--space-sm);
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      position: relative;
+      z-index: 1;
     }
+    
+    .asset-item input:focus {
+      border-bottom-color: var(--ink);
+      outline: none;
+    }
+    
+    .asset-item button {
+      background: transparent;
+      color: var(--ink);
+      border: 1px solid var(--ink);
+      padding: var(--space-xs) var(--space-sm);
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: all var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+    
+    .asset-item button:hover {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    
     .url-display {
-      background: #333;
-      padding: 5px;
-      border-radius: 4px;
-      font-size: 11px;
+      padding: var(--space-xs);
+      font-family: var(--font-mono);
+      font-size: 0.625rem;
       word-break: break-all;
-      margin-bottom: 5px;
+      margin-bottom: var(--space-sm);
       cursor: pointer;
+      opacity: 0.6;
+      position: relative;
+      z-index: 1;
     }
+    
     .url-display:hover {
-      background: #444;
+      opacity: 1;
+    }
+    
+    .new-folder-btn {
+      width: 100%;
+      margin-bottom: var(--space-lg);
+    }
+    
+    /* User section specific */
+    .users-section {
+      display: none;
+    }
+    
+    .users-list {
+      border: 1px solid var(--ink);
+      padding: var(--space-lg);
+    }
+    
+    .user-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--grey-light);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+    }
+    
+    .user-item:last-child {
+      border-bottom: none;
+    }
+    
+    .add-user-form {
+      border: 1px solid var(--ink);
+      padding: var(--space-lg);
+      margin-top: var(--space-lg);
+    }
+    
+    /* Circular index numbers */
+    .index-badge {
+      position: absolute;
+      top: var(--space-md);
+      right: var(--space-md);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 1px solid var(--ink);
+      background: var(--bg);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      z-index: 2;
+    }
+    
+    /* Theme toggle */
+    .theme-toggle {
+      position: fixed;
+      bottom: var(--space-lg);
+      left: var(--space-lg);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--ink);
+      background: var(--bg);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-family: var(--font-mono);
+      font-size: 1.25rem;
+      transition: all var(--transition);
+      z-index: 100;
+    }
+    
+    .theme-toggle:hover {
+      transform: rotate(180deg);
     }
   </style>
 </head>
 <body>
 
-<!-- Navigation -->
-<nav class="admin-nav">
-  <h1>AMF ADMIN</h1>
-  <a href="/admin/" class="active">Covers</a>
-  <a href="/admin/artist-audio.html">Artist Audio</a>
-</nav>
+<div class="admin-container">
+  <!-- Navigation -->
+  <nav class="admin-nav">
+    <div class="container">
+      <h1>ADMIN://AMF</h1>
+      <div class="nav-links">
+        <a href="/admin/" class="active">COVERS</a>
+        <a href="/admin/artist-audio.html">AUDIO</a>
+        <a href="#" onclick="showUsersSection()">USERS</a>
+      </div>
+      <div class="user-badge">
+        <span id="username">...</span>
+        <span class="user-role" id="userRole">...</span>
+        <button class="btn btn-danger" onclick="logout()" style="padding: var(--space-sm) var(--space-md); font-size: 0.75rem;">EXIT</button>
+      </div>
+    </div>
+  </nav>
 
-<div class="section">
-  <h1>Artist Covers</h1>
-  <div id="coversContainer"></div>
-  <div id="coverDropzone">Drag & drop image to add new cover</div>
-  <button class="btn btn-save" onclick="saveChanges()">Save Changes</button>
-  <button class="btn btn-live" onclick="pushLive()">Push Live</button>
+  <!-- Main Content -->
+  <main class="container">
+    <!-- Covers Section -->
+    <section class="section" id="coversSection">
+      <div class="section-header">
+        <h1>ARTIST COVERS</h1>
+        <span class="section-subtitle">DRAG TO REORDER × CLICK TO EDIT</span>
+      </div>
+      
+      <div class="covers-grid" id="coversContainer">
+        <!-- Covers will load here -->
+      </div>
+      
+      <div class="dropzone" id="coverDropzone">
+        <span class="dropzone-text">DRAG IMAGE TO CREATE NEW COVER</span>
+      </div>
+      
+      <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
+        <button class="btn btn-primary" onclick="saveChanges()">SAVE CHANGES</button>
+        <button class="btn" onclick="pushLive()">PUSH LIVE</button>
+      </div>
+    </section>
+
+    <!-- Image Repository Section -->
+    <section class="section">
+      <div class="section-header">
+        <h2>IMAGE REPOSITORY</h2>
+        <span class="section-subtitle">ORGANIZED BY FOLDER</span>
+      </div>
+      
+      <div class="folder-tree">
+        <!-- Folder Sidebar -->
+        <div class="folder-sidebar">
+          <button class="btn btn-primary new-folder-btn" onclick="createNewFolder()">+ NEW FOLDER</button>
+          <div id="folderTree"></div>
+        </div>
+        
+        <!-- Folder Content -->
+        <div class="folder-content">
+          <div class="breadcrumb" id="breadcrumb">
+            <span onclick="navigateToFolder('')">ROOT</span>
+          </div>
+          
+          <div class="dropzone" id="assetDropzone" style="margin-bottom: var(--space-xl);">
+            <span class="dropzone-text">DROP IMAGES HERE</span>
+          </div>
+          
+          <div id="assetsContainer" class="asset-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Users Section (Admin only) -->
+    <section class="section users-section" id="usersSection">
+      <div class="section-header">
+        <h1>USER MANAGEMENT</h1>
+        <span class="section-subtitle">ADMIN ACCESS ONLY</span>
+      </div>
+      
+      <div class="users-list">
+        <h3 style="margin-bottom: var(--space-lg);">CURRENT USERS</h3>
+        <div id="usersList"></div>
+      </div>
+      
+      <div class="add-user-form">
+        <h3 style="margin-bottom: var(--space-lg);">ADD NEW USER</h3>
+        <form id="addUserForm" onsubmit="addUser(event)">
+          <div class="form-group">
+            <label>USERNAME</label>
+            <input type="text" name="username" required>
+          </div>
+          <div class="form-group">
+            <label>PASSWORD</label>
+            <input type="password" name="password" required>
+          </div>
+          <div class="form-group">
+            <label>ROLE</label>
+            <select name="role" required>
+              <option value="viewer">VIEWER</option>
+              <option value="editor">EDITOR</option>
+              <option value="admin">ADMIN</option>
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary">CREATE USER</button>
+        </form>
+      </div>
+    </section>
+  </main>
 </div>
 
-<div class="section">
-  <h2>Image Repository</h2>
-  <p style="color: #888; font-size: 14px;">Upload images for thumbnails, logos, and other assets</p>
-  <div id="assetDropzone">Drag & drop images to upload</div>
-  <div id="assetsContainer" class="asset-grid"></div>
+<!-- Theme Toggle -->
+<button class="theme-toggle" onclick="toggleTheme()">
+  <span id="themeIcon">☾</span>
+</button>
+
+<!-- Toast notifications -->
+<div id="toast" class="toast"></div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-spinner"></div>
 </div>
+
+<script>
+  // Theme toggle
+  function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? '' : 'dark';
+    html.setAttribute('data-theme', newTheme);
+    document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☾' : '☀';
+    localStorage.setItem('theme', newTheme);
+  }
+  
+  // Load saved theme
+  const savedTheme = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☾' : '☀';
+</script>
 
 <script src="/admin/dashboard.js"></script>
 </body>
