@@ -1,123 +1,126 @@
-/* packages/coverflow/server.js
-   --------------------------------------------------
-   Production build — investor sub-domain added
-   -------------------------------------------------- */
-
-import express           from 'express';
-import path              from 'path';
-import fs                from 'fs';
-import multer            from 'multer';
-import basicAuth         from 'express-basic-auth';
-import { Octokit }       from '@octokit/rest';
+import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import multer from 'multer';
+import bcrypt from 'bcrypt';
+import session from 'express-session';
+import { Octokit } from '@octokit/rest';
 import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
-/* -------------------------------------------------- */
-/* 1 ▶ absolute paths & constants                     */
-/* -------------------------------------------------- */
-const __filename  = fileURLToPath(import.meta.url);
-const __dirname   = path.dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-const PUBLIC_DIR   = path.join(__dirname, 'public');
-const ADMIN_DIR    = path.join(__dirname, 'admin');
-const DATA_DIR     = path.join(__dirname, 'data');
-const INVESTORS_DIR = PUBLIC_DIR;                               // file lives in /public
-const UPLOADS_DIR  = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const ADMIN_DIR = path.join(__dirname, 'admin');
+const DATA_DIR = path.join(__dirname, 'data');
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 
-/* -------------------------------------------------- */
-/* 2 ▶ basic Express setup                            */
-/* -------------------------------------------------- */
-const app  = express();
+const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-/* -------------------------------------------------- */
-/* 2.1 ▶ admin sub-domain rewrite                     */
-/* -------------------------------------------------- */
+// Session configuration
+const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+app.use(session({
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Allow cookies over HTTP in development
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax'
+  }
+}));
+
+// Authentication middleware
+const requireAuth = (requiredRole = 'viewer') => {
+  return (req, res, next) => {
+    // Development bypass
+    if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+      req.session.user = {
+        username: 'dev',
+        role: 'admin'
+      };
+      return next();
+    }
+    
+    if (!req.session.user) {
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      return res.redirect('/admin/login.html');
+    }
+
+    const roleHierarchy = { admin: 3, editor: 2, viewer: 1 };
+    if (roleHierarchy[req.session.user.role] < roleHierarchy[requiredRole]) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+
+    next();
+  };
+};
+
+// User management functions
+async function loadUsers() {
+  const usersPath = path.join(DATA_DIR, 'users.json');
+  try {
+    const data = await fs.promises.readFile(usersPath, 'utf-8');
+    return JSON.parse(data);
+  } catch {
+    // Initialize with default admin user
+    const defaultUsers = [{
+      username: 'admin',
+      hash: await bcrypt.hash(process.env.ADMIN_PASSWORD || 'password', 10),
+      role: 'admin'
+    }];
+    await fs.promises.writeFile(usersPath, JSON.stringify(defaultUsers, null, 2));
+    return defaultUsers;
+  }
+}
+
+async function saveUsers(users) {
+  const usersPath = path.join(DATA_DIR, 'users.json');
+  await fs.promises.writeFile(usersPath, JSON.stringify(users, null, 2));
+}
+
+// Admin subdomain rewrite
 app.use((req, res, next) => {
   if (req.hostname.startsWith('admin.') && req.method === 'GET') {
-    if (
-      !req.path.startsWith('/admin') &&
-      !req.path.startsWith('/data/') &&
-      !req.path.startsWith('/uploads/') &&
-      !req.path.startsWith('/save-') &&
-      !req.path.startsWith('/delete-') &&
-      !req.path.startsWith('/upload-') &&
-      !req.path.startsWith('/push-') &&
-      !req.path.startsWith('/artist-tracks/')
-    ) {
+    if (!req.path.startsWith('/admin') && 
+        !req.path.startsWith('/api/') &&
+        !req.path.startsWith('/data/') &&
+        !req.path.startsWith('/uploads/')) {
       req.url = '/admin' + (req.url === '/' ? '/index.html' : req.url);
     }
   }
   next();
 });
 
-/* -------------------------------------------------- */
-/* 2.2 ▶ investors sub-domain auth + rewrite          */
-/* -------------------------------------------------- */
-app.use((req, res, next) => {
-  const isInvestorsSub = req.hostname.startsWith('investors.');
-  if (isInvestorsSub) {
-    if (req.url === '/' || req.url === '') req.url = '/investors.html';
-
-    return basicAuth({
-      challenge : true,
-      realm     : 'AMF-Investors',
-      authorizer: (_u, pwd) => pwd === process.env.INVESTOR_PASS
-    })(req, res, next);
-  }
-  next();
-});
-
-/* -------------------------------------------------- */
-/* 2.3 ▶ static assets                                */
-/* -------------------------------------------------- */
+// Static files (public access)
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
+app.use('/uploads', express.static(UPLOADS_DIR, {
+  setHeaders: res => res.setHeader('Cache-Control', 'no-store')
+}));
 
-app.use(
-  '/admin',
-  basicAuth({
-    users    : { admin: process.env.ADMIN_PASSWORD || 'password' },
-    challenge: true
-  }),
-  express.static(ADMIN_DIR, { extensions: ['html'] })
-);
+// Protected admin routes
+app.use('/admin/login.html', express.static(path.join(ADMIN_DIR, 'login.html')));
+app.use('/admin/login.js', express.static(path.join(ADMIN_DIR, 'login.js')));
+app.use('/admin', requireAuth('viewer'), express.static(ADMIN_DIR, { extensions: ['html'] }));
 
-app.use(
-  '/data',
-  express.static(DATA_DIR, {
-    setHeaders: res => res.setHeader('Cache-Control', 'no-store')
-  })
-);
+// Protected data access
+app.use('/data', requireAuth('viewer'), express.static(DATA_DIR, {
+  setHeaders: res => res.setHeader('Cache-Control', 'no-store')
+}));
 
-app.use(
-  '/uploads/audio',
-  (req, res, next) => {
-    const isInvestorsSub = req.hostname.startsWith('investors.');
-    const isAdminSub = req.hostname.startsWith('admin.');
-    
-    if (!isInvestorsSub && !isAdminSub) {
-      return res.status(403).send('Access denied');
-    }
-    next();
-  }
-);
-
-app.use(
-  '/uploads',
-  express.static(UPLOADS_DIR, {
-    setHeaders: res => res.setHeader('Cache-Control', 'no-store')
-  })
-);
-
-/* -------------------------------------------------- */
-/* 3 ▶ GitHub helper                                  */
-/* -------------------------------------------------- */
+// GitHub integration
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const GH_OWNER = 'theobattaglia1';
 const GH_REPO = 'coverflow_amf';
 
-// Enhanced GitHub sync with better error handling
 async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
   try {
     let sha;
@@ -132,7 +135,7 @@ async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
       if (err.status !== 404) throw err;
     }
 
-    const result = await octokit.repos.createOrUpdateFileContents({
+    await octokit.repos.createOrUpdateFileContents({
       owner: GH_OWNER,
       repo: GH_REPO,
       path: filePath,
@@ -141,15 +144,440 @@ async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
       sha
     });
 
-    console.log(`✅ Successfully pushed ${filePath} to GitHub`);
     return { success: true };
   } catch (err) {
-    console.error(`❌ GitHub push failed for ${filePath}:`, err.message);
+    console.error(`GitHub push failed for ${filePath}:`, err.message);
     throw err;
   }
 }
 
-// Initialize data from GitHub on startup
+// Enhanced multer setup with folder support
+fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+
+const storage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const folder = req.body.folder || '';
+    const destPath = path.join(UPLOADS_DIR, folder);
+    await fs.promises.mkdir(destPath, { recursive: true });
+    cb(null, destPath);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `upload-${uniqueSuffix}${ext}`);
+  }
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 10 * 1024 * 1024 },
+  fileFilter: (req, file, cb) =>
+    file.mimetype.startsWith('image/')
+      ? cb(null, true)
+      : cb(new Error('Only image files are allowed'))
+});
+
+// Audio upload configuration
+const audioStorage = multer.diskStorage({
+  destination: async (req, file, cb) => {
+    const audioDir = path.join(UPLOADS_DIR, 'audio');
+    await fs.promises.mkdir(audioDir, { recursive: true });
+    cb(null, audioDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+    const ext = path.extname(file.originalname);
+    cb(null, `audio-${uniqueSuffix}${ext}`);
+  }
+});
+
+const audioUpload = multer({
+  storage: audioStorage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/webm'];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only audio files are allowed'));
+    }
+  }
+});
+
+// Authentication endpoints
+app.post('/api/login', async (req, res) => {
+  try {
+    // Development bypass - auto-login
+    if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+      req.session.user = { username: 'dev', role: 'admin' };
+      return res.json({ success: true, role: 'admin' });
+    }
+    
+    const { username, password } = req.body;
+    const users = await loadUsers();
+    const user = users.find(u => u.username === username);
+
+    if (!user || !(await bcrypt.compare(password, user.hash))) {
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+
+    req.session.user = { username: user.username, role: user.role };
+    res.json({ success: true, role: user.role });
+  } catch (err) {
+    console.error('Login error:', err);
+    res.status(500).json({ error: 'Login failed' });
+  }
+});
+
+app.post('/api/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) return res.status(500).json({ error: 'Logout failed' });
+    res.json({ success: true });
+  });
+});
+
+app.get('/api/me', requireAuth(), (req, res) => {
+  // Development bypass - ensure session is set
+  if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true' && !req.session.user) {
+    req.session.user = {
+      username: 'dev',
+      role: 'admin'
+    };
+  }
+  res.json({ user: req.session.user });
+});
+
+// User management endpoints
+app.get('/api/users', requireAuth('admin'), async (req, res) => {
+  try {
+    const users = await loadUsers();
+    res.json(users.map(u => ({ username: u.username, role: u.role })));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load users' });
+  }
+});
+
+app.post('/api/users', requireAuth('admin'), async (req, res) => {
+  try {
+    const { username, password, role } = req.body;
+    const users = await loadUsers();
+
+    if (users.find(u => u.username === username)) {
+      return res.status(400).json({ error: 'User already exists' });
+    }
+
+    users.push({
+      username,
+      hash: await bcrypt.hash(password, 10),
+      role
+    });
+
+    await saveUsers(users);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create user' });
+  }
+});
+
+app.delete('/api/users/:username', requireAuth('admin'), async (req, res) => {
+  try {
+    const users = await loadUsers();
+    const filtered = users.filter(u => u.username !== req.params.username);
+    
+    if (filtered.length === users.length) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await saveUsers(filtered);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete user' });
+  }
+});
+
+// Folder management endpoints
+app.post('/api/folder', requireAuth('editor'), async (req, res) => {
+  try {
+    const { path: folderPath, name } = req.body;
+    const assetsPath = path.join(DATA_DIR, 'assets.json');
+    const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+
+    // Navigate to the target folder
+    const pathParts = folderPath ? folderPath.split('/').filter(Boolean) : [];
+    let current = assets;
+    
+    for (const part of pathParts) {
+      if (!current.folders) current.folders = [];
+      let folder = current.folders.find(f => f.name === part);
+      if (!folder) {
+        folder = { name: part, children: [] };
+        current.folders.push(folder);
+      }
+      current = folder;
+    }
+
+    if (!current.children) current.children = [];
+    
+    // Check if folder already exists
+    if (current.children.find(c => c.type === 'folder' && c.name === name)) {
+      return res.status(400).json({ error: 'Folder already exists' });
+    }
+
+    current.children.push({ type: 'folder', name, children: [] });
+
+    await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Create folder error:', err);
+    res.status(500).json({ error: 'Failed to create folder' });
+  }
+});
+
+app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
+  try {
+    const { path: folderPath } = req.body;
+    const assetsPath = path.join(DATA_DIR, 'assets.json');
+    const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+
+    const pathParts = folderPath.split('/').filter(Boolean);
+    const folderName = pathParts.pop();
+    
+    let parent = assets;
+    for (const part of pathParts) {
+      if (!parent.folders) parent.folders = [];
+      parent = parent.folders.find(f => f.name === part);
+      if (!parent) return res.status(404).json({ error: 'Parent folder not found' });
+    }
+
+    if (!parent.children) parent.children = [];
+    parent.children = parent.children.filter(c => !(c.type === 'folder' && c.name === folderName));
+
+    await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🗑️ Delete folder');
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete folder error:', err);
+    res.status(500).json({ error: 'Failed to delete folder' });
+  }
+});
+
+app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
+  try {
+    const { path: folderPath, newName } = req.body;
+    const assetsPath = path.join(DATA_DIR, 'assets.json');
+    const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+
+    const pathParts = folderPath.split('/').filter(Boolean);
+    const oldName = pathParts.pop();
+    
+    let parent = assets;
+    for (const part of pathParts) {
+      if (!parent.folders) parent.folders = [];
+      parent = parent.folders.find(f => f.name === part);
+      if (!parent) return res.status(404).json({ error: 'Parent folder not found' });
+    }
+
+    if (!parent.children) parent.children = [];
+    const folder = parent.children.find(c => c.type === 'folder' && c.name === oldName);
+    if (!folder) return res.status(404).json({ error: 'Folder not found' });
+
+    folder.name = newName;
+
+    await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '✏️ Rename folder');
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Rename folder error:', err);
+    res.status(500).json({ error: 'Failed to rename folder' });
+  }
+});
+
+// Enhanced image upload with folder support
+app.post('/upload-image', requireAuth('editor'), upload.single('image'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No image provided' });
+  const folder = req.body.folder || '';
+  const relativePath = path.join(folder, req.file.filename);
+  res.json({ 
+    url: `/uploads/${relativePath.replace(/\\/g, '/')}`, 
+    filename: req.file.filename,
+    folder: folder 
+  });
+});
+
+// Cover management endpoints
+app.post('/save-cover', requireAuth('editor'), async (req, res) => {
+  try {
+    const cover = req.body;
+    if (!cover || !cover.id) {
+      return res.status(400).json({ error: 'Invalid cover data', details: 'Missing ID' });
+    }
+
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    let covers = [];
+
+    try {
+      const data = await fs.promises.readFile(jsonPath, 'utf-8');
+      covers = JSON.parse(data);
+    } catch {
+      console.warn('Creating new covers.json');
+    }
+
+    // Generate artistId if new artist
+    if (cover.artistDetails?.name && !cover.artistId) {
+      cover.artistId = cover.artistDetails.name.toLowerCase().replace(/\s+/g, '-');
+    }
+
+    const idx = covers.findIndex(c => String(c.id) === String(cover.id));
+    if (idx === -1) {
+      covers.push(cover);
+      
+      // Auto-create artist folder if enabled
+      if (cover.artistDetails?.name && req.body.createArtistFolder) {
+        const assetsPath = path.join(DATA_DIR, 'assets.json');
+        const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+        
+        if (!assets.folders) assets.folders = [];
+        
+        // Check if artist folder exists
+        if (!assets.folders.find(f => f.name === cover.artistDetails.name)) {
+          assets.folders.push({
+            name: cover.artistDetails.name,
+            children: []
+          });
+          
+          await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+          await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Auto-create artist folder');
+        }
+      }
+    } else {
+      covers[idx] = cover;
+    }
+
+    await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `🔄 Update cover ${cover.id}`);
+    
+    res.json({ success: true, id: cover.id });
+  } catch (err) {
+    console.error('Save cover error:', err);
+    res.status(500).json({ error: 'Failed to save cover', details: err.message });
+  }
+});
+
+app.post('/save-covers', requireAuth('editor'), async (req, res) => {
+  try {
+    if (!Array.isArray(req.body)) {
+      return res.status(400).json({ error: 'Invalid format - expected array' });
+    }
+
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    await fs.promises.writeFile(jsonPath, JSON.stringify(req.body, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(req.body, null, 2), '🔄 Bulk covers update');
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Save covers error:', err);
+    res.status(500).json({ error: 'Failed to save covers', details: err.message });
+  }
+});
+
+app.post('/delete-cover', requireAuth('editor'), async (req, res) => {
+  try {
+    const { id } = req.body;
+    if (!id) return res.status(400).json({ error: 'Missing id' });
+
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    const data = await fs.promises.readFile(jsonPath, 'utf-8');
+    const covers = JSON.parse(data).filter(c => String(c.id) !== String(id));
+
+    await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `🗑️ Delete cover ${id}`);
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete cover error:', err);
+    res.status(500).json({ error: 'Failed to delete cover', details: err.message });
+  }
+});
+
+// Audio management
+app.post('/upload-audio', requireAuth('editor'), audioUpload.single('audio'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No audio file provided' });
+  res.json({ 
+    url: `/uploads/audio/${req.file.filename}`, 
+    filename: req.file.filename,
+    originalName: req.file.originalname 
+  });
+});
+
+app.post('/save-artist-tracks', requireAuth('editor'), async (req, res) => {
+  try {
+    const { artistId, tracks } = req.body;
+    if (!artistId) return res.status(400).json({ error: 'Missing artistId' });
+
+    const jsonPath = path.join(DATA_DIR, 'artist-tracks.json');
+    let allTracks = {};
+
+    try {
+      const data = await fs.promises.readFile(jsonPath, 'utf-8');
+      allTracks = JSON.parse(data);
+    } catch {
+      console.log('Creating new artist-tracks.json');
+    }
+
+    allTracks[artistId] = tracks;
+    await fs.promises.writeFile(jsonPath, JSON.stringify(allTracks, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/artist-tracks.json', JSON.stringify(allTracks, null, 2), '🎵 Update artist tracks');
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Save artist tracks error:', err);
+    res.status(500).json({ error: 'Failed to save tracks', details: err.message });
+  }
+});
+
+app.get('/artist-tracks/:artistId', requireAuth('viewer'), async (req, res) => {
+  try {
+    const jsonPath = path.join(DATA_DIR, 'artist-tracks.json');
+    const data = await fs.promises.readFile(jsonPath, 'utf-8');
+    const allTracks = JSON.parse(data);
+    res.json(allTracks[req.params.artistId] || []);
+  } catch {
+    res.json([]);
+  }
+});
+
+// Assets management
+app.post('/save-assets', requireAuth('editor'), async (req, res) => {
+  try {
+    const assets = req.body;
+    const jsonPath = path.join(DATA_DIR, 'assets.json');
+    await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🎨 Update assets');
+    
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Save assets error:', err);
+    res.status(500).json({ error: 'Failed to save assets', details: err.message });
+  }
+});
+
+app.post('/push-live', requireAuth('admin'), async (req, res) => {
+  try {
+    const jsonPath = path.join(DATA_DIR, 'covers.json');
+    const data = await fs.promises.readFile(jsonPath, 'utf-8');
+    await writeJsonToGitHub('packages/coverflow/data/covers.json', data, '🚀 Push to production');
+    res.json({ success: true, message: 'Changes pushed to GitHub' });
+  } catch (err) {
+    console.error('Push live error:', err);
+    res.status(500).json({ error: 'Failed to push live', details: err.message });
+  }
+});
+
+// Initialize from GitHub
 async function initializeFromGitHub() {
   console.log('🔄 Initializing data from GitHub...');
   
@@ -176,7 +604,17 @@ async function initializeFromGitHub() {
       console.log(`✅ Synced ${filePath} from GitHub`);
     } catch (err) {
       if (err.status === 404) {
-        console.log(`⚠️  ${filePath} not found in GitHub (will be created on first save)`);
+        console.log(`⚠️  ${filePath} not found in GitHub`);
+        
+        // Initialize empty files
+        const localPath = path.join(__dirname, ...filePath.split('/').slice(2));
+        await fs.promises.mkdir(path.dirname(localPath), { recursive: true });
+        
+        if (filePath.includes('assets.json')) {
+          await fs.promises.writeFile(localPath, JSON.stringify({ folders: [], images: [] }, null, 2));
+        } else if (filePath.includes('artist-tracks.json')) {
+          await fs.promises.writeFile(localPath, JSON.stringify({}, null, 2));
+        }
       } else {
         console.error(`❌ Failed to sync ${filePath}:`, err.message);
       }
@@ -184,300 +622,19 @@ async function initializeFromGitHub() {
   }
 }
 
-/* -------------------------------------------------- */
-/* 4 ▶ Multer setup                                   */
-/* -------------------------------------------------- */
-fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
-  filename   : (_req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `upload-${uniqueSuffix}${ext}`);
-  }
-});
-
-const upload = multer({
-  storage,
-  limits    : { fileSize: 10 * 1024 * 1024 },
-  fileFilter: (_req, file, cb) =>
-    file.mimetype.startsWith('image/')
-      ? cb(null, true)
-      : cb(new Error('Only image files are allowed'))
-});
-
-/* -------------------------------------------------- */
-/* 4.1 ▶ Audio Upload Configuration                   */
-/* -------------------------------------------------- */
-const audioStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const audioDir = path.join(UPLOADS_DIR, 'audio');
-    fs.mkdirSync(audioDir, { recursive: true });
-    cb(null, audioDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `audio-${uniqueSuffix}${ext}`);
-  }
-});
-
-const audioUpload = multer({
-  storage: audioStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit for audio
-  fileFilter: (req, file, cb) => {
-    const allowedMimes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/m4a'];
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only audio files are allowed'));
-    }
-  }
-});
-
-/* -------------------------------------------------- */
-/* 5 ▶ REST API routes                                */
-/* -------------------------------------------------- */
-
-/* save / update one cover */
-app.post('/save-cover', async (req, res) => {
-  try {
-    const cover = req.body;
-    if (!cover || !cover.id) {
-      return res.status(400).json({ error: 'Invalid cover data', details: 'Missing ID' });
-    }
-
-    const jsonPath = path.join(DATA_DIR, 'covers.json');
-    let covers = [];
-
-    try {
-      const data = await fs.promises.readFile(jsonPath, 'utf-8');
-      covers = JSON.parse(data);
-    } catch {
-      console.warn('Creating new covers.json');
-    }
-
-    const idx = covers.findIndex(c => String(c.id) === String(cover.id));
-    if (idx === -1) covers.push(cover);
-    else covers[idx] = cover;
-
-    await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    
-    // GitHub sync with error handling
-    try {
-      await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `🔄 cover ${cover.id} via admin panel`);
-    } catch (githubError) {
-      console.error('GitHub sync failed but local save succeeded');
-    }
-    
-    res.json({ success: true, id: cover.id });
-  } catch (err) {
-    console.error('Save cover error:', err);
-    res.status(500).json({ error: 'Failed to save cover', details: err.message });
-  }
-});
-
-/* bulk save / reorder covers */
-app.post('/save-covers', async (req, res) => {
-  try {
-    if (!Array.isArray(req.body)) {
-      return res.status(400).json({ error: 'Invalid format - expected array' });
-    }
-
-    const jsonPath = path.join(DATA_DIR, 'covers.json');
-    await fs.promises.writeFile(jsonPath, JSON.stringify(req.body, null, 2));
-    
-    // GitHub sync with error handling
-    try {
-      await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(req.body, null, 2), '🔄 bulk covers update');
-    } catch (githubError) {
-      return res.status(500).json({ 
-        error: 'Failed to sync to GitHub', 
-        details: githubError.message,
-        localSaveSuccess: true 
-      });
-    }
-    
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Save covers error:', err);
-    res.status(500).json({ error: 'Failed to save covers', details: err.message });
-  }
-});
-
-/* delete cover */
-app.post('/delete-cover', async (req, res) => {
-  try {
-    const { id } = req.body;
-    if (!id) return res.status(400).json({ error: 'Missing id' });
-
-    const jsonPath = path.join(DATA_DIR, 'covers.json');
-    const data = await fs.promises.readFile(jsonPath, 'utf-8');
-    const covers = JSON.parse(data).filter(c => String(c.id) !== String(id));
-
-    await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    
-    // GitHub sync with error handling
-    try {
-      await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `🗑️ delete cover ${id}`);
-    } catch (githubError) {
-      console.error('GitHub sync failed but local delete succeeded');
-    }
-    
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Delete cover error:', err);
-    res.status(500).json({ error: 'Failed to delete cover', details: err.message });
-  }
-});
-
-/* image upload */
-app.post('/upload-image', upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No image provided' });
-  res.json({ url: `/uploads/${req.file.filename}`, filename: req.file.filename });
-});
-
-/* audio upload */
-app.post('/upload-audio', audioUpload.single('audio'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No audio file provided' });
-  res.json({ 
-    url: `/uploads/audio/${req.file.filename}`, 
-    filename: req.file.filename,
-    originalName: req.file.originalname 
-  });
-});
-
-/* save artist tracks */
-app.post('/save-artist-tracks', async (req, res) => {
-  try {
-    const { artistId, tracks } = req.body;
-    if (!artistId) return res.status(400).json({ error: 'Missing artistId' });
-
-    const jsonPath = path.join(DATA_DIR, 'artist-tracks.json');
-    let allTracks = {};
-
-    try {
-      const data = await fs.promises.readFile(jsonPath, 'utf-8');
-      allTracks = JSON.parse(data);
-    } catch {
-      console.log('Creating new artist-tracks.json');
-    }
-
-    allTracks[artistId] = tracks;
-    await fs.promises.writeFile(jsonPath, JSON.stringify(allTracks, null, 2));
-    
-    // Sync to GitHub with error handling
-    try {
-      await writeJsonToGitHub('packages/coverflow/data/artist-tracks.json', JSON.stringify(allTracks, null, 2), '🎵 Update artist tracks');
-    } catch (githubError) {
-      return res.status(500).json({ 
-        error: 'Failed to sync to GitHub', 
-        details: githubError.message,
-        localSaveSuccess: true 
-      });
-    }
-    
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Save artist tracks error:', err);
-    res.status(500).json({ error: 'Failed to save tracks', details: err.message });
-  }
-});
-
-/* get artist tracks */
-app.get('/artist-tracks/:artistId', async (req, res) => {
-  try {
-    const jsonPath = path.join(DATA_DIR, 'artist-tracks.json');
-    const data = await fs.promises.readFile(jsonPath, 'utf-8');
-    const allTracks = JSON.parse(data);
-    res.json(allTracks[req.params.artistId] || []);
-  } catch {
-    res.json([]);
-  }
-});
-
-/* push live placeholder */
-app.post('/push-live', async (req, res) => {
-  try {
-    const jsonPath = path.join(DATA_DIR, 'covers.json');
-    const data = await fs.promises.readFile(jsonPath, 'utf-8');
-    await writeJsonToGitHub('packages/coverflow/data/covers.json', data, '🚀 Push to production');
-    res.json({ success: true, message: 'Changes pushed to GitHub' });
-  } catch (err) {
-    console.error('Push live error:', err);
-    res.status(500).json({ error: 'Failed to push live', details: err.message });
-  }
-});
-
-/* save assets */
-app.post('/save-assets', async (req, res) => {
-  try {
-    const assets = req.body;
-    const jsonPath = path.join(DATA_DIR, 'assets.json');
-    await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
-    
-    // Sync to GitHub with error handling
-    try {
-      await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🎨 Update assets');
-    } catch (githubError) {
-      console.error('GitHub sync failed but local save succeeded');
-    }
-    
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Save assets error:', err);
-    res.status(500).json({ error: 'Failed to save assets', details: err.message });
-  }
-});
-
-/* health check endpoint */
-app.get('/admin/health', async (req, res) => {
-  try {
-    // Test GitHub connection
-    await octokit.repos.get({
-      owner: GH_OWNER,
-      repo: GH_REPO
-    });
-    
-    res.json({
-      status: 'healthy',
-      github: 'connected',
-      dataDir: DATA_DIR,
-      uploadsDir: UPLOADS_DIR
-    });
-  } catch (err) {
-    res.status(500).json({
-      status: 'unhealthy',
-      github: 'disconnected',
-      error: err.message
-    });
-  }
-});
-
-/* -------------------------------------------------- */
-/* 5.5 ▶ global error handler                         */
-/* -------------------------------------------------- */
-app.use((err, _req, res, _next) => {
-  console.error('Unhandled error:', err);
-  res.status(500).json({
-    error  : 'Internal server error',
-    details: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
-
-/* -------------------------------------------------- */
-/* 6 ▶ start server                                   */
-/* -------------------------------------------------- */
-// Initialize from GitHub before starting server
+// Start server
 initializeFromGitHub().then(() => {
   const server = app.listen(PORT, () => {
     console.log(`🚀 Server running on http://localhost:${PORT}`);
     console.log(`📁 Uploads directory: ${UPLOADS_DIR}`);
     console.log(`🔐 Admin at: http://admin.localhost:${PORT}`);
+    
+    // Show auth bypass status
+    if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+      console.log('⚠️  Auth bypass enabled (development mode)');
+    }
   });
 
-  /* graceful shutdown */
   process.on('SIGTERM', () => {
     console.log('SIGTERM received, closing server…');
     server.close(() => {

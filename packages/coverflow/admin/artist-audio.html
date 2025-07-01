@@ -1,70 +1,113 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artist Audio Management</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&family=Inter:wght@400;500&display=swap" rel="stylesheet">
+    <title>AUDIO × ALL MY FRIENDS</title>
+    <link rel="stylesheet" href="/admin/admin.css">
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #111;
-            color: #fff;
-            padding: 2rem;
-        }
-        
-        .container {
+        .audio-container {
             max-width: 1200px;
             margin: 0 auto;
-        }
-        
-        h1 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 3rem;
-            margin-bottom: 2rem;
+            padding: 0 var(--gutter);
         }
         
         .artist-section {
-            background: #222;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border-radius: 8px;
+            border: 1px solid var(--ink);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            position: relative;
+        }
+        
+        .artist-section::before {
+            content: attr(data-artist-id);
+            position: absolute;
+            top: -12px;
+            left: var(--space-lg);
+            background: var(--bg);
+            padding: 0 var(--space-sm);
+            font-family: var(--font-mono);
+            font-size: 0.625rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.6;
         }
         
         .artist-header {
             display: flex;
             align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
+            gap: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 1px solid var(--grey-light);
         }
         
         .artist-image {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             object-fit: cover;
-            border-radius: 4px;
+            filter: grayscale(100%);
+            transition: filter var(--transition-slow);
+        }
+        
+        .artist-image:hover {
+            filter: grayscale(0%);
+        }
+        
+        .artist-header h2 {
+            font-family: var(--font-heading);
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            letter-spacing: -0.02em;
+            margin: 0;
         }
         
         .track-list {
-            margin-bottom: 1rem;
+            margin-bottom: var(--space-xl);
+            min-height: 80px;
         }
         
         .track-item {
-            display: flex;
+            display: grid;
+            grid-template-columns: 40px 1fr auto;
             align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: #333;
-            margin-bottom: 0.5rem;
-            border-radius: 4px;
+            gap: var(--space-lg);
+            padding: var(--space-md);
+            border: 1px solid var(--grey);
+            margin-bottom: 1px;
+            cursor: move;
+            transition: all var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .track-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 3px;
+            background: var(--accent);
+            transform: scaleY(0);
+            transition: transform var(--transition);
+        }
+        
+        .track-item:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .track-item.dragging {
+            opacity: 0.2;
+            transform: scale(0.95);
         }
         
         .track-number {
-            font-family: 'Space Grotesk', sans-serif;
+            font-family: var(--font-mono);
             font-weight: 700;
-            color: #FF4D00;
+            font-size: 1.25rem;
+            color: var(--accent);
+            text-align: center;
         }
         
         .track-info {
@@ -72,175 +115,372 @@
         }
         
         .track-title {
+            font-family: var(--font-heading);
             font-weight: 500;
-            margin-bottom: 0.25rem;
+            font-size: 1rem;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid transparent;
+            color: var(--ink);
+            width: 100%;
+            padding: var(--space-xs) 0;
+            transition: border-color var(--transition);
+        }
+        
+        .track-title:hover,
+        .track-title:focus {
+            border-bottom-color: var(--grey);
+            outline: none;
         }
         
         .track-file {
-            font-size: 0.875rem;
-            color: #888;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--grey);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-top: var(--space-xs);
+        }
+        
+        .track-duration {
+            margin-left: var(--space-md);
+            font-weight: 500;
         }
         
         .track-actions {
             display: flex;
-            gap: 0.5rem;
+            gap: var(--space-md);
+            align-items: center;
         }
         
-        button {
-            background: #FF4D00;
-            color: #111;
-            border: none;
-            padding: 0.5rem 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.2s;
+        audio {
+            height: 32px;
+            opacity: 0.8;
+            transition: opacity var(--transition);
         }
         
-        button:hover {
-            background: #ff6a00;
-            transform: translateY(-1px);
-        }
-        
-        .delete-btn {
-            background: #dc3545;
+        audio:hover {
+            opacity: 1;
         }
         
         .upload-section {
-            border: 2px dashed #444;
-            padding: 2rem;
+            border: 2px dashed var(--grey);
+            padding: var(--space-xl);
             text-align: center;
-            margin-top: 1rem;
-            transition: all 0.3s;
+            transition: all var(--transition);
             position: relative;
+            overflow: hidden;
+        }
+        
+        .upload-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent-dim);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform var(--transition);
         }
         
         .upload-section.drag-over {
-            border-color: #FF4D00;
-            background: rgba(255, 77, 0, 0.1);
+            border-color: var(--accent);
         }
         
-        .file-input-wrapper {
+        .upload-section.drag-over::before {
+            transform: scaleX(1);
+        }
+        
+        .drop-message {
+            font-family: var(--font-mono);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: var(--space-lg);
             position: relative;
-            overflow: hidden;
-            display: inline-block;
-            margin: 1rem 0;
-        }
-        
-        input[type="file"] {
-            position: absolute;
-            left: -9999px;
+            z-index: 1;
         }
         
         .file-label {
             display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background: #333;
-            color: #fff;
-            border-radius: 4px;
+            padding: var(--space-md) var(--space-lg);
+            background: transparent;
+            color: var(--ink);
+            border: 1px solid var(--ink);
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all var(--transition);
+            font-family: var(--font-mono);
             font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .file-label::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: var(--ink);
+            transition: left var(--transition);
+            z-index: -1;
         }
         
         .file-label:hover {
-            background: #444;
+            color: var(--bg);
+        }
+        
+        .file-label:hover::before {
+            left: 0;
         }
         
         .upload-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-lg);
         }
         
         .upload-item {
-            background: #333;
-            padding: 1rem;
-            border-radius: 4px;
+            border: 1px solid var(--grey);
+            padding: var(--space-md);
             text-align: left;
+            position: relative;
         }
         
         .upload-item input {
-            background: #444;
-            border: 1px solid #555;
-            color: #fff;
-            padding: 0.5rem;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid var(--grey);
+            color: var(--ink);
+            padding: var(--space-sm) 0;
             width: 100%;
-            margin-bottom: 0.5rem;
-            border-radius: 4px;
+            margin-bottom: var(--space-md);
+            font-family: var(--font-body);
+        }
+        
+        .upload-item input:focus {
+            border-bottom-color: var(--ink);
+            outline: none;
         }
         
         .upload-item .filename {
-            font-size: 0.875rem;
-            color: #888;
-            margin-bottom: 0.5rem;
-            word-break: break-all;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--grey);
+            margin-bottom: var(--space-sm);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
         .upload-progress {
             width: 100%;
-            height: 4px;
-            background: #444;
-            border-radius: 2px;
+            height: 2px;
+            background: var(--grey-light);
             overflow: hidden;
-            margin-top: 0.5rem;
+            margin-top: var(--space-md);
         }
         
         .upload-progress-bar {
             height: 100%;
-            background: #FF4D00;
-            transition: width 0.3s;
-        }
-        
-        .success {
-            color: #22C55E;
-            margin-top: 1rem;
-        }
-        
-        .error {
-            color: #dc3545;
-            margin-top: 1rem;
-        }
-        
-        .drop-message {
-            font-size: 1.25rem;
-            margin-bottom: 1rem;
-            font-weight: 500;
+            background: var(--accent);
+            transition: width var(--transition-slow);
         }
         
         .upload-all-btn {
-            margin-top: 1rem;
-            padding: 0.75rem 2rem;
-            font-size: 1.1rem;
+            margin-top: var(--space-lg);
+        }
+        
+        .no-artists {
+            text-align: center;
+            padding: var(--space-xxl) var(--space-xl);
+            color: var(--grey);
+        }
+        
+        .no-artists h2 {
+            font-family: var(--font-mono);
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .no-artists p {
+            font-family: var(--font-body);
+            max-width: 50ch;
+            margin: 0 auto var(--space-lg);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: var(--space-xl);
+            color: var(--grey);
+            font-family: var(--font-mono);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.875rem;
+        }
+        
+        .sortable-ghost {
+            opacity: 0.2;
+            filter: grayscale(100%);
+        }
+        
+        #loading {
+            text-align: center;
+            padding: var(--space-xxl);
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--grey);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: var(--space-lg);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Artist Audio Management</h1>
+    <!-- Navigation -->
+    <nav class="admin-nav">
+        <div class="container">
+            <h1>ADMIN://AMF</h1>
+            <div class="nav-links">
+                <a href="/admin/">COVERS</a>
+                <a href="/admin/artist-audio.html" class="active">AUDIO</a>
+            </div>
+            <div class="user-badge">
+                <span id="username">...</span>
+                <span class="user-role" id="userRole">...</span>
+                <button class="btn btn-danger" onclick="logout()" style="padding: var(--space-sm) var(--space-md); font-size: 0.75rem;">EXIT</button>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="audio-container">
+        <div style="padding: var(--space-xl) 0;">
+            <h1 style="margin: 0;">ARTIST AUDIO MANAGEMENT</h1>
+        </div>
         
-        <div id="artists-container">
+        <div id="loading">
+            <div class="loading-spinner"></div>
+            <p style="font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">LOADING ARTISTS...</p>
+        </div>
+        
+        <div id="artists-container" style="display: none;">
             <!-- Artists will be loaded here -->
+        </div>
+        
+        <div id="no-artists" class="no-artists" style="display: none;">
+            <h2>NO ARTISTS FOUND</h2>
+            <p>Add some artist covers in the Covers section to manage their audio tracks here.</p>
+            <a href="/admin/" class="btn">GO TO COVERS</a>
         </div>
     </div>
 
-    <script>
-        const artists = [
-            { id: 'hudson', name: 'Hudson Ingram', image: 'https://allmyfriendsinc.com/uploads/upload-1748121117525-242753559.jpeg' },
-            { id: 'jack', name: 'Jack Schrepferman', image: 'https://allmyfriendsinc.com/uploads/upload-1748120927291-42815401.png' },
-            { id: 'ruby', name: 'Ruby Plume', image: 'https://allmyfriendsinc.com/uploads/upload-1748121131532-324221674.png' },
-            { id: 'kate', name: 'Kate Stephenson', image: 'https://allmyfriendsinc.com/uploads/upload-1748120863747-270939313.jpg' },
-            { id: 'leon', name: 'Leon Sharplin', image: 'https://allmyfriendsinc.com/uploads/upload-1751081737021-755156096.png' },
-            { id: 'conall', name: 'Conall Cafferty', image: 'https://allmyfriendsinc.com/uploads/upload-1748123456690-945730077.png' },
-            { id: 'tom', name: 'Tom Siletto', image: 'https://allmyfriendsinc.com/uploads/upload-1748121102073-915680969.png' }
-        ];
+    <!-- Toast notifications -->
+    <div id="toast" class="toast"></div>
 
+    <script>
+        let artists = [];
         let artistTracks = {};
         let pendingUploads = {};
+        let sortableInstances = {};
+        let currentUser = null;
+
+        // Toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message.toUpperCase();
+            toast.className = `toast show ${type}`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Check authentication
+        async function checkAuth() {
+            try {
+                const res = await fetch('/api/me');
+                if (!res.ok) {
+                    window.location.href = '/admin/login.html';
+                    return;
+                }
+                const data = await res.json();
+                currentUser = data.user;
+                document.getElementById('username').textContent = currentUser.username;
+                document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
+            } catch (err) {
+                window.location.href = '/admin/login.html';
+            }
+        }
+
+        // Logout
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/admin/login.html';
+            } catch (err) {
+                showToast('LOGOUT FAILED', 'error');
+            }
+        }
+
+        // Load artists from covers.json
+        async function loadArtists() {
+            try {
+                const response = await fetch('/data/covers.json');
+                const covers = await response.json();
+                
+                // Extract unique artists from covers
+                const artistMap = new Map();
+                
+                covers.forEach(cover => {
+                    if (cover.artistDetails && cover.artistDetails.name) {
+                        const artistId = cover.artistId || cover.artistDetails.name.toLowerCase().replace(/\s+/g, '-');
+                        
+                        if (!artistMap.has(artistId)) {
+                            artistMap.set(artistId, {
+                                id: artistId,
+                                name: cover.artistDetails.name,
+                                image: cover.artistDetails.image || cover.frontImage || ''
+                            });
+                        }
+                    }
+                });
+                
+                artists = Array.from(artistMap.values());
+                
+                // Sort alphabetically
+                artists.sort((a, b) => a.name.localeCompare(b.name));
+                
+                if (artists.length === 0) {
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('no-artists').style.display = 'block';
+                    return;
+                }
+                
+                await loadArtistTracks();
+            } catch (err) {
+                console.error('Failed to load artists:', err);
+                showToast('FAILED TO LOAD ARTISTS', 'error');
+            }
+        }
 
         async function loadArtistTracks() {
             const container = document.getElementById('artists-container');
+            container.innerHTML = '';
             
             for (const artist of artists) {
                 // Fetch tracks for this artist
@@ -258,9 +498,11 @@
                 // Create artist section
                 const section = document.createElement('div');
                 section.className = 'artist-section';
+                section.setAttribute('data-artist-id', artist.id);
                 section.innerHTML = `
                     <div class="artist-header">
-                        <img src="${artist.image}" alt="${artist.name}" class="artist-image">
+                        <img src="${artist.image}" alt="${artist.name}" class="artist-image"
+                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'120\\' height=\\'120\\'%3E%3Crect fill=\\'%23333\\' width=\\'120\\' height=\\'120\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\' font-size=\\'10\\' font-family=\\'monospace\\'%3ENO IMAGE%3C/text%3E%3C/svg%3E'">
                         <h2>${artist.name}</h2>
                     </div>
                     <div class="track-list" id="tracks-${artist.id}">
@@ -268,15 +510,16 @@
                     </div>
                     <div class="upload-section" id="upload-section-${artist.id}">
                         <div class="drop-message">
-                            🎵 Drag & drop audio files here or click to browse
+                            DRAG & DROP AUDIO FILES OR CLICK TO BROWSE
                         </div>
                         <div class="file-input-wrapper">
-                            <input type="file" id="file-${artist.id}" accept="audio/*,video/mp4" multiple>
-                            <label for="file-${artist.id}" class="file-label">Choose Files</label>
+                            <input type="file" id="file-${artist.id}" accept="audio/*" multiple>
+                            <label for="file-${artist.id}" class="file-label">CHOOSE FILES</label>
                         </div>
                         <div class="upload-grid" id="upload-grid-${artist.id}"></div>
-                        <button class="upload-all-btn" id="upload-btn-${artist.id}" style="display:none;" onclick="uploadAllTracks('${artist.id}')">
-                            Upload All Tracks
+                        <button class="btn btn-primary upload-all-btn" id="upload-btn-${artist.id}" style="display:none;" 
+                                onclick="uploadAllTracks('${artist.id}')" ${currentUser.role === 'viewer' ? 'disabled' : ''}>
+                            UPLOAD ALL TRACKS
                         </button>
                         <div id="status-${artist.id}"></div>
                     </div>
@@ -288,9 +531,48 @@
                 
                 // Set up file input
                 document.getElementById(`file-${artist.id}`).addEventListener('change', (e) => {
+                    if (currentUser.role === 'viewer') {
+                        showToast('YOU DO NOT HAVE PERMISSION TO UPLOAD', 'error');
+                        return;
+                    }
                     handleFiles(artist.id, e.target.files);
                 });
+                
+                // Initialize sortable for track reordering
+                const trackList = document.getElementById(`tracks-${artist.id}`);
+                if (artistTracks[artist.id].length > 0) {
+                    sortableInstances[artist.id] = new Sortable(trackList, {
+                        animation: 120,
+                        easing: "cubic-bezier(.16,1,.3,1)",
+                        ghostClass: 'sortable-ghost',
+                        handle: '.track-item',
+                        onEnd: async (evt) => {
+                            // Reorder tracks array
+                            const movedTrack = artistTracks[artist.id].splice(evt.oldIndex, 1)[0];
+                            artistTracks[artist.id].splice(evt.newIndex, 0, movedTrack);
+                            
+                            // Save reordered tracks
+                            await saveTracks(artist.id);
+                            
+                            // Re-render to update track numbers
+                            document.getElementById(`tracks-${artist.id}`).innerHTML = 
+                                renderTracks(artist.id, artistTracks[artist.id]);
+                            
+                            // Reinitialize sortable
+                            sortableInstances[artist.id] = new Sortable(document.getElementById(`tracks-${artist.id}`), {
+                                animation: 120,
+                                easing: "cubic-bezier(.16,1,.3,1)",
+                                ghostClass: 'sortable-ghost',
+                                handle: '.track-item',
+                                onEnd: evt.onEnd
+                            });
+                        }
+                    });
+                }
             }
+            
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('artists-container').style.display = 'block';
         }
 
         function setupDragAndDrop(artistId) {
@@ -308,6 +590,10 @@
             dropZone.addEventListener('drop', (e) => {
                 e.preventDefault();
                 dropZone.classList.remove('drag-over');
+                if (currentUser.role === 'viewer') {
+                    showToast('YOU DO NOT HAVE PERMISSION TO UPLOAD', 'error');
+                    return;
+                }
                 handleFiles(artistId, e.dataTransfer.files);
             });
         }
@@ -318,7 +604,7 @@
             
             for (let file of files) {
                 // Check if it's an audio file
-                if (!file.type.startsWith('audio/') && !file.type.startsWith('video/mp4')) {
+                if (!file.type.startsWith('audio/')) {
                     continue;
                 }
                 
@@ -331,8 +617,8 @@
                 const defaultTitle = file.name.replace(/\.[^/.]+$/, "");
                 
                 uploadItem.innerHTML = `
-                    <div class="filename">${file.name}</div>
-                    <input type="text" placeholder="Track Title" value="${defaultTitle}" id="title-${fileId}">
+                    <div class="filename">${file.name.toUpperCase()}</div>
+                    <input type="text" placeholder="TRACK TITLE" value="${defaultTitle}" id="title-${fileId}">
                     <div class="upload-progress">
                         <div class="upload-progress-bar" id="progress-${fileId}"></div>
                     </div>
@@ -358,7 +644,7 @@
             const statusDiv = document.getElementById(`status-${artistId}`);
             const uploadBtn = document.getElementById(`upload-btn-${artistId}`);
             uploadBtn.disabled = true;
-            uploadBtn.textContent = 'Uploading...';
+            uploadBtn.textContent = 'UPLOADING...';
             
             let successCount = 0;
             let errorCount = 0;
@@ -368,7 +654,7 @@
                 const title = titleInput.value.trim();
                 
                 if (!title) {
-                    document.getElementById(`upload-${pending.id}`).style.border = '2px solid #dc3545';
+                    document.getElementById(`upload-${pending.id}`).style.borderColor = 'var(--accent)';
                     errorCount++;
                     continue;
                 }
@@ -392,8 +678,8 @@
                     // Update progress bar
                     document.getElementById(`progress-${pending.id}`).style.width = '100%';
                     
-                    // Calculate duration (in real app, you'd read this from the audio file)
-                    const duration = '3:' + Math.floor(Math.random() * 60).toString().padStart(2, '0');
+                    // Get audio duration
+                    const duration = await getAudioDuration(pending.file);
                     
                     // Add to tracks
                     if (!artistTracks[artistId]) artistTracks[artistId] = [];
@@ -409,13 +695,98 @@
                     successCount++;
                     
                 } catch (err) {
-                    document.getElementById(`upload-${pending.id}`).style.border = '2px solid #dc3545';
+                    console.error('Upload error:', err);
+                    document.getElementById(`upload-${pending.id}`).style.borderColor = 'var(--accent)';
                     errorCount++;
                 }
             }
             
             // Save all tracks
             if (successCount > 0) {
+                await saveTracks(artistId);
+                
+                // Update UI
+                document.getElementById(`tracks-${artistId}`).innerHTML = 
+                    renderTracks(artistId, artistTracks[artistId]);
+                    
+                // Reinitialize sortable
+                if (artistTracks[artistId].length > 0) {
+                    sortableInstances[artistId] = new Sortable(document.getElementById(`tracks-${artistId}`), {
+                        animation: 120,
+                        easing: "cubic-bezier(.16,1,.3,1)",
+                        ghostClass: 'sortable-ghost',
+                        handle: '.track-item'
+                    });
+                }
+            }
+            
+            // Clear pending uploads
+            pendingUploads[artistId] = [];
+            document.getElementById(`upload-grid-${artistId}`).innerHTML = '';
+            
+            // Update status
+            if (successCount > 0) {
+                showToast(`✓ ${successCount} TRACKS UPLOADED${errorCount > 0 ? `, ${errorCount} FAILED` : ''}`);
+            } else if (errorCount > 0) {
+                showToast(`${errorCount} UPLOADS FAILED`, 'error');
+            }
+            
+            // Hide upload button
+            uploadBtn.style.display = 'none';
+            uploadBtn.disabled = false;
+            uploadBtn.textContent = 'UPLOAD ALL TRACKS';
+        }
+
+        async function getAudioDuration(file) {
+            return new Promise((resolve) => {
+                const audio = new Audio();
+                audio.onloadedmetadata = () => {
+                    const duration = audio.duration;
+                    const minutes = Math.floor(duration / 60);
+                    const seconds = Math.floor(duration % 60);
+                    resolve(`${minutes}:${seconds.toString().padStart(2, '0')}`);
+                };
+                audio.onerror = () => resolve('0:00');
+                audio.src = URL.createObjectURL(file);
+            });
+        }
+
+        function renderTracks(artistId, tracks) {
+            if (!tracks || tracks.length === 0) {
+                return '<p class="empty-state">NO TRACKS UPLOADED YET</p>';
+            }
+            
+            return tracks.map((track, index) => `
+                <div class="track-item">
+                    <span class="track-number">${(index + 1).toString().padStart(2, '0')}</span>
+                    <div class="track-info">
+                        <input type="text" class="track-title" value="${track.title}" 
+                               onchange="updateTrackTitle('${artistId}', ${index}, this.value)"
+                               ${currentUser.role === 'viewer' ? 'disabled' : ''}>
+                        <div class="track-file">
+                            ${track.filename || 'AUDIO FILE'}
+                            <span class="track-duration">${track.duration || '0:00'}</span>
+                        </div>
+                    </div>
+                    <div class="track-actions">
+                        <audio controls>
+                            <source src="${track.url}" type="audio/mpeg">
+                        </audio>
+                        <button class="btn btn-danger" onclick="deleteTrack('${artistId}', ${index})"
+                                ${currentUser.role === 'viewer' ? 'disabled' : ''} style="padding: var(--space-sm) var(--space-md); font-size: 0.75rem;">DELETE</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function updateTrackTitle(artistId, trackIndex, newTitle) {
+            artistTracks[artistId][trackIndex].title = newTitle;
+            await saveTracks(artistId);
+            showToast('TRACK TITLE UPDATED');
+        }
+
+        async function saveTracks(artistId) {
+            try {
                 await fetch('/save-artist-tracks', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -424,72 +795,35 @@
                         tracks: artistTracks[artistId]
                     })
                 });
-                
-                // Update UI
-                document.getElementById(`tracks-${artistId}`).innerHTML = 
-                    renderTracks(artistId, artistTracks[artistId]);
+            } catch (err) {
+                console.error('Failed to save tracks:', err);
+                showToast('FAILED TO SAVE TRACKS', 'error');
             }
-            
-            // Clear pending uploads
-            pendingUploads[artistId] = [];
-            document.getElementById(`upload-grid-${artistId}`).innerHTML = '';
-            
-            // Update status
-            statusDiv.innerHTML = `<p class="success">✓ ${successCount} tracks uploaded successfully${errorCount > 0 ? `, ${errorCount} failed` : ''}</p>`;
-            
-            // Hide upload button
-            uploadBtn.style.display = 'none';
-            uploadBtn.disabled = false;
-            uploadBtn.textContent = 'Upload All Tracks';
-            
-            // Clear status after 5 seconds
-            setTimeout(() => {
-                statusDiv.innerHTML = '';
-            }, 5000);
-        }
-
-        function renderTracks(artistId, tracks) {
-            if (!tracks || tracks.length === 0) {
-                return '<p style="color: #666;">No tracks uploaded yet</p>';
-            }
-            
-            return tracks.map((track, index) => `
-                <div class="track-item">
-                    <span class="track-number">${(index + 1).toString().padStart(2, '0')}</span>
-                    <div class="track-info">
-                        <div class="track-title">${track.title}</div>
-                        <div class="track-file">${track.filename || 'audio file'}</div>
-                    </div>
-                    <div class="track-actions">
-                        <audio controls style="height: 30px;">
-                            <source src="${track.url}" type="audio/mpeg">
-                        </audio>
-                        <button class="delete-btn" onclick="deleteTrack('${artistId}', ${index})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
         }
 
         async function deleteTrack(artistId, trackIndex) {
-            if (!confirm('Delete this track?')) return;
+            if (currentUser.role === 'viewer') {
+                showToast('YOU DO NOT HAVE PERMISSION TO DELETE', 'error');
+                return;
+            }
+            
+            if (!confirm('DELETE THIS TRACK?')) return;
             
             artistTracks[artistId].splice(trackIndex, 1);
             
-            await fetch('/save-artist-tracks', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    artistId: artistId,
-                    tracks: artistTracks[artistId]
-                })
-            });
+            await saveTracks(artistId);
             
             document.getElementById(`tracks-${artistId}`).innerHTML = 
                 renderTracks(artistId, artistTracks[artistId]);
+                
+            showToast('TRACK DELETED');
         }
 
-        // Load on page load
-        loadArtistTracks();
+        // Initialize
+        (async function() {
+            await checkAuth();
+            await loadArtists();
+        })();
     </script>
 </body>
 </html>
