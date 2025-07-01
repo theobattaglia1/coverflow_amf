@@ -111,10 +111,14 @@ app.use('/admin/login.html', express.static(path.join(ADMIN_DIR, 'login.html')))
 app.use('/admin/login.js', express.static(path.join(ADMIN_DIR, 'login.js')));
 app.use('/admin', requireAuth('viewer'), express.static(ADMIN_DIR, { extensions: ['html'] }));
 
-// Protected data access
+// Public access to covers.json only
+app.get('/data/covers.json', (req, res) => {
+  res.sendFile(path.join(DATA_DIR, 'covers.json'));
+});
+
+// Protected access to other data files
 app.use('/data', requireAuth('viewer'), express.static(DATA_DIR, {
-  setHeaders: res => res.setHeader('Cache-Control', 'no-store')
-}));
+  setHeaders: res => res.setHeader('Cache-Control', 'no-
 
 // GitHub integration
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
