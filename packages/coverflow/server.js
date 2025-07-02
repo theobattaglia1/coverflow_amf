@@ -21,6 +21,11 @@ const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy in production (for secure cookies behind reverse proxy)
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
@@ -47,18 +52,32 @@ app.use(express.json());
 
 // Session configuration
 const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+const cookieConfig = {
+  secure: process.env.NODE_ENV === 'production',
+  httpOnly: true,
+  maxAge: 24 * 60 * 60 * 1000,
+  sameSite: 'lax',
+  domain: process.env.NODE_ENV === 'production' ? '.allmyfriendsinc.com' : undefined
+};
+
+console.log('Session cookie configuration:', cookieConfig);
+console.log('NODE_ENV:', process.env.NODE_ENV);
+
 app.use(session({
+  name: 'amf.sid', // Custom session name
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000,
-    sameSite: 'lax',
-    domain: process.env.NODE_ENV === 'production' ? '.allmyfriendsinc.com' : undefined
-  }
+  cookie: cookieConfig,
+  // Trust proxy for secure cookies behind reverse proxy
+  proxy: process.env.NODE_ENV === 'production'
 }));
+
+// Debug session middleware
+app.use((req, res, next) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.path} - Session ID: ${req.sessionID}, User: ${req.session?.user?.username || 'none'}`);
+  next();
+});
 
 // Helper to check if user is authenticated
 function isAuthenticated(req) {
