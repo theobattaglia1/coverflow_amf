@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AUDIO × ALL MY FRIENDS</title>
-    <link rel="stylesheet" href="/admin/admin.css">
+    <link rel="stylesheet" href="admin.css">
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
     <style>
         .audio-container {
@@ -358,8 +358,8 @@
         <div class="container">
             <h1>ADMIN://AMF</h1>
             <div class="nav-links">
-                <a href="/admin/">COVERS</a>
-                <a href="/admin/artist-audio.html" class="active">AUDIO</a>
+                <a href="/" class="nav-link-covers">COVERS</a>
+                <a href="artist-audio.html" class="active">AUDIO</a>
             </div>
             <div class="user-badge">
                 <span id="username">...</span>
@@ -394,6 +394,23 @@
     <div id="toast" class="toast"></div>
 
     <script>
+        // Fix navigation links based on subdomain
+        document.addEventListener('DOMContentLoaded', () => {
+            const isAdminSubdomain = window.location.hostname.startsWith('admin.');
+            
+            // Fix covers link
+            const coversLink = document.querySelector('.nav-link-covers');
+            if (coversLink) {
+                coversLink.href = isAdminSubdomain ? '/' : '/admin/';
+            }
+            
+            // Fix "GO TO COVERS" button
+            const goToCoversBtn = document.querySelector('a.btn[href="/admin/"]');
+            if (goToCoversBtn) {
+                goToCoversBtn.href = isAdminSubdomain ? '/' : '/admin/';
+            }
+        });
+        
         let artists = [];
         let artistTracks = {};
         let pendingUploads = {};
@@ -415,7 +432,7 @@
             try {
                 const res = await fetch('/api/me');
                 if (!res.ok) {
-                    window.location.href = '/admin/login.html';
+                    window.location.href = window.location.hostname.startsWith('admin.') ? '/' : '/admin/login.html';
                     return;
                 }
                 const data = await res.json();
@@ -423,7 +440,7 @@
                 document.getElementById('username').textContent = currentUser.username;
                 document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
             } catch (err) {
-                window.location.href = '/admin/login.html';
+                window.location.href = window.location.hostname.startsWith('admin.') ? '/' : '/admin/login.html';
             }
         }
 
@@ -431,7 +448,7 @@
         async function logout() {
             try {
                 await fetch('/api/logout', { method: 'POST' });
-                window.location.href = '/admin/login.html';
+                window.location.href = window.location.hostname.startsWith('admin.') ? '/' : '/admin/login.html';
             } catch (err) {
                 showToast('LOGOUT FAILED', 'error');
             }
