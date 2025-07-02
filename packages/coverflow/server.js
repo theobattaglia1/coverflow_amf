@@ -1,21 +1,21 @@
-import ‘dotenv/config’;
-import express from ‘express’;
-import path from ‘path’;
-import fs from ‘fs’;
-import multer from ‘multer’;
-import bcrypt from ‘bcrypt’;
-import session from ‘express-session’;
-import { Octokit } from ‘@octokit/rest’;
-import { fileURLToPath } from ‘url’;
-import crypto from ‘crypto’;
+import 'dotenv/config';
+import express from 'express';
+import path from 'path';
+import fs from 'fs';
+import multer from 'multer';
+import bcrypt from 'bcrypt';
+import session from 'express-session';
+import { Octokit } from '@octokit/rest';
+import { fileURLToPath } from 'url';
+import crypto from 'crypto';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PUBLIC_DIR = path.join(__dirname, ‘public’);
-const ADMIN_DIR = path.join(__dirname, ‘admin’);
-const DATA_DIR = path.join(__dirname, ‘data’);
-const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, ‘uploads’);
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const ADMIN_DIR = path.join(__dirname, 'admin');
+const DATA_DIR = path.join(__dirname, 'data');
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -23,48 +23,45 @@ const PORT = process.env.PORT || 3000;
 app.use(express.json());
 
 // Session configuration
-const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString(‘hex’);
+const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
 app.use(session({
-secret: sessionSecret,
-resave: false,
-saveUninitialized: false,
-cookie: {
-secure: false, // Allow cookies over HTTP in development
-httpOnly: true,
-maxAge: 24 * 60 * 60 * 1000, // 24 hours
-sameSite: ‘lax’
-}
+  secret: sessionSecret,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false, // Allow cookies over HTTP in development
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    sameSite: 'lax'
+  }
 }));
 
 // Authentication middleware
-const requireAuth = (requiredRole = ‘viewer’) => {
-return (req, res, next) => {
-// Development bypass
-if (process.env.NODE_ENV === ‘development’ && process.env.BYPASS_AUTH === ‘true’) {
-req.session.user = {
-username: ‘dev’,
-role: ‘admin’
-};
-return next();
-}
+const requireAuth = (requiredRole = 'viewer') => {
+  return (req, res, next) => {
+    // Development bypass
+    if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+      req.session.user = {
+        username: 'dev',
+        role: 'admin'
+      };
+      return next();
+    }
 
-```
-if (!req.session.user) {
-  if (req.xhr || req.headers.accept?.includes('application/json')) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  return res.redirect('/admin/login.html');
-}
+    if (!req.session.user) {
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.status(401).json({ error: 'Authentication required' });
+      }
+      return res.redirect('/admin/login.html');
+    }
 
-const roleHierarchy = { admin: 3, editor: 2, viewer: 1 };
-if (roleHierarchy[req.session.user.role] < roleHierarchy[requiredRole]) {
-  return res.status(403).json({ error: 'Insufficient permissions' });
-}
+    const roleHierarchy = { admin: 3, editor: 2, viewer: 1 };
+    if (roleHierarchy[req.session.user.role] < roleHierarchy[requiredRole]) {
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
 
-next();
-```
-
-};
+    next();
+  };
 };
 
 // User management functions
