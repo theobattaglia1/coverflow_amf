@@ -36,9 +36,16 @@ app.use(session({
   }
 }));
 
-// Authentication middleware
+// Authentication middleware - FIXED VERSION
 const requireAuth = (requiredRole = 'viewer') => {
   return (req, res, next) => {
+    // Skip auth for login-related paths
+    if (req.path.includes('login') || 
+        req.path === '/' && req.hostname.startsWith('admin.')) {
+      return next();
+    }
+    
+    // Development bypass
     if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
       req.session.user = {
         username: 'dev',
@@ -51,6 +58,18 @@ const requireAuth = (requiredRole = 'viewer') => {
       if (req.xhr || req.headers.accept?.includes('application/json')) {
         return res.status(401).json({ error: 'Authentication required' });
       }
+      
+      // Prevent redirect loop - check if already on login page
+      if (req.path === '/admin/login.html' || req.path === '/login.html') {
+        return next();
+      }
+      
+      // For admin subdomain, redirect to root which will show login
+      if (req.hostname.startsWith('admin.')) {
+        return res.redirect('/');
+      }
+      
+      // For main domain, redirect to admin login
       return res.redirect('/admin/login.html');
     }
 
@@ -85,14 +104,21 @@ async function saveUsers(users) {
   await fs.promises.writeFile(usersPath, JSON.stringify(users, null, 2));
 }
 
-// Admin subdomain rewrite
+// Admin subdomain rewrite - FIXED VERSION
 app.use((req, res, next) => {
+  // Check if this is the admin subdomain
   if (req.hostname.startsWith('admin.') && req.method === 'GET') {
-    if (!req.path.startsWith('/admin') &&
-        !req.path.startsWith('/api/') &&
-        !req.path.startsWith('/data/') &&
-        !req.path.startsWith('/uploads/')) {
-      req.url = '/admin' + (req.url === '/' ? '/index.html' : req.url);
+    // Special handling for login page
+    if (req.path === '/' || req.path === '') {
+      req.url = '/admin/login.html';
+    } else if (req.path === '/login' || req.path === '/login.html') {
+      req.url = '/admin/login.html';
+    } else if (!req.path.startsWith('/admin') &&
+               !req.path.startsWith('/api/') &&
+               !req.path.startsWith('/data/') &&
+               !req.path.startsWith('/uploads/')) {
+      // For all other paths, prepend /admin
+      req.url = '/admin' + req.path;
     }
   }
   next();
@@ -104,10 +130,23 @@ app.use('/uploads', express.static(UPLOADS_DIR, {
   setHeaders: res => res.setHeader('Cache-Control', 'no-store')
 }));
 
-// Protected admin routes
+// Make sure login page and its assets are publicly accessible (no auth required)
 app.use('/admin/login.html', express.static(path.join(ADMIN_DIR, 'login.html')));
 app.use('/admin/login.js', express.static(path.join(ADMIN_DIR, 'login.js')));
-app.use('/admin', requireAuth('viewer'), express.static(ADMIN_DIR, { extensions: ['html'] }));
+app.use('/admin/admin.css', express.static(path.join(ADMIN_DIR, 'admin.css')));
+
+// Protected admin routes (require authentication) - FIXED VERSION
+app.use('/admin', (req, res, next) => {
+  // Skip auth for login page and its assets
+  if (req.path === '/login.html' || 
+      req.path === '/login.js' || 
+      req.path === '/admin.css' ||
+      req.path.includes('/login')) {
+    return next();
+  }
+  // Apply auth to everything else
+  return requireAuth('viewer')(req, res, next);
+}, express.static(ADMIN_DIR, { extensions: ['html'] }));
 
 // Public access to covers.json only
 app.get('/data/covers.json', (req, res) => {
