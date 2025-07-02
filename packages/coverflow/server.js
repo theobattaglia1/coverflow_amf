@@ -117,6 +117,17 @@ app.use((req, res, next) => {
   if (isAdminSubdomain(req)) {
     console.log(`Admin subdomain request: ${req.method} ${req.path}`);
     
+    // Allow API requests to pass through
+    if (req.path.startsWith('/api/') || 
+        req.path.startsWith('/data/') || 
+        req.path.startsWith('/upload-') ||
+        req.path.startsWith('/save-') ||
+        req.path.startsWith('/delete-') ||
+        req.path.startsWith('/artist-tracks/') ||
+        req.path.startsWith('/uploads/')) {
+      return next();
+    }
+    
     // Handle root path
     if (req.path === '/' || req.path === '') {
       if (isAuthenticated(req)) {
