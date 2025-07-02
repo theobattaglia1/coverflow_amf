@@ -1,18 +1,29 @@
 // Check if already authenticated
 (async function checkExistingAuth() {
   try {
+    console.log('Checking existing auth...');
     const res = await fetch('/api/me');
+    console.log('Auth check response:', res.status);
+    
     if (res.ok) {
+      console.log('Already authenticated, redirecting...');
       // Already logged in, redirect appropriately based on domain
       if (window.location.hostname.startsWith('admin.')) {
         // On admin subdomain, go to root
-        window.location.href = '/';
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 1000);
       } else {
         // On main domain, go to admin directory
-        window.location.href = '/admin/';
+        setTimeout(() => {
+          window.location.href = '/admin/';
+        }, 1000);
       }
+    } else {
+      console.log('Not authenticated, staying on login page');
     }
   } catch (err) {
+    console.error('Auth check error:', err);
     // Not logged in, stay on login page
   }
 })();
@@ -81,8 +92,17 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     
     console.log('Login response status:', response.status);
     
-    const data = await response.json();
-    console.log('Login response data:', data);
+    let data;
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") !== -1) {
+      data = await response.json();
+      console.log('Login response data:', data);
+    } else {
+      // If not JSON, it's probably an HTML error page
+      const text = await response.text();
+      console.error('Non-JSON response:', text.substring(0, 200));
+      throw new Error('Server returned non-JSON response - likely 404');
+    }
     
     if (!response.ok) {
       throw new Error(data.error || 'Login failed');
@@ -98,13 +118,23 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
     // Redirect to dashboard based on domain
     if (window.location.hostname.startsWith('admin.')) {
       // On admin subdomain, go to root
-      window.location.href = '/';
+      console.log('Login successful, redirecting to admin root in 1 second...');
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 1000);
     } else {
       // On main domain, go to admin directory
-      window.location.href = '/admin/';
+      console.log('Login successful, redirecting to /admin/ in 1 second...');
+      setTimeout(() => {
+        window.location.href = '/admin/';
+      }, 1000);
     }
     
   } catch (error) {
+    console.error('Login error details:', {
+      message: error.message,
+      stack: error.stack
+    });
     showError(error.message || 'Invalid username or password');
     
     // Shake the form
