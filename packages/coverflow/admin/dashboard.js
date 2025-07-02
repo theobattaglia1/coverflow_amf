@@ -1,3 +1,20 @@
+// Fix navigation links based on subdomain
+document.addEventListener('DOMContentLoaded', () => {
+  const isAdminSubdomain = window.location.hostname.startsWith('admin.');
+  
+  // Fix covers link
+  const coversLink = document.querySelector('.nav-link-covers');
+  if (coversLink) {
+    coversLink.href = isAdminSubdomain ? '/' : '/admin/';
+  }
+  
+  // Fix audio link
+  const audioLink = document.querySelector('.nav-link-audio');
+  if (audioLink) {
+    audioLink.href = isAdminSubdomain ? 'artist-audio.html' : '/admin/artist-audio.html';
+  }
+});
+
 let covers = [];
 let assets = { folders: [], images: [] };
 let sortableInstance = null;
