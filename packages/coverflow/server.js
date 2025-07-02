@@ -11,9 +11,7 @@ import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import cors from 'cors';
 
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,6 +22,11 @@ const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 
 const app = express();
+
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 const PORT = process.env.PORT || 3000;
 
 if (process.env.NODE_ENV === 'production') {
