@@ -29,7 +29,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax',
@@ -295,15 +295,34 @@ app.post('/api/login', async (req, res) => {
     }
 
     const { username, password } = req.body;
+    console.log(`Login attempt for user: ${username}`);
+    
     const users = await loadUsers();
     const user = users.find(u => u.username === username);
 
-    if (!user || !(await bcrypt.compare(password, user.hash))) {
+    if (!user) {
+      console.log(`User not found: ${username}`);
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    const passwordMatch = await bcrypt.compare(password, user.hash);
+    if (!passwordMatch) {
+      console.log(`Invalid password for user: ${username}`);
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
     req.session.user = { username: user.username, role: user.role };
-    res.json({ success: true, role: user.role });
+    console.log(`Login successful for user: ${username}, role: ${user.role}`);
+    console.log(`Session created:`, req.session.user);
+    
+    // Explicitly save session
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.status(500).json({ error: 'Session save failed' });
+      }
+      res.json({ success: true, role: user.role });
+    });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });
