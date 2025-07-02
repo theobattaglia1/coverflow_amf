@@ -32,19 +32,24 @@ app.use(session({
     secure: false,
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
-    sameSite: 'lax'
+    sameSite: 'lax',
+    domain: process.env.NODE_ENV === 'production' ? '.allmyfriendsinc.com' : undefined
   }
 }));
 
-// Authentication middleware - FIXED VERSION
+// Helper to check if user is authenticated
+function isAuthenticated(req) {
+  return req.session && req.session.user;
+}
+
+// Helper to check if this is admin subdomain
+function isAdminSubdomain(req) {
+  return req.hostname.startsWith('admin.');
+}
+
+// Authentication middleware - COMPLETELY REWRITTEN
 const requireAuth = (requiredRole = 'viewer') => {
   return (req, res, next) => {
-    // Skip auth for login-related paths
-    if (req.path.includes('login') || 
-        req.path === '/' && req.hostname.startsWith('admin.')) {
-      return next();
-    }
-    
     // Development bypass
     if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
       req.session.user = {
@@ -54,18 +59,20 @@ const requireAuth = (requiredRole = 'viewer') => {
       return next();
     }
 
+    // Check if user is authenticated
     if (!req.session.user) {
+      // For API calls, return 401
       if (req.xhr || req.headers.accept?.includes('application/json')) {
         return res.status(401).json({ error: 'Authentication required' });
       }
       
-      // Prevent redirect loop - check if already on login page
-      if (req.path === '/admin/login.html' || req.path === '/login.html') {
-        return next();
-      }
-      
-      // For admin subdomain, redirect to root which will show login
-      if (req.hostname.startsWith('admin.')) {
+      // For admin subdomain, show login page
+      if (isAdminSubdomain(req)) {
+        // Already on login page? Let it through
+        if (req.path === '/' || req.path === '/login.html' || req.path.includes('/login')) {
+          return next();
+        }
+        // Redirect to subdomain root (which will show login)
         return res.redirect('/');
       }
       
@@ -73,6 +80,7 @@ const requireAuth = (requiredRole = 'viewer') => {
       return res.redirect('/admin/login.html');
     }
 
+    // User is authenticated, check role
     const roleHierarchy = { admin: 3, editor: 2, viewer: 1 };
     if (roleHierarchy[req.session.user.role] < roleHierarchy[requiredRole]) {
       return res.status(403).json({ error: 'Insufficient permissions' });
@@ -104,53 +112,80 @@ async function saveUsers(users) {
   await fs.promises.writeFile(usersPath, JSON.stringify(users, null, 2));
 }
 
-// Admin subdomain rewrite - FIXED VERSION
-app.use((req, res, next) => {
-  // Check if this is the admin subdomain
-  if (req.hostname.startsWith('admin.') && req.method === 'GET') {
-    // Special handling for login page
-    if (req.path === '/' || req.path === '') {
-      req.url = '/admin/login.html';
-    } else if (req.path === '/login' || req.path === '/login.html') {
-      req.url = '/admin/login.html';
-    } else if (!req.path.startsWith('/admin') &&
-               !req.path.startsWith('/api/') &&
-               !req.path.startsWith('/data/') &&
-               !req.path.startsWith('/uploads/')) {
-      // For all other paths, prepend /admin
-      req.url = '/admin' + req.path;
-    }
-  }
-  next();
-});
-
-// Static files (public access)
+// Static files for PUBLIC site (no auth required)
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 app.use('/uploads', express.static(UPLOADS_DIR, {
   setHeaders: res => res.setHeader('Cache-Control', 'no-store')
 }));
 
-// Make sure login page and its assets are publicly accessible (no auth required)
-app.use('/admin/login.html', express.static(path.join(ADMIN_DIR, 'login.html')));
-app.use('/admin/login.js', express.static(path.join(ADMIN_DIR, 'login.js')));
-app.use('/admin/admin.css', express.static(path.join(ADMIN_DIR, 'admin.css')));
+// Admin subdomain handler - COMPLETELY REWRITTEN
+app.use((req, res, next) => {
+  if (isAdminSubdomain(req)) {
+    // Handle root path
+    if (req.path === '/' || req.path === '') {
+      if (isAuthenticated(req)) {
+        // User is logged in, show dashboard
+        return res.sendFile(path.join(ADMIN_DIR, 'index.html'));
+      } else {
+        // User is not logged in, show login
+        return res.sendFile(path.join(ADMIN_DIR, 'login.html'));
+      }
+    }
+    
+    // Handle login page explicitly
+    if (req.path === '/login' || req.path === '/login.html') {
+      return res.sendFile(path.join(ADMIN_DIR, 'login.html'));
+    }
+    
+    // Handle other admin assets (css, js, etc)
+    if (req.path.startsWith('/')) {
+      const filePath = req.path.substring(1); // Remove leading slash
+      const fullPath = path.join(ADMIN_DIR, filePath);
+      
+      // Check if file exists
+      if (fs.existsSync(fullPath)) {
+        // For HTML files, check auth (except login)
+        if (fullPath.endsWith('.html') && !filePath.includes('login')) {
+          if (!isAuthenticated(req)) {
+            return res.redirect('/');
+          }
+        }
+        return res.sendFile(fullPath);
+      }
+    }
+  }
+  next();
+});
 
-// Protected admin routes (require authentication) - FIXED VERSION
+// Admin routes for main domain (with /admin prefix)
 app.use('/admin', (req, res, next) => {
-  // Skip auth for login page and its assets
+  // Always allow access to login page and its assets
   if (req.path === '/login.html' || 
       req.path === '/login.js' || 
       req.path === '/admin.css' ||
       req.path.includes('/login')) {
-    return next();
+    return express.static(ADMIN_DIR)(req, res, next);
   }
-  // Apply auth to everything else
-  return requireAuth('viewer')(req, res, next);
-}, express.static(ADMIN_DIR, { extensions: ['html'] }));
+  
+  // Check auth for everything else
+  if (!isAuthenticated(req)) {
+    if (req.xhr || req.headers.accept?.includes('application/json')) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    return res.redirect('/admin/login.html');
+  }
+  
+  // Serve static files
+  express.static(ADMIN_DIR, { extensions: ['html'] })(req, res, next);
+});
 
-// Public access to covers.json only
+// Public access to covers.json and styles.json only
 app.get('/data/covers.json', (req, res) => {
   res.sendFile(path.join(DATA_DIR, 'covers.json'));
+});
+
+app.get('/data/styles.json', (req, res) => {
+  res.sendFile(path.join(DATA_DIR, 'styles.json'));
 });
 
 // Protected access to other data files
@@ -277,13 +312,18 @@ app.post('/api/logout', (req, res) => {
   });
 });
 
-app.get('/api/me', requireAuth(), (req, res) => {
+app.get('/api/me', (req, res) => {
   if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true' && !req.session.user) {
     req.session.user = {
       username: 'dev',
       role: 'admin'
     };
   }
+  
+  if (!req.session.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+  
   res.json({ user: req.session.user });
 });
 
@@ -335,6 +375,107 @@ app.delete('/api/users/:username', requireAuth('admin'), async (req, res) => {
   }
 });
 
+// Folder management endpoints
+app.post('/api/folder', requireAuth('editor'), async (req, res) => {
+  try {
+    const { path: folderPath, name } = req.body;
+    const assetsPath = path.join(DATA_DIR, 'assets.json');
+    const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+
+    // Navigate to the target folder
+    const pathParts = folderPath ? folderPath.split('/').filter(Boolean) : [];
+    let current = assets;
+
+    for (const part of pathParts) {
+      if (!current.folders) current.folders = [];
+      let folder = current.folders.find(f => f.name === part);
+      if (!folder) {
+        folder = { name: part, children: [] };
+        current.folders.push(folder);
+      }
+      current = folder;
+    }
+
+    if (!current.children) current.children = [];
+
+    // Check if folder already exists
+    if (current.children.find(c => c.type === 'folder' && c.name === name)) {
+      return res.status(400).json({ error: 'Folder already exists' });
+    }
+
+    current.children.push({ type: 'folder', name, children: [] });
+
+    await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Create folder error:', err);
+    res.status(500).json({ error: 'Failed to create folder' });
+  }
+});
+
+app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
+  try {
+    const { path: folderPath } = req.body;
+    const assetsPath = path.join(DATA_DIR, 'assets.json');
+    const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+
+    const pathParts = folderPath.split('/').filter(Boolean);
+    const folderName = pathParts.pop();
+
+    let parent = assets;
+    for (const part of pathParts) {
+      if (!parent.folders) parent.folders = [];
+      parent = parent.folders.find(f => f.name === part);
+      if (!parent) return res.status(404).json({ error: 'Parent folder not found' });
+    }
+
+    if (!parent.children) parent.children = [];
+    parent.children = parent.children.filter(c => !(c.type === 'folder' && c.name === folderName));
+
+    await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🗑️ Delete folder');
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Delete folder error:', err);
+    res.status(500).json({ error: 'Failed to delete folder' });
+  }
+});
+
+app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
+  try {
+    const { path: folderPath, newName } = req.body;
+    const assetsPath = path.join(DATA_DIR, 'assets.json');
+    const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+
+    const pathParts = folderPath.split('/').filter(Boolean);
+    const oldName = pathParts.pop();
+
+    let parent = assets;
+    for (const part of pathParts) {
+      if (!parent.folders) parent.folders = [];
+      parent = parent.folders.find(f => f.name === part);
+      if (!parent) return res.status(404).json({ error: 'Parent folder not found' });
+    }
+
+    if (!parent.children) parent.children = [];
+    const folder = parent.children.find(c => c.type === 'folder' && c.name === oldName);
+    if (!folder) return res.status(404).json({ error: 'Folder not found' });
+
+    folder.name = newName;
+
+    await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '✏️ Rename folder');
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Rename folder error:', err);
+    res.status(500).json({ error: 'Failed to rename folder' });
+  }
+});
+
 // Image upload
 app.post('/upload-image', requireAuth('editor'), upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image provided' });
@@ -381,12 +522,32 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
     const idx = covers.findIndex(c => String(c.id) === String(cover.id));
     if (idx === -1) {
       covers.push(cover);
+      
+      // Auto-create artist folder if enabled
+      if (cover.artistDetails?.name && req.body.createArtistFolder) {
+        const assetsPath = path.join(DATA_DIR, 'assets.json');
+        const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+        
+        if (!assets.folders) assets.folders = [];
+        
+        // Check if folder already exists
+        if (!assets.folders.find(f => f.name === cover.artistDetails.name)) {
+          assets.folders.push({
+            name: cover.artistDetails.name,
+            type: 'folder',
+            children: []
+          });
+          
+          await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+          await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), `📁 Create artist folder: ${cover.artistDetails.name}`);
+        }
+      }
     } else {
       covers[idx] = cover;
     }
 
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Update cover');
+    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `Update cover: ${cover.albumTitle || 'Untitled'}`);
 
     res.json({ success: true });
   } catch (err) {
@@ -492,4 +653,8 @@ app.post('/push-live', requireAuth('admin'), async (req, res) => {
 // Start server
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  console.log(`Admin interface: http://localhost:${PORT}/admin/`);
+  if (process.env.NODE_ENV === 'production') {
+    console.log(`Admin subdomain: https://admin.allmyfriendsinc.com/`);
+  }
 });
