@@ -4,6 +4,16 @@ let sortableInstance = null;
 let currentPath = '';
 let currentUser = null;
 
+// Helper to check if we're on admin subdomain
+function isAdminSubdomain() {
+  return window.location.hostname.startsWith('admin.');
+}
+
+// Helper to get the correct login URL
+function getLoginUrl() {
+  return isAdminSubdomain() ? '/' : '/admin/login.html';
+}
+
 // Toast notification system
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
@@ -28,7 +38,7 @@ async function checkAuth() {
   try {
     const res = await fetch('/api/me');
     if (!res.ok) {
-      window.location.href = '/admin/login.html';
+      window.location.href = getLoginUrl();
       return;
     }
     const data = await res.json();
@@ -38,11 +48,13 @@ async function checkAuth() {
     
     // Show/hide admin features
     if (currentUser.role !== 'admin') {
-      document.querySelector('[onclick="showUsersSection()"]').style.display = 'none';
-      document.querySelector('.btn-live').style.display = 'none';
+      const usersLink = document.querySelector('[onclick="showUsersSection()"]');
+      const liveBtn = document.querySelector('.btn-live');
+      if (usersLink) usersLink.style.display = 'none';
+      if (liveBtn) liveBtn.style.display = 'none';
     }
   } catch (err) {
-    window.location.href = '/admin/login.html';
+    window.location.href = getLoginUrl();
   }
 }
 
@@ -50,7 +62,7 @@ async function checkAuth() {
 async function logout() {
   try {
     await fetch('/api/logout', { method: 'POST' });
-    window.location.href = '/admin/login.html';
+    window.location.href = getLoginUrl();
   } catch (err) {
     showToast('Logout failed', 'error');
   }
@@ -595,7 +607,9 @@ async function moveImageToFolder(imageUrl, targetPath) {
 
 // Edit cover
 function editCover(id) {
-  window.location.href = `/admin/admin.html?id=${id}`;
+  // Use subdomain-aware URL
+  const editUrl = isAdminSubdomain() ? `/admin.html?id=${id}` : `/admin/admin.html?id=${id}`;
+  window.location.href = editUrl;
 }
 
 // Save changes
