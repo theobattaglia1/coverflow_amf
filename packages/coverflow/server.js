@@ -94,3 +94,7 @@ app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 app.use('/uploads', express.static(UPLOADS_DIR, {
   setHeaders: res => res.setHeader('Cache-Control', 'no-store')
 }));
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`✅ Server running on port ${PORT}`);
+});
