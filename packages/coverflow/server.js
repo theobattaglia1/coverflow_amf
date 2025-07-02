@@ -112,15 +112,11 @@ async function saveUsers(users) {
   await fs.promises.writeFile(usersPath, JSON.stringify(users, null, 2));
 }
 
-// Static files for PUBLIC site (no auth required)
-app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
-app.use('/uploads', express.static(UPLOADS_DIR, {
-  setHeaders: res => res.setHeader('Cache-Control', 'no-store')
-}));
-
-// Admin subdomain handler - COMPLETELY REWRITTEN
+// Admin subdomain handler - MUST COME BEFORE PUBLIC STATIC FILES
 app.use((req, res, next) => {
   if (isAdminSubdomain(req)) {
+    console.log(`Admin subdomain request: ${req.method} ${req.path}`);
+    
     // Handle root path
     if (req.path === '/' || req.path === '') {
       if (isAuthenticated(req)) {
@@ -153,9 +149,18 @@ app.use((req, res, next) => {
         return res.sendFile(fullPath);
       }
     }
+    
+    // If no file matched, but we're on admin subdomain, return 404
+    return res.status(404).send('Not found');
   }
   next();
 });
+
+// Static files for PUBLIC site (no auth required) - MOVED AFTER ADMIN HANDLER
+app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
+app.use('/uploads', express.static(UPLOADS_DIR, {
+  setHeaders: res => res.setHeader('Cache-Control', 'no-store')
+}));
 
 // Admin routes for main domain (with /admin prefix)
 app.use('/admin', (req, res, next) => {

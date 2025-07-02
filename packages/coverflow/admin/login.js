@@ -3,8 +3,14 @@
   try {
     const res = await fetch('/api/me');
     if (res.ok) {
-      // Already logged in, redirect to dashboard
-      window.location.href = '/admin/';
+      // Already logged in, redirect appropriately based on domain
+      if (window.location.hostname.startsWith('admin.')) {
+        // On admin subdomain, go to root
+        window.location.href = '/';
+      } else {
+        // On main domain, go to admin directory
+        window.location.href = '/admin/';
+      }
     }
   } catch (err) {
     // Not logged in, stay on login page
@@ -84,8 +90,14 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       localStorage.removeItem('rememberUsername');
     }
     
-    // Redirect to dashboard
-    window.location.href = '/admin/';
+    // Redirect to dashboard based on domain
+    if (window.location.hostname.startsWith('admin.')) {
+      // On admin subdomain, go to root
+      window.location.href = '/';
+    } else {
+      // On main domain, go to admin directory
+      window.location.href = '/admin/';
+    }
     
   } catch (error) {
     showError(error.message || 'Invalid username or password');

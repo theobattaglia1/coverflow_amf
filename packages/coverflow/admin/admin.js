@@ -4,6 +4,36 @@ let currentLibraryPath = '';
 let targetInputField = null;
 let currentUser = null;
 
+// Helper function to determine if we're on admin subdomain
+function isAdminSubdomain() {
+  return window.location.hostname.startsWith('admin.');
+}
+
+// Helper function to get the correct base path for API calls
+function getApiBasePath() {
+  if (isAdminSubdomain()) {
+    // On admin subdomain, API calls go directly to root
+    return '';
+  } else {
+    // On main domain, we're already in the correct context
+    return '';
+  }
+}
+
+// Helper function to get the correct redirect path
+function getRedirectPath(path) {
+  if (isAdminSubdomain()) {
+    // On admin subdomain, paths are relative to root
+    return path.startsWith('/') ? path : '/' + path;
+  } else {
+    // On main domain, ensure /admin prefix
+    if (!path.startsWith('/admin')) {
+      return '/admin' + (path.startsWith('/') ? path : '/' + path);
+    }
+    return path;
+  }
+}
+
 // Toast notification
 function showToast(message, type = 'success') {
   const toast = document.getElementById('toast');
@@ -17,9 +47,14 @@ function showToast(message, type = 'success') {
 // Check authentication
 async function checkAuth() {
   try {
-    const res = await fetch('/api/me');
+    const res = await fetch(getApiBasePath() + '/api/me');
     if (!res.ok) {
-      window.location.href = '/admin/login.html';
+      // Redirect to login
+      if (isAdminSubdomain()) {
+        window.location.href = '/';
+      } else {
+        window.location.href = '/admin/login.html';
+      }
       return;
     }
     const data = await res.json();
@@ -27,13 +62,25 @@ async function checkAuth() {
     
     // Disable save/delete buttons for viewers
     if (currentUser.role === 'viewer') {
-      document.querySelector('.btn-save').disabled = true;
-      document.querySelector('.btn-delete').disabled = true;
-      document.querySelector('.btn-save').textContent = 'Save (View Only)';
-      document.querySelector('.btn-delete').textContent = 'Delete (View Only)';
+      const saveBtn = document.querySelector('.btn-primary[onclick="saveCover()"]');
+      const deleteBtn = document.querySelector('.btn-danger[onclick="deleteCover()"]');
+      if (saveBtn) {
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'SAVE (VIEW ONLY)';
+      }
+      if (deleteBtn) {
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'DELETE (VIEW ONLY)';
+      }
     }
   } catch (err) {
-    window.location.href = '/admin/login.html';
+    console.error('Auth check failed:', err);
+    // Redirect to login
+    if (isAdminSubdomain()) {
+      window.location.href = '/';
+    } else {
+      window.location.href = '/admin/login.html';
+    }
   }
 }
 
@@ -46,7 +93,7 @@ async function checkAuth() {
   
   if (id) {
     try {
-      const res = await fetch('/data/covers.json');
+      const res = await fetch(getApiBasePath() + '/data/covers.json');
       const covers = await res.json();
       currentCover = covers.find(c => c.id == id);
     } catch (err) {
@@ -102,7 +149,7 @@ async function checkAuth() {
 // Load assets
 async function loadAssets() {
   try {
-    const res = await fetch('/data/assets.json');
+    const res = await fetch(getApiBasePath() + '/data/assets.json');
     if (!res.ok) {
       assets = { folders: [], images: [] };
       return;
@@ -171,7 +218,7 @@ window.saveCover = async function() {
   console.log("📦 Sending data to server:", body);
 
   try {
-    const response = await fetch('/save-cover', {
+    const response = await fetch(getApiBasePath() + '/save-cover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
@@ -190,7 +237,7 @@ window.saveCover = async function() {
     
     // Redirect after short delay
     setTimeout(() => {
-      window.location.href = '/admin/';
+      window.location.href = getRedirectPath('/');
     }, 1000);
     
   } catch (error) {
@@ -216,7 +263,7 @@ window.deleteCover = async function() {
   
   if (confirm("Are you sure you want to delete this cover?")) {
     try {
-      const response = await fetch('/delete-cover', {
+      const response = await fetch(getApiBasePath() + '/delete-cover', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
@@ -228,7 +275,7 @@ window.deleteCover = async function() {
       
       showToast("Cover deleted successfully!");
       setTimeout(() => {
-        window.location.href = '/admin/';
+        window.location.href = getRedirectPath('/');
       }, 1000);
     } catch (error) {
       showToast("Failed to delete: " + error.message, 'error');
@@ -403,7 +450,7 @@ async function handleUpload(file) {
     const formData = new FormData();
     formData.append('image', file);
     
-    const res = await fetch('/upload-image', {
+    const res = await fetch(getApiBasePath() + '/upload-image', {
       method: 'POST',
       body: formData
     });
@@ -429,5 +476,13 @@ async function handleUpload(file) {
 document.getElementById('imageLibraryModal').addEventListener('click', (e) => {
   if (e.target === e.currentTarget) {
     closeImageLibrary();
+  }
+});
+
+// Update back navigation link
+document.addEventListener('DOMContentLoaded', () => {
+  const backNav = document.querySelector('.back-nav a');
+  if (backNav) {
+    backNav.href = getRedirectPath('/');
   }
 });
