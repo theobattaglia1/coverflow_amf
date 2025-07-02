@@ -8,6 +8,7 @@ import session from 'express-session';
 import { Octokit } from '@octokit/rest';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import cors from 'cors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,6 +21,28 @@ const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow any subdomain of allmyfriendsinc.com in production
+    if (process.env.NODE_ENV === 'production') {
+      if (origin.includes('allmyfriendsinc.com')) {
+        return callback(null, true);
+      }
+    } else {
+      // Allow all origins in development
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true // Allow cookies to be sent
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Session configuration
