@@ -69,6 +69,8 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
   errorEl.classList.remove('show');
   
   try {
+    console.log('Attempting login with:', { username: credentials.username });
+    
     const response = await fetch('/api/login', {
       method: 'POST',
       headers: {
@@ -77,7 +79,10 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       body: JSON.stringify(credentials)
     });
     
+    console.log('Login response status:', response.status);
+    
     const data = await response.json();
+    console.log('Login response data:', data);
     
     if (!response.ok) {
       throw new Error(data.error || 'Login failed');
