@@ -11,6 +11,10 @@ import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import cors from 'cors';
 
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
