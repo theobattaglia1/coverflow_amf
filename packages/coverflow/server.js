@@ -118,6 +118,21 @@ app.use((req, res, next) => {
   if (isAdminSubdomain(req)) {
     console.log(`Admin subdomain request: ${req.method} ${req.path}`);
     
+    // Allow API routes to pass through
+    if (req.path.startsWith('/api/')) {
+      return next();
+    }
+    
+    // Allow data routes to pass through
+    if (req.path.startsWith('/data/')) {
+      return next();
+    }
+    
+    // Allow upload routes to pass through
+    if (req.path.startsWith('/upload')) {
+      return next();
+    }
+    
     // Handle root path
     if (req.path === '/' || req.path === '') {
       if (isAuthenticated(req)) {
