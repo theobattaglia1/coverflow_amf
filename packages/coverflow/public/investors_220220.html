@@ -1675,6 +1675,450 @@
                 print-color-adjust:exact;
             }
         }
+        
+        /* ———————————— 19. EXCEPTIONAL MOBILE ENHANCEMENTS */
+        /* Mobile Navigation Burger */
+        .nav-burger{
+            display:none;
+            flex-direction:column;
+            gap:4px;
+            cursor:pointer;
+            z-index:1001;
+            padding:8px;
+            margin-right:-8px;
+        }
+        
+        .nav-burger span{
+            width:24px;
+            height:2px;
+            background:var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .nav-burger.active span:nth-child(1){
+            transform:rotate(45deg) translate(5px, 5px);
+        }
+        
+        .nav-burger.active span:nth-child(2){
+            opacity:0;
+        }
+        
+        .nav-burger.active span:nth-child(3){
+            transform:rotate(-45deg) translate(5px, -5px);
+        }
+        
+        /* Enhanced Mobile Typography */
+        @media(max-width:768px){
+            :root{
+                /* Better mobile type scale */
+                --step--2: clamp(.6rem,.8vw,.7rem);
+                --step--1: clamp(.7rem,.9vw,.825rem);
+                --step-0:  clamp(.875rem,1vw,1rem);
+                --step-1:  clamp(1rem,1.2vw,1.25rem);
+                --step-2:  clamp(1.5rem,2vw,2rem);
+                --step-3:  clamp(2rem,3vw,2.5rem);
+                --step-4:  clamp(2.5rem,5vw,3.5rem);
+                --step-5:  clamp(3rem,7vw,5rem);
+                --step-6:  clamp(4rem,12vw,8rem);
+                
+                /* Adjusted spacing for mobile */
+                --gutter:1rem;
+                --section-space:5rem;
+            }
+            
+            /* Mobile Navigation */
+            .nav{
+                padding:1rem 0;
+            }
+            
+            .nav-burger{
+                display:flex;
+            }
+            
+            .nav-links{
+                position:fixed;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                background:var(--bg);
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                gap:2rem;
+                transform:translateX(100%);
+                transition:transform 0.3s ease;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+            }
+            
+            .nav-link{
+                font-size:var(--step-2);
+                opacity:1;
+            }
+            
+            /* Mobile Hero */
+            .hero{
+                min-height:100vh;
+                padding-top:5rem;
+            }
+            
+            .display{
+                font-size:clamp(3rem,20vw,8rem);
+                line-height:.9;
+            }
+            
+            /* Mobile Sections */
+            section{
+                padding-block:var(--section-space);
+            }
+            
+            /* Enhanced Mobile Cards */
+            .concept-card{
+                padding:2rem;
+                margin-bottom:1.5rem;
+                background:var(--bg);
+                position:relative;
+                overflow:visible;
+            }
+            
+            .concept-card::after{
+                content:'';
+                position:absolute;
+                bottom:-8px;
+                left:8px;
+                right:-8px;
+                height:100%;
+                background:var(--ink);
+                opacity:0.1;
+                z-index:-1;
+                transition:all 0.3s ease;
+            }
+            
+            .concept-card:active{
+                transform:translateY(-2px);
+            }
+            
+            .concept-card:active::after{
+                bottom:-4px;
+                left:4px;
+                right:-4px;
+            }
+            
+            /* Mobile Touch Targets */
+            .nav-link,
+            .btn,
+            .social-link{
+                min-height:44px;
+                display:flex;
+                align-items:center;
+            }
+            
+            /* Enhanced Mobile Artist Grid */
+            .artist-grid{
+                gap:2rem;
+                padding:0 0.5rem;
+            }
+            
+            .artist-card{
+                max-width:100%;
+                aspect-ratio:1;
+                position:relative;
+            }
+            
+            .album-cover{
+                height:100%;
+                aspect-ratio:1;
+            }
+            
+            .artist-info{
+                transform:translateY(0);
+                position:absolute;
+                bottom:0;
+                background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.7) 70%,transparent 100%);
+                padding:2rem var(--gutter) var(--gutter);
+            }
+            
+            /* Mobile Modal Enhancements */
+            .artist-modal{
+                align-items:flex-end;
+            }
+            
+            .modal-content{
+                width:100%;
+                max-width:100%;
+                height:90vh;
+                border-radius:1.5rem 1.5rem 0 0;
+                transform:translateY(100%);
+            }
+            
+            .artist-modal.active .modal-content{
+                transform:translateY(0);
+            }
+            
+            .modal-close{
+                position:sticky;
+                top:1rem;
+                right:1rem;
+                background:rgba(255,255,255,0.9);
+                color:var(--ink);
+                backdrop-filter:blur(10px);
+                border:2px solid var(--ink);
+            }
+            
+            .modal-artist-header{
+                gap:2rem;
+                padding:2rem 1rem;
+            }
+            
+            .modal-artist-image{
+                height:50vh;
+                border-radius:1rem;
+                overflow:hidden;
+            }
+            
+            /* Mobile Player Enhancement */
+            .modal-music-section{
+                padding:2rem 1rem;
+                background:var(--ink);
+                color:var(--bg);
+            }
+            
+            .track{
+                padding:1.25rem 0;
+                position:relative;
+            }
+            
+            .track:active{
+                background:rgba(255,255,255,0.1);
+                padding-left:1rem;
+            }
+            
+            .progress-bar{
+                height:6px;
+                margin:1.5rem 0;
+                cursor:pointer;
+                position:relative;
+            }
+            
+            .progress-bar::before{
+                content:'';
+                position:absolute;
+                top:-10px;
+                bottom:-10px;
+                left:0;
+                right:0;
+            }
+            
+            /* Mobile Timeline */
+            .timeline{
+                padding-left:2rem;
+                position:relative;
+            }
+            
+            .timeline-line{
+                left:0;
+                top:0;
+                bottom:0;
+                right:auto;
+                width:2px;
+                height:100%;
+                background:linear-gradient(180deg, var(--ink) 0%, var(--accent) 50%, var(--success) 100%);
+            }
+            
+            .timeline-item{
+                padding-left:2rem;
+                padding-top:0;
+                margin-bottom:3rem;
+            }
+            
+            .timeline-marker{
+                left:-6px;
+                top:0;
+            }
+            
+            /* Mobile Case Studies */
+            .case-image{
+                width:100%;
+                max-width:none;
+                height:50vh;
+                margin-bottom:2rem;
+            }
+            
+            .case-section{
+                margin-bottom:1.5rem;
+            }
+            
+            .case-deal{
+                padding:2rem 1.5rem;
+                margin-inline:-1rem;
+            }
+            
+            /* Mobile Synergy Network */
+            .synergy-network{
+                height:auto;
+                padding:2rem 0;
+            }
+            
+            .synergy-node{
+                position:relative !important;
+                width:100%;
+                margin-bottom:1rem;
+                text-align:center;
+                padding:1.5rem;
+            }
+            
+            .synergy-lines{
+                display:none;
+            }
+            
+            .multiplier-callout{
+                position:relative;
+                margin-top:2rem;
+                bottom:auto;
+            }
+            
+            /* Mobile Financial Tables */
+            .financial-year{
+                margin-bottom:2rem;
+                overflow-x:auto;
+            }
+            
+            table{
+                font-size:var(--step--1);
+                min-width:280px;
+            }
+            
+            table td{
+                padding:0.75rem 0.5rem;
+            }
+            
+            /* Mobile Investment Section */
+            .investment-section{
+                padding:4rem 1rem;
+                margin-inline:-1rem;
+            }
+            
+            .investment-grid{
+                grid-template-columns:1fr;
+                gap:3rem;
+                text-align:center;
+            }
+            
+            /* Mobile Footer */
+            .footer{
+                padding-block:4rem;
+            }
+            
+            .footer-title{
+                font-size:var(--step-4);
+            }
+            
+            /* Mobile Quotes */
+            .quote{
+                font-size:var(--step-2);
+                margin-block:3rem;
+                padding-left:1.5rem;
+                border-left-width:3px;
+            }
+            
+            /* Swipe Hints */
+            .swipe-hint{
+                display:block;
+                text-align:center;
+                font-size:var(--step--2);
+                opacity:0.5;
+                margin-top:1rem;
+                text-transform:uppercase;
+                letter-spacing:0.1em;
+            }
+            
+            /* Performance Optimizations */
+            .artist-card,
+            .concept-card,
+            .case-section,
+            .financial-year,
+            .timeline-item{
+                will-change:transform;
+            }
+            
+            /* Reduced Motion Support */
+            @media(prefers-reduced-motion: reduce){
+                *{
+                    animation:none !important;
+                    transition:none !important;
+                }
+            }
+            
+            /* Touch Feedback */
+            .artist-card:active,
+            .btn:active,
+            .social-link:active,
+            .nav-link:active{
+                transform:scale(0.98);
+            }
+            
+            /* iOS Safe Areas */
+            .nav{
+                padding-top:max(1rem, env(safe-area-inset-top));
+            }
+            
+            .footer{
+                padding-bottom:max(4rem, env(safe-area-inset-bottom));
+            }
+            
+            /* Improved Tap Targets */
+            .track,
+            .social-link,
+            .nav-link{
+                position:relative;
+            }
+            
+            .track::before,
+            .social-link::before,
+            .nav-link::before{
+                content:'';
+                position:absolute;
+                top:-8px;
+                bottom:-8px;
+                left:-12px;
+                right:-12px;
+            }
+        }
+        
+        /* Small Mobile Optimizations */
+        @media(max-width:375px){
+            .display{
+                font-size:clamp(2.5rem,18vw,6rem);
+            }
+            
+            .modal-artist-info h2{
+                font-size:var(--step-3);
+            }
+            
+            .investment-number{
+                font-size:var(--step-4);
+            }
+        }
+        
+        /* Landscape Mobile */
+        @media(max-width:768px) and (orientation:landscape){
+            .hero{
+                min-height:auto;
+                padding:3rem 0;
+            }
+            
+            .modal-content{
+                height:100vh;
+                border-radius:0;
+            }
+            
+            .modal-artist-image{
+                height:40vh;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1682,14 +2126,19 @@
     <nav class="nav">
         <div class="nav-inner container">
             <div class="nav-logo">ALL MY FRIENDS</div>
+            <div class="nav-burger" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
             <ul class="nav-links">
-                <li><a href="#intro" class="nav-link active">Intro</a></li>
-                <li><a href="#artists" class="nav-link">Artists</a></li>
-                <li><a href="#timeline" class="nav-link">Timeline</a></li>
-                <li><a href="#cases" class="nav-link">Case Studies</a></li>
-                <li><a href="#synergy" class="nav-link">Synergy</a></li>
-                <li><a href="#future" class="nav-link">Future</a></li>
-                <li><a href="#financials" class="nav-link">Financials</a></li>
+                <li><a href="#intro" class="nav-link active" onclick="closeMobileNav()">Intro</a></li>
+                <li><a href="#artists" class="nav-link" onclick="closeMobileNav()">Artists</a></li>
+                <li><a href="#timeline" class="nav-link" onclick="closeMobileNav()">Timeline</a></li>
+                <li><a href="#cases" class="nav-link" onclick="closeMobileNav()">Case Studies</a></li>
+                <li><a href="#synergy" class="nav-link" onclick="closeMobileNav()">Synergy</a></li>
+                <li><a href="#future" class="nav-link" onclick="closeMobileNav()">Future</a></li>
+                <li><a href="#financials" class="nav-link" onclick="closeMobileNav()">Financials</a></li>
             </ul>
         </div>
     </nav>
@@ -1763,11 +2212,11 @@
             <div class="founder-content">
                 <div>
                     <h2>THEO<br>BATTAGLIA</h2>
-                    <p class="lead">Founder</p>
+                    <p class="lead">Founder, Strategist & Creative Catalyst</p>
                     <div class="spacer-md"></div>
                     <p>
-                        With a background spanning major labels (<strong>10K Projects - Executive Vice President, Creative</strong>), entertainment studios 
-                        (<strong>HBO - series Marketing</strong>, <strong>Warner Bros - Creative Development</strong>), and tech innovators (<strong>Apple - Apple TV+</strong>), I've witnessed firsthand how 
+                        With a background spanning major labels (<strong>10K Projects</strong>), entertainment studios 
+                        (<strong>HBO</strong>, <strong>Warner Bros</strong>), and tech innovators (<strong>Apple</strong>), I've witnessed firsthand how 
                         traditional management commodifies talent rather than cultivating it.
                     </p>
                     <p>
@@ -1875,6 +2324,7 @@
                     </div>
                 </div>
             </div>
+            <p class="swipe-hint">Tap to explore</p>
         </div>
         
         <!-- Artist Modal -->
@@ -2512,6 +2962,21 @@
     
     <!-- Minimal JS -->
     <script>
+        // Mobile Navigation
+        function toggleMobileNav() {
+            const burger = document.querySelector('.nav-burger');
+            const navLinks = document.querySelector('.nav-links');
+            burger.classList.toggle('active');
+            navLinks.classList.toggle('active');
+        }
+        
+        function closeMobileNav() {
+            const burger = document.querySelector('.nav-burger');
+            const navLinks = document.querySelector('.nav-links');
+            burger.classList.remove('active');
+            navLinks.classList.remove('active');
+        }
+        
         // Active nav
         const sections = document.querySelectorAll('section[id]');
         const navLinks = document.querySelectorAll('.nav-link');
@@ -2859,6 +3324,7 @@
                 if (!activeTrack) {
                     playTrack(0);
                 } else {
+
                     // Resume current track
                     const tracks = document.querySelectorAll('#modal-track-list .track');
                     const activeIndex = Array.from(tracks).findIndex(t => t.classList.contains('active'));
@@ -2928,6 +3394,9 @@
         function drawSynergyLines() {
             const container = document.querySelector('.synergy-lines');
             const nodes = document.querySelectorAll('.synergy-node');
+            
+            // Only draw lines on desktop
+            if (window.innerWidth <= 768) return;
             
             // Clear existing lines
             container.innerHTML = '';
@@ -3005,6 +3474,21 @@
             // Note: In print dialog, select "Save as PDF" as the destination
             // For best results, ensure "Background graphics" is checked
         }
+        
+        // Touch gesture support for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        function handleGesture() {
+            if (touchEndX < touchStartX - 50) {
+                // Swiped left
+                nextTrack();
+            }
+            if (touchEndX > touchStartX + 50) {
+                // Swiped right
+                previousTrack();
+            }
+        }
 
         // Initialize on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
@@ -3024,6 +3508,26 @@
                     downloadPDF();
                 });
             }
+            
+            // Mobile touch gesture support
+            const modalContent = document.querySelector('.modal-content');
+            if (modalContent) {
+                modalContent.addEventListener('touchstart', e => {
+                    touchStartX = e.changedTouches[0].screenX;
+                });
+                
+                modalContent.addEventListener('touchend', e => {
+                    touchEndX = e.changedTouches[0].screenX;
+                    handleGesture();
+                });
+            }
+            
+            // Prevent pull-to-refresh on mobile
+            document.body.addEventListener('touchmove', (e) => {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
         });
     </script>
 </body>
