@@ -263,7 +263,7 @@ window.deleteCover = async function() {
   
   if (confirm("Are you sure you want to delete this cover?")) {
     try {
-const response = await fetch(getApiBasePath() + '/api/delete-cover', {
+const response = await fetch('/delete-cover', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id })
