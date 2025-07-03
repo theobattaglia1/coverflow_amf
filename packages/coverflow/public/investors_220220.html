@@ -102,7 +102,7 @@
             top:1px;
             left:1px;
             color:var(--accent);
-            opacity:.1;
+            opacity:.15;
             z-index:-1;
         }
         
@@ -134,6 +134,142 @@
         .offset-2{grid-column-start:3;}
         .offset-3{grid-column-start:4;}
         
+        /* Enhanced Problem/Solution Cards */
+        .concept-cards{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:3rem;
+            margin-top:4rem;
+            position:relative;
+        }
+        
+        .concept-card{
+            padding:3rem;
+            position:relative;
+            overflow:hidden;
+            border:2px solid var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .concept-card::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:var(--ink);
+            transform:translateX(-100%);
+            transition:transform 0.3s ease;
+            z-index:-1;
+        }
+        
+        .concept-card:hover{
+            color:var(--bg);
+            transform:translateY(-4px);
+        }
+        
+        .concept-card:hover::before{
+            transform:translateX(0);
+        }
+        
+        .concept-card.problem{
+            border-left-width:6px;
+        }
+        
+        .concept-card.solution{
+            border-right-width:6px;
+        }
+        
+        .concept-card h5{
+            margin-bottom:1.5rem;
+            font-size:var(--step-2);
+            position:relative;
+        }
+        
+        .concept-card.problem h5::after{
+            content:'×';
+            position:absolute;
+            right:0;
+            top:0;
+            font-size:var(--step-3);
+            opacity:0.2;
+        }
+        
+        .concept-card.solution h5::after{
+            content:'✓';
+            position:absolute;
+            right:0;
+            top:0;
+            font-size:var(--step-3);
+            opacity:0.2;
+        }
+        
+        /* Abstract corner element */
+        .abstract-corner{
+            position:absolute;
+            top:-10%;
+            right:-5%;
+            width:25vw;
+            height:25vw;
+            background:linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.02) 50%);
+            transform:rotate(45deg);
+            z-index:-1;
+        }
+        
+        /* Founder section with image */
+        .founder-section{
+            position:relative;
+        }
+        
+        .founder-content{
+            display:grid;
+            grid-template-columns:1fr 300px;
+            gap:4rem;
+            align-items:start;
+        }
+        
+        .founder-image{
+            position:relative;
+            width:300px;
+            height:400px;
+            overflow:hidden;
+            transform:rotate(2deg);
+            margin-top:2rem;
+        }
+        
+        .founder-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:grayscale(100%) contrast(1.1);
+            transition:all 0.3s ease;
+        }
+        
+        .founder-image:hover img{
+            filter:grayscale(50%) contrast(1);
+        }
+        
+        .founder-image::before{
+            content:'';
+            position:absolute;
+            inset:0;
+            border:3px solid var(--ink);
+            transform:translate(-8px, -8px);
+            z-index:-1;
+        }
+        
+        @media(max-width:768px){
+            .founder-content{
+                grid-template-columns:1fr;
+            }
+            .founder-image{
+                width:100%;
+                max-width:300px;
+                margin:2rem auto;
+            }
+        }
+
         .modal-music-section .track-list{
             margin-bottom:2rem;
             max-height:300px;
@@ -267,6 +403,7 @@
             .grid{grid-template-columns:repeat(4,1fr);}
             [class*="col-"]{grid-column:span 4;}
             [class*="offset-"]{grid-column-start:1;}
+            .concept-cards{grid-template-columns:1fr;}
         }
         
         /* ———————————— 4. Section Architecture */
@@ -471,7 +608,7 @@
             }
         }
         
-        /* ———————————— 9. Timeline */
+        /* ———————————— 9. Enhanced Timeline */
         .timeline{
             position:relative;
             padding-top:4rem;
@@ -482,9 +619,29 @@
             top:0;
             left:0;
             right:0;
-            height:1px;
-            background:var(--ink);
-            opacity:.1;
+            height:2px;
+            background:linear-gradient(90deg, var(--ink) 0%, var(--accent) 50%, var(--success) 100%);
+            opacity:.2;
+        }
+        
+        .timeline-line::before{
+            content:'2022';
+            position:absolute;
+            left:0;
+            top:-25px;
+            font-size:var(--step--2);
+            font-weight:700;
+            opacity:0.5;
+        }
+        
+        .timeline-line::after{
+            content:'2030';
+            position:absolute;
+            right:0;
+            top:-25px;
+            font-size:var(--step--2);
+            font-weight:700;
+            opacity:0.5;
         }
         
         .timeline-items{
@@ -496,6 +653,7 @@
         
         .timeline-item{
             padding-top:2rem;
+            position:relative;
         }
         
         .timeline-marker{
@@ -506,6 +664,12 @@
             height:12px;
             background:var(--ink);
             border-radius:50%;
+            transition:all 0.3s ease;
+        }
+        
+        .timeline-item:hover .timeline-marker{
+            transform:scale(1.5);
+            background:var(--accent);
         }
         
         .timeline-year{
@@ -1011,12 +1175,77 @@
             filter:saturate(100%) contrast(1);
         }
         
+        /* Enhanced Case Study Text Layout */
+        .case-content{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            margin-top:3rem;
+            position:relative;
+        }
+        
+        .case-section{
+            position:relative;
+            padding:2rem;
+            background:var(--bg);
+            border:1px solid rgba(0,0,0,0.1);
+            transition:all 0.3s ease;
+        }
+        
+        .case-section::before{
+            content:'';
+            position:absolute;
+            top:-1px;
+            left:-1px;
+            right:-1px;
+            bottom:-1px;
+            background:var(--accent);
+            opacity:0;
+            transition:opacity 0.3s ease;
+            z-index:-1;
+        }
+        
+        .case-section:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .case-section:hover::before{
+            opacity:0.05;
+        }
+        
+        .case-deal{
+            grid-column:span 2;
+            margin-top:2rem;
+            padding:3rem;
+            background:var(--ink);
+            color:var(--bg);
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .case-deal::after{
+            content:'$$$';
+            position:absolute;
+            top:-20px;
+            right:20px;
+            font-size:var(--step-6);
+            opacity:0.05;
+            font-weight:900;
+        }
+        
         @media(max-width:768px){
             .case-header{
                 grid-template-columns:1fr;
             }
             .case-image{
                 margin:0 auto;
+            }
+            .case-content{
+                grid-template-columns:1fr;
+            }
+            .case-deal{
+                grid-column:span 1;
             }
         }
         
@@ -1228,6 +1457,93 @@
             color:var(--accent);
         }
         
+        /* ———————————— 17. Roster Synergy Network */
+        .synergy-visual{
+            position:relative;
+            padding:6rem 0;
+            margin:4rem 0;
+        }
+        
+        .synergy-intro{
+            text-align:center;
+            margin-bottom:4rem;
+        }
+        
+        .synergy-intro p{
+            font-size:var(--step-1);
+            max-width:50ch;
+            margin:0 auto;
+            line-height:1.6;
+        }
+        
+        .synergy-network{
+            position:relative;
+            height:600px;
+            margin:4rem 0;
+            overflow:hidden;
+        }
+        
+        .synergy-node{
+            position:absolute;
+            background:var(--bg);
+            border:3px solid var(--ink);
+            padding:1.5rem 2rem;
+            font-weight:700;
+            transition:all 0.3s ease;
+            cursor:pointer;
+            z-index:10;
+        }
+        
+        .synergy-node:hover{
+            background:var(--ink);
+            color:var(--bg);
+            transform:scale(1.1);
+            z-index:20;
+        }
+        
+        .synergy-node.producer{
+            border-color:var(--accent);
+        }
+        
+        .synergy-node.artist{
+            border-style:dashed;
+        }
+        
+        /* Node positions */
+        .synergy-node:nth-child(1){top:20%;left:45%;} /* Jack - Center */
+        .synergy-node:nth-child(2){top:10%;left:20%;} /* Hudson - Top Left */
+        .synergy-node:nth-child(3){top:10%;right:20%;} /* Ruby - Top Right */
+        .synergy-node:nth-child(4){top:50%;left:10%;} /* Kate - Mid Left */
+        .synergy-node:nth-child(5){top:50%;right:10%;} /* Tom - Mid Right */
+        .synergy-node:nth-child(6){bottom:20%;left:25%;} /* Leon - Bottom Left */
+        .synergy-node:nth-child(7){bottom:20%;right:25%;} /* Conall - Bottom Right */
+        
+        .synergy-lines{
+            position:absolute;
+            inset:0;
+            pointer-events:none;
+        }
+        
+        .synergy-line{
+            position:absolute;
+            height:1px;
+            background:var(--ink);
+            opacity:0.2;
+            transform-origin:left center;
+        }
+        
+        /* Multiplier text */
+        .multiplier-callout{
+            position:absolute;
+            bottom:-4rem;
+            left:50%;
+            transform:translateX(-50%);
+            text-align:center;
+            font-size:var(--step-2);
+            font-weight:700;
+            color:var(--accent);
+        }
+        
         @keyframes shimmer{
             to{left:100%;}
         }
@@ -1242,7 +1558,7 @@
             overflow:visible !important;
         }
         
-        /* ———————————— 17. Print Styles */
+        /* ———————————— 18. Print Styles */
         @media print{
             @page{
                 margin:0.75in;
@@ -1288,7 +1604,8 @@
             .hero-image,
             .large-image,
             .case-image,
-            .album-cover{
+            .album-cover,
+            .founder-image{
                 transform:none !important;
             }
             
@@ -1392,9 +1709,7 @@
     
     <!-- Who We Are -->
     <section style="position:relative;">
-        <div class="accent-image top-right">
-            <div style="width:100%;height:100%;background:var(--accent);opacity:0.03;"></div>
-        </div>
+        <div class="abstract-corner"></div>
         
         <div class="container">
             <p class="section-marker">01 — WHO WE ARE</p>
@@ -1413,15 +1728,15 @@
             
             <div class="spacer-lg"></div>
             
-            <div class="grid">
-                <div class="col-6">
+            <div class="concept-cards">
+                <div class="concept-card problem">
                     <h5>The Problem</h5>
                     <p>• Profit-extraction mindset: Artists seen merely as revenue channels<br>
                     • Misaligned incentives: Agencies push short-term wins over long-term growth<br>
                     • Limited equity participation: Upfront cash but no meaningful ownership<br>
                     • Reactivity over strategy: Ad-hoc decisions miss trend anticipation</p>
                 </div>
-                <div class="col-6">
+                <div class="concept-card solution">
                     <h5>Our Solution</h5>
                     <p>• Vision-focused investment: Each artist as dynamic talent with compounding value<br>
                     • Equity alignment: Artists become true partners, not just clients<br>
@@ -1441,18 +1756,18 @@
     </section>
     
     <!-- Meet Theo -->
-    <section style="background:#FAFAFA;">
+    <section style="background:#FAFAFA;" class="founder-section">
         <div class="container">
             <p class="section-marker">02 — MEET THE FOUNDER</p>
             
-            <div class="grid">
-                <div class="col-8">
+            <div class="founder-content">
+                <div>
                     <h2>THEO<br>BATTAGLIA</h2>
-                    <p class="lead">Founder, Strategist & Creative Catalyst</p>
+                    <p class="lead">Founder</p>
                     <div class="spacer-md"></div>
                     <p>
-                        With a background spanning major labels (10K Projects), entertainment studios 
-                        (HBO, Warner Bros), and tech innovators (Apple), I've witnessed firsthand how 
+                        With a background spanning major labels (<strong>10K Projects - Executive Vice President, Creative</strong>), entertainment studios 
+                        (<strong>HBO - series Marketing</strong>, <strong>Warner Bros - Creative Development</strong>), and tech innovators (<strong>Apple - Apple TV+</strong>), I've witnessed firsthand how 
                         traditional management commodifies talent rather than cultivating it.
                     </p>
                     <p>
@@ -1460,6 +1775,9 @@
                         development—rooted in visionary strategy and genuine partnership—can yield 
                         stellar commercial results while nurturing creative evolution.
                     </p>
+                </div>
+                <div class="founder-image">
+                    <img src="https://admin.allmyfriendsinc.com/uploads/upload-1751584655185-135257080.png" alt="Theo Battaglia">
                 </div>
             </div>
         </div>
@@ -1472,7 +1790,7 @@
             
             <div class="grid">
                 <div class="col-10">
-                    <h2 data-misreg="MEET THE ROSTER">MEET THE<br>ROSTER</h2>
+                    <h2>MEET THE <span data-misreg="ROSTER">ROSTER</span></h2>
                     <p class="lead">Click any artist to explore their story, hear exclusive demos, and discover their journey</p>
                 </div>
             </div>
@@ -1659,8 +1977,8 @@
                 </div>
             </div>
             
-            <div class="grid">
-                <div class="col-6">
+            <div class="case-content">
+                <div class="case-section">
                     <h5>The Timeline</h5>
                     <p><strong>April 2023:</strong> Discovered on TikTok at age 16<br>
                     <strong>June 2023:</strong> First development sessions<br>
@@ -1668,7 +1986,7 @@
                     <strong>October 2024:</strong> ACL Festival performance<br>
                     <strong>April 2025:</strong> Signs to Interscope/Aaron Dessner JV</p>
                 </div>
-                <div class="col-6">
+                <div class="case-section">
                     <h5>Why It's Working</h5>
                     <p>• Authentic Texas roots with universal appeal<br>
                     • 18-year-old voice capturing Gen Z experience<br>
@@ -1676,12 +1994,8 @@
                     • Strategic positioning between Taylor Swift's narrative and Noah Kahan's authenticity<br>
                     • Joint venture structure ensures aligned creative vision</p>
                 </div>
-            </div>
-            
-            <div class="spacer-md"></div>
-            
-            <div class="grid">
-                <div class="col-12">
+                
+                <div class="case-deal">
                     <h5>The Deal</h5>
                     <p><strong>Structure:</strong> Hudson is signed to a Joint Venture between Interscope Records and Aaron Dessner<br>
                     <strong>Aaron Dessner:</strong> Producer/collaborator for The National, Bon Iver, Taylor Swift, Noah Kahan, Gracie Abrams<br>
@@ -1690,6 +2004,8 @@
                     <strong>Rollout:</strong> September 2025 campaign planned</p>
                 </div>
             </div>
+            
+            <div class="spacer-md"></div>
             
             <div class="quote">
                 "Industry buzzing despite no music released yet"
@@ -1712,27 +2028,23 @@
                 </div>
             </div>
             
-            <div class="grid">
-                <div class="col-6">
+            <div class="case-content">
+                <div class="case-section">
                     <h5>The Success</h5>
                     <p><strong>Credits:</strong> Midwxst "Car Seats", dhruv "Speed of Light"<br>
                     <strong>December 2024:</strong> Kobalt/100 Publishing deal<br>
                     <strong>Advance:</strong> Mid-six figures<br>
                     <strong>Since signing:</strong> 15+ major label cuts secured</p>
                 </div>
-                <div class="col-6">
+                <div class="case-section">
                     <h5>Market Comps</h5>
                     <p>• OZ (Drake, Travis Scott producer)<br>
                     • Omer Fedi (Lil Nas X, The Kid LAROI)<br>
                     • Blake Slatkin (Justin Bieber, Gracie Abrams)<br>
                     All started with similar trajectory</p>
                 </div>
-            </div>
-            
-            <div class="spacer-md"></div>
-            
-            <div class="grid">
-                <div class="col-12">
+                
+                <div class="case-deal">
                     <h5>Ecosystem Synergy</h5>
                     <p>Jack's production style perfectly complements our artist roster. He's worked extensively with Hudson 
                     (including sessions with Aaron Dessner), creating a sound that bridges indie credibility with pop accessibility. 
@@ -1757,86 +2069,42 @@
             
             <div class="spacer-lg"></div>
             
-            <div class="grid">
-                <div class="col-8">
-                    <p class="lead">
-                        Our roster isn't just a collection of talent – it's a living, 
-                        breathing creative ecosystem where every collaboration amplifies value.
-                    </p>
-                </div>
+            <div class="synergy-intro">
+                <p>
+                    Our roster operates as a creative multiplier. When artists collaborate internally, 
+                    they share audiences, reduce costs, and create a self-reinforcing cycle of growth. 
+                    Every connection strengthens the whole—turning individual success into collective momentum.
+                </p>
             </div>
             
-            <div class="spacer-lg"></div>
-            
-            <!-- Collaboration Map -->
-            <div style="position:relative;padding:4rem 0;">
-                <h4 class="text-center">Active Collaborations</h4>
-                <div class="spacer-md"></div>
-                
-                <div class="grid">
-                    <div class="col-4" style="text-align:center;">
-                        <h5 style="color:var(--accent);">Jack Schrepferman</h5>
-                        <p style="font-size:var(--step--1);">Producer</p>
-                        <div style="margin-top:1rem;padding:1rem;border-left:3px solid var(--accent);">
-                            <p style="font-size:var(--step--1);text-align:left;">
-                                → Hudson Ingram (5 tracks)<br>
-                                → Ruby Plume (3 tracks)<br>
-                                → Tom Siletto (2 tracks)<br>
-                                → Kate Stephenson (4 tracks)
-                            </p>
-                        </div>
+            <div class="synergy-visual">
+                <div class="synergy-network">
+                    <div class="synergy-lines">
+                        <!-- Lines will be added with JS -->
                     </div>
-                    
-                    <div class="col-4" style="text-align:center;">
-                        <h5 style="color:var(--accent);">Hudson Ingram</h5>
-                        <p style="font-size:var(--step--1);">Artist/Writer</p>
-                        <div style="margin-top:1rem;padding:1rem;border-left:3px solid var(--accent);">
-                            <p style="font-size:var(--step--1);text-align:left;">
-                                → Co-writing with Ruby Plume<br>
-                                → Sessions with Jack & Dessner<br>
-                                → Mentoring Conall Cafferty<br>
-                                → Tom Siletto collaboration
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="col-4" style="text-align:center;">
-                        <h5 style="color:var(--accent);">Leon Sharplin</h5>
-                        <p style="font-size:var(--step--1);">Producer/Artist</p>
-                        <div style="margin-top:1rem;padding:1rem;border-left:3px solid var(--accent);">
-                            <p style="font-size:var(--step--1);text-align:left;">
-                                → Producing Kate Stephenson<br>
-                                → Co-producing with Jack<br>
-                                → Conall Cafferty tracks<br>
-                                → Ruby Plume sessions
-                            </p>
-                        </div>
-                    </div>
+                    <div class="synergy-node producer" style="width:200px;">Jack Schrepferman<br><span style="font-size:var(--step--1);font-weight:400;opacity:0.7;">Producer Hub</span></div>
+                    <div class="synergy-node artist">Hudson Ingram</div>
+                    <div class="synergy-node artist">Ruby Plume</div>
+                    <div class="synergy-node artist">Kate Stephenson</div>
+                    <div class="synergy-node artist">Tom Siletto</div>
+                    <div class="synergy-node producer">Leon Sharplin</div>
+                    <div class="synergy-node artist">Conall Cafferty</div>
+                </div>
+                <div class="multiplier-callout">
+                    Every collaboration = +40% revenue impact
                 </div>
             </div>
             
             <div class="spacer-lg"></div>
             
             <div class="grid">
-                <div class="col-6">
+                <div class="col-12 text-center">
                     <h5>The Multiplier Effect</h5>
-                    <p>When Jack produces a hit for Hudson, it elevates both careers. 
-                    When Hudson writes with Ruby, both artists gain new audiences. 
-                    Every internal collaboration:</p>
-                    <p>• Reduces external costs<br>
-                    • Strengthens roster bonds<br>
-                    • Creates shared success incentives<br>
-                    • Builds our reputation as a creative hub</p>
-                </div>
-                <div class="col-6">
-                    <h5>By The Numbers</h5>
-                    <p><strong>2024:</strong> 12 internal collaborations<br>
-                    <strong>2025 YTD:</strong> 27 internal collaborations<br>
-                    <strong>Success Rate:</strong> 73% of collabs result in releases<br>
-                    <strong>Revenue Impact:</strong> +40% on collaborative tracks</p>
-                    <div class="spacer-sm"></div>
-                    <p><strong>Projected 2030:</strong> 200+ annual internal collaborations 
-                    creating a self-sustaining creative economy</p>
+                    <p style="max-width:65ch;margin:2rem auto;">
+                        When Jack produces a hit for Hudson, it elevates both careers. 
+                        When Hudson writes with Ruby, both artists gain new audiences. 
+                        This isn't just management—it's ecosystem design.
+                    </p>
                 </div>
             </div>
             
@@ -2655,6 +2923,58 @@
                 pauseIcon.style.display = 'none';
             }
         }
+        
+        // Draw synergy lines
+        function drawSynergyLines() {
+            const container = document.querySelector('.synergy-lines');
+            const nodes = document.querySelectorAll('.synergy-node');
+            
+            // Clear existing lines
+            container.innerHTML = '';
+            
+            // Define connections
+            const connections = [
+                [0, 1], // Jack to Hudson
+                [0, 2], // Jack to Ruby
+                [0, 3], // Jack to Kate
+                [0, 4], // Jack to Tom
+                [1, 2], // Hudson to Ruby
+                [1, 4], // Hudson to Tom
+                [1, 6], // Hudson to Conall
+                [5, 2], // Leon to Ruby
+                [5, 3], // Leon to Kate
+                [5, 6], // Leon to Conall
+                [0, 5], // Jack to Leon
+            ];
+            
+            connections.forEach(([from, to]) => {
+                const fromNode = nodes[from];
+                const toNode = nodes[to];
+                
+                if (fromNode && toNode) {
+                    const fromRect = fromNode.getBoundingClientRect();
+                    const toRect = toNode.getBoundingClientRect();
+                    const containerRect = container.getBoundingClientRect();
+                    
+                    const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+                    const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+                    const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+                    const y2 = toRect.top + toRect.height / 2 - containerRect.top;
+                    
+                    const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+                    const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+                    
+                    const line = document.createElement('div');
+                    line.className = 'synergy-line';
+                    line.style.width = `${length}px`;
+                    line.style.left = `${x1}px`;
+                    line.style.top = `${y1}px`;
+                    line.style.transform = `rotate(${angle}deg)`;
+                    
+                    container.appendChild(line);
+                }
+            });
+        }
 
         // Download as PDF function
         function downloadPDF() {
@@ -2689,6 +3009,12 @@
         // Initialize on DOM ready
         document.addEventListener('DOMContentLoaded', () => {
             initializeArtistCards();
+            
+            // Draw synergy lines after a short delay to ensure positioning
+            setTimeout(drawSynergyLines, 100);
+            
+            // Redraw lines on window resize
+            window.addEventListener('resize', drawSynergyLines);
             
             // Add event listener to PDF download button
             const pdfButton = document.getElementById('download-pdf');
