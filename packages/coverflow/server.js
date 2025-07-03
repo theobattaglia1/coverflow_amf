@@ -133,6 +133,26 @@ app.use((req, res, next) => {
       return next();
     }
     
+    // Allow save/delete cover routes to pass through
+    if (req.path === '/save-cover' || req.path === '/delete-cover' || req.path === '/save-covers') {
+      return next();
+    }
+    
+    // Allow assets routes to pass through
+    if (req.path === '/save-assets') {
+      return next();
+    }
+    
+    // Allow artist tracks routes to pass through
+    if (req.path.startsWith('/artist-tracks') || req.path === '/save-artist-tracks') {
+      return next();
+    }
+    
+    // Allow push-live route to pass through
+    if (req.path === '/push-live') {
+      return next();
+    }
+    
     // Handle root path
     if (req.path === '/' || req.path === '') {
       if (isAuthenticated(req)) {
