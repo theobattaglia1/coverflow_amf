@@ -153,6 +153,11 @@ app.use((req, res, next) => {
       return next();
     }
     
+    // Allow test-github and force-github-backup routes
+    if (req.path === '/test-github' || req.path === '/force-github-backup') {
+      return next();
+    }
+    
     // Handle root path
     if (req.path === '/' || req.path === '') {
       if (isAuthenticated(req)) {
@@ -252,7 +257,13 @@ const GH_OWNER = 'theobattaglia1';
 const GH_REPO = 'coverflow_amf';
 
 async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
+  console.log(`📤 Attempting to push to GitHub: ${filePath}`);
+  
   try {
+    if (!process.env.GITHUB_TOKEN) {
+      throw new Error('GITHUB_TOKEN not set!');
+    }
+    
     let sha;
     try {
       const { data } = await octokit.repos.getContent({
@@ -261,11 +272,13 @@ async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
         path: filePath
       });
       sha = data.sha;
+      console.log(`📄 File exists, SHA: ${sha}`);
     } catch (err) {
       if (err.status !== 404) throw err;
+      console.log(`📄 File doesn't exist, will create new`);
     }
 
-    await octokit.repos.createOrUpdateFileContents({
+    const result = await octokit.repos.createOrUpdateFileContents({
       owner: GH_OWNER,
       repo: GH_REPO,
       path: filePath,
@@ -274,12 +287,71 @@ async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
       sha
     });
 
+    console.log(`✅ GitHub push successful: ${result.data.commit.sha}`);
     return { success: true };
   } catch (err) {
-    console.error(`GitHub push failed for ${filePath}:`, err.message);
+    console.error(`❌ GitHub push failed for ${filePath}:`, err.message);
+    console.error('Full error:', err);
     throw err;
   }
 }
+
+// Test GitHub endpoint
+app.post('/test-github', requireAuth('admin'), async (req, res) => {
+  try {
+    const testContent = {
+      message: "GitHub sync test",
+      timestamp: new Date().toISOString(),
+      randomNumber: Math.random()
+    };
+    
+    const result = await writeJsonToGitHub(
+      'test-github-sync.json',
+      JSON.stringify(testContent, null, 2),
+      'Test GitHub sync'
+    );
+    
+    res.json({ success: true, result });
+  } catch (err) {
+    console.error('GitHub test failed:', err);
+    res.json({ success: false, error: err.message });
+  }
+});
+
+// Force GitHub backup endpoint
+app.post('/force-github-backup', requireAuth('admin'), async (req, res) => {
+  console.log('🔄 Starting forced GitHub backup...');
+  
+  try {
+    // Read current data
+    const covers = JSON.parse(
+      await fs.promises.readFile(path.join(DATA_DIR, 'covers.json'), 'utf-8')
+    );
+    const assets = JSON.parse(
+      await fs.promises.readFile(path.join(DATA_DIR, 'assets.json'), 'utf-8')
+    );
+    
+    // Push to GitHub
+    console.log('📤 Pushing covers.json...');
+    await writeJsonToGitHub(
+      'packages/coverflow/data/covers.json',
+      JSON.stringify(covers, null, 2),
+      `🔄 Force backup - ${new Date().toISOString()}`
+    );
+    
+    console.log('📤 Pushing assets.json...');
+    await writeJsonToGitHub(
+      'packages/coverflow/data/assets.json',
+      JSON.stringify(assets, null, 2),
+      `🔄 Force backup - ${new Date().toISOString()}`
+    );
+    
+    res.json({ success: true, message: 'Backup complete' });
+  } catch (err) {
+    console.error('❌ Backup failed:', err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
 
 // Enhanced multer setup with folder support
 fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -529,13 +601,15 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
   }
 });
 
-// Image upload
+// Image upload - UPDATED WITH PRODUCTION URL
 app.post('/upload-image', requireAuth('editor'), upload.single('image'), (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No image provided' });
   const folder = req.body.folder || '';
   const relativePath = path.join(folder, req.file.filename);
   res.json({
-    url: `/uploads/${relativePath.replace(/\\/g, '/')}`,
+    url: process.env.NODE_ENV === 'production' 
+      ? `https://allmyfriendsinc.com/uploads/${relativePath.replace(/\\/g, '/')}` 
+      : `/uploads/${relativePath.replace(/\\/g, '/')}`,
     filename: req.file.filename,
     folder: folder
   });
@@ -600,9 +674,19 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
     }
 
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), `Update cover: ${cover.albumTitle || 'Untitled'}`);
+    
+    // Ensure GitHub sync happens
+    const githubResult = await writeJsonToGitHub(
+      'packages/coverflow/data/covers.json', 
+      JSON.stringify(covers, null, 2), 
+      `Update cover: ${cover.albumTitle || 'Untitled'}`
+    );
+    
+    if (!githubResult.success) {
+      console.error('GitHub sync failed but local save succeeded');
+    }
 
-    res.json({ success: true });
+    res.json({ success: true, githubSync: githubResult.success });
   } catch (err) {
     console.error('Save error:', err);
     res.status(500).json({ error: 'Failed to save', details: err.message });

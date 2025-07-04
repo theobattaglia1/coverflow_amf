@@ -85,6 +85,48 @@ async function logout() {
   }
 }
 
+// Test GitHub connection
+async function testGitHub() {
+  try {
+    showLoading();
+    const res = await fetch('/test-github', { method: 'POST' });
+    const result = await res.json();
+    
+    if (result.success) {
+      showToast('GitHub connection works! Check your repo for a test file.');
+    } else {
+      showToast('GitHub connection failed: ' + result.error, 'error');
+    }
+  } catch (err) {
+    showToast('GitHub test failed: ' + err.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+// Force backup to GitHub
+async function forceBackupToGitHub() {
+  if (!confirm('Force backup all data to GitHub? This will overwrite GitHub with current data.')) {
+    return;
+  }
+  
+  showLoading();
+  try {
+    const res = await fetch('/force-github-backup', { method: 'POST' });
+    const result = await res.json();
+    
+    if (result.success) {
+      showToast('✅ Backup complete! Check GitHub for commits.');
+    } else {
+      showToast('❌ Backup failed: ' + result.error, 'error');
+    }
+  } catch (err) {
+    showToast('❌ Backup error: ' + err.message, 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
 // Load covers
 async function loadCovers() {
   try {
@@ -128,6 +170,23 @@ async function loadAssets() {
   } catch (err) {
     console.error('Failed to load assets:', err);
     assets = { folders: [], images: [] };
+  }
+}
+
+// Layout params
+function updateLayoutParameters() {
+  const vw = window.innerWidth;
+
+  if (isMobile) {
+    // on mobile, use larger spacing to accommodate bigger/flipped cards
+    coverSpacing   = Math.max(180, vw * 0.30);
+    anglePerOffset = 50;
+    minScale       = 0.45;
+  } else {
+    // original desktop spacing with better minimum
+    coverSpacing   = Math.max(150, vw * 0.18); // Increased minimum from 120 to 150
+    anglePerOffset = vw < 600 ? 50 : 65;
+    minScale       = vw < 600 ? 0.45 : 0.5;
   }
 }
 

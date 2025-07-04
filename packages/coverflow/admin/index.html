@@ -364,7 +364,11 @@
       
       <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
         <button class="btn btn-primary" onclick="saveChanges()">SAVE CHANGES</button>
-        <button class="btn" onclick="pushLive()">PUSH LIVE</button>
+        <button class="btn btn-live" onclick="pushLive()">PUSH LIVE</button>
+        <button class="btn" onclick="testGitHub()">TEST GITHUB</button>
+        <button class="btn" onclick="forceBackupToGitHub()" style="background: #28a745; color: white;">
+          FORCE BACKUP TO GITHUB
+        </button>
       </div>
     </section>
 
