@@ -21,6 +21,158 @@ let sortableInstance = null;
 let currentPath = '';
 let currentUser = null;
 
+// Batch operations
+let selectedCovers = new Set();
+let batchMode = false;
+
+// Create batch operations toolbar
+const batchToolbar = document.createElement('div');
+batchToolbar.className = 'batch-toolbar';
+batchToolbar.style.cssText = `
+  display: none;
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: var(--bg);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+`;
+
+batchToolbar.innerHTML = `
+  <span class="batch-count">0 selected</span>
+  <button class="btn btn-sm" onclick="deleteSelectedCovers()">DELETE SELECTED</button>
+  <button class="btn btn-sm" onclick="exportSelectedCovers()">EXPORT SELECTED</button>
+  <button class="btn btn-sm btn-secondary" onclick="cancelBatchMode()">CANCEL</button>
+`;
+
+document.body.appendChild(batchToolbar);
+
+// Add batch mode toggle button
+const batchButton = document.createElement('button');
+batchButton.className = 'btn btn-secondary';
+batchButton.textContent = 'BATCH MODE';
+batchButton.onclick = toggleBatchMode;
+batchButton.style.marginLeft = 'var(--space-md)';
+
+if (headerActions) {
+  headerActions.appendChild(batchButton);
+}
+
+function toggleBatchMode() {
+  batchMode = !batchMode;
+  selectedCovers.clear();
+  
+  if (batchMode) {
+    batchButton.classList.add('active');
+    batchButton.textContent = 'EXIT BATCH MODE';
+    batchToolbar.style.display = 'flex';
+    document.getElementById('coversGrid').classList.add('batch-mode');
+    
+    // Add checkboxes to covers
+    document.querySelectorAll('.cover-card').forEach(card => {
+      if (!card.querySelector('.batch-checkbox')) {
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.className = 'batch-checkbox';
+        checkbox.style.cssText = `
+          position: absolute;
+          top: var(--space-sm);
+          left: var(--space-sm);
+          width: 20px;
+          height: 20px;
+          cursor: pointer;
+          z-index: 10;
+        `;
+        checkbox.onchange = (e) => {
+          const coverId = card.dataset.coverId;
+          if (e.target.checked) {
+            selectedCovers.add(coverId);
+            card.classList.add('selected');
+          } else {
+            selectedCovers.delete(coverId);
+            card.classList.remove('selected');
+          }
+          updateBatchCount();
+        };
+        card.appendChild(checkbox);
+      }
+    });
+  } else {
+    cancelBatchMode();
+  }
+}
+
+function cancelBatchMode() {
+  batchMode = false;
+  selectedCovers.clear();
+  batchButton.classList.remove('active');
+  batchButton.textContent = 'BATCH MODE';
+  batchToolbar.style.display = 'none';
+  document.getElementById('coversGrid').classList.remove('batch-mode');
+  
+  // Remove checkboxes
+  document.querySelectorAll('.batch-checkbox').forEach(cb => cb.remove());
+  document.querySelectorAll('.cover-card.selected').forEach(card => {
+    card.classList.remove('selected');
+  });
+}
+
+function updateBatchCount() {
+  const count = selectedCovers.size;
+  document.querySelector('.batch-count').textContent = `${count} selected`;
+}
+
+async function deleteSelectedCovers() {
+  if (selectedCovers.size === 0) return;
+  
+  if (!confirm(`Delete ${selectedCovers.size} covers? This cannot be undone.`)) return;
+  
+  showLoading();
+  
+  try {
+    // Delete each selected cover
+    for (const coverId of selectedCovers) {
+      const coverIndex = covers.findIndex(c => c.id === coverId);
+      if (coverIndex !== -1) {
+        covers.splice(coverIndex, 1);
+      }
+    }
+    
+    // Save updated covers
+    await saveCovers();
+    
+    showToast(`Deleted ${selectedCovers.size} covers`);
+    cancelBatchMode();
+    renderCovers();
+  } catch (err) {
+    showToast('Failed to delete covers', 'error');
+  } finally {
+    hideLoading();
+  }
+}
+
+function exportSelectedCovers() {
+  if (selectedCovers.size === 0) return;
+  
+  const selectedData = covers.filter(c => selectedCovers.has(c.id));
+  const dataStr = JSON.stringify(selectedData, null, 2);
+  const dataBlob = new Blob([dataStr], { type: 'application/json' });
+  
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(dataBlob);
+  link.download = `covers-export-${new Date().toISOString().split('T')[0]}.json`;
+  link.click();
+  
+  showToast(`Exported ${selectedCovers.size} covers`);
+}
+
 // Helper to check if we're on admin subdomain
 function isAdminSubdomain() {
   return window.location.hostname.startsWith('admin.');
@@ -31,14 +183,27 @@ function getLoginUrl() {
   return isAdminSubdomain() ? '/' : '/admin/login.html';
 }
 
-// Toast notification system
-function showToast(message, type = 'success') {
+// Toast notifications with configurable duration
+function showToast(message, type = 'success', duration = 5000) {
   const toast = document.getElementById('toast');
   toast.textContent = message;
   toast.className = `toast show ${type}`;
-  setTimeout(() => {
+  
+  // Clear any existing timeout
+  if (window.toastTimeout) {
+    clearTimeout(window.toastTimeout);
+  }
+  
+  // Auto-hide after duration
+  window.toastTimeout = setTimeout(() => {
     toast.classList.remove('show');
-  }, 3000);
+  }, duration);
+  
+  // Allow click to dismiss
+  toast.onclick = () => {
+    toast.classList.remove('show');
+    clearTimeout(window.toastTimeout);
+  };
 }
 
 // Loading overlay
@@ -1028,6 +1193,79 @@ async function deleteUser(username) {
   }
 }
 
+// Search functionality
+let searchTimeout;
+const searchInput = document.createElement('input');
+searchInput.type = 'text';
+searchInput.placeholder = 'SEARCH COVERS...';
+searchInput.className = 'search-input';
+searchInput.style.cssText = `
+  width: 300px;
+  padding: var(--space-md);
+  margin-left: var(--space-lg);
+  background: transparent;
+  border: 1px solid var(--grey);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+`;
+
+// Add search input to header
+const headerActions = document.querySelector('.header-actions');
+if (headerActions) {
+  headerActions.insertBefore(searchInput, headerActions.firstChild);
+}
+
+searchInput.addEventListener('input', (e) => {
+  clearTimeout(searchTimeout);
+  searchTimeout = setTimeout(() => {
+    const query = e.target.value.toLowerCase().trim();
+    filterCovers(query);
+  }, 300);
+});
+
+function filterCovers(query) {
+  const coverCards = document.querySelectorAll('.cover-card');
+  let visibleCount = 0;
+  
+  coverCards.forEach(card => {
+    const title = card.querySelector('.cover-card-title')?.textContent.toLowerCase() || '';
+    const label = card.querySelector('.cover-card-label')?.textContent.toLowerCase() || '';
+    const category = card.querySelector('.cover-card-category')?.textContent.toLowerCase() || '';
+    
+    const matches = !query || 
+      title.includes(query) || 
+      label.includes(query) || 
+      category.includes(query);
+    
+    card.style.display = matches ? '' : 'none';
+    if (matches) visibleCount++;
+  });
+  
+  // Show no results message
+  let noResults = document.getElementById('noSearchResults');
+  if (!noResults) {
+    noResults = document.createElement('div');
+    noResults.id = 'noSearchResults';
+    noResults.style.cssText = `
+      grid-column: 1 / -1;
+      text-align: center;
+      color: var(--grey);
+      font-family: var(--font-mono);
+      font-size: 0.875rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: var(--space-xl);
+    `;
+    noResults.textContent = 'NO COVERS FOUND';
+    document.getElementById('coversGrid').appendChild(noResults);
+  }
+  
+  noResults.style.display = visibleCount === 0 && query ? 'block' : 'none';
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   await checkAuth();
@@ -1055,4 +1293,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   `;
   document.head.appendChild(style);
+
+  // Make batch functions globally available
+  window.toggleBatchMode = toggleBatchMode;
+  window.cancelBatchMode = cancelBatchMode;
+  window.deleteSelectedCovers = deleteSelectedCovers;
+  window.exportSelectedCovers = exportSelectedCovers;
 });

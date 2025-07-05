@@ -120,12 +120,72 @@ const requireAuth = (requiredRole = 'viewer') => {
   };
 };
 
-// User management functions
+// Simple in-memory cache for JSON data
+class DataCache {
+  constructor(ttl = 60000) { // 1 minute default TTL
+    this.cache = new Map();
+    this.ttl = ttl;
+  }
+  
+  get(key) {
+    const item = this.cache.get(key);
+    if (!item) return null;
+    
+    if (Date.now() > item.expiry) {
+      this.cache.delete(key);
+      return null;
+    }
+    
+    return item.data;
+  }
+  
+  set(key, data) {
+    this.cache.set(key, {
+      data,
+      expiry: Date.now() + this.ttl
+    });
+  }
+  
+  invalidate(key) {
+    this.cache.delete(key);
+  }
+  
+  clear() {
+    this.cache.clear();
+  }
+}
+
+// Initialize caches
+const dataCache = new DataCache(60000); // 1 minute cache
+const userCache = new DataCache(300000); // 5 minute cache for users
+
+// Helper function to read JSON with caching
+async function readJsonFile(filePath, cacheKey, cache = dataCache) {
+  // Check cache first
+  const cached = cache.get(cacheKey);
+  if (cached) return cached;
+  
+  // Read from file
+  try {
+    const data = await fs.promises.readFile(filePath, 'utf-8');
+    const parsed = JSON.parse(data);
+    
+    // Cache the result
+    cache.set(cacheKey, parsed);
+    
+    return parsed;
+  } catch (error) {
+    console.error(`Error reading ${filePath}:`, error);
+    throw error;
+  }
+}
+
+// User management functions with caching
 async function loadUsers() {
   const usersPath = path.join(DATA_DIR, 'users.json');
+  
   try {
-    const data = await fs.promises.readFile(usersPath, 'utf-8');
-    return JSON.parse(data);
+    return await readJsonFile(usersPath, 'users', userCache);
   } catch {
     const defaultUsers = [{
       username: 'admin',
@@ -133,6 +193,7 @@ async function loadUsers() {
       role: 'admin'
     }];
     await fs.promises.writeFile(usersPath, JSON.stringify(defaultUsers, null, 2));
+    userCache.set('users', defaultUsers);
     return defaultUsers;
   }
 }
@@ -140,6 +201,7 @@ async function loadUsers() {
 async function saveUsers(users) {
   const usersPath = path.join(DATA_DIR, 'users.json');
   await fs.promises.writeFile(usersPath, JSON.stringify(users, null, 2));
+  userCache.invalidate('users');
 }
 
 // Admin subdomain handler - MUST COME BEFORE PUBLIC STATIC FILES
@@ -240,9 +302,30 @@ app.get('/hudson-deck.html',
 
 // Static files for PUBLIC site (no auth required) - MOVED AFTER ADMIN HANDLER
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
-app.use('/uploads', express.static(UPLOADS_DIR, {
-  setHeaders: res => res.setHeader('Cache-Control', 'no-store')
-}));
+
+// In development, proxy upload requests to production if file doesn't exist locally
+if (process.env.NODE_ENV !== 'production') {
+  app.use('/uploads', (req, res, next) => {
+    const localPath = path.join(UPLOADS_DIR, req.path);
+    
+    // Check if file exists locally
+    if (fs.existsSync(localPath)) {
+      // Serve local file
+      return express.static(UPLOADS_DIR, {
+        setHeaders: res => res.setHeader('Cache-Control', 'no-store')
+      })(req, res, next);
+    }
+    
+    // Proxy to production
+    console.log(`Proxying ${req.path} to production...`);
+    res.redirect(`https://www.allmyfriendsinc.com/uploads${req.path}`);
+  });
+} else {
+  // Production - serve uploads normally
+  app.use('/uploads', express.static(UPLOADS_DIR, {
+    setHeaders: res => res.setHeader('Cache-Control', 'no-store')
+  }));
+}
 
 // Admin routes for main domain (with /admin prefix)
 app.use('/admin', (req, res, next) => {
@@ -266,17 +349,36 @@ app.use('/admin', (req, res, next) => {
   express.static(ADMIN_DIR, { extensions: ['html'] })(req, res, next);
 });
 
-// Public access to covers.json and styles.json only
-app.get('/data/covers.json', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
-  res.setHeader('Vary', 'Accept-Encoding');
-  res.sendFile(path.join(DATA_DIR, 'covers.json'));
+// Cached data endpoints
+app.get('/data/covers.json', requireAuth('viewer'), async (req, res) => {
+  try {
+    const covers = await readJsonFile(path.join(DATA_DIR, 'covers.json'), 'covers');
+    res.json(covers);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load covers' });
+  }
 });
 
-app.get('/data/styles.json', (req, res) => {
-  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
-  res.setHeader('Vary', 'Accept-Encoding');
-  res.sendFile(path.join(DATA_DIR, 'styles.json'));
+app.get('/data/assets.json', requireAuth('viewer'), async (req, res) => {
+  try {
+    const assets = await readJsonFile(path.join(DATA_DIR, 'assets.json'), 'assets');
+    res.json(assets);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to load assets' });
+  }
+});
+
+app.get('/data/styles.json', async (req, res) => {
+  try {
+    const styles = await readJsonFile(path.join(DATA_DIR, 'styles.json'), 'styles');
+    res.json(styles);
+  } catch (error) {
+    // Return default styles if file doesn't exist
+    res.json({
+      fontFamily: 'GT America',
+      fontSize: 16
+    });
+  }
 });
 
 // Protected access to other data files
@@ -289,15 +391,32 @@ const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const GH_OWNER = 'theobattaglia1';
 const GH_REPO = 'coverflow_amf';
 
-// Debounce queue for GitHub sync
+// Debounce queue for GitHub sync with size limit
 class GitHubSyncQueue {
-  constructor() {
+  constructor(maxQueueSize = 100) {
     this.queue = new Map();
     this.timers = new Map();
     this.processing = false;
+    this.maxQueueSize = maxQueueSize;
+    this.errorCount = 0;
+    this.maxErrors = 5;
   }
 
   add(filePath, content, message, debounceMs = 5000) {
+    // Prevent queue from growing too large
+    if (this.queue.size >= this.maxQueueSize) {
+      console.error(`GitHub sync queue full (${this.maxQueueSize} items), dropping oldest items`);
+      // Remove oldest items
+      const keysToRemove = Array.from(this.queue.keys()).slice(0, 10);
+      keysToRemove.forEach(key => {
+        this.queue.delete(key);
+        if (this.timers.has(key)) {
+          clearTimeout(this.timers.get(key));
+          this.timers.delete(key);
+        }
+      });
+    }
+    
     // Clear existing timer
     if (this.timers.has(filePath)) {
       clearTimeout(this.timers.get(filePath));
@@ -316,20 +435,46 @@ class GitHubSyncQueue {
   async process() {
     if (this.processing || this.queue.size === 0) return;
     
+    // Stop processing if too many errors
+    if (this.errorCount >= this.maxErrors) {
+      console.error('Too many GitHub sync errors, clearing queue');
+      this.queue.clear();
+      this.errorCount = 0;
+      return;
+    }
+    
     this.processing = true;
     
     for (const [filePath, { content, message }] of this.queue) {
       try {
         await writeJsonToGitHub(filePath, content, message);
         this.queue.delete(filePath);
+        this.errorCount = 0; // Reset error count on success
       } catch (error) {
         console.error(`Failed to sync ${filePath}:`, error);
-        // Keep in queue for retry
+        this.errorCount++;
+        
+        // Remove from queue after 3 attempts
+        const attempts = (this.attempts.get(filePath) || 0) + 1;
+        if (attempts >= 3) {
+          console.error(`Giving up on ${filePath} after 3 attempts`);
+          this.queue.delete(filePath);
+          this.attempts.delete(filePath);
+        } else {
+          this.attempts.set(filePath, attempts);
+        }
       }
     }
     
     this.processing = false;
+    
+    // Process again if there are items in queue
+    if (this.queue.size > 0) {
+      setTimeout(() => this.process(), 5000);
+    }
   }
+  
+  attempts = new Map();
 }
 
 const gitHubSync = new GitHubSyncQueue();
