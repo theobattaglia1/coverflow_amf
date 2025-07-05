@@ -327,6 +327,15 @@ function renderCovers() {
         return;
       }
       
+      // Don't flip if clicking on interactive elements in the back
+      if (e.target.closest('.contact-card') || 
+          e.target.closest('iframe') || 
+          e.target.closest('.spotify-embed-container') ||
+          e.target.closest('.back-content a')) {
+        e.stopPropagation();
+        return;
+      }
+      
       const idx = +wrapper.dataset.index;
       const off = idx - activeIndex;
       const fc = wrapper.querySelector('.flip-container');
