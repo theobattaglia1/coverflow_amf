@@ -217,7 +217,7 @@ function updateLayoutParameters() {
   }
 }
 
-// 7) Cover rendering with lazy loading
+// 7) Cover rendering with elegant lazy loading
 function renderCovers() {
   coverflowEl.innerHTML = '';
   
@@ -231,19 +231,10 @@ function renderCovers() {
     const flipContainer = document.createElement('div');
     flipContainer.className = 'flip-container';
     
-    // Front face with lazy loading
+    // Front face with lazy loading but using background-image
     const frontFace = document.createElement('div');
     frontFace.className = 'cover-front';
-    
-    const img = document.createElement('img');
-    img.dataset.src = c.frontImage; // Store URL in data attribute
-    img.alt = c.albumTitle || 'Cover';
-    img.className = 'lazy-cover';
-    
-    // Add placeholder
-    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23222" width="300" height="300"/%3E%3C/svg%3E';
-    
-    frontFace.appendChild(img);
+    frontFace.dataset.image = c.frontImage; // Store URL for lazy loading
     
     // Back face
     const backFace = document.createElement('div');
@@ -327,11 +318,11 @@ function renderCovers() {
     coverflowEl.appendChild(wrapper);
   });
   
-  // Set up lazy loading
+  // Set up lazy loading for background images
   setupLazyLoading();
 }
 
-// Lazy loading implementation
+// Lazy loading implementation for background images
 let imageObserver;
 
 function setupLazyLoading() {
@@ -342,41 +333,36 @@ function setupLazyLoading() {
   
   const imageOptions = {
     threshold: 0,
-    rootMargin: '50px'
+    rootMargin: '200px' // Load images 200px before they enter viewport
   };
   
   imageObserver = new IntersectionObserver((entries, observer) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
-        const img = entry.target;
-        const src = img.dataset.src;
+        const element = entry.target;
+        const imageUrl = element.dataset.image;
         
-        if (src && !img.classList.contains('loaded')) {
-          // Create a new image to preload
-          const tempImg = new Image();
-          tempImg.onload = () => {
-            img.src = src;
-            img.classList.add('loaded');
-            img.style.opacity = '0';
-            setTimeout(() => {
-              img.style.transition = 'opacity 0.3s ease';
-              img.style.opacity = '1';
-            }, 10);
+        if (imageUrl && !element.classList.contains('loaded')) {
+          // Preload the image
+          const img = new Image();
+          img.onload = () => {
+            element.style.backgroundImage = `url('${imageUrl}')`;
+            element.classList.add('loaded');
           };
-          tempImg.onerror = () => {
-            img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23333" width="300" height="300"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="14" font-family="monospace"%3EERROR%3C/text%3E%3C/svg%3E';
+          img.onerror = () => {
+            element.style.backgroundImage = `url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23333" width="300" height="300"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="14" font-family="monospace"%3EERROR%3C/text%3E%3C/svg%3E')`;
           };
-          tempImg.src = src;
+          img.src = imageUrl;
         }
         
-        observer.unobserve(img);
+        observer.unobserve(element);
       }
     });
   }, imageOptions);
   
-  // Observe all lazy images
-  document.querySelectorAll('.lazy-cover').forEach(img => {
-    imageObserver.observe(img);
+  // Observe all cover fronts
+  document.querySelectorAll('.cover-front[data-image]').forEach(el => {
+    imageObserver.observe(el);
   });
 }
 
