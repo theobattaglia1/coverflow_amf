@@ -317,7 +317,7 @@ html, body {
 .flip-container.flipped {
   transform: rotateY(180deg);
   position: relative;
-  z-index: 1000;
+  z-index: 10000 !important;
 }
 
 .cover-front,
@@ -508,6 +508,8 @@ html, body {
   display: flex;
   flex-direction: column;
   background: rgba(0,0,0,0.2);
+  pointer-events: auto;
+  z-index: 10;
 }
 
 /* Custom Spotify embed wrapper */
@@ -802,6 +804,7 @@ html, body {
 
 .cover-active {
   animation: coverBreathe 3s ease-in-out infinite;
+  z-index: 9999 !important;
 }
 
 /* Enhanced coverflow container with vignette */

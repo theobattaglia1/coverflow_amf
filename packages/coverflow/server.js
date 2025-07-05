@@ -9,6 +9,8 @@ import session from 'express-session';
 import { Octokit } from '@octokit/rest';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
+import cors from 'cors';
+import rateLimit from 'express-rate-limit';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +23,33 @@ const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Trust proxy in production (for secure cookies behind reverse proxy)
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+}
+
+// CORS configuration
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow any subdomain of allmyfriendsinc.com in production
+    if (process.env.NODE_ENV === 'production') {
+      if (origin && origin.includes('allmyfriendsinc.com')) {
+        return callback(null, true);
+      }
+    } else {
+      // Allow all origins in development
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true // Allow cookies to be sent
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Session configuration
@@ -30,7 +59,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false,
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000,
     sameSite: 'lax',
@@ -51,8 +80,8 @@ function isAdminSubdomain(req) {
 // Authentication middleware - COMPLETELY REWRITTEN
 const requireAuth = (requiredRole = 'viewer') => {
   return (req, res, next) => {
-    // Development bypass
-    if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+    // Development bypass - only in development environment
+    if (process.env.NODE_ENV === 'development' && process.env.NODE_ENV !== 'production' && process.env.BYPASS_AUTH === 'true') {
       req.session.user = {
         username: 'dev',
         role: 'admin'
@@ -239,10 +268,14 @@ app.use('/admin', (req, res, next) => {
 
 // Public access to covers.json and styles.json only
 app.get('/data/covers.json', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
+  res.setHeader('Vary', 'Accept-Encoding');
   res.sendFile(path.join(DATA_DIR, 'covers.json'));
 });
 
 app.get('/data/styles.json', (req, res) => {
+  res.setHeader('Cache-Control', 'public, max-age=300, s-maxage=600');
+  res.setHeader('Vary', 'Accept-Encoding');
   res.sendFile(path.join(DATA_DIR, 'styles.json'));
 });
 
@@ -251,10 +284,55 @@ app.use('/data', requireAuth('viewer'), express.static(DATA_DIR, {
   setHeaders: res => res.setHeader('Cache-Control', 'no-store')
 }));
 
-// GitHub integration
+// GitHub integration with debouncing
 const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
 const GH_OWNER = 'theobattaglia1';
 const GH_REPO = 'coverflow_amf';
+
+// Debounce queue for GitHub sync
+class GitHubSyncQueue {
+  constructor() {
+    this.queue = new Map();
+    this.timers = new Map();
+    this.processing = false;
+  }
+
+  add(filePath, content, message, debounceMs = 5000) {
+    // Clear existing timer
+    if (this.timers.has(filePath)) {
+      clearTimeout(this.timers.get(filePath));
+    }
+
+    // Set new timer
+    const timer = setTimeout(() => {
+      this.queue.set(filePath, { content, message });
+      this.timers.delete(filePath);
+      this.process();
+    }, debounceMs);
+
+    this.timers.set(filePath, timer);
+  }
+
+  async process() {
+    if (this.processing || this.queue.size === 0) return;
+    
+    this.processing = true;
+    
+    for (const [filePath, { content, message }] of this.queue) {
+      try {
+        await writeJsonToGitHub(filePath, content, message);
+        this.queue.delete(filePath);
+      } catch (error) {
+        console.error(`Failed to sync ${filePath}:`, error);
+        // Keep in queue for retry
+      }
+    }
+    
+    this.processing = false;
+  }
+}
+
+const gitHubSync = new GitHubSyncQueue();
 
 async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
   console.log(`📤 Attempting to push to GitHub: ${filePath}`);
@@ -359,7 +437,11 @@ fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 const storage = multer.diskStorage({
   destination: async (req, file, cb) => {
     const folder = req.body.folder || '';
-    const destPath = path.join(UPLOADS_DIR, folder);
+    // Sanitize the folder path to prevent path traversal
+    const sanitizedFolder = folder.split('/').filter(part => 
+      part && part !== '.' && part !== '..' && !part.includes('\\')
+    ).join('/');
+    const destPath = path.join(UPLOADS_DIR, sanitizedFolder);
     await fs.promises.mkdir(destPath, { recursive: true });
     cb(null, destPath);
   },
@@ -373,10 +455,21 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   limits: { fileSize: 10 * 1024 * 1024 },
-  fileFilter: (req, file, cb) =>
-    file.mimetype.startsWith('image/')
-      ? cb(null, true)
-      : cb(new Error('Only image files are allowed'))
+  fileFilter: (req, file, cb) => {
+    // Check MIME type
+    if (!file.mimetype.startsWith('image/')) {
+      return cb(new Error('Only image files are allowed'));
+    }
+    
+    // Check file extension
+    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      return cb(new Error('Invalid file extension'));
+    }
+    
+    cb(null, true);
+  }
 });
 
 // Audio upload configuration
@@ -398,16 +491,34 @@ const audioUpload = multer({
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedMimes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/webm'];
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only audio files are allowed'));
+    const allowedExtensions = ['.mp3', '.wav', '.m4a', '.webm', '.mpeg'];
+    
+    // Check MIME type
+    if (!allowedMimes.includes(file.mimetype)) {
+      return cb(new Error('Only audio files are allowed'));
     }
+    
+    // Check file extension
+    const ext = path.extname(file.originalname).toLowerCase();
+    if (!allowedExtensions.includes(ext)) {
+      return cb(new Error('Invalid audio file extension'));
+    }
+    
+    cb(null, true);
   }
 });
 
+// Rate limiting for login endpoint
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 5, // limit each IP to 5 requests per windowMs
+  message: 'Too many login attempts, please try again later',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 // Authentication endpoints
-app.post('/api/login', async (req, res) => {
+app.post('/api/login', loginLimiter, async (req, res) => {
   try {
     if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
       req.session.user = { username: 'dev', role: 'admin' };
@@ -465,6 +576,23 @@ app.get('/api/users', requireAuth('admin'), async (req, res) => {
 app.post('/api/users', requireAuth('admin'), async (req, res) => {
   try {
     const { username, password, role } = req.body;
+    
+    // Validate input
+    if (!username || !password || !role) {
+      return res.status(400).json({ error: 'Username, password, and role are required' });
+    }
+    
+    if (typeof username !== 'string' || username.length < 3 || username.length > 50) {
+      return res.status(400).json({ error: 'Username must be between 3 and 50 characters' });
+    }
+    
+    if (typeof password !== 'string' || password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+    
+    if (!['admin', 'editor', 'viewer'].includes(role)) {
+      return res.status(400).json({ error: 'Invalid role' });
+    }
     const users = await loadUsers();
 
     if (users.find(u => u.username === username)) {
@@ -531,7 +659,7 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
     current.children.push({ type: 'folder', name, children: [] });
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
+    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
 
     res.json({ success: true });
   } catch (err) {
@@ -560,7 +688,7 @@ app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
     parent.children = parent.children.filter(c => !(c.type === 'folder' && c.name === folderName));
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🗑️ Delete folder');
+    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🗑️ Delete folder');
 
     res.json({ success: true });
   } catch (err) {
@@ -592,7 +720,7 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
     folder.name = newName;
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '✏️ Rename folder');
+    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '✏️ Rename folder');
 
     res.json({ success: true });
   } catch (err) {
@@ -631,6 +759,19 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
     if (!cover || !cover.id) {
       return res.status(400).json({ error: 'Invalid cover data', details: 'Missing ID' });
     }
+    
+    // Validate cover data
+    if (typeof cover.id !== 'string' || cover.id.length === 0) {
+      return res.status(400).json({ error: 'Cover ID must be a non-empty string' });
+    }
+    
+    // Validate optional string fields
+    const stringFields = ['albumTitle', 'category', 'frontImage', 'backImage', 'recordLabelImage'];
+    for (const field of stringFields) {
+      if (cover[field] !== undefined && typeof cover[field] !== 'string') {
+        return res.status(400).json({ error: `${field} must be a string` });
+      }
+    }
 
     const jsonPath = path.join(DATA_DIR, 'covers.json');
     let covers = [];
@@ -666,7 +807,7 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
           });
           
           await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-          await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), `📁 Create artist folder: ${cover.artistDetails.name}`);
+          gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), `📁 Create artist folder: ${cover.artistDetails.name}`);
         }
       }
     } else {
@@ -675,18 +816,14 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
 
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
     
-    // Ensure GitHub sync happens
-    const githubResult = await writeJsonToGitHub(
+    // Queue GitHub sync (non-blocking)
+    gitHubSync.add(
       'packages/coverflow/data/covers.json', 
       JSON.stringify(covers, null, 2), 
       `Update cover: ${cover.albumTitle || 'Untitled'}`
     );
     
-    if (!githubResult.success) {
-      console.error('GitHub sync failed but local save succeeded');
-    }
-
-    res.json({ success: true, githubSync: githubResult.success });
+    res.json({ success: true, githubSync: 'queued' });
   } catch (err) {
     console.error('Save error:', err);
     res.status(500).json({ error: 'Failed to save', details: err.message });
@@ -703,7 +840,7 @@ app.post('/delete-cover', requireAuth('editor'), async (req, res) => {
     covers = covers.filter(c => String(c.id) !== String(id));
     
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Delete cover');
+    gitHubSync.add('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Delete cover');
     
     res.json({ success: true });
   } catch (err) {
@@ -717,7 +854,7 @@ app.post('/save-covers', requireAuth('editor'), async (req, res) => {
     const jsonPath = path.join(DATA_DIR, 'covers.json');
     
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Update covers order');
+    gitHubSync.add('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Update covers order');
     
     res.json({ success: true });
   } catch (err) {
@@ -732,7 +869,7 @@ app.post('/save-assets', requireAuth('editor'), async (req, res) => {
     const jsonPath = path.join(DATA_DIR, 'assets.json');
     
     await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), 'Update assets');
+    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), 'Update assets');
     
     res.json({ success: true });
   } catch (err) {
@@ -766,7 +903,7 @@ app.post('/save-artist-tracks', requireAuth('editor'), async (req, res) => {
     allTracks[artistId] = tracks;
     
     await fs.promises.writeFile(tracksPath, JSON.stringify(allTracks, null, 2));
-    await writeJsonToGitHub('packages/coverflow/data/artist-tracks.json', JSON.stringify(allTracks, null, 2), 'Update artist tracks');
+    gitHubSync.add('packages/coverflow/data/artist-tracks.json', JSON.stringify(allTracks, null, 2), 'Update artist tracks');
     
     res.json({ success: true });
   } catch (err) {
@@ -786,6 +923,24 @@ app.post('/push-live', requireAuth('admin'), async (req, res) => {
     res.status(500).json({ error: 'Failed to push live', details: err.message });
   }
 });
+
+// Static file caching middleware
+app.use(express.static(PUBLIC_DIR, {
+  maxAge: '1d',
+  etag: true,
+  lastModified: true,
+  setHeaders: (res, path) => {
+    if (path.endsWith('.html')) {
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    } else if (path.match(/\.(jpg|jpeg|png|gif|webp|svg|ico)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=2592000, immutable'); // 30 days
+    } else if (path.match(/\.(css|js)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year
+    } else if (path.match(/\.(woff|woff2|ttf|otf|eot)$/)) {
+      res.setHeader('Cache-Control', 'public, max-age=31536000, immutable'); // 1 year
+    }
+  }
+}));
 
 // Start server
 app.listen(PORT, () => {
