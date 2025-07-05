@@ -239,14 +239,66 @@ function renderCovers() {
     // Back face
     const backFace = document.createElement('div');
     backFace.className = 'cover-back';
-    backFace.innerHTML = `
-      <div class="back-content">
-        ${c.music?.spotifyEmbed ? 
-          `<div class="spotify-embed-container">${c.music.spotifyEmbed}</div>` : 
-          (c.contactCard ? c.contactCard : '<p>No content available</p>')
-        }
-      </div>
-    `;
+    
+    // Create back content based on cover type
+    let backContent = '<div class="back-content">';
+    
+    if (c.albumTitle?.toLowerCase() === 'contact') {
+      // Contact card
+      backContent += `
+        <a href="mailto:hi@allmyfriendsinc.com" class="contact-card">
+          <div class="contact-icon">✉️</div>
+          <span>Say&nbsp;Hello</span>
+        </a>
+      `;
+    } else if (c.music?.type === 'embed' && c.music.url) {
+      // Spotify embed
+      const spotifyUrl = c.music.url;
+      let embedUrl = spotifyUrl;
+      
+      // Convert regular Spotify URLs to embed URLs
+      if (spotifyUrl.includes('spotify.com/track/')) {
+        embedUrl = spotifyUrl.replace('spotify.com/', 'spotify.com/embed/');
+        embedUrl += embedUrl.includes('?') ? '&' : '?';
+        embedUrl += 'utm_source=generator&theme=0'; // dark theme
+      } else if (spotifyUrl.includes('spotify.com/playlist/') || spotifyUrl.includes('spotify.com/album/')) {
+        embedUrl = spotifyUrl.replace('spotify.com/', 'spotify.com/embed/');
+        embedUrl += embedUrl.includes('?') ? '&' : '?';
+        embedUrl += 'utm_source=generator&theme=0'; // dark theme
+      }
+      
+      backContent += `
+        <div class="spotify-embed-wrapper">
+          <div class="spotify-loading"></div>
+          <div class="spotify-embed-container">
+            <iframe
+              style="border-radius:12px"
+              src="${embedUrl}"
+              width="100%"
+              height="152"
+              frameBorder="0"
+              allowfullscreen=""
+              allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+              loading="lazy"
+              onload="this.parentElement.previousElementSibling.remove()">
+            </iframe>
+          </div>
+          ${c.frontImage ? `<div class="album-art-preview" style="background-image: url('${c.frontImage}')"></div>` : ''}
+          <div class="spotify-branding">
+            <svg viewBox="0 0 24 24">
+              <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
+            </svg>
+            <span>Spotify</span>
+          </div>
+        </div>
+      `;
+    } else {
+      // Default empty back
+      backContent += '<p style="color: rgba(255,255,255,0.5); text-align: center;">No content available</p>';
+    }
+    
+    backContent += '</div>';
+    backFace.innerHTML = backContent;
     
     flipContainer.appendChild(frontFace);
     flipContainer.appendChild(backFace);
@@ -625,29 +677,9 @@ const handleResize = debounce(() => {
 
 window.addEventListener('resize', handleResize, { passive: true });
 
-// Create loading indicator
-const loadingIndicator = document.createElement('div');
-loadingIndicator.className = 'loading-indicator';
-loadingIndicator.innerHTML = `
-  <div class="loading-spinner"></div>
-  <div class="loading-text">LOADING COVERS...</div>
-`;
-loadingIndicator.style.cssText = `
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-  z-index: 1000;
-`;
-document.body.appendChild(loadingIndicator);
-
-// Initialize with loading state
+// Initialize
 fetch(`/data/covers.json?cb=${Date.now()}`)
-  .then(r => {
-    if (!r.ok) throw new Error('Failed to load covers');
-    return r.json();
-  })
+  .then(r => r.json())
   .then(data => {
     allCovers = data;
     covers    = [...allCovers];
@@ -656,20 +688,9 @@ fetch(`/data/covers.json?cb=${Date.now()}`)
     renderCovers();
     renderCoverFlow();
     syncFilters(); // Update counts after loading
-    
-    // Hide loading indicator
-    loadingIndicator.style.opacity = '0';
-    loadingIndicator.style.transition = 'opacity 0.3s ease';
-    setTimeout(() => {
-      loadingIndicator.remove();
-    }, 300);
   })
   .catch(err => {
     console.error('Failed to load covers:', err);
-    loadingIndicator.innerHTML = `
-      <div class="error-message">FAILED TO LOAD COVERS</div>
-      <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; color: black; border: none; cursor: pointer;">RETRY</button>
-    `;
   });
 
 // 15) Keyboard navigation
