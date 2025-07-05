@@ -12,12 +12,16 @@ const coverflowEl   = document.getElementById('coverflow'),
 const trailCanvas = document.getElementById('trail-canvas'),
       trailCtx    = trailCanvas.getContext('2d');
 let particles = [];
+let animationId = null;
+let isAnimating = false;
+
 function resizeTrailCanvas() {
   trailCanvas.width  = coverflowEl.clientWidth;
   trailCanvas.height = coverflowEl.clientHeight;
 }
 window.addEventListener('resize', resizeTrailCanvas, { passive: true });
 resizeTrailCanvas();
+startAnimation(); // Start the animation system
 
 function emitParticles(delta) {
   const count = Math.min(Math.abs(delta) / 3, 15);
@@ -35,6 +39,8 @@ function emitParticles(delta) {
 }
 
 function animateTrails() {
+  if (!isAnimating) return;
+  
   trailCtx.clearRect(0, 0, trailCanvas.width, trailCanvas.height);
   particles.forEach((p, i) => {
     trailCtx.globalAlpha = (p.life / 80) * 0.6;
@@ -55,9 +61,47 @@ function animateTrails() {
     p.life--;
     if (p.life <= 0) particles.splice(i, 1);
   });
-  requestAnimationFrame(animateTrails);
+  animationId = requestAnimationFrame(animateTrails);
 }
-animateTrails();
+
+// Start/stop animation based on visibility
+function startAnimation() {
+  if (!isAnimating) {
+    isAnimating = true;
+    animateTrails();
+  }
+}
+
+function stopAnimation() {
+  isAnimating = false;
+  if (animationId) {
+    cancelAnimationFrame(animationId);
+    animationId = null;
+  }
+}
+
+// Visibility detection
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stopAnimation();
+  } else {
+    startAnimation();
+  }
+});
+
+// Intersection Observer for viewport detection
+const animationObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && !document.hidden) {
+      startAnimation();
+    } else {
+      stopAnimation();
+    }
+  });
+}, { threshold: 0.1 });
+
+// Start observing the canvas
+animationObserver.observe(trailCanvas);
 
 // 3) Ambient glow - Enhanced with logo integration
 function updateAmbient() {
@@ -173,148 +217,80 @@ function updateLayoutParameters() {
   }
 }
 
-// 7) Render covers
+// 7) Cover rendering with lazy loading
 function renderCovers() {
-  if (!coverflowEl) {
-    console.error('Coverflow element not found!');
-    return;
-  }
   coverflowEl.innerHTML = '';
-  covers.forEach((cover, i) => {
+  
+  covers.forEach((c, i) => {
     const wrapper = document.createElement('div');
     wrapper.className = 'cover';
     wrapper.dataset.index = i;
-    wrapper.dataset.originalIndex = cover.id;
-    wrapper.dataset.category = cover.category;
-
-    const flip = document.createElement('div');
-    flip.className = 'flip-container';
-
-    const front = document.createElement('div');
-    front.className = 'cover-front';
-    // If the image starts with /uploads, prepend the production URL
-    const imageUrl = cover.frontImage.startsWith('/uploads/') 
-      ? `https://allmyfriendsinc.com${cover.frontImage}`
-      : cover.frontImage;
-    front.style.backgroundImage = `url('${imageUrl}')`;
-
-    const back = document.createElement('div');
-    back.className = 'cover-back';
-
-    const backContent = document.createElement('div');
-    backContent.className = 'back-content';
-
-    if (cover.albumTitle?.toLowerCase() === 'contact') {
-      backContent.innerHTML = `
-        <a href="mailto:hi@allmyfriendsinc.com" class="contact-card">
-          <div class="contact-icon">✉️</div>
-          <span>Say&nbsp;Hello</span>
-        </a>`;
-    } else {
-      // Create an info button overlay for artist details
-      const infoOverlay = document.createElement('div');
-      infoOverlay.className = 'artist-info-overlay';
-      infoOverlay.innerHTML = `
-        <button class="info-button" aria-label="View artist details">
-          <svg viewBox="0 0 24 24" width="24" height="24">
-            <path fill="currentColor" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/>
-          </svg>
-        </button>
-      `;
-      backContent.appendChild(infoOverlay);
-
-      // FRONT label
-      const coverLabel = document.createElement('div');
-      coverLabel.className = 'cover-label';
-      coverLabel.innerHTML = `
-        <strong>${cover.albumTitle || ''}</strong><br/>
-        ${cover.coverLabel   || ''}
-      `;
-      wrapper.appendChild(coverLabel);
-
-      // BACK label
-      const backLabel = document.createElement('div');
-      backLabel.className = 'back-label';
-      backLabel.innerHTML = coverLabel.innerHTML;
-      wrapper.appendChild(backLabel);
-
-      // Spotify embed
-      if (cover.music?.type === 'embed' && cover.music.url) {
-        // Create wrapper for elegant Spotify player
-        const embedWrapper = document.createElement('div');
-        embedWrapper.className = 'spotify-embed-wrapper';
-        
-        // Add loading indicator
-        const loadingIndicator = document.createElement('div');
-        loadingIndicator.className = 'spotify-loading';
-        embedWrapper.appendChild(loadingIndicator);
-        
-        // Create container for the iframe
-        const embedContainer = document.createElement('div');
-        embedContainer.className = 'spotify-embed-container';
-        
-        // Extract track/playlist ID from URL
-        const spotifyUrl = cover.music.url;
-        let embedUrl = spotifyUrl;
-        
-        // Convert regular Spotify URLs to embed URLs with compact player
-        if (spotifyUrl.includes('spotify.com/track/')) {
-          embedUrl = spotifyUrl.replace('spotify.com/', 'spotify.com/embed/');
-          embedUrl += embedUrl.includes('?') ? '&' : '?';
-          embedUrl += 'utm_source=generator&theme=0'; // dark theme
-        } else if (spotifyUrl.includes('spotify.com/playlist/') || spotifyUrl.includes('spotify.com/album/')) {
-          embedUrl = spotifyUrl.replace('spotify.com/', 'spotify.com/embed/');
-          embedUrl += embedUrl.includes('?') ? '&' : '?';
-          embedUrl += 'utm_source=generator&theme=0'; // dark theme
+    wrapper.dataset.originalIndex = c.id;
+    
+    // Create flip container
+    const flipContainer = document.createElement('div');
+    flipContainer.className = 'flip-container';
+    
+    // Front face with lazy loading
+    const frontFace = document.createElement('div');
+    frontFace.className = 'cover-front';
+    
+    const img = document.createElement('img');
+    img.dataset.src = c.frontImage; // Store URL in data attribute
+    img.alt = c.albumTitle || 'Cover';
+    img.className = 'lazy-cover';
+    
+    // Add placeholder
+    img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23222" width="300" height="300"/%3E%3C/svg%3E';
+    
+    frontFace.appendChild(img);
+    
+    // Back face
+    const backFace = document.createElement('div');
+    backFace.className = 'cover-back';
+    backFace.innerHTML = `
+      <div class="back-content">
+        ${c.music?.spotifyEmbed ? 
+          `<div class="spotify-embed-container">${c.music.spotifyEmbed}</div>` : 
+          (c.contactCard ? c.contactCard : '<p>No content available</p>')
         }
-        
-        // Create iframe
-        const iframe = document.createElement('iframe');
-        iframe.style.cssText = 'border-radius:12px';
-        iframe.src = embedUrl;
-        iframe.width = '100%';
-        iframe.height = '80'; // Compact height for single track
-        iframe.frameBorder = '0';
-        iframe.allow = 'autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture';
-        iframe.loading = 'lazy';
-        
-        // Remove loading indicator when iframe loads
-        iframe.onload = () => {
-          loadingIndicator.remove();
-        };
-        
-        embedContainer.appendChild(iframe);
-        embedWrapper.appendChild(embedContainer);
-        
-        // Add album art preview if available
-        if (cover.frontImage) {
-          const albumArt = document.createElement('div');
-          albumArt.className = 'album-art-preview';
-          // Use the same imageUrl we calculated for the front
-          albumArt.style.backgroundImage = `url('${imageUrl}')`;
-          embedWrapper.appendChild(albumArt);
-        }
-        
-        // Add Spotify branding
-        const spotifyBranding = document.createElement('div');
-        spotifyBranding.className = 'spotify-branding';
-        spotifyBranding.innerHTML = `
-          <svg viewBox="0 0 24 24">
-            <path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.721 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/>
-          </svg>
-          <span>Spotify</span>
-        `;
-        embedWrapper.appendChild(spotifyBranding);
-        
-        backContent.appendChild(embedWrapper);
-      }
+      </div>
+    `;
+    
+    flipContainer.appendChild(frontFace);
+    flipContainer.appendChild(backFace);
+    wrapper.appendChild(flipContainer);
+    
+    // Add info button if artist details exist
+    if (c.artistDetails) {
+      const infoBtn = document.createElement('button');
+      infoBtn.className = 'info-button';
+      infoBtn.innerHTML = '<span>i</span>';
+      infoBtn.setAttribute('aria-label', 'Artist information');
+      wrapper.appendChild(infoBtn);
     }
-
-    back.appendChild(backContent);
-    flip.appendChild(front);
-    flip.appendChild(back);
-    wrapper.appendChild(flip);
-
+    
+    // Add text overlay
+    const textOverlay = document.createElement('div');
+    textOverlay.className = 'cover-text-overlay';
+    textOverlay.innerHTML = `
+      <div class="album-title">${c.albumTitle || ''}</div>
+      <div class="cover-label">${c.coverLabel || ''}</div>
+    `;
+    wrapper.appendChild(textOverlay);
+    
+    // Apply custom styles
+    if (c.fontFamily) textOverlay.style.fontFamily = c.fontFamily;
+    if (c.fontSize) textOverlay.style.fontSize = c.fontSize + 'px';
+    if (c.fontColor) textOverlay.style.color = c.fontColor;
+    if (c.textPosition) {
+      const [x, y] = c.textPosition.split(',').map(v => v.trim());
+      textOverlay.style.left = x + '%';
+      textOverlay.style.top = y + '%';
+      textOverlay.style.transform = 'translate(-50%, -50%)';
+    }
+    
+    // Click handler
     wrapper.addEventListener('click', (e) => {
       // Don't flip if clicking on info button
       if (e.target.closest('.info-button')) {
@@ -339,11 +315,68 @@ function renderCovers() {
       const idx = +wrapper.dataset.index;
       const off = idx - activeIndex;
       const fc = wrapper.querySelector('.flip-container');
-      if (off === 0 && fc) fc.classList.toggle('flipped');
-      else setActiveIndex(idx);
+      
+      if (off === 0 && fc) {
+        fc.classList.toggle('flipped');
+      } else {
+        activeIndex = idx;
+        renderCoverFlow();
+      }
     });
-
+    
     coverflowEl.appendChild(wrapper);
+  });
+  
+  // Set up lazy loading
+  setupLazyLoading();
+}
+
+// Lazy loading implementation
+let imageObserver;
+
+function setupLazyLoading() {
+  // Clean up previous observer
+  if (imageObserver) {
+    imageObserver.disconnect();
+  }
+  
+  const imageOptions = {
+    threshold: 0,
+    rootMargin: '50px'
+  };
+  
+  imageObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        const src = img.dataset.src;
+        
+        if (src && !img.classList.contains('loaded')) {
+          // Create a new image to preload
+          const tempImg = new Image();
+          tempImg.onload = () => {
+            img.src = src;
+            img.classList.add('loaded');
+            img.style.opacity = '0';
+            setTimeout(() => {
+              img.style.transition = 'opacity 0.3s ease';
+              img.style.opacity = '1';
+            }, 10);
+          };
+          tempImg.onerror = () => {
+            img.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23333" width="300" height="300"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="14" font-family="monospace"%3EERROR%3C/text%3E%3C/svg%3E';
+          };
+          tempImg.src = src;
+        }
+        
+        observer.unobserve(img);
+      }
+    });
+  }, imageOptions);
+  
+  // Observe all lazy images
+  document.querySelectorAll('.lazy-cover').forEach(img => {
+    imageObserver.observe(img);
   });
 }
 
@@ -442,97 +475,131 @@ document.querySelector('.artist-modal .close-btn')
     document.querySelector('.artist-modal').classList.add('hidden');
   }, { passive: true });
 
-// 12) Filter dropdown (hover & click)
-const filterButtons   = Array.from(document.querySelectorAll('.filter-label')),
-      filterDropdown  = document.createElement('div');
-filterDropdown.className = 'filter-dropdown';
-document.body.appendChild(filterDropdown);
+// 12) Filter dropdown with proper cleanup
+const filterButtons = document.querySelectorAll('.filter-label');
+const filterDropdown = document.getElementById('filter-dropdown');
+let dropdownTimeout;
+let dropdownListeners = new Map();
 
-// Update filter counts
-function updateFilterCounts() {
-  const counts = {
-    all: allCovers.length,
-    artist: allCovers.filter(c => c.category?.includes('artist')).length,
-    songwriter: allCovers.filter(c => c.category?.includes('songwriter')).length,
-    producer: allCovers.filter(c => c.category?.includes('producer')).length
-  };
+// Event delegation for dropdown items
+filterDropdown.addEventListener('click', (e) => {
+  const item = e.target.closest('.dropdown-item');
+  if (item) {
+    const id = item.dataset.id;
+    const index = covers.findIndex(c => c.id == id);
+    if (index !== -1) {
+      activeIndex = index;
+      renderCoverFlow();
+      filterDropdown.style.display = 'none';
+    }
+  }
+}, { passive: true });
+
+// Clean up function for dropdown
+function cleanupDropdownListeners() {
+  dropdownListeners.forEach((listener, element) => {
+    element.removeEventListener('mouseenter', listener.enter);
+    element.removeEventListener('mouseleave', listener.leave);
+    element.removeEventListener('click', listener.click);
+  });
+  dropdownListeners.clear();
+}
+
+// Set up filter buttons with proper cleanup
+function setupFilterButtons() {
+  cleanupDropdownListeners();
   
-  Object.entries(counts).forEach(([filter, count]) => {
-    const countEl = document.querySelector(`[data-count="${filter}"]`);
-    if (countEl) countEl.textContent = count;
+  filterButtons.forEach(btn => {
+    const listeners = {
+      enter: () => {
+        clearTimeout(dropdownTimeout);
+        const f = btn.dataset.filter;
+        const res = allCovers.filter(c => f === 'all' || c.category?.includes(f));
+        filterDropdown.innerHTML = res.map(c =>
+          `<div class="dropdown-item" data-id="${c.id}">${c.albumTitle||'Untitled'} — ${c.coverLabel||''}</div>`
+        ).join('') || `<div class="dropdown-item">No results</div>`;
+
+        filterDropdown.style.display = 'block';
+        const r = btn.getBoundingClientRect();
+        filterDropdown.style.left = `${r.left}px`;
+        filterDropdown.style.top  = `${r.bottom + 2}px`;
+      },
+      leave: () => {
+        dropdownTimeout = setTimeout(() => {
+          if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none';
+        }, 100);
+      },
+      click: () => {
+        filterButtons.forEach(b => {
+          b.classList.remove('active');
+          b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        
+        const f = btn.dataset.filter;
+        
+        // Special handling for 'about' filter
+        if (f === 'about') {
+          window.location.href = '/investors.html';
+          return;
+        }
+        
+        // Update visible covers without full re-render
+        const allCoverElements = document.querySelectorAll('.cover');
+        let visibleCovers = [];
+        
+        allCoverElements.forEach((coverEl, index) => {
+          const coverId = coverEl.dataset.originalIndex;
+          const cover = allCovers.find(c => c.id == coverId);
+          
+          if (f === 'all' || (cover && cover.category?.includes(f))) {
+            coverEl.style.display = '';
+            visibleCovers.push({ element: coverEl, originalIndex: index });
+          } else {
+            coverEl.style.display = 'none';
+          }
+        });
+        
+        // Update dataset indices for visible covers
+        visibleCovers.forEach((item, newIndex) => {
+          item.element.dataset.index = newIndex;
+        });
+        
+        // Update covers array
+        covers = (f === 'all' ? [...allCovers] : allCovers.filter(c => c.category?.includes(f)));
+        
+        // Reset to center
+        activeIndex = Math.floor((visibleCovers.length - 1) / 2);
+        renderCoverFlow();
+        
+        // Animate the active state
+        btn.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          btn.style.transform = '';
+        }, 150);
+      }
+    };
+    
+    btn.addEventListener('mouseenter', listeners.enter, { passive: true });
+    btn.addEventListener('mouseleave', listeners.leave, { passive: true });
+    btn.addEventListener('click', listeners.click, { passive: true });
+    
+    dropdownListeners.set(btn, listeners);
   });
 }
 
-// Add mouse tracking for gradient effect
-const filterContainer = document.querySelector('.filter-container');
-filterContainer.addEventListener('mousemove', (e) => {
-  const rect = filterContainer.getBoundingClientRect();
-  const x = ((e.clientX - rect.left) / rect.width) * 100;
-  const y = ((e.clientY - rect.top) / rect.height) * 100;
-  filterContainer.style.setProperty('--mouse-x', `${x}%`);
-  filterContainer.style.setProperty('--mouse-y', `${y}%`);
-});
+// Initialize filter buttons
+setupFilterButtons();
 
-let dropdownTimeout;
-
-filterButtons.forEach(btn => {
-  btn.addEventListener('mouseenter', () => {
-    clearTimeout(dropdownTimeout);
-    const f = btn.dataset.filter;
-    const res = allCovers.filter(c => f === 'all' || c.category?.includes(f));
-    filterDropdown.innerHTML = res.map(c =>
-      `<div class="dropdown-item" data-id="${c.id}">${c.albumTitle||'Untitled'} — ${c.coverLabel||''}</div>`
-    ).join('') || `<div class="dropdown-item">No results</div>`;
-
-    filterDropdown.style.display = 'block';
-    const r = btn.getBoundingClientRect();
-    filterDropdown.style.left = `${r.left}px`;
-    filterDropdown.style.top  = `${r.bottom + 2}px`;
-  }, { passive: true });
-
-  btn.addEventListener('mouseleave', () => {
-    dropdownTimeout = setTimeout(() => {
-      if (!filterDropdown.matches(':hover')) filterDropdown.style.display = 'none';
-    }, 100); // Small delay to allow moving to dropdown
-  }, { passive: true });
-
-  btn.addEventListener('click', () => {
-    filterButtons.forEach(b => {
-      b.classList.remove('active');
-      b.setAttribute('aria-pressed', 'false');
-    });
-    btn.classList.add('active');
-    btn.setAttribute('aria-pressed', 'true');
-    
-    const f = btn.dataset.filter;
-    covers = (f === 'all' ? [...allCovers] : allCovers.filter(c => c.category?.includes(f)));
-    activeIndex = Math.floor((covers.length - 1) / 2);
-    renderCovers();
-    renderCoverFlow();
-    
-    // Animate the active state
-    btn.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-      btn.style.transform = '';
-    }, 150);
-  }, { passive: true });
-});
+filterDropdown.addEventListener('mouseleave', () => {
+  dropdownTimeout = setTimeout(() => {
+    filterDropdown.style.display = 'none';
+  }, 100);
+}, { passive: true });
 
 filterDropdown.addEventListener('mouseenter', () => {
   clearTimeout(dropdownTimeout);
-}, { passive: true });
-
-filterDropdown.addEventListener('mouseleave', () => {
-  filterDropdown.style.display = 'none';
-}, { passive: true });
-filterDropdown.addEventListener('click', e => {
-  const id = e.target.dataset.id;
-  if (!id) return;
-  const idx = covers.findIndex(c => c.id.toString() === id);
-  if (idx !== -1) {
-    setActiveIndex(idx);
-    filterDropdown.style.display = 'none';
-  }
 }, { passive: true });
 
 // 13) Re‑center helper
@@ -546,19 +613,55 @@ function syncFilters() {
   updateFilterCounts();
 }
 
-let resizeTimeout;
-window.addEventListener('resize', () => {
-  clearTimeout(resizeTimeout);
-  resizeTimeout = setTimeout(() => {
-    updateLayoutParameters();
-    renderCoverFlow();
-    resizeTrailCanvas();
-  }, 100); // Debounce resize events
-}, { passive: true });
+// Utility: Debounce function
+function debounce(func, wait, immediate) {
+  let timeout;
+  return function executedFunction() {
+    const context = this;
+    const args = arguments;
+    const later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    const callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+}
 
-// Initialize
+// 14) Window resize with proper debouncing
+const handleResize = debounce(() => {
+  updateLayoutParameters();
+  renderCoverFlow();
+  resizeTrailCanvas();
+}, 250);
+
+window.addEventListener('resize', handleResize, { passive: true });
+
+// Create loading indicator
+const loadingIndicator = document.createElement('div');
+loadingIndicator.className = 'loading-indicator';
+loadingIndicator.innerHTML = `
+  <div class="loading-spinner"></div>
+  <div class="loading-text">LOADING COVERS...</div>
+`;
+loadingIndicator.style.cssText = `
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 1000;
+`;
+document.body.appendChild(loadingIndicator);
+
+// Initialize with loading state
 fetch(`/data/covers.json?cb=${Date.now()}`)
-  .then(r => r.json())
+  .then(r => {
+    if (!r.ok) throw new Error('Failed to load covers');
+    return r.json();
+  })
   .then(data => {
     allCovers = data;
     covers    = [...allCovers];
@@ -567,7 +670,111 @@ fetch(`/data/covers.json?cb=${Date.now()}`)
     renderCovers();
     renderCoverFlow();
     syncFilters(); // Update counts after loading
+    
+    // Hide loading indicator
+    loadingIndicator.style.opacity = '0';
+    loadingIndicator.style.transition = 'opacity 0.3s ease';
+    setTimeout(() => {
+      loadingIndicator.remove();
+    }, 300);
   })
   .catch(err => {
     console.error('Failed to load covers:', err);
+    loadingIndicator.innerHTML = `
+      <div class="error-message">FAILED TO LOAD COVERS</div>
+      <button onclick="location.reload()" style="margin-top: 20px; padding: 10px 20px; background: white; color: black; border: none; cursor: pointer;">RETRY</button>
+    `;
   });
+
+// 15) Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  // Ignore if user is typing in an input
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  
+  switch(e.key) {
+    case 'ArrowLeft':
+      e.preventDefault();
+      if (activeIndex > 0) {
+        activeIndex--;
+        renderCoverFlow();
+        announceCurrentCover();
+      }
+      break;
+      
+    case 'ArrowRight':
+      e.preventDefault();
+      if (activeIndex < covers.length - 1) {
+        activeIndex++;
+        renderCoverFlow();
+        announceCurrentCover();
+      }
+      break;
+      
+    case 'Enter':
+    case ' ':
+      e.preventDefault();
+      const activeCover = document.querySelector('.cover-active .flip-container');
+      if (activeCover) {
+        activeCover.classList.toggle('flipped');
+        announceFlipState(activeCover.classList.contains('flipped'));
+      }
+      break;
+      
+    case 'Escape':
+      e.preventDefault();
+      // Close any open modals
+      const modal = document.querySelector('.artist-modal.show');
+      if (modal) {
+        closeArtistModal();
+      } else {
+        // Unflip active cover
+        const flippedCover = document.querySelector('.cover-active .flip-container.flipped');
+        if (flippedCover) {
+          flippedCover.classList.remove('flipped');
+          announceFlipState(false);
+        }
+      }
+      break;
+      
+    case 'Home':
+      e.preventDefault();
+      activeIndex = 0;
+      renderCoverFlow();
+      announceCurrentCover();
+      break;
+      
+    case 'End':
+      e.preventDefault();
+      activeIndex = covers.length - 1;
+      renderCoverFlow();
+      announceCurrentCover();
+      break;
+  }
+});
+
+// Accessibility announcements
+const liveRegion = document.createElement('div');
+liveRegion.className = 'sr-only';
+liveRegion.setAttribute('aria-live', 'polite');
+liveRegion.setAttribute('aria-atomic', 'true');
+document.body.appendChild(liveRegion);
+
+function announceCurrentCover() {
+  const cover = covers[activeIndex];
+  if (cover) {
+    liveRegion.textContent = `Selected: ${cover.albumTitle || 'Untitled'} by ${cover.coverLabel || 'Unknown'}. Press Enter to flip.`;
+  }
+}
+
+function announceFlipState(isFlipped) {
+  liveRegion.textContent = isFlipped ? 'Cover flipped to back. Press Escape to flip back.' : 'Cover flipped to front.';
+}
+
+// Add focus indicator for keyboard navigation
+document.addEventListener('keydown', () => {
+  document.body.classList.add('keyboard-nav');
+}, { once: true });
+
+document.addEventListener('mousedown', () => {
+  document.body.classList.remove('keyboard-nav');
+});

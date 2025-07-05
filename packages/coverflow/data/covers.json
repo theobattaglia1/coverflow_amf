@@ -140,23 +140,25 @@
     }
   },
   {
-    "id": "1748123495341",
-    "category": "artist, songwriter, producer",
-    "frontImage": "/uploads/upload-1748123564277-682298391.png",
-    "albumTitle": "SELF PROCLAIMED NARCISSIST",
-    "coverLabel": "Loading...",
+    "id": "1751664621537",
+    "category": "producer, songwriter",
+    "frontImage": "https://allmyfriendsinc.com/uploads/upload-1751664621430-139857834.png",
+    "albumTitle": "Leon Sharplin",
+    "coverLabel": "Producer",
     "fontFamily": "",
     "fontSize": "",
     "music": {
       "type": "embed",
-      "url": ""
+      "url": "https://open.spotify.com/track/0lIcZEJMNWL1wkjaXZnOjr?si=313db60af9cc41db"
     },
     "artistDetails": {
-      "name": "SELF PROCLAIMED NARCISSIST",
+      "name": "Leon Sharplin",
       "location": "",
-      "bio": "https://www.tiktok.com/@selfproclaimednarcissitt",
-      "spotifyLink": "",
-      "image": "/uploads/upload-1748123495233-882606687.png"
-    }
+      "bio": "",
+      "spotifyLink": "https://open.spotify.com/track/0lIcZEJMNWL1wkjaXZnOjr?si=313db60af9cc41db",
+      "image": "https://allmyfriendsinc.com/uploads/upload-1751664621430-139857834.png"
+    },
+    "createArtistFolder": false,
+    "artistId": "leon-sharplin"
   }
 ]

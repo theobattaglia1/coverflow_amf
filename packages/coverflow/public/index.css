@@ -328,13 +328,29 @@ html, body {
   backface-visibility: hidden;
 }
 .cover-front {
-  background-size: cover;
-  background-position: center;
-  /* Add subtle inner shadow for depth */
-  box-shadow: 
-    inset 0 0 0 1px rgba(255,255,255,0.1),
-    inset 0 2px 4px rgba(0,0,0,0.2);
-  border-radius: 4px;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #222;
+  overflow: hidden;
+}
+
+.cover-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cover-front img.lazy-cover {
+  opacity: 0;
+}
+
+.cover-front img.loaded {
+  opacity: 1;
 }
 
 /* Enhanced reflection with gradient fade */
@@ -989,4 +1005,79 @@ html, body {
 }
 .contact-card .contact-icon{
   font-size:24px;
+}
+
+/* Accessibility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard navigation focus styles */
+.keyboard-nav .cover-active {
+  outline: 3px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 4px;
+}
+
+.keyboard-nav button:focus,
+.keyboard-nav a:focus {
+  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline-offset: 2px;
+}
+
+/* Skip to main content link */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--bg-color);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  z-index: 100;
+}
+
+.skip-link:focus {
+  top: 0;
+}
+
+/* Loading indicator */
+.loading-indicator {
+  color: white;
+  font-family: var(--global-font-family);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  margin: 0 auto 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loading-text {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: 0.8;
+}
+
+.error-message {
+  color: #ff6b6b;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }

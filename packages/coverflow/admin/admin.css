@@ -614,3 +614,46 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Batch mode styles */
+.batch-mode .cover-card {
+  cursor: pointer;
+}
+
+.batch-mode .cover-card.selected {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+.batch-mode .cover-card.selected::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.batch-checkbox {
+  accent-color: var(--accent);
+}
+
+.btn.active {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.btn-sm {
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.75rem;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--grey);
+  color: var(--ink);
+}
+
+.btn-secondary:hover {
+  background: var(--grey);
+}
