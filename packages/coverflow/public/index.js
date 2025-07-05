@@ -308,7 +308,7 @@ function renderCovers() {
     if (c.artistDetails) {
       const infoBtn = document.createElement('button');
       infoBtn.className = 'info-button';
-      infoBtn.innerHTML = '<span>i</span>';
+      infoBtn.innerHTML = '<span>+</span>';
       infoBtn.setAttribute('aria-label', 'Artist information');
       wrapper.appendChild(infoBtn);
     }
@@ -468,52 +468,60 @@ window.addEventListener('keydown', e => {
 });
 
 // 10) Modal open function
-function openArtistModal(coverData) {
-  const modal = document.querySelector('.artist-modal'),
-        photo = modal.querySelector('.artist-photo'),
-        player= modal.querySelector('.spotify-player'),
-        link  = coverData.artistDetails.spotifyLink;
-
-  if (coverData.artistDetails.image) {
-    photo.src = coverData.artistDetails.image;
-    photo.style.display = '';
-  } else {
-    photo.style.display = 'none';
-  }
-
-  if (link?.includes('spotify.com')) {
-    player.src = link.replace('spotify.com/','spotify.com/embed/');
-    player.style.display = '';
-  } else {
-    player.style.display = 'none';
-  }
-
-  modal.querySelector('.artist-name').innerText     = coverData.artistDetails.name;
-  modal.querySelector('.artist-location').innerText = coverData.artistDetails.location;
-  modal.querySelector('.artist-bio').innerText      = coverData.artistDetails.bio;
-  modal.querySelector('.spotify-link').href         = link;
+function openArtistModal(cover) {
+  const modal = document.querySelector('.artist-modal');
+  if (!modal) return;
+  
+  const modalContent = modal.querySelector('.modal-content');
+  
+  // Use the front cover image as the banner, fallback to artist image
+  const bannerImage = cover.frontImage || cover.artistDetails?.image || '';
+  
+  modalContent.innerHTML = `
+    ${bannerImage ? `<img src="${bannerImage}" alt="${cover.artistDetails?.name || ''}" class="artist-photo">` : ''}
+    <div class="artist-info">
+      <h2 class="artist-name">${cover.artistDetails?.name || 'Unknown Artist'}</h2>
+      ${cover.artistDetails?.location ? `<p class="artist-location">${cover.artistDetails.location}</p>` : ''}
+      ${cover.artistDetails?.bio ? `<p class="artist-bio">${cover.artistDetails.bio}</p>` : ''}
+      ${cover.artistDetails?.spotifyLink ? 
+        `<a href="${cover.artistDetails.spotifyLink}" target="_blank" class="spotify-button">
+          Listen on Spotify
+        </a>` : ''
+      }
+    </div>
+  `;
+  
   modal.classList.remove('hidden');
+  modal.classList.add('show');
+  
+  // Close on background click
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      closeArtistModal();
+    }
+  };
+  
+  // Close on Escape key
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      closeArtistModal();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  };
+  document.addEventListener('keydown', handleEscape);
 }
 
-// 11) Modal close
-document.querySelector('.artist-modal')
-  .addEventListener('click', e => {
-    if (e.target.classList.contains('artist-modal')) {
-      const mc = e.target.querySelector('.modal-content');
-      mc.classList.add('pulse-dismiss');
-      setTimeout(() => {
-        e.target.classList.add('hidden');
-        mc.classList.remove('pulse-dismiss');
-      }, 250);
-    }
-  }, { passive: true });
+function closeArtistModal() {
+  const modal = document.querySelector('.artist-modal');
+  if (modal) {
+    modal.classList.remove('show');
+    setTimeout(() => {
+      modal.classList.add('hidden');
+    }, 300);
+  }
+}
 
-document.querySelector('.artist-modal .close-btn')
-  .addEventListener('click', () => {
-    document.querySelector('.artist-modal').classList.add('hidden');
-  }, { passive: true });
-
-// 12) Filter dropdown with proper cleanup
+// 11) Filter dropdown with proper cleanup
 const filterButtons = document.querySelectorAll('.filter-label');
 const filterDropdown = document.getElementById('filter-dropdown');
 let dropdownTimeout;
