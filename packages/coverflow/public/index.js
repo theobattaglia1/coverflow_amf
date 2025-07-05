@@ -302,16 +302,17 @@ function renderCovers() {
     
     flipContainer.appendChild(frontFace);
     flipContainer.appendChild(backFace);
-    wrapper.appendChild(flipContainer);
     
-    // Add info button if artist details exist
+    // Add info button inside flip container if artist details exist
     if (c.artistDetails) {
       const infoBtn = document.createElement('button');
       infoBtn.className = 'info-button';
       infoBtn.innerHTML = '<span>+</span>';
       infoBtn.setAttribute('aria-label', 'Artist information');
-      wrapper.appendChild(infoBtn);
+      flipContainer.appendChild(infoBtn);
     }
+    
+    wrapper.appendChild(flipContainer);
     
     // Add text overlay
     const textOverlay = document.createElement('div');
