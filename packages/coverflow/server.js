@@ -80,40 +80,37 @@ function isAdminSubdomain(req) {
 // Authentication middleware - COMPLETELY REWRITTEN
 const requireAuth = (requiredRole = 'viewer') => {
   return (req, res, next) => {
-    // Development bypass - only in development environment
-    if (process.env.NODE_ENV === 'development' && process.env.NODE_ENV !== 'production' && process.env.BYPASS_AUTH === 'true') {
-      req.session.user = {
-        username: 'dev',
-        role: 'admin'
-      };
+    if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
+      req.session.user = req.session.user || { username: 'dev', role: 'admin' };
       return next();
     }
 
-    // Check if user is authenticated
     if (!req.session.user) {
-      // For API calls, return 401
       if (req.xhr || req.headers.accept?.includes('application/json')) {
         return res.status(401).json({ error: 'Authentication required' });
       }
-      
-      // For admin subdomain, show login page
-      if (isAdminSubdomain(req)) {
-        // Already on login page? Let it through
-        if (req.path === '/' || req.path === '/login.html' || req.path.includes('/login')) {
-          return next();
-        }
-        // Redirect to subdomain root (which will show login)
-        return res.redirect('/');
-      }
-      
-      // For main domain, redirect to admin login
       return res.redirect('/admin/login.html');
     }
 
-    // User is authenticated, check role
-    const roleHierarchy = { admin: 3, editor: 2, viewer: 1 };
-    if (roleHierarchy[req.session.user.role] < roleHierarchy[requiredRole]) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
+    // Convert string to array for consistency
+    const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+    
+    // Check if user has required role
+    if (!allowedRoles.includes(req.session.user.role)) {
+      // Admin can access everything
+      if (req.session.user.role === 'admin') {
+        return next();
+      }
+      
+      // Editor can access viewer content
+      if (req.session.user.role === 'editor' && allowedRoles.includes('viewer')) {
+        return next();
+      }
+      
+      if (req.xhr || req.headers.accept?.includes('application/json')) {
+        return res.status(403).json({ error: 'Insufficient permissions' });
+      }
+      return res.status(403).send('Access denied');
     }
 
     next();
@@ -349,8 +346,8 @@ app.use('/admin', (req, res, next) => {
   express.static(ADMIN_DIR, { extensions: ['html'] })(req, res, next);
 });
 
-// Cached data endpoints
-app.get('/data/covers.json', requireAuth('viewer'), async (req, res) => {
+// Public access to covers.json
+app.get('/data/covers.json', async (req, res) => {
   try {
     const covers = await readJsonFile(path.join(DATA_DIR, 'covers.json'), 'covers');
     res.json(covers);
@@ -359,7 +356,8 @@ app.get('/data/covers.json', requireAuth('viewer'), async (req, res) => {
   }
 });
 
-app.get('/data/assets.json', requireAuth('viewer'), async (req, res) => {
+// Public access to assets.json
+app.get('/data/assets.json', async (req, res) => {
   try {
     const assets = await readJsonFile(path.join(DATA_DIR, 'assets.json'), 'assets');
     res.json(assets);
@@ -368,21 +366,8 @@ app.get('/data/assets.json', requireAuth('viewer'), async (req, res) => {
   }
 });
 
-app.get('/data/styles.json', async (req, res) => {
-  try {
-    const styles = await readJsonFile(path.join(DATA_DIR, 'styles.json'), 'styles');
-    res.json(styles);
-  } catch (error) {
-    // Return default styles if file doesn't exist
-    res.json({
-      fontFamily: 'GT America',
-      fontSize: 16
-    });
-  }
-});
-
-// Protected access to other data files
-app.use('/data', requireAuth('viewer'), express.static(DATA_DIR, {
+// Public static serving for /data
+app.use('/data', express.static(DATA_DIR, {
   setHeaders: res => res.setHeader('Cache-Control', 'no-store')
 }));
 
@@ -1086,6 +1071,31 @@ app.use(express.static(PUBLIC_DIR, {
     }
   }
 }));
+
+// Admin routes
+app.get('/admin/', requireAuth(['admin', 'editor']), (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin', 'index.html'));
+});
+
+// Swiss Modernism admin interface - serve directly
+app.get('/admin/swiss', (req, res) => {
+  // Check if user is authenticated
+  if (!req.session.user) {
+    return res.redirect('/admin/login.html');
+  }
+  
+  // Check if user has permission
+  if (!['admin', 'editor'].includes(req.session.user.role)) {
+    return res.status(403).send('Access denied');
+  }
+  
+  // Serve the Swiss admin interface
+  res.sendFile(path.join(__dirname, 'admin', 'index-swiss.html'));
+});
+
+app.get('/admin/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'admin', 'login.html'));
+});
 
 // Start server
 app.listen(PORT, () => {
