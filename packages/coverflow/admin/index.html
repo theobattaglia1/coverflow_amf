@@ -1,474 +1,266 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ADMIN × ALL MY FRIENDS</title>
-  <link rel="stylesheet" href="admin.css">
+  <title>AMF ADMIN — EDITORIAL INTERFACE</title>
+  <link rel="stylesheet" href="admin-swiss.css">
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
-  <style>
-    /* Specific overrides for dashboard */
-    .folder-tree {
-      display: grid;
-      grid-template-columns: 300px 1fr;
-      gap: var(--gutter);
-      min-height: 600px;
-    }
-    
-    .folder-sidebar {
-      border: 1px solid var(--ink);
-      padding: var(--space-lg);
-      overflow-y: auto;
-      position: relative;
-    }
-    
-    .folder-sidebar::before {
-      content: 'FOLDERS';
-      position: absolute;
-      top: -12px;
-      left: var(--space-md);
-      background: var(--bg);
-      padding: 0 var(--space-sm);
-      font-family: var(--font-mono);
-      font-size: 0.625rem;
-      letter-spacing: 0.2em;
-      font-weight: 500;
-    }
-    
-    .folder-content {
-      border: 1px solid var(--ink);
-      padding: var(--space-lg);
-      overflow-y: auto;
-      position: relative;
-    }
-    
-    .folder-content::before {
-      content: 'ASSETS';
-      position: absolute;
-      top: -12px;
-      left: var(--space-md);
-      background: var(--bg);
-      padding: 0 var(--space-sm);
-      font-family: var(--font-mono);
-      font-size: 0.625rem;
-      letter-spacing: 0.2em;
-      font-weight: 500;
-    }
-    
-    .folder-item {
-      padding: var(--space-sm) var(--space-md);
-      cursor: pointer;
-      margin-bottom: 1px;
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-      transition: all var(--transition);
-      border-left: 3px solid transparent;
-    }
-    
-    .folder-item:hover {
-      background: var(--accent-dim);
-      border-left-color: var(--accent);
-    }
-    
-    .folder-item.active {
-      background: var(--ink);
-      color: var(--bg);
-      border-left-color: var(--accent);
-    }
-    
-    .folder-actions {
-      margin-left: auto;
-      display: flex;
-      gap: var(--space-xs);
-      opacity: 0;
-      transition: opacity var(--transition);
-    }
-    
-    .folder-item:hover .folder-actions {
-      opacity: 1;
-    }
-    
-    .folder-actions button {
-      background: none;
-      border: none;
-      color: currentColor;
-      cursor: pointer;
-      padding: var(--space-xs);
-      opacity: 0.6;
-      transition: opacity var(--transition);
-    }
-    
-    .folder-actions button:hover {
-      opacity: 1;
-    }
-    
-    .breadcrumb {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-      margin-bottom: var(--space-lg);
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-    
-    .breadcrumb span {
-      cursor: pointer;
-      opacity: 0.6;
-      transition: opacity var(--transition);
-    }
-    
-    .breadcrumb span:hover {
-      opacity: 1;
-    }
-    
-    .breadcrumb span:last-child {
-      opacity: 1;
-      cursor: default;
-      color: var(--accent);
-    }
-    
-    .breadcrumb span:not(:last-child)::after {
-      content: '/';
-      margin-left: var(--space-sm);
-      opacity: 0.3;
-    }
-    
-    .asset-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: var(--space-lg);
-    }
-    
-    .asset-item {
-      border: 1px solid var(--grey);
-      padding: var(--space-md);
-      cursor: move;
-      transition: all var(--transition);
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .asset-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--accent-dim);
-      transform: scaleY(0);
-      transform-origin: bottom;
-      transition: transform var(--transition);
-      pointer-events: none;
-    }
-    
-    .asset-item:hover {
-      border-color: var(--ink);
-      transform: translateY(-2px);
-    }
-    
-    .asset-item:hover::before {
-      transform: scaleY(1);
-    }
-    
-    .asset-item img {
-      width: 100%;
-      height: 120px;
-      object-fit: cover;
-      margin-bottom: var(--space-md);
-      filter: grayscale(100%);
-      transition: filter var(--transition-slow);
-    }
-    
-    .asset-item:hover img {
-      filter: grayscale(0%);
-    }
-    
-    .asset-item input {
-      width: 100%;
-      background: transparent;
-      border: none;
-      border-bottom: 1px solid var(--grey);
-      color: var(--ink);
-      padding: var(--space-xs) 0;
-      margin-bottom: var(--space-sm);
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .asset-item input:focus {
-      border-bottom-color: var(--ink);
-      outline: none;
-    }
-    
-    .asset-item button {
-      background: transparent;
-      color: var(--ink);
-      border: 1px solid var(--ink);
-      padding: var(--space-xs) var(--space-sm);
-      cursor: pointer;
-      font-family: var(--font-mono);
-      font-size: 0.625rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      transition: all var(--transition);
-      position: relative;
-      z-index: 1;
-    }
-    
-    .asset-item button:hover {
-      background: var(--ink);
-      color: var(--bg);
-    }
-    
-    .url-display {
-      padding: var(--space-xs);
-      font-family: var(--font-mono);
-      font-size: 0.625rem;
-      word-break: break-all;
-      margin-bottom: var(--space-sm);
-      cursor: pointer;
-      opacity: 0.6;
-      position: relative;
-      z-index: 1;
-    }
-    
-    .url-display:hover {
-      opacity: 1;
-    }
-    
-    .new-folder-btn {
-      width: 100%;
-      margin-bottom: var(--space-lg);
-    }
-    
-    /* User section specific */
-    .users-section {
-      display: none;
-    }
-    
-    .users-list {
-      border: 1px solid var(--ink);
-      padding: var(--space-lg);
-    }
-    
-    .user-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: var(--space-md);
-      border-bottom: 1px solid var(--grey-light);
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-    }
-    
-    .user-item:last-child {
-      border-bottom: none;
-    }
-    
-    .add-user-form {
-      border: 1px solid var(--ink);
-      padding: var(--space-lg);
-      margin-top: var(--space-lg);
-    }
-    
-    /* Circular index numbers */
-    .index-badge {
-      position: absolute;
-      top: var(--space-md);
-      right: var(--space-md);
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      border: 1px solid var(--ink);
-      background: var(--bg);
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-family: var(--font-mono);
-      font-size: 0.75rem;
-      font-weight: 700;
-      z-index: 2;
-    }
-    
-    /* Theme toggle */
-    .theme-toggle {
-      position: fixed;
-      bottom: var(--space-lg);
-      left: var(--space-lg);
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      border: 1px solid var(--ink);
-      background: var(--bg);
-      color: var(--ink);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-family: var(--font-mono);
-      font-size: 1.25rem;
-      transition: all var(--transition);
-      z-index: 100;
-    }
-    
-    .theme-toggle:hover {
-      transform: rotate(180deg);
-    }
-  </style>
 </head>
 <body>
 
-<div class="admin-container">
-  <!-- Navigation -->
-  <nav class="admin-nav">
+<div class="admin-wrapper">
+  <!-- Fixed Header: Minimal, typography-focused -->
+  <header class="admin-header">
     <div class="container">
-      <h1>ADMIN://AMF</h1>
-      <div class="nav-links">
-        <a href="/" class="active nav-link-covers">COVERS</a>
-        <a href="artist-audio.html" class="nav-link-audio">AUDIO</a>
-        <a href="#" onclick="showUsersSection()">USERS</a>
-      </div>
-      <div class="user-badge">
-        <span id="username">...</span>
-        <span class="user-role" id="userRole">...</span>
-        <button class="btn btn-danger" onclick="logout()" style="padding: var(--space-sm) var(--space-md); font-size: 0.75rem;">EXIT</button>
-      </div>
+      <div class="admin-logo">AMF://ADMIN</div>
+      
+      <nav class="admin-nav">
+        <a href="#covers" class="active">COVERS</a>
+        <a href="#assets">ASSETS</a>
+        <a href="#audio">AUDIO</a>
+        <a href="#users">USERS</a>
+        
+        <div class="user-info">
+          <span id="username">LOADING...</span>
+          <span class="user-role" id="userRole">—</span>
+          <button class="btn btn-danger" onclick="logout()">EXIT</button>
+        </div>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <!-- Main Content -->
-  <main class="container">
-    <!-- Covers Section -->
-    <section class="section" id="coversSection">
-      <div class="section-header">
-        <h1>ARTIST COVERS</h1>
-        <span class="section-subtitle">DRAG TO REORDER × CLICK TO EDIT</span>
-      </div>
+  <!-- Main Content: Generous spacing, editorial structure -->
+  <main class="admin-main">
+    <div class="container">
       
-      <div class="covers-grid" id="coversContainer">
-        <!-- Covers will load here -->
-      </div>
-      
-      <div class="dropzone" id="coverDropzone">
-        <span class="dropzone-text">DRAG IMAGE TO CREATE NEW COVER</span>
-      </div>
-      
-      <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
-        <button class="btn btn-primary" onclick="saveChanges()">SAVE CHANGES</button>
-        <button class="btn btn-live" onclick="pushLive()">PUSH LIVE</button>
-        <button class="btn" onclick="testGitHub()">TEST GITHUB</button>
-        <button class="btn" onclick="forceBackupToGitHub()" style="background: #28a745; color: white;">
-          FORCE BACKUP TO GITHUB
-        </button>
-      </div>
-    </section>
-
-    <!-- Image Repository Section -->
-    <section class="section">
-      <div class="section-header">
-        <h2>IMAGE REPOSITORY</h2>
-        <span class="section-subtitle">ORGANIZED BY FOLDER</span>
-      </div>
-      
-      <div class="folder-tree">
-        <!-- Folder Sidebar -->
-        <div class="folder-sidebar">
-          <button class="btn btn-primary new-folder-btn" onclick="createNewFolder()">+ NEW FOLDER</button>
-          <div id="folderTree"></div>
+      <!-- 01 — COVERS -->
+      <section class="section" id="coversSection">
+        <div class="section-marker">
+          <span class="section-number">01 —</span>
+          <h1 class="section-title" data-text="COVERS">COVERS</h1>
         </div>
         
-        <!-- Folder Content -->
-        <div class="folder-content">
-          <div class="breadcrumb" id="breadcrumb">
-            <span onclick="navigateToFolder('')">ROOT</span>
-          </div>
-          
-          <div class="dropzone" id="assetDropzone" style="margin-bottom: var(--space-xl);">
-            <span class="dropzone-text">DROP IMAGES HERE</span>
-          </div>
-          
-          <div id="assetsContainer" class="asset-grid"></div>
+        <!-- Search functionality -->
+        <div class="search-container">
+          <input type="text" 
+                 class="search-input" 
+                 id="coverSearch" 
+                 placeholder="SEARCH BY TITLE OR ARTIST..."
+                 autocomplete="off">
         </div>
-      </div>
-    </section>
+        
+        <!-- Cover grid with editorial layout -->
+        <div class="covers-container" id="coversContainer">
+          <!-- Covers will be dynamically loaded -->
+        </div>
+        
+        <!-- Dropzone: Minimal design -->
+        <div class="dropzone" id="coverDropzone">
+          <span class="dropzone-text">DROP IMAGE TO CREATE NEW COVER</span>
+        </div>
+        
+        <!-- Action buttons: Brutalist elegance -->
+        <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
+          <button class="btn btn-primary" onclick="saveChanges()">SAVE CHANGES</button>
+          <button class="btn" onclick="toggleBatchMode()" id="batchModeBtn">BATCH MODE</button>
+          <button class="btn" onclick="exportCovers()" style="display: none;" id="exportBtn">EXPORT SELECTED</button>
+          <button class="btn btn-danger" onclick="deleteSelected()" style="display: none;" id="deleteBtn">DELETE SELECTED</button>
+          <button class="btn" onclick="pushLive()">PUSH LIVE</button>
+        </div>
+      </section>
 
-    <!-- Users Section (Admin only) -->
-    <section class="section users-section" id="usersSection">
-      <div class="section-header">
-        <h1>USER MANAGEMENT</h1>
-        <span class="section-subtitle">ADMIN ACCESS ONLY</span>
-      </div>
-      
-      <div class="users-list">
-        <h3 style="margin-bottom: var(--space-lg);">CURRENT USERS</h3>
-        <div id="usersList"></div>
-      </div>
-      
-      <div class="add-user-form">
-        <h3 style="margin-bottom: var(--space-lg);">ADD NEW USER</h3>
-        <form id="addUserForm" onsubmit="addUser(event)">
-          <div class="form-group">
-            <label>USERNAME</label>
-            <input type="text" name="username" required>
+      <!-- 02 — ASSETS -->
+      <section class="section" id="assetsSection">
+        <div class="section-marker">
+          <span class="section-number">02 —</span>
+          <h1 class="section-title" data-text="ASSETS">ASSETS</h1>
+        </div>
+        
+        <div class="asset-browser">
+          <!-- Folder navigation -->
+          <div class="folder-panel">
+            <button class="btn btn-primary" onclick="createNewFolder()" style="width: 100%; margin-bottom: var(--space-lg);">
+              + NEW FOLDER
+            </button>
+            <ul class="folder-list" id="folderTree">
+              <!-- Folders will be dynamically loaded -->
+            </ul>
           </div>
-          <div class="form-group">
-            <label>PASSWORD</label>
-            <input type="password" name="password" required>
+          
+          <!-- Asset grid -->
+          <div class="asset-content">
+            <div class="dropzone" id="assetDropzone">
+              <span class="dropzone-text">DROP IMAGES HERE</span>
+            </div>
+            
+            <div class="asset-grid" id="assetsContainer">
+              <!-- Assets will be dynamically loaded -->
+            </div>
           </div>
-          <div class="form-group">
-            <label>ROLE</label>
-            <select name="role" required>
-              <option value="viewer">VIEWER</option>
-              <option value="editor">EDITOR</option>
-              <option value="admin">ADMIN</option>
-            </select>
+        </div>
+      </section>
+
+      <!-- 03 — USERS -->
+      <section class="section" id="usersSection" style="display: none;">
+        <div class="section-marker">
+          <span class="section-number">03 —</span>
+          <h1 class="section-title" data-text="USERS">USERS</h1>
+        </div>
+        
+        <div class="grid">
+          <div style="grid-column: span 6;">
+            <h3>CURRENT USERS</h3>
+            <div id="usersList" style="margin-top: var(--space-lg);">
+              <!-- Users will be dynamically loaded -->
+            </div>
           </div>
-          <button type="submit" class="btn btn-primary">CREATE USER</button>
-        </form>
-      </div>
-    </section>
+          
+          <div style="grid-column: span 6;">
+            <h3>ADD NEW USER</h3>
+            <form id="addUserForm" onsubmit="addUser(event)" style="margin-top: var(--space-lg);">
+              <div class="form-group">
+                <label class="form-label">USERNAME</label>
+                <input type="text" class="form-input" name="username" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">PASSWORD</label>
+                <input type="password" class="form-input" name="password" required>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label">ROLE</label>
+                <select class="form-select" name="role" required>
+                  <option value="viewer">VIEWER</option>
+                  <option value="editor">EDITOR</option>
+                  <option value="admin">ADMIN</option>
+                </select>
+              </div>
+              
+              <button type="submit" class="btn btn-primary">CREATE USER</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+    </div>
   </main>
 </div>
 
-<!-- Theme Toggle -->
-<button class="theme-toggle" onclick="toggleTheme()">
-  <span id="themeIcon">☾</span>
-</button>
-
-<!-- Toast notifications -->
-<div id="toast" class="toast"></div>
-
-<!-- Loading overlay -->
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-spinner"></div>
+<!-- Modal for cover editing -->
+<div class="modal" id="coverModal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">EDIT COVER</h2>
+      <button class="modal-close" onclick="closeModal()">CLOSE</button>
+    </div>
+    <div id="modalBody">
+      <!-- Modal content will be dynamically loaded -->
+    </div>
+  </div>
 </div>
 
+<!-- Toast notifications: Editorial announcement -->
+<div id="toast" class="toast"></div>
+
+<!-- Loading indicator -->
+<div class="loading" id="loading" style="display: none;">LOADING...</div>
+
 <script>
-  // Theme toggle
-  function toggleTheme() {
-    const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? '' : 'dark';
-    html.setAttribute('data-theme', newTheme);
-    document.getElementById('themeIcon').textContent = newTheme === 'dark' ? '☾' : '☀';
-    localStorage.setItem('theme', newTheme);
+// Initialize smooth scrolling for navigation
+document.querySelectorAll('.admin-nav a[href^="#"]').forEach(anchor => {
+  anchor.addEventListener('click', function (e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    // Update active state
+    document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+    this.classList.add('active');
+  });
+});
+
+// Show/hide sections based on navigation
+function showSection(sectionId) {
+  document.querySelectorAll('.section').forEach(section => {
+    section.style.display = section.id === sectionId ? 'block' : 'none';
+  });
+}
+
+// Initialize on load
+document.addEventListener('DOMContentLoaded', () => {
+  // Load user info
+  fetch('/api/me')
+    .then(res => res.json())
+    .then(data => {
+      if (data.user) {
+        document.getElementById('username').textContent = data.user.username.toUpperCase();
+        document.getElementById('userRole').textContent = data.user.role.toUpperCase();
+        
+        // Show users section only for admins
+        if (data.user.role === 'admin') {
+          document.getElementById('usersSection').style.display = 'block';
+        }
+      }
+    })
+    .catch(err => {
+      console.error('Failed to load user info:', err);
+      // Don't redirect here, let the server handle auth
+    });
+});
+
+// Logout function
+function logout() {
+  fetch('/api/logout', { method: 'POST' })
+    .then(() => window.location.href = '/admin/login.html');
+}
+
+// Toast notification
+function showToast(message, duration = 5000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, duration);
+}
+
+// Modal functions
+function openModal() {
+  document.getElementById('coverModal').classList.add('active');
+}
+
+function closeModal() {
+  document.getElementById('coverModal').classList.remove('active');
+}
+
+// Close modal on background click
+document.getElementById('coverModal').addEventListener('click', (e) => {
+  if (e.target === e.currentTarget) {
+    closeModal();
+  }
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeModal();
   }
   
-  // Load saved theme
-  const savedTheme = localStorage.getItem('theme') || 'dark';
-  document.documentElement.setAttribute('data-theme', savedTheme);
-  document.getElementById('themeIcon').textContent = savedTheme === 'dark' ? '☾' : '☀';
+  // Cmd/Ctrl + S to save
+  if ((e.metaKey || e.ctrlKey) && e.key === 's') {
+    e.preventDefault();
+    saveChanges();
+  }
+});
 </script>
 
-<script src="dashboard.js"></script>
+<!-- Load the main dashboard script -->
+<script src="dashboard-swiss.js"></script>
+
 </body>
-</html>
+</html> 
