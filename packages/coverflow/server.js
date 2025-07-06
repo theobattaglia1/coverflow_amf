@@ -249,8 +249,8 @@ app.use((req, res, next) => {
     // Handle root path
     if (req.path === '/' || req.path === '') {
       if (isAuthenticated(req)) {
-        // User is logged in, show dashboard
-        return res.sendFile(path.join(ADMIN_DIR, 'index.html'));
+        // User is logged in, show Swiss dashboard
+        return res.sendFile(path.join(ADMIN_DIR, 'index-swiss.html'));
       } else {
         // User is not logged in, show login
         return res.sendFile(path.join(ADMIN_DIR, 'login.html'));
