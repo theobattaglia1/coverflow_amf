@@ -3094,574 +3094,155 @@
     </footer>
     
     <!-- Minimal JS -->
-    <script>
-        // Mobile Navigation
-        function toggleMobileNav() {
-            const burger = document.querySelector('.nav-burger');
-            const navLinks = document.querySelector('.nav-links');
-            burger.classList.toggle('active');
-            navLinks.classList.toggle('active');
-        }
-        
-        function closeMobileNav() {
-            const burger = document.querySelector('.nav-burger');
-            const navLinks = document.querySelector('.nav-links');
-            burger.classList.remove('active');
-            navLinks.classList.remove('active');
-        }
-        
-        // Active nav
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                if (scrollY >= section.offsetTop - 100) {
-                    current = section.id;
-                }
-            });
-            
-            navLinks.forEach(link => {
-                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
-            });
-        });
-        
-        // Smooth scroll
-        navLinks.forEach(link => {
-            link.addEventListener('click', e => {
-                e.preventDefault();
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
-        });
-        
-        // Music Player Functionality
-        let updateInterval = null;
-        let currentModalArtist = null;
+<script>
+// Mobile Navigation
+function toggleMobileNav() {
+  const burger = document.querySelector('.nav-burger');
+  const navLinks = document.querySelector('.nav-links');
+  burger.classList.toggle('active');
+  navLinks.classList.toggle('active');
+}
 
-        // Artist Data
-        const artistData = {
-            hudson: {
-                name: "Hudson Ingram",
-                role: "Artist • Interscope/Dessner JV",
-                image: "https://allmyfriendsinc.com/uploads/upload-1748121117525-242753559.jpeg",
-                bio: "18-year-old Nashville-based artist from Texas, Hudson represents the evolution of American songwriting. Discovered on TikTok in April 2023, he's since signed a joint venture with Interscope Records and Aaron Dessner (The National, Taylor Swift). His sound bridges the gap between Taylor Swift's narrative precision and Noah Kahan's emotional authenticity, delivered through a distinctly masculine lens. September 2025 rollout planned.",
-                instagram: "https://instagram.com/hudsoningram",
-                tiktok: "https://tiktok.com/@hudsoningram",
-                spotify: "https://open.spotify.com/artist/hudsoningram",
-                apple: "https://music.apple.com/artist/hudsoningram",
-                tracksTitle: "Exclusive Demos"
-            },
-            jack: {
-                name: "Jack Schrepferman",
-                role: "Producer • Kobalt Publishing",
-                image: "https://allmyfriendsinc.com/uploads/upload-1748120927291-42815401.png",
-                bio: "Producer/songwriter signed to Kobalt/100 Publishing with a mid-six-figure advance. Credits include Midwxst ('Car Seats') and dhruv ('Speed of Light'). Since December 2024, has secured 15+ major label cuts. Jack's production style perfectly complements our artist roster, creating a sound that bridges indie credibility with pop accessibility. Market comps include OZ, Omer Fedi, and Blake Slatkin.",
-                instagram: "https://instagram.com/jackschrepferman",
-                tiktok: "https://tiktok.com/@jackschrepferman",
-                spotify: "https://open.spotify.com/artist/jackschrepferman",
-                apple: "https://music.apple.com/artist/jackschrepferman",
-                tracksTitle: "Production Demos"
-            },
-            ruby: {
-                name: "Ruby Plume",
-                role: "Artist/Songwriter",
-                image: "https://allmyfriendsinc.com/uploads/upload-1748121131532-324221674.png",
-                bio: "Rising artist-songwriter with multiple publishing offers on the table. Ruby's introspective lyrics and ethereal production have caught the attention of major labels and publishers alike. Her collaborative spirit has led to writing sessions with Hudson Ingram and production work with both Jack Schrepferman and Leon Sharplin. Expected to close publishing deal Q3 2025.",
-                instagram: "https://instagram.com/rubyplume",
-                tiktok: "https://tiktok.com/@rubyplume",
-                spotify: "https://open.spotify.com/artist/rubyplume",
-                apple: "https://music.apple.com/artist/rubyplume",
-                tracksTitle: "Unreleased Tracks"
-            },
-            kate: {
-                name: "Kate Stephenson",
-                role: "Artist/Creator",
-                image: "https://allmyfriendsinc.com/uploads/upload-1748120863747-270939313.jpg",
-                bio: "Multi-hyphenate artist and digital creator who went viral on TikTok with 5.9M+ views. Kate seamlessly blends music with visual storytelling, creating immersive experiences that resonate with Gen Z audiences. Currently working on debut project with production from Leon Sharplin and Jack Schrepferman. Publishing and label deals expected Q3 2025.",
-                instagram: "https://instagram.com/katestephenson",
-                tiktok: "https://tiktok.com/@katestephenson",
-                spotify: "https://open.spotify.com/artist/katestephenson",
-                apple: "https://music.apple.com/artist/katestephenson",
-                tracksTitle: "Exclusive Demos"
-            },
-            leon: {
-                name: "Leon Sharplin",
-                role: "Producer/Artist",
-                image: "https://allmyfriendsinc.com/uploads/upload-1751081737021-755156096.png",
-                bio: "Producer and artist with 2 publishing offers before graduation. Leon's genre-fluid production style spans from intimate indie to expansive pop soundscapes. He's become a key collaborator within the AMF roster, producing for Kate Stephenson, Ruby Plume, and Conall Cafferty while developing his own artist project. Expected to sign publishing deal Q3 2025.",
-                instagram: "https://instagram.com/leonsharplin",
-                tiktok: "https://tiktok.com/@leonsharplin",
-                spotify: "https://open.spotify.com/artist/leonsharplin",
-                apple: "https://music.apple.com/artist/leonsharplin",
-                tracksTitle: "Production Showcase"
-            },
-            tom: {
-                name: "Tom Siletto",
-                role: "Artist",
-                image: "https://allmyfriendsinc.com/uploads/upload-1748121102073-915680969.png",
-                bio: "Singer-songwriter with 400K+ organic streams across platforms. Tom's raw, emotive style and honest songwriting have built a dedicated fanbase without major label support. His collaborations with Hudson Ingram and production work with Jack Schrepferman have elevated his sound while maintaining his authentic voice. Label deal expected Q3 2025.",
-                instagram: "https://instagram.com/tomsiletto",
-                tiktok: "https://tiktok.com/@tomsiletto",
-                spotify: "https://open.spotify.com/artist/tomsiletto",
-                apple: "https://music.apple.com/artist/tomsiletto",
-                tracksTitle: "Unreleased Music"
-            },
-            conall: {
-                name: "Conall Cafferty",
-                role: "Artist/Songwriter",
-                image: "https://allmyfriendsinc.com/uploads/upload-1748123456690-945730077.png",
-                bio: "Irish-born artist-songwriter with a Capitol Records term sheet on the table. Conall's poetic lyricism and folk-influenced melodies have drawn comparisons to Hozier and Dermot Kennedy. Mentored by Hudson Ingram and working closely with Leon Sharplin on production. Publishing deal expected Q3 2025 with potential label upstream in Q2 2026.",
-                instagram: "https://instagram.com/conallcafferty",
-                tiktok: "https://tiktok.com/@conallcafferty",
-                spotify: "https://open.spotify.com/artist/conallcafferty",
-                apple: "https://music.apple.com/artist/conallcafferty",
-                tracksTitle: "Demo Collection"
-            }
-        };
+function closeMobileNav() {
+  const burger = document.querySelector('.nav-burger');
+  const navLinks = document.querySelector('.nav-links');
+  burger.classList.remove('active');
+  navLinks.classList.remove('active');
+}
 
-        // Initialize artist cards
-        function initializeArtistCards() {
-            document.querySelectorAll('.artist-card').forEach(card => {
-                card.addEventListener('click', () => openModal(card.dataset.artist));
-            });
-            
-            // Close modal on background click
-            const modal = document.getElementById('artist-modal');
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    closeModal();
-                }
-            });
-            
-            // Close modal on escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && modal.classList.contains('active')) {
-                    closeModal();
-                }
-            });
-        }
+// Active nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
 
-        function openModal(artistId) {
-            const artist = artistData[artistId];
-            if (!artist) return;
-            
-            currentModalArtist = artistId;
-            const modalBody = document.getElementById('modal-body');
-            
-            modalBody.innerHTML = `
-                <div class="modal-artist-header">
-                    <div class="modal-artist-image">
-                        <img src="${artist.image}" alt="${artist.name}">
-                    </div>
-                    <div class="modal-artist-info">
-                        <h2>${artist.name}</h2>
-                        <div class="modal-artist-role">${artist.role}</div>
-                        <p class="artist-bio">${artist.bio}</p>
-                        <div class="social-links">
-                            ${artist.instagram ? `<a href="${artist.instagram}" target="_blank" class="social-link">Instagram</a>` : ''}
-                            ${artist.tiktok ? `<a href="${artist.tiktok}" target="_blank" class="social-link">TikTok</a>` : ''}
-                            ${artist.spotify ? `<a href="${artist.spotify}" target="_blank" class="social-link">Spotify</a>` : ''}
-                            ${artist.apple ? `<a href="${artist.apple}" target="_blank" class="social-link">Apple Music</a>` : ''}
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-music-section">
-                    <h3 class="modal-section-title">${artist.tracksTitle}</h3>
-                    <p style="font-size:var(--step--1);opacity:0.5;margin-bottom:1rem;">Demo player for presentation purposes</p>
-                    <div class="track-list" id="modal-track-list">
-                        <p style="text-align:center;opacity:0.5;">Loading tracks...</p>
-                    </div>
-                    <div class="player-controls">
-                        <div class="progress-bar" onclick="seekAudio(event,this)">
-                            <div class="progress-fill"></div>
-                        </div>
-                        <div class="time-display">
-                            <span class="current-time">0:00</span>
-                            <span class="total-time">0:00</span>
-                        </div>
-                        <div class="control-buttons">
-                            <button class="control-btn" onclick="previousTrack()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
-                                </svg>
-                            </button>
-                            <button class="control-btn play-btn" onclick="togglePlay()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="play-icon">
-                                    <path d="M8 5v14l11-7z"/>
-                                </svg>
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="pause-icon" style="display:none;">
-                                    <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
-                                </svg>
-                            </button>
-                            <button class="control-btn" onclick="nextTrack()">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/>
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            `;
-            
-            // Load tracks for this artist
-            loadModalTracks(artistId);
-            
-            // Show modal
-            const modal = document.getElementById('artist-modal');
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    if (scrollY >= section.offsetTop - 100) {
+      current = section.id;
+    }
+  });
 
-        function closeModal() {
-            const modal = document.getElementById('artist-modal');
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            
-            // Stop any simulated playback
-            if (updateInterval) {
-                clearInterval(updateInterval);
-                updateInterval = null;
-            }
-            
-            // Reset player UI
-            const playIcon = document.querySelector('.play-icon');
-            const pauseIcon = document.querySelector('.pause-icon');
-            if (playIcon) playIcon.style.display = 'block';
-            if (pauseIcon) pauseIcon.style.display = 'none';
-            
-            currentModalArtist = null;
-        }
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+});
 
-        async function loadModalTracks(artistId) {
-            const trackList = document.getElementById('modal-track-list');
-            
-            // Demo tracks for each artist (in a real app, this would come from your server)
-            const demoTracks = {
-                hudson: [
-                    { title: "September Sky", duration: "3:24" },
-                    { title: "Texas Moon", duration: "4:12" },
-                    { title: "Dessner Sessions Demo", duration: "2:58" }
-                ],
-                jack: [
-                    { title: "Midnight Production", duration: "3:45" },
-                    { title: "Indie Pop Demo", duration: "3:12" },
-                    { title: "Hudson Collab v2", duration: "4:03" }
-                ],
-                ruby: [
-                    { title: "Ethereal Dreams", duration: "3:36" },
-                    { title: "Untitled Demo", duration: "2:54" },
-                    { title: "Nashville Sessions", duration: "3:18" }
-                ],
-                kate: [
-                    { title: "Visual Sound", duration: "3:42" },
-                    { title: "TikTok Viral Demo", duration: "2:28" },
-                    { title: "Leon Production", duration: "3:55" }
-                ],
-                leon: [
-                    { title: "Genre Fluid", duration: "4:15" },
-                    { title: "Kate's Track v3", duration: "3:33" },
-                    { title: "Pop Landscape", duration: "3:21" }
-                ],
-                tom: [
-                    { title: "Raw Emotion", duration: "3:48" },
-                    { title: "400K Demo", duration: "3:15" },
-                    { title: "Jack Production", duration: "3:27" }
-                ],
-                conall: [
-                    { title: "Irish Roots", duration: "4:02" },
-                    { title: "Capitol Demo", duration: "3:39" },
-                    { title: "Folk Influence", duration: "3:51" }
-                ]
-            };
-            
-            const tracks = demoTracks[artistId] || [];
-            
-            if (tracks.length > 0) {
-                trackList.innerHTML = tracks.map((track, index) => `
-                    <div class="track" data-src="#" data-duration="${track.duration}" onclick="playTrack(${index})">
-                        <span class="track-number">${(index + 1).toString().padStart(2, '0')}</span>
-                        <span class="track-title">${track.title}</span>
-                        <span class="track-duration">${track.duration}</span>
-                        <div class="loading-spinner"></div>
-                    </div>
-                `).join('');
-            } else {
-                trackList.innerHTML = '<p style="text-align:center;opacity:0.5;">No tracks available yet</p>';
-            }
-        }
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
 
-        function playTrack(trackIndex) {
-            const tracks = document.querySelectorAll('#modal-track-list .track');
-            const track = tracks[trackIndex];
-            
-            if (!track) return;
-            
-            // Update active state
-            tracks.forEach(t => t.classList.remove('active'));
-            track.classList.add('active');
-            
-            // For demo purposes, just update UI
-            // In production, this would load and play actual audio files
-            updatePlayerUI(true);
-            
-            // Simulate playback progress
-            const duration = track.dataset.duration;
-            const [min, sec] = duration.split(':').map(Number);
-            const totalSeconds = min * 60 + sec;
-            
-            // Update time display
-            document.querySelector('.total-time').textContent = duration;
-            
-            // Demo: Show playback is working
-            let currentSeconds = 0;
-            if (updateInterval) clearInterval(updateInterval);
-            
-            updateInterval = setInterval(() => {
-                currentSeconds += 1;
-                if (currentSeconds > totalSeconds) {
-                    clearInterval(updateInterval);
-                    nextTrack();
-                    return;
-                }
-                
-                const percent = (currentSeconds / totalSeconds) * 100;
-                document.querySelector('.progress-fill').style.width = percent + '%';
-                
-                const currentMin = Math.floor(currentSeconds / 60);
-                const currentSec = currentSeconds % 60;
-                document.querySelector('.current-time').textContent = 
-                    `${currentMin}:${currentSec.toString().padStart(2, '0')}`;
-            }, 1000);
-        }
+// Modal Functionality for Artist Cards
+function openModal(artistId) {
+  document.getElementById('artist-modal').classList.add('active');
+  const modals = document.querySelectorAll('#artist-modal > .modal-content > div[id$="-modal"]');
+  modals.forEach(m => m.style.display = 'none');
+  const target = document.getElementById(artistId + '-modal');
+  if (target) target.style.display = 'block';
+}
 
-        function togglePlay() {
-            const playIcon = document.querySelector('.play-icon');
-            const pauseIcon = document.querySelector('.pause-icon');
-            
-            if (playIcon.style.display === 'none') {
-                // Pause
-                playIcon.style.display = 'block';
-                pauseIcon.style.display = 'none';
-                clearInterval(updateInterval);
-            } else {
-                // Play
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-                
-                // If no track selected, play first
-                const activeTrack = document.querySelector('#modal-track-list .track.active');
-                if (!activeTrack) {
-                    playTrack(0);
-                } else {
+function closeModal() {
+  document.getElementById('artist-modal').classList.remove('active');
+  const modals = document.querySelectorAll('#artist-modal > .modal-content > div[id$="-modal"]');
+  modals.forEach(m => m.style.display = 'none');
+}
 
-                    // Resume current track
-                    const tracks = document.querySelectorAll('#modal-track-list .track');
-                    const activeIndex = Array.from(tracks).findIndex(t => t.classList.contains('active'));
-                    if (activeIndex >= 0) {
-                        playTrack(activeIndex);
-                    }
-                }
-            }
-        }
+function initializeArtistCards() {
+  document.querySelectorAll('.artist-card').forEach(card => {
+    card.addEventListener('click', () => openModal(card.dataset.artist));
+  });
 
-        function previousTrack() {
-            const tracks = document.querySelectorAll('#modal-track-list .track');
-            const activeIndex = Array.from(tracks).findIndex(t => t.classList.contains('active'));
-            
-            if (activeIndex > 0) {
-                playTrack(activeIndex - 1);
-            }
-        }
+  const modal = document.getElementById('artist-modal');
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
 
-        function nextTrack() {
-            const tracks = document.querySelectorAll('#modal-track-list .track');
-            const activeIndex = Array.from(tracks).findIndex(t => t.classList.contains('active'));
-            
-            if (activeIndex < tracks.length - 1) {
-                playTrack(activeIndex + 1);
-            }
-        }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+}
 
-        function seekAudio(event, progressBar) {
-            // For demo purposes, just update the progress bar position
-            const rect = progressBar.getBoundingClientRect();
-            const percent = (event.clientX - rect.left) / rect.width;
-            
-            const progressFill = progressBar.querySelector('.progress-fill');
-            progressFill.style.width = (percent * 100) + '%';
-            
-            // Update time based on current track duration
-            const activeTrack = document.querySelector('#modal-track-list .track.active');
-            if (activeTrack) {
-                const duration = activeTrack.dataset.duration;
-                const [min, sec] = duration.split(':').map(Number);
-                const totalSeconds = min * 60 + sec;
-                const currentSeconds = Math.floor(totalSeconds * percent);
-                
-                const currentMin = Math.floor(currentSeconds / 60);
-                const currentSec = currentSeconds % 60;
-                document.querySelector('.current-time').textContent = 
-                    `${currentMin}:${currentSec.toString().padStart(2, '0')}`;
-            }
-        }
+// Synergy Lines
+function drawSynergyLines() {
+  const container = document.querySelector('.synergy-lines');
+  const nodes = document.querySelectorAll('.synergy-node');
+  if (window.innerWidth <= 768) return;
+  container.innerHTML = '';
+  const connections = [
+    [0, 1], [0, 2], [0, 3], [0, 4],
+    [1, 2], [1, 4], [1, 6], [5, 2],
+    [5, 3], [5, 6], [0, 5]
+  ];
+  connections.forEach(([from, to]) => {
+    const fromNode = nodes[from];
+    const toNode = nodes[to];
+    if (fromNode && toNode) {
+      const fromRect = fromNode.getBoundingClientRect();
+      const toRect = toNode.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+      const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+      const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+      const y2 = toRect.top + toRect.height / 2 - containerRect.top;
+      const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+      const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+      const line = document.createElement('div');
+      line.className = 'synergy-line';
+      line.style.width = `${length}px`;
+      line.style.left = `${x1}px`;
+      line.style.top = `${y1}px`;
+      line.style.transform = `rotate(${angle}deg)`;
+      container.appendChild(line);
+    }
+  });
+}
 
-        function updatePlayerUI(isPlaying) {
-            const playBtn = document.querySelector('.play-btn');
-            const playIcon = playBtn.querySelector('.play-icon');
-            const pauseIcon = playBtn.querySelector('.pause-icon');
-            
-            if (isPlaying) {
-                playIcon.style.display = 'none';
-                pauseIcon.style.display = 'block';
-            } else {
-                playIcon.style.display = 'block';
-                pauseIcon.style.display = 'none';
-            }
-        }
-        
-        // Draw synergy lines
-        function drawSynergyLines() {
-            const container = document.querySelector('.synergy-lines');
-            const nodes = document.querySelectorAll('.synergy-node');
-            
-            // Only draw lines on desktop
-            if (window.innerWidth <= 768) return;
-            
-            // Clear existing lines
-            container.innerHTML = '';
-            
-            // Define connections
-            const connections = [
-                [0, 1], // Jack to Hudson
-                [0, 2], // Jack to Ruby
-                [0, 3], // Jack to Kate
-                [0, 4], // Jack to Tom
-                [1, 2], // Hudson to Ruby
-                [1, 4], // Hudson to Tom
-                [1, 6], // Hudson to Conall
-                [5, 2], // Leon to Ruby
-                [5, 3], // Leon to Kate
-                [5, 6], // Leon to Conall
-                [0, 5], // Jack to Leon
-            ];
-            
-            connections.forEach(([from, to]) => {
-                const fromNode = nodes[from];
-                const toNode = nodes[to];
-                
-                if (fromNode && toNode) {
-                    const fromRect = fromNode.getBoundingClientRect();
-                    const toRect = toNode.getBoundingClientRect();
-                    const containerRect = container.getBoundingClientRect();
-                    
-                    const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
-                    const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
-                    const x2 = toRect.left + toRect.width / 2 - containerRect.left;
-                    const y2 = toRect.top + toRect.height / 2 - containerRect.top;
-                    
-                    const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-                    const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
-                    
-                    const line = document.createElement('div');
-                    line.className = 'synergy-line';
-                    line.style.width = `${length}px`;
-                    line.style.left = `${x1}px`;
-                    line.style.top = `${y1}px`;
-                    line.style.transform = `rotate(${angle}deg)`;
-                    
-                    container.appendChild(line);
-                }
-            });
-        }
+// Download PDF
+function downloadPDF() {
+  const originalTitle = document.title;
+  document.title = 'All My Friends Inc - Investment Deck 2025';
+  document.body.classList.add('printing');
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove('printing');
+    document.title = originalTitle;
+  }, 100);
+}
 
-        // Download as PDF function
-        function downloadPDF() {
-            // Browser print dialog allows saving as PDF
-            // For best quality:
-            // 1. Select "Save as PDF" as destination
-            // 2. Enable "Background graphics" option
-            // 3. Use "Letter" size and default margins
-            
-            // Store current title
-            const originalTitle = document.title;
-            
-            // Set filename for PDF
-            document.title = 'All My Friends Inc - Investment Deck 2025';
-            
-            // Add print-ready class to body
-            document.body.classList.add('printing');
-            
-            // Trigger print dialog (user can save as PDF)
-            window.print();
-            
-            // Remove print-ready class and restore title
-            setTimeout(() => {
-                document.body.classList.remove('printing');
-                document.title = originalTitle;
-            }, 100);
-            
-            // Note: In print dialog, select "Save as PDF" as the destination
-            // For best results, ensure "Background graphics" is checked
-        }
-        
-        // Touch gesture support for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-        
-        function handleGesture() {
-            if (touchEndX < touchStartX - 50) {
-                // Swiped left
-                nextTrack();
-            }
-            if (touchEndX > touchStartX + 50) {
-                // Swiped right
-                previousTrack();
-            }
-        }
+// Mobile Touch Gestures
+let touchStartX = 0;
+let touchEndX = 0;
+function handleGesture() {
+  // No-op since music player is removed
+}
 
-        // Initialize on DOM ready
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeArtistCards();
-            
-            // Draw synergy lines after a short delay to ensure positioning
-            setTimeout(drawSynergyLines, 100);
-            
-            // Redraw lines on window resize
-            window.addEventListener('resize', drawSynergyLines);
-            
-            // Add event listener to PDF download button
-            const pdfButton = document.getElementById('download-pdf');
-            if (pdfButton) {
-                pdfButton.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    downloadPDF();
-                });
-            }
-            
-            // Mobile touch gesture support
-            const modalContent = document.querySelector('.modal-content');
-            if (modalContent) {
-                modalContent.addEventListener('touchstart', e => {
-                    touchStartX = e.changedTouches[0].screenX;
-                });
-                
-                modalContent.addEventListener('touchend', e => {
-                    touchEndX = e.changedTouches[0].screenX;
-                    handleGesture();
-                });
-            }
-            
-            // Prevent pull-to-refresh on mobile
-            document.body.addEventListener('touchmove', (e) => {
-                if (e.touches.length > 1) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-        });
-    </script>
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  initializeArtistCards();
+  setTimeout(drawSynergyLines, 100);
+  window.addEventListener('resize', drawSynergyLines);
+  const pdfButton = document.getElementById('download-pdf');
+  if (pdfButton) {
+    pdfButton.addEventListener('click', e => {
+      e.preventDefault();
+      downloadPDF();
+    });
+  }
+  const modalContent = document.querySelector('.modal-content');
+  if (modalContent) {
+    modalContent.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+    modalContent.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleGesture(); });
+  }
+  document.body.addEventListener('touchmove', e => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+});
+</script>
+
 </body>
 </html>
