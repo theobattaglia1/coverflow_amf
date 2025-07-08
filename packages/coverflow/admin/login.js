@@ -11,12 +11,12 @@
       if (window.location.hostname.startsWith('admin.')) {
         // On admin subdomain, go to root
         setTimeout(() => {
-          window.location.href = '/';
+        window.location.href = '/';
         }, 1000);
       } else {
         // On main domain, go to admin directory
         setTimeout(() => {
-          window.location.href = '/admin/';
+        window.location.href = '/admin/';
         }, 1000);
       }
     } else {
@@ -120,13 +120,13 @@ document.getElementById('loginForm').addEventListener('submit', async (e) => {
       // On admin subdomain, go to root
       console.log('Login successful, redirecting to admin root in 1 second...');
       setTimeout(() => {
-        window.location.href = '/';
+      window.location.href = '/';
       }, 1000);
     } else {
       // On main domain, go to admin directory
       console.log('Login successful, redirecting to /admin/ in 1 second...');
       setTimeout(() => {
-        window.location.href = '/admin/';
+      window.location.href = '/admin/';
       }, 1000);
     }
     

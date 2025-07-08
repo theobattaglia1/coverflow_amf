@@ -1,1302 +1,665 @@
-// Fix navigation links based on subdomain
-document.addEventListener('DOMContentLoaded', () => {
-  const isAdminSubdomain = window.location.hostname.startsWith('admin.');
-  
-  // Fix covers link
-  const coversLink = document.querySelector('.nav-link-covers');
-  if (coversLink) {
-    coversLink.href = isAdminSubdomain ? '/' : '/admin/';
-  }
-  
-  // Fix audio link
-  const audioLink = document.querySelector('.nav-link-audio');
-  if (audioLink) {
-    audioLink.href = isAdminSubdomain ? 'artist-audio.html' : '/admin/artist-audio.html';
-  }
-});
+/**
+ * AMF ADMIN DASHBOARD — SWISS MODERNISM EDITION
+ * Professional, fluid interactions with editorial restraint
+ */
 
+// State management
 let covers = [];
-let assets = { folders: [], images: [] };
-let sortableInstance = null;
-let currentPath = '';
-let currentUser = null;
-
-// Batch operations
-let selectedCovers = new Set();
+let assets = {};
+let folders = [];
+let currentFolder = '';
+let hasChanges = false;
 let batchMode = false;
+let selectedCovers = new Set();
 
-// Create batch operations toolbar
-const batchToolbar = document.createElement('div');
-batchToolbar.className = 'batch-toolbar';
-batchToolbar.style.cssText = `
-  display: none;
-  position: fixed;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--ink);
-  color: var(--bg);
-  padding: var(--space-md) var(--space-lg);
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: var(--space-md);
-`;
+// Initialize
+document.addEventListener('DOMContentLoaded', init);
 
-batchToolbar.innerHTML = `
-  <span class="batch-count">0 selected</span>
-  <button class="btn btn-sm" onclick="deleteSelectedCovers()">DELETE SELECTED</button>
-  <button class="btn btn-sm" onclick="exportSelectedCovers()">EXPORT SELECTED</button>
-  <button class="btn btn-sm btn-secondary" onclick="cancelBatchMode()">CANCEL</button>
-`;
-
-document.body.appendChild(batchToolbar);
-
-// Add batch mode toggle button
-const batchButton = document.createElement('button');
-batchButton.className = 'btn btn-secondary';
-batchButton.textContent = 'BATCH MODE';
-batchButton.onclick = toggleBatchMode;
-batchButton.style.marginLeft = 'var(--space-md)';
-
-if (headerActions) {
-  headerActions.appendChild(batchButton);
+async function init() {
+  // Don't check auth here - server already handles it
+  // await checkAuth();
+  
+  // Just load the user info without redirecting
+  try {
+    const res = await fetch('/api/me');
+    const data = await res.json();
+    
+    if (data.user) {
+      document.getElementById('username').textContent = data.user.username.toUpperCase();
+      document.getElementById('userRole').textContent = data.user.role.toUpperCase();
+      
+      if (data.user.role === 'admin') {
+        document.getElementById('usersSection').style.display = 'block';
+        loadUsers();
+      }
+    }
+  } catch (err) {
+    console.error('Failed to load user info:', err);
+  }
+  
+  await loadCovers();
+  await loadAssets();
+  setupEventListeners();
+  setupDragAndDrop();
+  setupKeyboardShortcuts();
 }
 
+// Load covers with smooth animation
+async function loadCovers() {
+  showLoading();
+  
+  try {
+    const res = await fetch('/data/covers.json');
+    covers = await res.json();
+    renderCovers();
+  } catch (err) {
+    showToast('FAILED TO LOAD COVERS', 5000);
+    console.error(err);
+  } finally {
+    hideLoading();
+  }
+}
+
+// Render covers with editorial layout
+function renderCovers(searchTerm = '') {
+  const container = document.getElementById('coversContainer');
+  container.innerHTML = '';
+  
+  // Filter covers based on search
+  const filteredCovers = covers.filter(cover => {
+    if (!searchTerm) return true;
+    const search = searchTerm.toLowerCase();
+    return (
+      cover.albumTitle?.toLowerCase().includes(search) ||
+      cover.coverLabel?.toLowerCase().includes(search) ||
+      cover.category?.some(cat => cat.toLowerCase().includes(search))
+    );
+  });
+  
+  // Create cover elements with staggered animation
+  filteredCovers.forEach((cover, index) => {
+    const coverEl = createCoverElement(cover, index);
+    container.appendChild(coverEl);
+    
+    // Staggered fade-in animation
+    setTimeout(() => {
+      coverEl.style.opacity = '1';
+      coverEl.style.transform = coverEl.style.transform.replace('translateY(20px)', 'translateY(0)');
+    }, index * 50);
+  });
+  
+  // Initialize Sortable with smooth animations
+  if (!searchTerm) {
+    new Sortable(container, {
+      animation: 200,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      onEnd: (evt) => {
+        // Update cover order
+        const newCovers = [...covers];
+        const [movedCover] = newCovers.splice(evt.oldIndex, 1);
+        newCovers.splice(evt.newIndex, 0, movedCover);
+        covers = newCovers;
+        
+        // Update indices
+        covers.forEach((cover, i) => cover.index = i);
+        hasChanges = true;
+        updateSaveButton();
+      }
+    });
+  }
+}
+
+// Create cover element with professional styling
+function createCoverElement(cover, index) {
+  const div = document.createElement('div');
+  div.className = 'cover-item';
+  div.dataset.id = cover.id;
+  div.style.opacity = '0';
+  div.style.transform = `translateY(20px)`;
+  div.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+  
+  // Add subtle rotation for visual interest
+  const rotation = (index % 3 === 0) ? -0.5 : (index % 3 === 1) ? 0.5 : 0;
+  div.style.transform += ` rotate(${rotation}deg)`;
+  
+  div.innerHTML = `
+    <img src="${cover.frontImage || '/placeholder.jpg'}" 
+         alt="${cover.albumTitle || 'Untitled'}" 
+         class="cover-image"
+         loading="lazy">
+    <div class="cover-index">${index + 1}</div>
+    <div class="cover-meta">
+      <div style="font-weight: 700;">${cover.albumTitle || 'UNTITLED'}</div>
+      <div style="opacity: 0.8;">${cover.coverLabel || '—'}</div>
+    </div>
+  `;
+  
+  // Click handler
+  div.addEventListener('click', (e) => {
+    if (batchMode) {
+      toggleCoverSelection(cover.id);
+    } else {
+      editCover(cover);
+    }
+  });
+  
+  return div;
+}
+
+// Edit cover with modal
+function editCover(cover) {
+  const modal = document.getElementById('coverModal');
+  const modalBody = document.getElementById('modalBody');
+  
+  modalBody.innerHTML = `
+    <form id="editCoverForm" style="display: grid; gap: var(--space-lg);">
+      <div class="form-group">
+        <label class="form-label">ALBUM TITLE</label>
+        <input type="text" class="form-input" name="albumTitle" value="${cover.albumTitle || ''}" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">ARTIST NAME</label>
+        <input type="text" class="form-input" name="coverLabel" value="${cover.coverLabel || ''}" required>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">CATEGORIES</label>
+        <input type="text" class="form-input" name="category" value="${(cover.category || []).join(', ')}" 
+               placeholder="ARTISTS, SONGWRITERS, PRODUCERS">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">SPOTIFY EMBED URL</label>
+        <input type="url" class="form-input" name="spotifyEmbed" value="${cover.spotifyEmbed || ''}"
+               placeholder="https://open.spotify.com/track/...">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label">CONTACT EMAIL</label>
+        <input type="email" class="form-input" name="contactEmail" value="${cover.contactEmail || ''}"
+               placeholder="artist@example.com">
+      </div>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
+        <div class="form-group">
+          <label class="form-label">FRONT IMAGE</label>
+          <div style="position: relative;">
+            <img src="${cover.frontImage || '/placeholder.jpg'}" 
+                 style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <button type="button" class="btn" onclick="selectImage('frontImage', ${cover.id})" style="width: 100%;">
+              CHANGE IMAGE
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label class="form-label">BACK IMAGE</label>
+          <div style="position: relative;">
+            <img src="${cover.backImage || '/placeholder.jpg'}" 
+                 style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <button type="button" class="btn" onclick="selectImage('backImage', ${cover.id})" style="width: 100%;">
+              CHANGE IMAGE
+            </button>
+          </div>
+        </div>
+      </div>
+      
+      <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
+        <button type="button" class="btn" onclick="closeModal()">CANCEL</button>
+        <button type="submit" class="btn btn-primary">SAVE CHANGES</button>
+      </div>
+    </form>
+  `;
+  
+  // Form submit handler
+  document.getElementById('editCoverForm').onsubmit = async (e) => {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    
+    // Update cover data
+    cover.albumTitle = formData.get('albumTitle');
+    cover.coverLabel = formData.get('coverLabel');
+    cover.category = formData.get('category').split(',').map(c => c.trim()).filter(Boolean);
+    cover.spotifyEmbed = formData.get('spotifyEmbed');
+    cover.contactEmail = formData.get('contactEmail');
+    
+    hasChanges = true;
+    updateSaveButton();
+    renderCovers();
+    closeModal();
+    showToast('COVER UPDATED');
+  };
+  
+  openModal();
+}
+
+// Batch mode functionality
 function toggleBatchMode() {
   batchMode = !batchMode;
   selectedCovers.clear();
   
-  if (batchMode) {
-    batchButton.classList.add('active');
-    batchButton.textContent = 'EXIT BATCH MODE';
-    batchToolbar.style.display = 'flex';
-    document.getElementById('coversGrid').classList.add('batch-mode');
-    
-    // Add checkboxes to covers
-    document.querySelectorAll('.cover-card').forEach(card => {
-      if (!card.querySelector('.batch-checkbox')) {
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.className = 'batch-checkbox';
-        checkbox.style.cssText = `
-          position: absolute;
-          top: var(--space-sm);
-          left: var(--space-sm);
-          width: 20px;
-          height: 20px;
-          cursor: pointer;
-          z-index: 10;
-        `;
-        checkbox.onchange = (e) => {
-          const coverId = card.dataset.coverId;
-          if (e.target.checked) {
-            selectedCovers.add(coverId);
-            card.classList.add('selected');
-          } else {
-            selectedCovers.delete(coverId);
-            card.classList.remove('selected');
-          }
-          updateBatchCount();
-        };
-        card.appendChild(checkbox);
-      }
-    });
-  } else {
-    cancelBatchMode();
-  }
-}
-
-function cancelBatchMode() {
-  batchMode = false;
-  selectedCovers.clear();
-  batchButton.classList.remove('active');
-  batchButton.textContent = 'BATCH MODE';
-  batchToolbar.style.display = 'none';
-  document.getElementById('coversGrid').classList.remove('batch-mode');
+  document.body.classList.toggle('batch-active', batchMode);
+  document.getElementById('batchModeBtn').textContent = batchMode ? 'EXIT BATCH' : 'BATCH MODE';
+  document.getElementById('exportBtn').style.display = batchMode ? 'block' : 'none';
+  document.getElementById('deleteBtn').style.display = batchMode ? 'block' : 'none';
   
-  // Remove checkboxes
-  document.querySelectorAll('.batch-checkbox').forEach(cb => cb.remove());
-  document.querySelectorAll('.cover-card.selected').forEach(card => {
-    card.classList.remove('selected');
-  });
-}
-
-function updateBatchCount() {
-  const count = selectedCovers.size;
-  document.querySelector('.batch-count').textContent = `${count} selected`;
-}
-
-async function deleteSelectedCovers() {
-  if (selectedCovers.size === 0) return;
-  
-  if (!confirm(`Delete ${selectedCovers.size} covers? This cannot be undone.`)) return;
-  
-  showLoading();
-  
-  try {
-    // Delete each selected cover
-    for (const coverId of selectedCovers) {
-      const coverIndex = covers.findIndex(c => c.id === coverId);
-      if (coverIndex !== -1) {
-        covers.splice(coverIndex, 1);
-      }
-    }
-    
-    // Save updated covers
-    await saveCovers();
-    
-    showToast(`Deleted ${selectedCovers.size} covers`);
-    cancelBatchMode();
+  if (!batchMode) {
     renderCovers();
-  } catch (err) {
-    showToast('Failed to delete covers', 'error');
-  } finally {
-    hideLoading();
   }
 }
 
-function exportSelectedCovers() {
-  if (selectedCovers.size === 0) return;
-  
-  const selectedData = covers.filter(c => selectedCovers.has(c.id));
-  const dataStr = JSON.stringify(selectedData, null, 2);
-  const dataBlob = new Blob([dataStr], { type: 'application/json' });
-  
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(dataBlob);
-  link.download = `covers-export-${new Date().toISOString().split('T')[0]}.json`;
-  link.click();
-  
-  showToast(`Exported ${selectedCovers.size} covers`);
-}
-
-// Helper to check if we're on admin subdomain
-function isAdminSubdomain() {
-  return window.location.hostname.startsWith('admin.');
-}
-
-// Helper to get the correct login URL
-function getLoginUrl() {
-  return isAdminSubdomain() ? '/' : '/admin/login.html';
-}
-
-// Toast notifications with configurable duration
-function showToast(message, type = 'success', duration = 5000) {
-  const toast = document.getElementById('toast');
-  toast.textContent = message;
-  toast.className = `toast show ${type}`;
-  
-  // Clear any existing timeout
-  if (window.toastTimeout) {
-    clearTimeout(window.toastTimeout);
-  }
-  
-  // Auto-hide after duration
-  window.toastTimeout = setTimeout(() => {
-    toast.classList.remove('show');
-  }, duration);
-  
-  // Allow click to dismiss
-  toast.onclick = () => {
-    toast.classList.remove('show');
-    clearTimeout(window.toastTimeout);
-  };
-}
-
-// Loading overlay
-function showLoading() {
-  document.getElementById('loadingOverlay').classList.add('show');
-}
-
-function hideLoading() {
-  document.getElementById('loadingOverlay').classList.remove('show');
-}
-
-// Check authentication
-async function checkAuth() {
-  try {
-    const res = await fetch('/api/me');
-    if (!res.ok) {
-      window.location.href = getLoginUrl();
-      return;
-    }
-    const data = await res.json();
-    currentUser = data.user;
-    document.getElementById('username').textContent = currentUser.username;
-    document.getElementById('userRole').textContent = currentUser.role;
-    
-    // Show/hide admin features
-    if (currentUser.role !== 'admin') {
-      const usersLink = document.querySelector('[onclick="showUsersSection()"]');
-      const liveBtn = document.querySelector('.btn-live');
-      if (usersLink) usersLink.style.display = 'none';
-      if (liveBtn) liveBtn.style.display = 'none';
-    }
-  } catch (err) {
-    window.location.href = getLoginUrl();
-  }
-}
-
-// Logout
-async function logout() {
-  try {
-    await fetch('/api/logout', { method: 'POST' });
-    window.location.href = getLoginUrl();
-  } catch (err) {
-    showToast('Logout failed', 'error');
-  }
-}
-
-// Test GitHub connection
-async function testGitHub() {
-  try {
-    showLoading();
-    const res = await fetch('/test-github', { method: 'POST' });
-    const result = await res.json();
-    
-    if (result.success) {
-      showToast('GitHub connection works! Check your repo for a test file.');
-    } else {
-      showToast('GitHub connection failed: ' + result.error, 'error');
-    }
-  } catch (err) {
-    showToast('GitHub test failed: ' + err.message, 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Force backup to GitHub
-async function forceBackupToGitHub() {
-  if (!confirm('Force backup all data to GitHub? This will overwrite GitHub with current data.')) {
-    return;
-  }
-  
-  showLoading();
-  try {
-    const res = await fetch('/force-github-backup', { method: 'POST' });
-    const result = await res.json();
-    
-    if (result.success) {
-      showToast('✅ Backup complete! Check GitHub for commits.');
-    } else {
-      showToast('❌ Backup failed: ' + result.error, 'error');
-    }
-  } catch (err) {
-    showToast('❌ Backup error: ' + err.message, 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Load covers
-async function loadCovers() {
-  try {
-    const res = await fetch('/data/covers.json');
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    covers = await res.json();
-    
-    // Filter out empty covers
-    covers = covers.filter(c => c.id && c.frontImage);
-    
-    renderCovers();
-  } catch (err) {
-    console.error('Failed to load covers:', err);
-    showToast('Failed to load covers', 'error');
-  }
-}
-
-// Load assets with new hierarchical structure
-async function loadAssets() {
-  try {
-    const res = await fetch('/data/assets.json');
-    if (!res.ok) {
-      // Initialize with empty structure
-      assets = { folders: [], images: [] };
-      return;
-    }
-    const data = await res.json();
-    
-    // Handle migration from flat structure
-    if (Array.isArray(data.images) && !data.folders) {
-      assets = {
-        folders: [],
-        images: data.images || []
-      };
-    } else {
-      assets = data;
-    }
-    
-    renderFolderTree();
-    renderAssets();
-  } catch (err) {
-    console.error('Failed to load assets:', err);
-    assets = { folders: [], images: [] };
-  }
-}
-
-// Layout params
-function updateLayoutParameters() {
-  const vw = window.innerWidth;
-
-  if (isMobile) {
-    // on mobile, use larger spacing to accommodate bigger/flipped cards
-    coverSpacing   = Math.max(180, vw * 0.30);
-    anglePerOffset = 50;
-    minScale       = 0.45;
+function toggleCoverSelection(coverId) {
+  if (selectedCovers.has(coverId)) {
+    selectedCovers.delete(coverId);
   } else {
-    // original desktop spacing with better minimum
-    coverSpacing   = Math.max(150, vw * 0.18); // Increased minimum from 120 to 150
-    anglePerOffset = vw < 600 ? 50 : 65;
-    minScale       = vw < 600 ? 0.45 : 0.5;
-  }
-}
-
-// Render covers
-function renderCovers() {
-  const container = document.getElementById('coversContainer');
-  
-  if (covers.length === 0) {
-    container.innerHTML = '<p style="color: var(--grey); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">No covers yet. Drag an image below to add one.</p>';
-    return;
+    selectedCovers.add(coverId);
   }
   
-  container.innerHTML = covers.map((cover, index) => `
-    <div class="cover-card" data-id="${cover.id}">
-      <span class="index-badge">${(index + 1).toString().padStart(2, '0')}</span>
-      <img src="${cover.frontImage}" alt="${cover.albumTitle || 'Untitled'}" 
-           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'200\\'%3E%3Crect fill=\\'%23333\\' width=\\'200\\' height=\\'200\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\' font-family=\\'monospace\\' font-size=\\'12\\'%3ENO IMAGE%3C/text%3E%3C/svg%3E'">
-      <button class="cover-card-edit" onclick="editCover('${cover.id}')">EDIT</button>
-      <div class="cover-card-info">
-        <div class="cover-card-title">${cover.albumTitle || "UNTITLED"}</div>
-        <div class="cover-card-label">${cover.coverLabel || "NO LABEL"}</div>
-      </div>
-    </div>
-  `).join("");
-
-  // Initialize or reinitialize Sortable
-  if (sortableInstance) {
-    sortableInstance.destroy();
-  }
+  const coverEl = document.querySelector(`[data-id="${coverId}"]`);
+  coverEl.classList.toggle('selected', selectedCovers.has(coverId));
   
-  sortableInstance = new Sortable(container, {
-    animation: 120,
-    easing: "cubic-bezier(.16,1,.3,1)",
-    ghostClass: 'sortable-ghost',
-    onEnd: (evt) => {
-      // Update the covers array to match new order
-      const orderedIds = [...container.querySelectorAll('.cover-card')].map(c => c.dataset.id);
-      const newCovers = [];
-      
-      orderedIds.forEach(id => {
-        const cover = covers.find(c => String(c.id) === String(id));
-        if (cover) newCovers.push(cover);
-      });
-      
-      covers = newCovers;
-      console.log("🔄 Covers reordered");
-    }
-  });
+  // Update button states
+  const hasSelection = selectedCovers.size > 0;
+  document.getElementById('exportBtn').disabled = !hasSelection;
+  document.getElementById('deleteBtn').disabled = !hasSelection;
 }
 
-// Render folder tree
-function renderFolderTree() {
-  const container = document.getElementById('folderTree');
-  
-  function renderFolder(folder, level = 0) {
-    const indent = level * 20;
-    const hasChildren = folder.children && folder.children.filter(c => c.type === 'folder').length > 0;
-    
-    return `
-      <div class="folder-item" draggable="true" data-path="${folder.path || folder.name}" style="padding-left: ${indent}px">
-        <span>${hasChildren ? '▸' : '·'}</span>
-        <span onclick="navigateToFolder('${folder.path || folder.name}')" style="text-transform: uppercase;">${folder.name}</span>
-        <div class="folder-actions">
-          <button onclick="renameFolder('${folder.path || folder.name}')" title="Rename">✎</button>
-          <button onclick="deleteFolder('${folder.path || folder.name}')" title="Delete">✕</button>
-        </div>
-      </div>
-      ${hasChildren ? folder.children.filter(c => c.type === 'folder').map(child => 
-        renderFolder({...child, path: (folder.path || folder.name) + '/' + child.name}, level + 1)
-      ).join('') : ''}
-    `;
-  }
-  
-  container.innerHTML = `
-    <div class="folder-item ${currentPath === '' ? 'active' : ''}" data-path="">
-      <span>▪</span>
-      <span onclick="navigateToFolder('')" style="text-transform: uppercase;">ALL IMAGES</span>
-    </div>
-    ${assets.folders.map(folder => renderFolder(folder)).join('')}
-  `;
-  
-  // Setup drag and drop for folders
-  setupFolderDragAndDrop();
-}
-
-// Navigate to folder
-function navigateToFolder(path) {
-  currentPath = path;
-  
-  // Update active folder
-  document.querySelectorAll('.folder-item').forEach(item => {
-    item.classList.toggle('active', item.dataset.path === path);
-  });
-  
-  // Update breadcrumb
-  updateBreadcrumb();
-  
-  // Render assets in current folder
-  renderAssets();
-}
-
-// Update breadcrumb
-function updateBreadcrumb() {
-  const breadcrumb = document.getElementById('breadcrumb');
-  const parts = currentPath.split('/').filter(Boolean);
-  
-  breadcrumb.innerHTML = `
-    <span onclick="navigateToFolder('')">ROOT</span>
-    ${parts.map((part, index) => {
-      const path = parts.slice(0, index + 1).join('/');
-      return `<span onclick="navigateToFolder('${path}')">${part.toUpperCase()}</span>`;
-    }).join('')}
-  `;
-}
-
-// Get items in current folder
-function getCurrentFolderItems() {
-  if (currentPath === '') {
-    return {
-      folders: assets.folders,
-      images: assets.images.filter(img => !img.folder || img.folder === '')
-    };
-  }
-  
-  // Navigate to current folder
-  const pathParts = currentPath.split('/').filter(Boolean);
-  let current = assets;
-  
-  for (const part of pathParts) {
-    const folder = (current.folders || current.children || []).find(f => 
-      (f.type === 'folder' || !f.type) && f.name === part
-    );
-    if (!folder) return { folders: [], images: [] };
-    current = folder;
-  }
-  
-  return {
-    folders: (current.children || []).filter(c => c.type === 'folder'),
-    images: (current.children || []).filter(c => c.type === 'image')
-  };
-}
-
-// Render assets in current folder
-function renderAssets() {
-  const container = document.getElementById('assetsContainer');
-  const { folders, images } = getCurrentFolderItems();
-  
-  if (folders.length === 0 && images.length === 0) {
-    container.innerHTML = '<p style="color: var(--grey); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">EMPTY FOLDER</p>';
-    return;
-  }
-  
-  container.innerHTML = [
-    // Render subfolders
-    ...folders.map(folder => `
-      <div class="asset-item folder-item" draggable="true" data-type="folder" data-name="${folder.name}">
-        <div style="font-size: 48px; margin-bottom: var(--space-md); opacity: 0.8;">◐</div>
-        <div style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${folder.name}</div>
-        <button onclick="navigateToFolder('${currentPath ? currentPath + '/' : ''}${folder.name}')">OPEN</button>
-      </div>
-    `),
-    // Render images
-    ...images.map((image, index) => `
-      <div class="asset-item" draggable="true" data-type="image" data-index="${index}">
-        <img src="${image.url}" alt="${image.name || 'Asset'}" 
-             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'100\\'%3E%3Crect fill=\\'%23333\\' width=\\'200\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\' font-size=\\'10\\' font-family=\\'monospace\\'%3EBROKEN%3C/text%3E%3C/svg%3E'">
-        <input type="text" value="${image.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${image.url}', this.value)">
-        <div class="url-display" onclick="copyToClipboard('${image.url}')" title="CLICK TO COPY">
-          ${image.url}
-        </div>
-        <button onclick="deleteAsset('${image.url}')">DELETE</button>
-      </div>
-    `)
-  ].join('');
-  
-  // Setup drag and drop for assets
-  setupAssetDragAndDrop();
-}
-
-// Create new folder
-async function createNewFolder() {
-  const name = prompt('Enter folder name:');
-  if (!name) return;
-  
-  showLoading();
-  try {
-    const res = await fetch('/api/folder', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: currentPath, name })
-    });
-    
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error);
-    }
-    
-    showToast('Folder created successfully');
-    await loadAssets();
-  } catch (err) {
-    showToast(err.message || 'Failed to create folder', 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Rename folder
-async function renameFolder(path) {
-  const oldName = path.split('/').pop();
-  const newName = prompt('Enter new name:', oldName);
-  if (!newName || newName === oldName) return;
-  
-  showLoading();
-  try {
-    const res = await fetch('/api/folder/rename', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path, newName })
-    });
-    
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error);
-    }
-    
-    showToast('Folder renamed successfully');
-    await loadAssets();
-  } catch (err) {
-    showToast(err.message || 'Failed to rename folder', 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Delete folder
-async function deleteFolder(path) {
-  if (!confirm(`Delete folder "${path.split('/').pop()}" and all its contents?`)) return;
-  
-  showLoading();
-  try {
-    const res = await fetch('/api/folder', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path })
-    });
-    
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error);
-    }
-    
-    showToast('Folder deleted successfully');
-    if (currentPath.startsWith(path)) {
-      navigateToFolder('');
-    }
-    await loadAssets();
-  } catch (err) {
-    showToast(err.message || 'Failed to delete folder', 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-// Update asset name
-function updateAssetName(url, name) {
-  // Find and update the asset
-  function updateInStructure(items) {
-    for (let item of items) {
-      if (item.type === 'image' && item.url === url) {
-        item.name = name;
-        return true;
-      }
-      if (item.children) {
-        if (updateInStructure(item.children)) return true;
-      }
-    }
-    return false;
-  }
-  
-  // Check root images
-  const rootImage = assets.images.find(img => img.url === url);
-  if (rootImage) {
-    rootImage.name = name;
-  } else {
-    // Check in folders
-    updateInStructure(assets.folders);
-  }
-  
-  saveAssets();
-}
-
-// Delete asset
-async function deleteAsset(url) {
-  if (!confirm('Delete this asset?')) return;
-  
-  // Remove from structure
-  function removeFromStructure(items) {
-    for (let i = 0; i < items.length; i++) {
-      if (items[i].type === 'image' && items[i].url === url) {
-        items.splice(i, 1);
-        return true;
-      }
-      if (items[i].children) {
-        if (removeFromStructure(items[i].children)) return true;
-      }
-    }
-    return false;
-  }
-  
-  // Check root images
-  const rootIndex = assets.images.findIndex(img => img.url === url);
-  if (rootIndex !== -1) {
-    assets.images.splice(rootIndex, 1);
-  } else {
-    // Check in folders
-    assets.folders.forEach(folder => {
-      if (folder.children) {
-        removeFromStructure(folder.children);
-      }
-    });
-  }
-  
-  await saveAssets();
-  renderAssets();
-}
-
-// Copy to clipboard
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Copied to clipboard!');
-  });
-}
-
-// Save assets
-async function saveAssets() {
-  try {
-    const res = await fetch('/save-assets', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(assets)
-    });
-
-    if (!res.ok) {
-      throw new Error(`Server error ${res.status}`);
-    }
-
-    console.log("✅ Assets saved");
-  } catch (err) {
-    console.error("❌ Error saving assets:", err);
-    showToast('Failed to save assets', 'error');
-  }
-}
-
-// Setup folder drag and drop
-function setupFolderDragAndDrop() {
-  const folderItems = document.querySelectorAll('.folder-item[draggable="true"]');
-  
-  folderItems.forEach(item => {
-    item.addEventListener('dragstart', (e) => {
-      e.dataTransfer.effectAllowed = 'move';
-      e.dataTransfer.setData('type', 'folder');
-      e.dataTransfer.setData('path', item.dataset.path);
-      item.classList.add('dragging');
-    });
-    
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-    });
-    
-    item.addEventListener('dragover', (e) => {
-      e.preventDefault();
-      e.dataTransfer.dropEffect = 'move';
-      item.classList.add('drag-over');
-    });
-    
-    item.addEventListener('dragleave', () => {
-      item.classList.remove('drag-over');
-    });
-    
-    item.addEventListener('drop', async (e) => {
-      e.preventDefault();
-      item.classList.remove('drag-over');
-      
-      const type = e.dataTransfer.getData('type');
-      const targetPath = item.dataset.path;
-      
-      if (type === 'image') {
-        // Moving image to folder
-        const imageUrl = e.dataTransfer.getData('url');
-        await moveImageToFolder(imageUrl, targetPath);
-      }
-    });
-  });
-}
-
-// Setup asset drag and drop
-function setupAssetDragAndDrop() {
-  const assetItems = document.querySelectorAll('.asset-item[draggable="true"]');
-  
-  assetItems.forEach(item => {
-    item.addEventListener('dragstart', (e) => {
-      e.dataTransfer.effectAllowed = 'move';
-      const type = item.dataset.type;
-      e.dataTransfer.setData('type', type);
-      
-      if (type === 'image') {
-        const img = item.querySelector('img');
-        e.dataTransfer.setData('url', img.src);
-      } else if (type === 'folder') {
-        e.dataTransfer.setData('folderName', item.dataset.name);
-      }
-      
-      item.classList.add('dragging');
-    });
-    
-    item.addEventListener('dragend', () => {
-      item.classList.remove('dragging');
-    });
-  });
-}
-
-// Move image to folder
-async function moveImageToFolder(imageUrl, targetPath) {
-  // Find the image
-  let image = null;
-  let sourceLocation = null;
-  
-  // Check root
-  const rootIndex = assets.images.findIndex(img => img.url === imageUrl);
-  if (rootIndex !== -1) {
-    image = assets.images[rootIndex];
-    sourceLocation = { type: 'root', index: rootIndex };
-  } else {
-    // Search in folders
-    function findInFolders(items, path = '') {
-      for (let i = 0; i < items.length; i++) {
-        if (items[i].type === 'image' && items[i].url === imageUrl) {
-          return { image: items[i], location: { type: 'folder', path, index: i } };
-        }
-        if (items[i].children) {
-          const found = findInFolders(items[i].children, path + '/' + items[i].name);
-          if (found) return found;
-        }
-      }
-      return null;
-    }
-    
-    assets.folders.forEach(folder => {
-      if (!image && folder.children) {
-        const found = findInFolders(folder.children, folder.name);
-        if (found) {
-          image = found.image;
-          sourceLocation = found.location;
-        }
-      }
-    });
-  }
-  
-  if (!image) return;
-  
-  // Remove from source
-  if (sourceLocation.type === 'root') {
-    assets.images.splice(sourceLocation.index, 1);
-  }
-  
-  // Add to target
-  if (targetPath === '') {
-    // Moving to root
-    assets.images.push(image);
-  } else {
-    // Navigate to target folder and add
-    const pathParts = targetPath.split('/').filter(Boolean);
-    let target = assets;
-    
-    for (const part of pathParts) {
-      let folder = (target.folders || target.children || []).find(f => 
-        (f.type === 'folder' || !f.type) && f.name === part
-      );
-      if (!folder) {
-        folder = { name: part, type: 'folder', children: [] };
-        if (!target.folders) target.folders = [];
-        target.folders.push(folder);
-      }
-      target = folder;
-    }
-    
-    if (!target.children) target.children = [];
-    target.children.push({ ...image, type: 'image' });
-  }
-  
-  await saveAssets();
-  renderAssets();
-}
-
-// Edit cover
-function editCover(id) {
-  // Use subdomain-aware URL
-  const editUrl = isAdminSubdomain() ? `/admin.html?id=${id}` : `/admin/admin.html?id=${id}`;
-  window.location.href = editUrl;
-}
-
-// Save changes
+// Save changes with visual feedback
 async function saveChanges() {
-  if (currentUser.role === 'viewer') {
-    showToast('You do not have permission to save changes', 'error');
+  if (!hasChanges) {
+    showToast('NO CHANGES TO SAVE');
     return;
   }
   
   showLoading();
+  
   try {
     const res = await fetch('/save-covers', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(covers)
     });
-
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.details || `Server error ${res.status}`);
+    
+    if (res.ok) {
+      hasChanges = false;
+      updateSaveButton();
+      showToast('CHANGES SAVED SUCCESSFULLY');
+    } else {
+      throw new Error('Save failed');
     }
-
-    showToast('Covers saved successfully!');
   } catch (err) {
-    console.error("❌ Error saving covers:", err);
-    showToast(`Failed to save: ${err.message}`, 'error');
+    showToast('FAILED TO SAVE CHANGES', 5000);
+    console.error(err);
   } finally {
     hideLoading();
   }
 }
 
-// Push live
+// Update save button state
+function updateSaveButton() {
+  const saveBtn = document.querySelector('[onclick="saveChanges()"]');
+  if (hasChanges) {
+    saveBtn.classList.add('btn-primary');
+    saveBtn.textContent = 'SAVE CHANGES *';
+  } else {
+    saveBtn.classList.remove('btn-primary');
+    saveBtn.textContent = 'SAVE CHANGES';
+  }
+}
+
+// Push live with confirmation
 async function pushLive() {
-  if (currentUser.role !== 'admin') {
-    showToast('Only admins can push live', 'error');
-    return;
-  }
-  
-  if (!confirm('Push all changes live? This will update the public site.')) {
-    return;
-  }
+  if (!confirm('PUSH ALL CHANGES TO LIVE SITE?')) return;
   
   showLoading();
+  
   try {
     const res = await fetch('/push-live', { method: 'POST' });
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.details || `Server error ${res.status}`);
-    }
     
-    showToast('Changes are now live!');
+    if (res.ok) {
+      showToast('SUCCESSFULLY PUSHED TO LIVE');
+    } else {
+      throw new Error('Push failed');
+    }
   } catch (err) {
-    console.error("❌ Error pushing live:", err);
-    showToast(`Failed to push live: ${err.message}`, 'error');
+    showToast('FAILED TO PUSH LIVE', 5000);
+    console.error(err);
   } finally {
     hideLoading();
   }
 }
 
-// Setup drag and drop for covers
-function setupCoverDragAndDrop() {
-  const dropzone = document.getElementById("coverDropzone");
-  
-  // Prevent default drag behaviors
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, preventDefaults, false);
-    document.body.addEventListener(eventName, preventDefaults, false);
-  });
+// Asset management
+async function loadAssets() {
+  try {
+    const res = await fetch('/data/assets.json');
+    const data = await res.json();
+    assets = data.assets || {};
+    folders = Object.keys(assets);
+    renderFolders();
+    renderAssets();
+  } catch (err) {
+    console.error('Failed to load assets:', err);
+  }
+}
 
+function renderFolders() {
+  const folderTree = document.getElementById('folderTree');
+  folderTree.innerHTML = '';
+  
+  // Root folder
+  const rootItem = document.createElement('li');
+  rootItem.className = 'folder-item' + (currentFolder === '' ? ' active' : '');
+  rootItem.textContent = 'ROOT';
+  rootItem.onclick = () => selectFolder('');
+  folderTree.appendChild(rootItem);
+  
+  // Other folders
+  folders.forEach(folder => {
+    const li = document.createElement('li');
+    li.className = 'folder-item' + (currentFolder === folder ? ' active' : '');
+    li.textContent = folder.toUpperCase();
+    li.onclick = () => selectFolder(folder);
+    folderTree.appendChild(li);
+  });
+}
+
+function selectFolder(folder) {
+  currentFolder = folder;
+  renderFolders();
+  renderAssets();
+}
+
+function renderAssets() {
+  const container = document.getElementById('assetsContainer');
+  container.innerHTML = '';
+  
+  const folderAssets = currentFolder ? (assets[currentFolder] || []) : 
+    Object.values(assets).flat();
+  
+  folderAssets.forEach(asset => {
+    const div = document.createElement('div');
+    div.className = 'asset-item';
+    div.innerHTML = `
+      <img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy">
+    `;
+    
+    div.onclick = () => {
+      navigator.clipboard.writeText(asset.url);
+      showToast('URL COPIED TO CLIPBOARD');
+    };
+    
+    container.appendChild(div);
+  });
+}
+
+// Drag and drop functionality
+function setupDragAndDrop() {
+  // Cover dropzone
+  const coverDropzone = document.getElementById('coverDropzone');
+  
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    coverDropzone.addEventListener(eventName, preventDefaults, false);
+  });
+  
   function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
   }
-
-  // Highlight drop zone
-  ['dragenter', 'dragover'].forEach(eventName => {
-    dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
-  });
-
-  ['dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
-  });
-
-  // Handle dropped files
-  dropzone.addEventListener('drop', e => handleFiles(e.dataTransfer.files, 'cover'), false);
-
-  // Also allow click to upload
-  dropzone.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = e => handleFiles(e.target.files, 'cover');
-    input.click();
-  });
-}
-
-// Setup drag and drop for assets
-function setupAssetUploadDragAndDrop() {
-  const dropzone = document.getElementById("assetDropzone");
   
-  // Prevent default drag behaviors
-  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, preventDefaults, false);
-  });
-
-  function preventDefaults(e) {
-    e.preventDefault();
-    e.stopPropagation();
-  }
-
-  // Highlight drop zone
   ['dragenter', 'dragover'].forEach(eventName => {
-    dropzone.addEventListener(eventName, () => dropzone.classList.add('dragover'), false);
+    coverDropzone.addEventListener(eventName, () => {
+      coverDropzone.classList.add('active');
+    }, false);
   });
-
+  
   ['dragleave', 'drop'].forEach(eventName => {
-    dropzone.addEventListener(eventName, () => dropzone.classList.remove('dragover'), false);
+    coverDropzone.addEventListener(eventName, () => {
+      coverDropzone.classList.remove('active');
+    }, false);
   });
-
-  // Handle dropped files
-  dropzone.addEventListener('drop', e => handleFiles(e.dataTransfer.files, 'asset'), false);
-
-  // Also allow click to upload
-  dropzone.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.multiple = true;
-    input.onchange = e => handleFiles(e.target.files, 'asset');
-    input.click();
-  });
+  
+  coverDropzone.addEventListener('drop', handleCoverDrop, false);
+  
+  // Asset dropzone
+  const assetDropzone = document.getElementById('assetDropzone');
+  if (assetDropzone) {
+    setupAssetDropzone(assetDropzone);
+  }
 }
 
-// Handle file uploads
-async function handleFiles(files, type = 'cover') {
-  if (currentUser.role === 'viewer') {
-    showToast('You do not have permission to upload files', 'error');
+async function handleCoverDrop(e) {
+  const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+  
+  if (files.length === 0) {
+    showToast('PLEASE DROP IMAGE FILES ONLY');
     return;
   }
-  
-  const dropzone = document.getElementById(type === 'cover' ? "coverDropzone" : "assetDropzone");
-  const originalText = dropzone.textContent;
   
   for (const file of files) {
-    if (!file || !file.type.startsWith('image/')) {
-      showToast('Please upload only image files', 'error');
-      continue;
-    }
-
-    // Show loading state
-    dropzone.textContent = `Uploading ${file.name}...`;
-    dropzone.style.opacity = '0.5';
-
-    try {
-      // Upload image
-      const formData = new FormData();
-      formData.append('image', file);
-      if (type === 'asset') {
-        formData.append('folder', currentPath);
-      }
-      
-      const uploadRes = await fetch('/upload-image', {
-        method: 'POST',
-        body: formData
-      });
-
-      if (!uploadRes.ok) {
-        const error = await uploadRes.json();
-        throw new Error(error.error || 'Upload failed');
-      }
-
-      const { url } = await uploadRes.json();
-      console.log('Image uploaded:', url);
-
-      if (type === 'cover') {
-        // Create new cover
-        const tempTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-        
-        const newCover = {
-          id: Date.now().toString(),
-          frontImage: url,
-          albumTitle: tempTitle,
-          coverLabel: '',
-          category: '',
-          fontFamily: '',
-          fontSize: '',
-          music: { type: 'embed', url: '' },
-          artistDetails: {
-            name: '',
-            location: '',
-            bio: '',
-            spotifyLink: '',
-            image: url
-          }
-        };
-
-        covers.push(newCover);
-        renderCovers();
-        
-        // Auto-save after adding
-        await saveChanges();
-        
-        showToast('Cover added! Click "Edit" to add details.');
-      } else {
-        // Add to assets in current folder
-        const newAsset = {
-          type: 'image',
-          url: url,
-          name: file.name.replace(/\.[^/.]+$/, ''),
-          uploadedAt: new Date().toISOString()
-        };
-        
-        if (currentPath === '') {
-          assets.images.push(newAsset);
-        } else {
-          // Navigate to current folder and add
-          const pathParts = currentPath.split('/').filter(Boolean);
-          let current = assets;
-          
-          for (const part of pathParts) {
-            let folder = (current.folders || current.children || []).find(f => 
-              (f.type === 'folder' || !f.type) && f.name === part
-            );
-            if (!folder) {
-              folder = { name: part, type: 'folder', children: [] };
-              if (!current.folders) current.folders = [];
-              current.folders.push(folder);
-            }
-            current = folder;
-          }
-          
-          if (!current.children) current.children = [];
-          current.children.push(newAsset);
-        }
-        
-        renderAssets();
-        
-        // Auto-save assets
-        await saveAssets();
-      }
-      
-    } catch (err) {
-      console.error('Upload error:', err);
-      showToast(`Upload failed: ${err.message}`, 'error');
-    }
-  }
-  
-  // Restore dropzone
-  dropzone.textContent = originalText;
-  dropzone.style.opacity = '1';
-}
-
-// User management functions
-function showUsersSection() {
-  if (currentUser.role !== 'admin') {
-    showToast('Access denied', 'error');
-    return;
-  }
-  
-  document.getElementById('coversSection').style.display = 'none';
-  document.getElementById('usersSection').style.display = 'block';
-  loadUsers();
-}
-
-async function loadUsers() {
-  try {
-    const res = await fetch('/api/users');
-    if (!res.ok) throw new Error('Failed to load users');
-    
-    const users = await res.json();
-    const container = document.getElementById('usersList');
-    
-    container.innerHTML = users.map(user => `
-      <div class="user-item">
-        <div>
-          <strong>${user.username}</strong>
-          <span class="user-role" style="margin-left: 10px;">${user.role}</span>
-        </div>
-        ${user.username !== currentUser.username ? 
-          `<button onclick="deleteUser('${user.username}')">Delete</button>` : 
-          '<span style="color: #666;">Current user</span>'}
-      </div>
-    `).join('');
-  } catch (err) {
-    showToast('Failed to load users', 'error');
+    await uploadAndCreateCover(file);
   }
 }
 
-async function addUser(event) {
-  event.preventDefault();
-  
-  const formData = new FormData(event.target);
-  const userData = {
-    username: formData.get('username'),
-    password: formData.get('password'),
-    role: formData.get('role')
-  };
+async function uploadAndCreateCover(file) {
+  const formData = new FormData();
+  formData.append('image', file);
   
   showLoading();
+  
   try {
-    const res = await fetch('/api/users', {
+    const res = await fetch('/upload-image', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
+      body: formData
     });
     
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error);
+    const data = await res.json();
+    
+    if (res.ok) {
+      // Create new cover
+      const newCover = {
+        id: Date.now(),
+        index: covers.length,
+        albumTitle: 'NEW COVER',
+        coverLabel: 'ARTIST NAME',
+        frontImage: data.url,
+        backImage: data.url,
+        category: ['artists']
+      };
+      
+      covers.push(newCover);
+      hasChanges = true;
+      updateSaveButton();
+      renderCovers();
+      
+      // Auto-open edit modal
+      setTimeout(() => editCover(newCover), 300);
+      
+      showToast('COVER CREATED — PLEASE EDIT DETAILS');
+    } else {
+      throw new Error(data.error || 'Upload failed');
     }
-    
-    showToast('User created successfully');
-    event.target.reset();
-    loadUsers();
   } catch (err) {
-    showToast(err.message || 'Failed to create user', 'error');
-  } finally {
-    hideLoading();
-  }
-}
-
-async function deleteUser(username) {
-  if (!confirm(`Delete user "${username}"?`)) return;
-  
-  showLoading();
-  try {
-    const res = await fetch(`/api/users/${username}`, { method: 'DELETE' });
-    
-    if (!res.ok) {
-      const error = await res.json();
-      throw new Error(error.error);
-    }
-    
-    showToast('User deleted successfully');
-    loadUsers();
-  } catch (err) {
-    showToast(err.message || 'Failed to delete user', 'error');
+    showToast('FAILED TO UPLOAD IMAGE', 5000);
+    console.error(err);
   } finally {
     hideLoading();
   }
 }
 
 // Search functionality
-let searchTimeout;
-const searchInput = document.createElement('input');
-searchInput.type = 'text';
-searchInput.placeholder = 'SEARCH COVERS...';
-searchInput.className = 'search-input';
-searchInput.style.cssText = `
-  width: 300px;
-  padding: var(--space-md);
-  margin-left: var(--space-lg);
-  background: transparent;
-  border: 1px solid var(--grey);
-  color: var(--ink);
-  font-family: var(--font-mono);
-  font-size: 0.875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-`;
-
-// Add search input to header
-const headerActions = document.querySelector('.header-actions');
-if (headerActions) {
-  headerActions.insertBefore(searchInput, headerActions.firstChild);
+function setupEventListeners() {
+  // Cover search
+  const searchInput = document.getElementById('coverSearch');
+  let searchTimeout;
+  
+  searchInput.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      renderCovers(e.target.value);
+    }, 300);
+  });
 }
 
-searchInput.addEventListener('input', (e) => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
-    const query = e.target.value.toLowerCase().trim();
-    filterCovers(query);
-  }, 300);
-});
-
-function filterCovers(query) {
-  const coverCards = document.querySelectorAll('.cover-card');
-  let visibleCount = 0;
-  
-  coverCards.forEach(card => {
-    const title = card.querySelector('.cover-card-title')?.textContent.toLowerCase() || '';
-    const label = card.querySelector('.cover-card-label')?.textContent.toLowerCase() || '';
-    const category = card.querySelector('.cover-card-category')?.textContent.toLowerCase() || '';
+// Keyboard shortcuts
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // Cmd/Ctrl + F to focus search
+    if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+      e.preventDefault();
+      document.getElementById('coverSearch').focus();
+    }
     
-    const matches = !query || 
-      title.includes(query) || 
-      label.includes(query) || 
-      category.includes(query);
-    
-    card.style.display = matches ? '' : 'none';
-    if (matches) visibleCount++;
+    // Cmd/Ctrl + B for batch mode
+    if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+      e.preventDefault();
+      toggleBatchMode();
+    }
   });
+}
+
+// Loading states
+function showLoading() {
+  document.getElementById('loading').style.display = 'block';
+}
+
+function hideLoading() {
+  document.getElementById('loading').style.display = 'none';
+}
+
+// Toast notifications with click to dismiss
+function showToast(message, duration = 3000) {
+  const toast = document.getElementById('toast');
+  toast.textContent = message.toUpperCase();
+  toast.classList.add('show');
   
-  // Show no results message
-  let noResults = document.getElementById('noSearchResults');
-  if (!noResults) {
-    noResults = document.createElement('div');
-    noResults.id = 'noSearchResults';
-    noResults.style.cssText = `
-      grid-column: 1 / -1;
-      text-align: center;
-      color: var(--grey);
-      font-family: var(--font-mono);
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      padding: var(--space-xl);
-    `;
-    noResults.textContent = 'NO COVERS FOUND';
-    document.getElementById('coversGrid').appendChild(noResults);
+  // Click to dismiss
+  toast.onclick = () => {
+    toast.classList.remove('show');
+  };
+  
+  setTimeout(() => {
+    toast.classList.remove('show');
+  }, duration);
+}
+
+// User management (admin only)
+async function loadUsers() {
+  try {
+    const res = await fetch('/api/users');
+    const users = await res.json();
+    
+    const usersList = document.getElementById('usersList');
+    usersList.innerHTML = users.map(user => `
+      <div style="display: flex; justify-content: space-between; align-items: center; 
+                  padding: var(--space-md) 0; border-bottom: 1px solid var(--grey-100);">
+        <div>
+          <div style="font-weight: 700;">${user.username.toUpperCase()}</div>
+          <div style="font-family: var(--font-mono); font-size: 0.75rem; opacity: 0.7;">
+            ${user.role.toUpperCase()}
+          </div>
+        </div>
+        ${user.username !== 'admin' ? `
+          <button class="btn btn-danger" onclick="deleteUser('${user.username}')" 
+                  style="padding: var(--space-sm) var(--space-md);">
+            DELETE
+          </button>
+        ` : ''}
+      </div>
+    `).join('');
+  } catch (err) {
+    console.error('Failed to load users:', err);
+  }
+}
+
+async function addUser(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  
+  try {
+    const res = await fetch('/api/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: formData.get('username'),
+        password: formData.get('password'),
+        role: formData.get('role')
+      })
+    });
+    
+    if (res.ok) {
+      showToast('USER CREATED SUCCESSFULLY');
+      e.target.reset();
+      loadUsers();
+    } else {
+      const data = await res.json();
+      showToast(data.error || 'FAILED TO CREATE USER', 5000);
+    }
+  } catch (err) {
+    showToast('FAILED TO CREATE USER', 5000);
+    console.error(err);
+  }
+}
+
+async function deleteUser(username) {
+  if (!confirm(`DELETE USER "${username.toUpperCase()}"?`)) return;
+  
+  try {
+    const res = await fetch(`/api/users/${username}`, { method: 'DELETE' });
+    
+    if (res.ok) {
+      showToast('USER DELETED');
+      loadUsers();
+    } else {
+      throw new Error('Delete failed');
+    }
+  } catch (err) {
+    showToast('FAILED TO DELETE USER', 5000);
+    console.error(err);
+  }
+}
+
+// Export functionality
+async function exportCovers() {
+  const selected = covers.filter(c => selectedCovers.has(c.id));
+  
+  if (selected.length === 0) {
+    showToast('NO COVERS SELECTED');
+    return;
   }
   
-  noResults.style.display = visibleCount === 0 && query ? 'block' : 'none';
+  const dataStr = JSON.stringify(selected, null, 2);
+  const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+  
+  const exportName = `amf-covers-export-${new Date().toISOString().split('T')[0]}.json`;
+  
+  const linkElement = document.createElement('a');
+  linkElement.setAttribute('href', dataUri);
+  linkElement.setAttribute('download', exportName);
+  linkElement.click();
+  
+  showToast(`EXPORTED ${selected.length} COVERS`);
 }
 
-// Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', async () => {
-  await checkAuth();
-  loadCovers();
-  loadAssets();
-  setupCoverDragAndDrop();
-  setupAssetUploadDragAndDrop();
+// Delete selected covers
+async function deleteSelected() {
+  const count = selectedCovers.size;
+  if (count === 0) return;
   
-  // Add CSS for sortable ghost
-  const style = document.createElement('style');
-  style.textContent = `
-    .sortable-ghost {
-      opacity: 0.2;
-      filter: grayscale(100%);
-      transform: scale(0.95);
-    }
-    .cover-card {
-      transition: transform var(--transition);
-    }
-    .cover-card:hover {
-      transform: scale(1.02);
-    }
-    .cover-card.dragging {
-      cursor: grabbing;
-    }
-  `;
-  document.head.appendChild(style);
-
-  // Make batch functions globally available
-  window.toggleBatchMode = toggleBatchMode;
-  window.cancelBatchMode = cancelBatchMode;
-  window.deleteSelectedCovers = deleteSelectedCovers;
-  window.exportSelectedCovers = exportSelectedCovers;
-});
+  if (!confirm(`DELETE ${count} SELECTED COVERS?`)) return;
+  
+  covers = covers.filter(c => !selectedCovers.has(c.id));
+  
+  // Re-index
+  covers.forEach((cover, i) => cover.index = i);
+  
+  hasChanges = true;
+  updateSaveButton();
+  toggleBatchMode();
+  renderCovers();
+  
+  showToast(`DELETED ${count} COVERS`);
+} 

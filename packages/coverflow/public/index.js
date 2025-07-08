@@ -234,7 +234,14 @@ function renderCovers() {
     // Front face with lazy loading but using background-image
     const frontFace = document.createElement('div');
     frontFace.className = 'cover-front';
-    frontFace.dataset.image = c.frontImage; // Store URL for lazy loading
+    if (c.frontImage) {
+      frontFace.dataset.image = c.frontImage;
+      // Set background image immediately for visible covers
+      if (Math.abs(i - activeIndex) <= 5) {
+        frontFace.style.backgroundImage = `url('${c.frontImage}')`;
+        frontFace.classList.add('loaded');
+      }
+    }
     
     // Back face
     const backFace = document.createElement('div');
@@ -396,25 +403,17 @@ function setupLazyLoading() {
         const imageUrl = element.dataset.image;
         
         if (imageUrl && !element.classList.contains('loaded')) {
-          // Preload the image
-          const img = new Image();
-          img.onload = () => {
-            element.style.backgroundImage = `url('${imageUrl}')`;
-            element.classList.add('loaded');
-          };
-          img.onerror = () => {
-            element.style.backgroundImage = `url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="300" height="300"%3E%3Crect fill="%23333" width="300" height="300"/%3E%3Ctext x="50%25" y="50%25" text-anchor="middle" dy=".3em" fill="%23999" font-size="14" font-family="monospace"%3EERROR%3C/text%3E%3C/svg%3E')`;
-          };
-          img.src = imageUrl;
+          // Set the background image directly
+          element.style.backgroundImage = `url('${imageUrl}')`;
+          element.classList.add('loaded');
+          observer.unobserve(element);
         }
-        
-        observer.unobserve(element);
       }
     });
   }, imageOptions);
   
-  // Observe all cover fronts
-  document.querySelectorAll('.cover-front[data-image]').forEach(el => {
+  // Observe all cover fronts that haven't loaded yet
+  document.querySelectorAll('.cover-front[data-image]:not(.loaded)').forEach(el => {
     imageObserver.observe(el);
   });
 }
