@@ -6,6 +6,19 @@
     <title>All My Friends Inc. — Investment Opportunity</title>
     <meta name="description" content="All My Friends Inc. – Building the future of artist development through vision-focused investment and genuine partnership"/>
     
+    <!-- Open Graph meta tags for social sharing -->
+    <meta property="og:title" content="All My Friends Inc. — Investment Opportunity"/>
+    <meta property="og:description" content="All My Friends Inc. – Building the future of artist development through vision-focused investment and genuine partnership"/>
+    <meta property="og:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://allmyfriendsinc.com/investors_220220.html"/>
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="All My Friends Inc. — Investment Opportunity"/>
+    <meta name="twitter:description" content="All My Friends Inc. – Building the future of artist development through vision-focused investment and genuine partnership"/>
+    <meta name="twitter:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    
     <style>
         /* ———————————— 0. Reset & Core */
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -2147,7 +2160,173 @@
     <section id="intro" class="hero">
         <div class="container">
             <div class="hero-content">
-                <h1 class="display" data-misreg="ALL MY FRIENDS">ALL MY<br>FRIENDS</h1>
+                <div style="margin-bottom: 2rem; display: block; width: 100%; overflow: visible; min-height: 280px;">
+                    <style>
+                        .amf-logo {
+                            --logo-unit: 64px;
+                            --bar-width: 48px;
+                            --gap: calc(var(--logo-unit) / 12);
+                            --black: #000;
+                            --white: #fff;
+                            --font-family: 'Helvetica Neue', Arial, sans-serif;
+                        }
+
+                        .amf-logo-wrapper {
+                            width: 100%;
+                            height: 280px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+
+                        .amf-logo-container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-start;
+                            user-select: none;
+                        }
+
+                        .amf-logo-elements {
+                            display: flex;
+                            align-items: flex-end;
+                            gap: var(--gap);
+                        }
+
+                        .amf-logo-a .amf-circle {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--white);
+                            color: var(--black);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border: 1px solid var(--black);
+                            border-radius: 50%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            animation: amfRotateKnob 6s linear infinite;
+                        }
+
+                        .amf-rounded-bar {
+                            width: var(--bar-width);
+                            background: var(--white);
+                            border: 1px solid rgba(0, 0, 0, 0.2);
+                            border-radius: calc(var(--bar-width)/2);
+                            position: relative;
+                            overflow: hidden;
+                            display: flex;
+                            align-items: flex-end;
+                            justify-content: center;
+                        }
+
+                        .amf-bar-m {
+                            height: calc(var(--logo-unit) * 2);
+                        }
+
+                        .amf-bar-f {
+                            height: calc(var(--logo-unit) * 3.7);
+                            top: calc(var(--logo-unit) * 0.8);
+                        }
+
+                        .amf-rounded-bar .amf-letter {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--black);
+                            color: var(--white);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border-radius: 50%;
+                            position: absolute;
+                            bottom: 0;
+                            left: 50%;
+                            transform: translateX(-50%);
+                        }
+
+                        .amf-bar-m .amf-letter {
+                            animation: amfSliderUpDown 6s ease-in-out infinite alternate;
+                        }
+
+                        .amf-bar-f .amf-letter {
+                            animation: amfSliderDownUp 6.5s ease-in-out infinite alternate;
+                        }
+
+                        @keyframes amfSliderUpDown {
+                            0%, 100% { bottom: 0; }
+                            50%      { bottom: 60%; }
+                        }
+                        @keyframes amfSliderDownUp {
+                            0%, 100% { bottom: 60%; }
+                            50%      { bottom: 0; }
+                        }
+                        @keyframes amfRotateKnob {
+                            from { transform: rotate(0deg); }
+                            to   { transform: rotate(360deg); }
+                        }
+
+                        .amf-logo-a,
+                        .amf-bar-m {
+                            transform: translateY(15px);
+                        }
+
+                        .amf-logo-text {
+                            display: inline-block;
+                            white-space: nowrap;
+                            margin-top: calc(var(--logo-unit) / 2.5);
+                            margin-left: calc(var(--bar-width) * 2 + var(--gap));
+                            transform: translateX(-100%);
+                            font-family: var(--font-family);
+                            font-size: calc(var(--logo-unit) / 3.4);
+                            text-transform: uppercase;
+                            letter-spacing: -0.5px;
+                            color: var(--black);
+                            line-height: 0.8;
+                            font-weight: bold;
+                        }
+
+                        .amf-logo-text div:first-child {
+                            margin: 0;
+                        }
+
+                        .amf-logo-text div:last-child {
+                            margin: 0;
+                            display: block;
+                            text-align: right;
+                        }
+
+                        @media (max-height: 280px), (max-width: 500px) {
+                            .amf-logo-wrapper { transform: scale(0.7); }
+                        }
+                        @media (max-height: 220px), (max-width: 400px) {
+                            .amf-logo-wrapper { transform: scale(0.6); }
+                        }
+                        @media (max-width: 500px) {
+                            .amf-logo {
+                                --logo-unit: 50px;
+                                --bar-width: 40px;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="amf-logo">
+                        <div class="amf-logo-wrapper">
+                            <div class="amf-logo-container">
+                                <div class="amf-logo-elements">
+                                    <div class="amf-logo-a">
+                                        <div class="amf-circle">A</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-m">
+                                        <div class="amf-letter">M</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-f">
+                                        <div class="amf-letter">F</div>
+                                    </div>
+                                </div>
+                                <div class="amf-logo-text">
+                                    <div>ALL MY FRIENDS</div>
+                                    <div>INC</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <p class="lead">Building the future of artist development<br>through vision-focused investment and genuine partnership</p>
                 <div class="spacer-md"></div>
                 <p class="opacity-50">Founded February 2022 by Theo Battaglia<br>3+ years operating lean • 7 strategic artists • 100% partner mentality</p>
