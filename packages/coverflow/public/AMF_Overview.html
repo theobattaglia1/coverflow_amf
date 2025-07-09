@@ -1,0 +1,3166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All My Friends Inc. — Company Overview</title>
+    <meta name="description" content="All My Friends Inc. – Building the future of artist development through vision-focused partnership and genuine partnership"/>
+    
+    <!-- Open Graph meta tags for social sharing -->
+    <meta property="og:title" content="All My Friends Inc. — Company Overview"/>
+    <meta property="og:description" content="All My Friends Inc. – Building the future of artist development through vision-focused partnership and genuine partnership"/>
+    <meta property="og:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://allmyfriendsinc.com/partners_220220.html"/>
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="All My Friends Inc. — Company Overview"/>
+    <meta name="twitter:description" content="All My Friends Inc. – Building the future of artist development through vision-focused partnership and genuine partnership"/>
+    <meta name="twitter:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    
+    <style>
+        /* ———————————— 0. Reset & Core */
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        
+        /* ———————————— 1. Design System Variables */
+        :root{
+            /* Core Palette */
+            --bg:#FFFFFF;
+            --ink:#000000;
+            --accent:#0000FF;
+            --success:#22C55E;
+            
+            /* Fluid Type Scale - Slightly Tighter than Hudson */
+            --step--2: clamp(.5rem,.6vw,.7rem);
+            --step--1: clamp(.625rem,.75vw,.825rem);
+            --step-0:  clamp(.75rem,.9vw,.95rem);
+            --step-1:  clamp(.875rem,1.1vw,1.15rem);
+            --step-2:  clamp(1.25rem,1.8vw,1.8rem);
+            --step-3:  clamp(2rem,2.5vw,2.5rem);
+            --step-4:  clamp(2.5rem,4vw,4rem);
+            --step-5:  clamp(3rem,6vw,6rem);
+            --step-6:  clamp(4.5rem,10vw,10rem);
+            
+            /* Grid & Spacing */
+            --gutter:1.5rem;
+            --max-width:1280px;
+            --section-space:10rem;
+        }
+        
+        /* ———————————— 2. Base Typography */
+        html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased;}
+        body{
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-weight:400;
+            font-size:var(--step-0);
+            line-height:1.4;
+            color:var(--ink);
+            background:var(--bg);
+            letter-spacing:-.01em;
+        }
+        
+        h1,h2,h3,h4,h5,h6{
+            font-weight:700;
+            line-height:1;
+            letter-spacing:-.04em;
+            margin:0;
+            position:relative;
+        }
+        
+        h1{font-size:var(--step-6);letter-spacing:-.06em;}
+        h2{font-size:var(--step-5);letter-spacing:-.05em;}
+        h3{font-size:var(--step-4);letter-spacing:-.04em;}
+        h4{font-size:var(--step-3);letter-spacing:-.03em;}
+        h5{font-size:var(--step-2);letter-spacing:-.02em;}
+        
+        .display{
+            font-size:clamp(4rem,15vw,14rem);
+            font-weight:900;
+            line-height:.8;
+            letter-spacing:-.08em;
+            text-transform:uppercase;
+        }
+        
+        p{
+            margin-bottom:1.5rem;
+            max-width:65ch;
+        }
+        
+        .lead{
+            font-size:var(--step-1);
+            line-height:1.5;
+            font-weight:400;
+            letter-spacing:-.02em;
+        }
+        
+        a{
+            color:var(--ink);
+            text-decoration:none;
+        }
+        
+        a:hover{
+            text-decoration:underline;
+            text-underline-offset:2px;
+        }
+        
+        strong{
+            font-weight:700;
+        }
+        
+        /* CHAOS: Subtle mis-registration on key headlines */
+        [data-misreg]::after{
+            content:attr(data-misreg);
+            position:absolute;
+            top:1px;
+            left:1px;
+            color:var(--accent);
+            opacity:.15;
+            z-index:-1;
+        }
+        
+        /* ———————————— 3. Grid System */
+        .container{
+            max-width:var(--max-width);
+            margin-inline:auto;
+            padding-inline:var(--gutter);
+        }
+        
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:var(--gutter);
+        }
+        
+        .col-12{grid-column:span 12;}
+        .col-10{grid-column:span 10;}
+        .col-8{grid-column:span 8;}
+        .col-7{grid-column:span 7;}
+        .col-6{grid-column:span 6;}
+        .col-5{grid-column:span 5;}
+        .col-4{grid-column:span 4;}
+        .col-3{grid-column:span 3;}
+        .col-2{grid-column:span 2;}
+        
+        /* Column offsets */
+        .offset-1{grid-column-start:2;}
+        .offset-2{grid-column-start:3;}
+        .offset-3{grid-column-start:4;}
+        
+        /* Enhanced Problem/Solution Cards */
+        .concept-cards{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:3rem;
+            margin-top:4rem;
+            position:relative;
+        }
+        
+        .concept-card{
+            padding:3rem;
+            position:relative;
+            overflow:hidden;
+            border:2px solid var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .concept-card::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:var(--ink);
+            transform:translateX(-100%);
+            transition:transform 0.3s ease;
+            z-index:-1;
+        }
+        
+        .concept-card:hover{
+            color:var(--bg);
+            transform:translateY(-4px);
+        }
+        
+        .concept-card:hover::before{
+            transform:translateX(0);
+        }
+        
+        .concept-card.problem{
+            border-left-width:6px;
+        }
+        
+        .concept-card.solution{
+            border-right-width:6px;
+        }
+        
+        .concept-card h5{
+            margin-bottom:1.5rem;
+            font-size:var(--step-2);
+            position:relative;
+        }
+        
+        .concept-card.problem h5::after{
+            content:'×';
+            position:absolute;
+            right:0;
+            top:0;
+            font-size:var(--step-3);
+            opacity:0.2;
+        }
+        
+        .concept-card.solution h5::after{
+            content:'✓';
+            position:absolute;
+            right:0;
+            top:0;
+            font-size:var(--step-3);
+            opacity:0.2;
+        }
+        
+        /* Abstract corner element */
+        .abstract-corner{
+            position:absolute;
+            top:-10%;
+            right:-5%;
+            width:25vw;
+            height:25vw;
+            background:linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.02) 50%);
+            transform:rotate(45deg);
+            z-index:-1;
+        }
+        
+        /* Founder section with image */
+        .founder-section{
+            position:relative;
+        }
+        
+        .founder-content{
+            display:grid;
+            grid-template-columns:1fr 300px;
+            gap:4rem;
+            align-items:start;
+        }
+        
+        .founder-image{
+            position:relative;
+            width:300px;
+            height:400px;
+            overflow:hidden;
+            transform:rotate(2deg);
+            margin-top:2rem;
+        }
+        
+        .founder-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:grayscale(100%) contrast(1.1);
+            transition:all 0.3s ease;
+        }
+        
+        .founder-image:hover img{
+            filter:grayscale(50%) contrast(1);
+        }
+        
+        .founder-image::before{
+            content:'';
+            position:absolute;
+            inset:0;
+            border:3px solid var(--ink);
+            transform:translate(-8px, -8px);
+            z-index:-1;
+        }
+        
+        @media(max-width:768px){
+            .founder-content{
+                grid-template-columns:1fr;
+            }
+            .founder-image{
+                width:100%;
+                max-width:300px;
+                margin:2rem auto;
+            }
+        }
+
+        .modal-music-section .track-list{
+            margin-bottom:2rem;
+            max-height:300px;
+            overflow-y:auto;
+        }
+
+        .modal-music-section .track{
+            padding:1rem 0;
+            border-bottom:1px solid rgba(0,0,0,0.1);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            gap:1rem;
+        }
+
+        .modal-music-section .track:hover{
+            padding-left:1rem;
+            background:rgba(0,0,0,0.02);
+        }
+
+        .modal-music-section .track.active{
+            color:var(--accent);
+            font-weight:600;
+        }
+
+        .modal-music-section .track-number{
+            font-weight:700;
+            opacity:0.5;
+            width:20px;
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+        }
+
+        .modal-music-section .track-title{
+            flex:1;
+        }
+
+        .modal-music-section .track-duration{
+            font-size:var(--step--2);
+            opacity:0.5;
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+        }
+
+        .modal-music-section .loading-spinner{
+            display:none;
+            width:20px;
+            height:20px;
+            border:2px solid rgba(0,0,0,0.1);
+            border-top-color:var(--accent);
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+
+        .modal-music-section .track.loading .loading-spinner{
+            display:block;
+        }
+
+        .modal-music-section .track.loading .track-duration{
+            display:none;
+        }
+
+        .modal-music-section .player-controls{
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        }
+
+        .modal-music-section .progress-bar{
+            width:100%;
+            height:4px;
+            background:rgba(0,0,0,0.1);
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .modal-music-section .progress-fill{
+            height:100%;
+            background:var(--accent);
+            width:0%;
+            transition:width 0.1s linear;
+        }
+
+        .modal-music-section .time-display{
+            display:flex;
+            justify-content:space-between;
+            font-size:var(--step--2);
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            opacity:0.7;
+        }
+
+        .modal-music-section .control-buttons{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:2rem;
+        }
+
+        .modal-music-section .control-btn{
+            background:none;
+            border:none;
+            color:var(--ink);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:0.5rem;
+        }
+
+        .modal-music-section .control-btn:hover{
+            color:var(--accent);
+            transform:scale(1.1);
+        }
+
+        .modal-music-section .play-btn{
+            width:48px;
+            height:48px;
+            border:2px solid var(--ink);
+            border-radius:50%;
+            font-size:1.25rem;
+        }
+
+        .modal-music-section .play-btn:hover{
+            border-color:var(--accent);
+            background:var(--accent);
+            color:var(--bg);
+        }
+
+        @media(max-width:768px){
+            .grid{grid-template-columns:repeat(4,1fr);}
+            [class*="col-"]{grid-column:span 4;}
+            [class*="offset-"]{grid-column-start:1;}
+            .concept-cards{grid-template-columns:1fr;}
+        }
+        
+        /* ———————————— 4. Section Architecture */
+        section{
+            padding-block:var(--section-space);
+            position:relative;
+        }
+        
+        section:first-child{
+            padding-top:0;
+        }
+        
+        /* CHAOS: Selective disruption */
+        .break-grid{
+            margin-left:calc(var(--gutter) * -2);
+            margin-right:calc(var(--gutter) * -4);
+        }
+        
+        /* ———————————— 5. Navigation */
+        .nav{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            z-index:1000;
+            padding:1.5rem 0;
+            background:rgba(255,255,255,.95);
+            backdrop-filter:blur(10px);
+        }
+        
+        .nav-inner{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+        
+        .nav-logo{
+            font-size:1.5rem;
+            font-weight:900;
+            letter-spacing:-.05em;
+        }
+        
+        .nav-links{
+            display:flex;
+            gap:3rem;
+            list-style:none;
+        }
+        
+        .nav-link{
+            font-size:var(--step--1);
+            font-weight:500;
+            letter-spacing:-.02em;
+            opacity:.5;
+            transition:opacity .2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active{
+            opacity:1;
+            text-decoration:none;
+        }
+        
+        /* ———————————— 6. Hero */
+        .hero{
+            height:100vh;
+            display:flex;
+            align-items:center;
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .hero-content{
+            position:relative;
+            z-index:2;
+        }
+        
+        .hero-title{
+            margin-bottom:2rem;
+        }
+        
+        /* CHAOS: Off-kilter hero image */
+        .hero-image{
+            position:absolute;
+            right:-10%;
+            top:50%;
+            transform:translateY(-50%) rotate(-2deg);
+            width:45vw;
+            height:70vh;
+            background:var(--ink);
+            opacity:.03;
+            z-index:1;
+        }
+        
+        @media(max-width:768px){
+            .hero-image{
+                width:100%;
+                height:50vh;
+                right:0;
+                top:auto;
+                bottom:0;
+                transform:none;
+            }
+        }
+        
+        /* ———————————— 7. Story Section */
+        .section-marker{
+            font-size:var(--step--2);
+            font-weight:700;
+            letter-spacing:-.02em;
+            margin-bottom:4rem;
+            opacity:.2;
+        }
+        
+        /* Large off-kilter image */
+        .large-image{
+            position:relative;
+            margin-block:6rem;
+            margin-left:-10vw;
+            width:60vw;
+            height:70vh;
+            overflow:hidden;
+            transform:rotate(1deg);
+        }
+        
+        .large-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        /* Small accent image */
+        .accent-image{
+            position:absolute;
+            width:25vw;
+            height:35vh;
+            overflow:hidden;
+            z-index:-1;
+        }
+        
+        .accent-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        .accent-image.top-right{
+            top:-5rem;
+            right:-5rem;
+            transform:rotate(-3deg);
+        }
+        
+        .accent-image.bottom-left{
+            bottom:-3rem;
+            left:-8rem;
+            transform:rotate(2deg);
+        }
+        
+        /* Pull quote */
+        .quote{
+            font-size:var(--step-3);
+            font-weight:300;
+            line-height:1.2;
+            letter-spacing:-.03em;
+            margin-block:6rem;
+            padding-left:2rem;
+            border-left:4px solid var(--ink);
+        }
+        
+        /* ———————————— 8. Metrics Grid */
+        .metrics-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:4rem;
+            margin-top:6rem;
+        }
+        
+        .metric-item{
+            position:relative;
+        }
+        
+        .metric-value{
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size:var(--step-4);
+            font-weight:900;
+            letter-spacing:-.06em;
+            line-height:1;
+            margin-bottom:.5rem;
+            color:var(--accent);
+        }
+        
+        .metric-label{
+            font-size:var(--step--1);
+            font-weight:400;
+            letter-spacing:-.01em;
+            opacity:.7;
+            text-transform:uppercase;
+        }
+        
+        @media(max-width:768px){
+            .metrics-grid{
+                grid-template-columns:repeat(2,1fr);
+            }
+        }
+        
+        /* ———————————— 9. Enhanced Timeline */
+        .timeline{
+            position:relative;
+            padding-top:4rem;
+        }
+        
+        .timeline-line{
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            height:2px;
+            background:linear-gradient(90deg, var(--ink) 0%, var(--accent) 50%, var(--success) 100%);
+            opacity:.2;
+        }
+        
+        .timeline-line::before{
+            content:'2022';
+            position:absolute;
+            left:0;
+            top:-25px;
+            font-size:var(--step--2);
+            font-weight:700;
+            opacity:0.5;
+        }
+        
+        .timeline-line::after{
+            content:'2030';
+            position:absolute;
+            right:0;
+            top:-25px;
+            font-size:var(--step--2);
+            font-weight:700;
+            opacity:0.5;
+        }
+        
+        .timeline-items{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:3rem;
+            position:relative;
+        }
+        
+        .timeline-item{
+            padding-top:2rem;
+            position:relative;
+        }
+        
+        .timeline-marker{
+            position:absolute;
+            top:-6px;
+            left:0;
+            width:12px;
+            height:12px;
+            background:var(--ink);
+            border-radius:50%;
+            transition:all 0.3s ease;
+        }
+        
+        .timeline-item:hover .timeline-marker{
+            transform:scale(1.5);
+            background:var(--accent);
+        }
+        
+        .timeline-year{
+            font-size:var(--step-2);
+            font-weight:900;
+            margin-bottom:1rem;
+        }
+        
+        @media(max-width:768px){
+            .timeline-items{
+                grid-template-columns:1fr;
+            }
+        }
+        
+        /* ———————————— 10. Artist Grid */
+        .artist-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            gap:3rem;
+            margin:4rem 0;
+        }
+        
+        /* Artist Cards */
+        .artist-card{
+            position:relative;
+            width:100%;
+            max-width:300px;
+            margin:0 auto;
+            cursor:pointer;
+            overflow:hidden;
+            border:1px solid rgba(0,0,0,0.1);
+            transition:all 0.3s ease;
+        }
+
+        .artist-card:hover{
+            transform:translateY(-4px);
+            box-shadow:0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .artist-card::before{
+            content:'';
+            position:absolute;
+            top:0;
+            right:0;
+            width:8px;
+            height:100%;
+            background:linear-gradient(90deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.05) 50%,rgba(0,0,0,0.1) 100%);
+            z-index:1;
+        }
+
+        .album-cover{
+            width:100%;
+            height:300px;
+            object-fit:cover;
+            filter:saturate(70%) contrast(1.1);
+            transition:all 0.3s ease;
+        }
+
+        .artist-card:hover .album-cover{
+            filter:saturate(100%) contrast(1);
+            transform:scale(1.02);
+        }
+
+        .artist-info{
+            position:absolute;
+            bottom:0;
+            left:0;
+            right:0;
+            padding:var(--gutter);
+            background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,transparent 100%);
+            color:var(--bg);
+            transform:translateY(100%);
+            transition:transform 0.3s ease;
+            z-index:2;
+        }
+
+        .artist-card:hover .artist-info{
+            transform:translateY(0);
+        }
+
+        .artist-name{
+            font-size:var(--step-1);
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            margin-bottom:0.25rem;
+        }
+
+        .artist-role{
+            font-size:var(--step--1);
+            opacity:0.8;
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+        }
+
+        /* Modal Styles */
+        .artist-modal{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(255,255,255,0.95);
+            backdrop-filter:blur(10px);
+            z-index:2000;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            opacity:0;
+            visibility:hidden;
+            transition:all 0.3s ease;
+        }
+
+        .artist-modal.active{
+            opacity:1;
+            visibility:visible;
+        }
+
+        .modal-content{
+            background:var(--bg);
+            max-width:1200px;
+            width:90%;
+            max-height:90vh;
+            overflow-y:auto;
+            position:relative;
+            box-shadow:0 20px 40px rgba(0,0,0,0.1);
+            transform:scale(0.9) translateY(20px);
+            opacity:0;
+            transition:all 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        .modal-content::-webkit-scrollbar{
+            width:8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track{
+            background:rgba(0,0,0,0.05);
+        }
+
+        .modal-content::-webkit-scrollbar-thumb{
+            background:rgba(0,0,0,0.2);
+            border-radius:4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover{
+            background:rgba(0,0,0,0.3);
+        }
+
+        .artist-modal.active .modal-content{
+            transform:scale(1) translateY(0);
+            opacity:1;
+            transition-delay:0.1s;
+        }
+
+        .modal-close{
+            position:absolute;
+            top:2rem;
+            right:2rem;
+            width:40px;
+            height:40px;
+            background:var(--ink);
+            color:var(--bg);
+            border:none;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:1.5rem;
+            transition:all 0.3s ease;
+            z-index:10;
+        }
+
+        .modal-close:hover{
+            background:var(--accent);
+            transform:rotate(90deg);
+        }
+
+        .modal-artist-header{
+            display:grid;
+            grid-template-columns:400px 1fr;
+            gap:4rem;
+            padding:4rem;
+        }
+
+        .modal-artist-image{
+            width:400px;
+            height:400px;
+            overflow:hidden;
+        }
+
+        .modal-artist-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:saturate(70%) contrast(1.1);
+        }
+
+        .modal-artist-info h2{
+            font-size:var(--step-4);
+            margin-bottom:0.5rem;
+        }
+
+        .modal-artist-role{
+            font-size:var(--step-1);
+            color:var(--accent);
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+            margin-bottom:2rem;
+        }
+
+        .artist-bio{
+            font-size:var(--step-0);
+            line-height:1.6;
+            margin-bottom:2rem;
+            max-width:600px;
+        }
+
+        .social-links{
+            display:flex;
+            gap:1rem;
+            margin-bottom:3rem;
+        }
+
+        .social-link{
+            display:inline-flex;
+            align-items:center;
+            gap:0.5rem;
+            padding:0.75rem 1.5rem;
+            border:2px solid var(--ink);
+            text-decoration:none;
+            color:var(--ink);
+            font-weight:500;
+            transition:all 0.3s ease;
+            font-size:var(--step--1);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .social-link::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:-100%;
+            width:100%;
+            height:100%;
+            background:var(--ink);
+            transition:left 0.3s ease;
+            z-index:-1;
+        }
+
+        .social-link:hover{
+            color:var(--bg);
+            transform:translateY(-2px);
+        }
+
+        .social-link:hover::before{
+            left:0;
+        }
+
+        .modal-music-section{
+            background:#FAFAFA;
+            padding:3rem 4rem;
+        }
+
+        .modal-section-title{
+            font-size:var(--step-2);
+            margin-bottom:2rem;
+            text-transform:uppercase;
+            letter-spacing:-0.02em;
+        }
+
+        @media(max-width:768px){
+            .modal-artist-header{
+                grid-template-columns:1fr;
+                padding:2rem;
+            }
+            
+            .modal-artist-image{
+                width:100%;
+                height:300px;
+            }
+            
+            .social-links{
+                flex-wrap:wrap;
+            }
+        }
+
+        .player-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:start;
+            margin-bottom:var(--gutter);
+        }
+
+        .player-artist h3{
+            font-size:var(--step-1);
+            font-weight:700;
+            margin-bottom:0.25rem;
+        }
+
+        .player-artist p{
+            font-size:var(--step--1);
+            color:var(--accent);
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+        }
+
+        .close-btn{
+            width:32px;
+            height:32px;
+            background:none;
+            border:1px solid rgba(255,255,255,0.3);
+            color:var(--bg);
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:1.25rem;
+            transition:all 0.3s ease;
+        }
+
+        .close-btn:hover{
+            background:var(--bg);
+            color:var(--ink);
+        }
+
+        .track-list{
+            flex:1;
+            margin-bottom:var(--gutter);
+            overflow-y:auto;
+            max-height:200px;
+        }
+
+        .track{
+            padding:var(--space-sm) 0;
+            border-bottom:1px solid rgba(255,255,255,0.1);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            gap:var(--space-sm);
+        }
+
+        .track:hover{
+            padding-left:var(--space-xs);
+        }
+
+        .track.active{
+            color:var(--accent);
+        }
+
+        .track-number{
+            font-weight:700;
+            opacity:0.5;
+            width:20px;
+        }
+
+        .track-title{
+            flex:1;
+            font-size:var(--step--1);
+        }
+
+        .track-duration{
+            font-size:var(--step--2);
+            opacity:0.5;
+        }
+
+        .player-controls{
+            display:flex;
+            flex-direction:column;
+            gap:var(--space-sm);
+        }
+
+        .progress-bar{
+            width:100%;
+            height:4px;
+            background:rgba(255,255,255,0.1);
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .progress-fill{
+            height:100%;
+            background:var(--accent);
+            width:0%;
+            transition:width 0.1s linear;
+        }
+
+        .control-buttons{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:var(--gutter);
+        }
+
+        .control-btn{
+            background:none;
+            border:none;
+            color:var(--bg);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .control-btn:hover{
+            color:var(--accent);
+            transform:scale(1.1);
+        }
+
+        .play-btn{
+            width:48px;
+            height:48px;
+            border:2px solid var(--bg);
+            border-radius:50%;
+            font-size:1.25rem;
+        }
+
+        .play-btn:hover{
+            border-color:var(--accent);
+            background:var(--accent);
+            color:var(--ink);
+        }
+
+        .time-display{
+            display:flex;
+            justify-content:space-between;
+            font-size:var(--step--2);
+            opacity:0.7;
+            margin-top:var(--space-xs);
+        }
+
+        .loading-spinner{
+            display:none;
+            width:24px;
+            height:24px;
+            border:2px solid rgba(255,255,255,0.3);
+            border-top-color:var(--accent);
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+
+        .track.loading .loading-spinner{
+            display:block;
+        }
+
+        .track.loading .track-duration{
+            display:none;
+        }
+
+        .click-hint{
+            position:absolute;
+            bottom:-2rem;
+            left:50%;
+            transform:translateX(-50%);
+            font-size:var(--step--2);
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+            color:var(--ink);
+            opacity:0;
+            transition:opacity 0.3s ease;
+        }
+
+        .jewel-case:hover .click-hint{
+            opacity:0.5;
+        }
+        
+        /* ———————————— 11. Case Study Section */
+        .case-study{
+            background:#FAFAFA;
+            margin-inline:calc(var(--gutter) * -2);
+            padding-inline:calc(var(--gutter) * 2);
+        }
+        
+        .case-header{
+            display:grid;
+            grid-template-columns:300px 1fr;
+            gap:4rem;
+            align-items:center;
+            margin-bottom:4rem;
+        }
+        
+        .case-image{
+            width:300px;
+            height:300px;
+            overflow:hidden;
+            transform:rotate(-1deg);
+        }
+        
+        .case-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:saturate(70%) contrast(1.1);
+            transition:all 0.3s ease;
+        }
+        
+        .case-image:hover img{
+            filter:saturate(100%) contrast(1);
+        }
+        
+        /* Enhanced Case Study Text Layout */
+        .case-content{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            margin-top:3rem;
+            position:relative;
+        }
+        
+        .case-section{
+            position:relative;
+            padding:2rem;
+            background:var(--bg);
+            border:1px solid rgba(0,0,0,0.1);
+            transition:all 0.3s ease;
+        }
+        
+        .case-section::before{
+            content:'';
+            position:absolute;
+            top:-1px;
+            left:-1px;
+            right:-1px;
+            bottom:-1px;
+            background:var(--accent);
+            opacity:0;
+            transition:opacity 0.3s ease;
+            z-index:-1;
+        }
+        
+        .case-section:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .case-section:hover::before{
+            opacity:0.05;
+        }
+        
+        .case-deal{
+            grid-column:span 2;
+            margin-top:2rem;
+            padding:3rem;
+            background:var(--ink);
+            color:var(--bg);
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .case-deal::after{
+            content:'$$$';
+            position:absolute;
+            top:-20px;
+            right:20px;
+            font-size:var(--step-6);
+            opacity:0.05;
+            font-weight:900;
+        }
+        
+        @media(max-width:768px){
+            .case-header{
+                grid-template-columns:1fr;
+            }
+            .case-image{
+                margin:0 auto;
+            }
+            .case-content{
+                grid-template-columns:1fr;
+            }
+            .case-deal{
+                grid-column:span 1;
+            }
+        }
+        
+        /* ———————————— 12. Financials */
+        .financial-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:3rem;
+            margin-top:4rem;
+        }
+        
+        .financial-year{
+            padding:2rem;
+            border:2px solid var(--ink);
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .financial-year:hover{
+            transform:translateY(-4px);
+            box-shadow:0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .financial-year.highlight{
+            border-color:var(--accent);
+            background:linear-gradient(135deg,rgba(0,0,255,0.02) 0%,transparent 50%);
+        }
+        
+        .year-label{
+            font-size:var(--step-2);
+            font-weight:900;
+            margin-bottom:1rem;
+        }
+        
+        table{
+            width:100%;
+            font-size:var(--step--1);
+            line-height:1.8;
+            border-collapse:collapse;
+        }
+        
+        table tr{
+            border-bottom:1px solid rgba(0,0,0,0.1);
+        }
+        
+        table td{
+            padding:0.5rem 0;
+        }
+        
+        table td:last-child{
+            text-align:right;
+            font-weight:600;
+        }
+        
+        /* ———————————— 13. partnership Section */
+        .partnership-section{
+            background:var(--ink);
+            color:var(--bg);
+            margin-inline:calc(var(--gutter) * -2);
+            padding:8rem var(--gutter);
+        }
+        
+        .partnership-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:4rem;
+            margin-top:4rem;
+        }
+        
+        .partnership-number{
+            font-size:var(--step-5);
+            font-weight:900;
+            letter-spacing:-.06em;
+            line-height:1;
+            margin-bottom:.5rem;
+            color:var(--accent);
+        }
+        
+        .partnership-label{
+            font-size:var(--step--1);
+            font-weight:400;
+            letter-spacing:-.01em;
+            opacity:.7;
+            text-transform:uppercase;
+        }
+        
+        /* ———————————— 14. Footer */
+        .footer{
+            padding-block:8rem;
+            text-align:center;
+        }
+        
+        .footer-title{
+            font-size:var(--step-5);
+            margin-bottom:2rem;
+            letter-spacing:-.05em;
+        }
+        
+        .btn{
+            display:inline-block;
+            padding:1rem 2rem;
+            border:2px solid var(--ink);
+            font-weight:500;
+            letter-spacing:-.02em;
+            transition:all .2s;
+            margin:.5rem;
+        }
+        
+        .btn:hover{
+            background:var(--ink);
+            color:var(--bg);
+            text-decoration:none;
+        }
+        
+        .btn-primary{
+            background:var(--ink);
+            color:var(--bg);
+            text-decoration:none;
+        }
+        
+        .btn-primary:hover{
+            background:transparent;
+            color:var(--ink);
+            transform:translateY(-2px);
+            box-shadow:0 4px 8px rgba(0,0,0,0.1);
+            text-decoration:none;
+        }
+        
+        /* ———————————— 15. Utilities */
+        .spacer-xs{height:2rem;}
+        .spacer-sm{height:4rem;}
+        .spacer-md{height:6rem;}
+        .spacer-lg{height:8rem;}
+        .spacer-xl{height:12rem;}
+        
+        .text-center{text-align:center;}
+        .opacity-50{opacity:.5;}
+        .opacity-20{opacity:.2;}
+        
+        /* ———————————— 16. Growth Chart */
+        .growth-chart{
+            margin:4rem 0;
+            padding:3rem;
+            border:3px solid var(--ink);
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .growth-bars{
+            display:flex;
+            align-items:flex-end;
+            justify-content:space-between;
+            height:400px;
+            margin-bottom:2rem;
+            position:relative;
+            z-index:1;
+        }
+        
+        .growth-bar{
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            margin:0 1rem;
+            cursor:pointer;
+            transition:all 0.3s ease;
+        }
+        
+        .growth-bar:hover{
+            transform:translateY(-8px);
+        }
+        
+        .bar-fill{
+            width:100%;
+            background:var(--success);
+            transition:all 0.5s cubic-bezier(0.22,1,0.36,1);
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .bar-fill::after{
+            content:'';
+            position:absolute;
+            top:0;
+            left:-100%;
+            width:100%;
+            height:100%;
+            background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.3) 50%,transparent 100%);
+            animation:shimmer 2s infinite;
+        }
+        
+        .growth-bar:last-child .bar-fill{
+            background:var(--accent);
+        }
+        
+        .bar-year{
+            margin-top:1rem;
+            font-weight:700;
+        }
+        
+        .bar-value{
+            color:var(--success);
+            font-weight:700;
+            font-size:var(--step-1);
+            margin-top:0.5rem;
+        }
+        
+        .growth-bar:last-child .bar-value{
+            color:var(--accent);
+        }
+        
+        /* ———————————— 17. Roster Synergy Network */
+        .synergy-visual{
+            position:relative;
+            padding:6rem 0;
+            margin:4rem 0;
+        }
+        
+        .synergy-intro{
+            text-align:center;
+            margin-bottom:4rem;
+        }
+        
+        .synergy-intro p{
+            font-size:var(--step-1);
+            max-width:50ch;
+            margin:0 auto;
+            line-height:1.6;
+        }
+        
+        .synergy-network{
+            position:relative;
+            height:600px;
+            margin:4rem 0;
+            overflow:hidden;
+        }
+        
+        .synergy-node{
+            position:absolute;
+            background:var(--bg);
+            border:3px solid var(--ink);
+            padding:1.5rem 2rem;
+            font-weight:700;
+            transition:all 0.3s ease;
+            cursor:pointer;
+            z-index:10;
+        }
+        
+        .synergy-node:hover{
+            background:var(--ink);
+            color:var(--bg);
+            transform:scale(1.1);
+            z-index:20;
+        }
+        
+        .synergy-node.producer{
+            border-color:var(--accent);
+        }
+        
+        .synergy-node.artist{
+            border-style:dashed;
+        }
+        
+        /* Node positions */
+        .synergy-node:nth-child(1){top:20%;left:45%;} /* Jack - Center */
+        .synergy-node:nth-child(2){top:10%;left:20%;} /* Hudson - Top Left */
+        .synergy-node:nth-child(3){top:10%;right:20%;} /* Ruby - Top Right */
+        .synergy-node:nth-child(4){top:50%;left:10%;} /* Kate - Mid Left */
+        .synergy-node:nth-child(5){top:50%;right:10%;} /* Tom - Mid Right */
+        .synergy-node:nth-child(6){bottom:20%;left:25%;} /* Leon - Bottom Left */
+        .synergy-node:nth-child(7){bottom:20%;right:25%;} /* Conall - Bottom Right */
+        
+        .synergy-lines{
+            position:absolute;
+            inset:0;
+            pointer-events:none;
+        }
+        
+        .synergy-line{
+            position:absolute;
+            height:1px;
+            background:var(--ink);
+            opacity:0.2;
+            transform-origin:left center;
+        }
+        
+        /* Multiplier text */
+        .multiplier-callout{
+            position:absolute;
+            bottom:-4rem;
+            left:50%;
+            transform:translateX(-50%);
+            text-align:center;
+            font-size:var(--step-2);
+            font-weight:700;
+            color:var(--accent);
+        }
+        
+        @keyframes shimmer{
+            to{left:100%;}
+        }
+        
+        @keyframes spin{
+            from{transform:rotate(0deg);}
+            to{transform:rotate(360deg);}
+        }
+        
+        /* Body printing state */
+        body.printing{
+            overflow:visible !important;
+        }
+        
+        /* ———————————— 18. Print Styles */
+        @media print{
+            @page{
+                margin:0.75in;
+                size:letter;
+            }
+            
+            body{
+                background:#fff;
+                color:#000;
+                font-size:11pt;
+                line-height:1.4;
+            }
+            
+            /* Hide navigation and interactive elements */
+            .nav,
+            .modal-close,
+            .control-buttons,
+            .player-controls,
+            .artist-modal{
+                display:none;
+            }
+            
+            /* Ensure sections don't break */
+            section{
+                padding-block:2rem;
+                page-break-inside:avoid;
+            }
+            
+            .hero{
+                height:auto;
+                min-height:100vh;
+                page-break-after:always;
+            }
+            
+            .financial-year,
+            .timeline-item,
+            .case-header,
+            .metrics-grid{
+                page-break-inside:avoid;
+            }
+            
+            /* Reset transforms for print */
+            .hero-image,
+            .large-image,
+            .case-image,
+            .album-cover,
+            .founder-image{
+                transform:none !important;
+            }
+            
+            /* Ensure images print */
+            img{
+                max-width:100%;
+                page-break-inside:avoid;
+                filter:none !important;
+            }
+            
+            /* Typography adjustments */
+            h1{font-size:48pt;}
+            h2{font-size:36pt;}
+            h3{font-size:24pt;}
+            h4{font-size:18pt;}
+            h5{font-size:14pt;}
+            
+            .display{
+                font-size:60pt;
+            }
+            
+            /* Ensure tables are readable */
+            table{
+                font-size:10pt;
+                width:100%;
+            }
+            
+            /* Color adjustments */
+            .partnership-section{
+                background:#000 !important;
+                color:#fff !important;
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+            
+            .case-study{
+                background:#f5f5f5 !important;
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+            
+            /* Artist cards show properly in print */
+            .artist-card{
+                transform:none !important;
+                max-width:200px;
+                page-break-inside:avoid;
+            }
+            
+            .artist-info{
+                position:static;
+                transform:none !important;
+                background:#000;
+                color:#fff;
+                padding:0.5rem;
+                margin:0;
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+            .footer{
+                page-break-before:always;
+                padding:3rem 0;
+            }
+            
+            /* Ensure accent colors print */
+            *{
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+        }
+        
+        /* ———————————— 19. EXCEPTIONAL MOBILE ENHANCEMENTS */
+        /* Mobile Navigation Burger */
+        .nav-burger{
+            display:none;
+            flex-direction:column;
+            gap:4px;
+            cursor:pointer;
+            z-index:1001;
+            padding:8px;
+            margin-right:-8px;
+        }
+        
+        .nav-burger span{
+            width:24px;
+            height:2px;
+            background:var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .nav-burger.active span:nth-child(1){
+            transform:rotate(45deg) translate(5px, 5px);
+        }
+        
+        .nav-burger.active span:nth-child(2){
+            opacity:0;
+        }
+        
+        .nav-burger.active span:nth-child(3){
+            transform:rotate(-45deg) translate(5px, -5px);
+        }
+        
+        /* Enhanced Mobile Typography */
+        @media(max-width:768px){
+            :root{
+                /* Better mobile type scale */
+                --step--2: clamp(.6rem,.8vw,.7rem);
+                --step--1: clamp(.7rem,.9vw,.825rem);
+                --step-0:  clamp(.875rem,1vw,1rem);
+                --step-1:  clamp(1rem,1.2vw,1.25rem);
+                --step-2:  clamp(1.5rem,2vw,2rem);
+                --step-3:  clamp(2rem,3vw,2.5rem);
+                --step-4:  clamp(2.5rem,5vw,3.5rem);
+                --step-5:  clamp(3rem,7vw,5rem);
+                --step-6:  clamp(4rem,12vw,8rem);
+                
+                /* Adjusted spacing for mobile */
+                --gutter:1rem;
+                --section-space:5rem;
+            }
+            
+            /* Mobile Navigation */
+            .nav{
+                padding:1rem 0;
+            }
+            
+            .nav-burger{
+                display:flex;
+            }
+            
+            .nav-links{
+                position:fixed;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                background:var(--bg);
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                gap:2rem;
+                transform:translateX(100%);
+                transition:transform 0.3s ease;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+            }
+            
+            .nav-link{
+                font-size:var(--step-2);
+                opacity:1;
+            }
+            
+            /* Mobile Hero */
+            .hero{
+                min-height:100vh;
+                padding-top:5rem;
+            }
+            
+            .display{
+                font-size:clamp(3rem,20vw,8rem);
+                line-height:.9;
+            }
+            
+            /* Mobile Sections */
+            section{
+                padding-block:var(--section-space);
+            }
+            
+            /* Enhanced Mobile Cards */
+            .concept-card{
+                padding:2rem;
+                margin-bottom:1.5rem;
+                background:var(--bg);
+                position:relative;
+                overflow:visible;
+            }
+            
+            .concept-card::after{
+                content:'';
+                position:absolute;
+                bottom:-8px;
+                left:8px;
+                right:-8px;
+                height:100%;
+                background:var(--ink);
+                opacity:0.1;
+                z-index:-1;
+                transition:all 0.3s ease;
+            }
+            
+            .concept-card:active{
+                transform:translateY(-2px);
+            }
+            
+            .concept-card:active::after{
+                bottom:-4px;
+                left:4px;
+                right:-4px;
+            }
+            
+            /* Mobile Touch Targets */
+            .nav-link,
+            .btn,
+            .social-link{
+                min-height:44px;
+                display:flex;
+                align-items:center;
+            }
+            
+            /* Enhanced Mobile Artist Grid */
+            .artist-grid{
+                gap:2rem;
+                padding:0 0.5rem;
+            }
+            
+            .artist-card{
+                max-width:100%;
+                aspect-ratio:1;
+                position:relative;
+            }
+            
+            .album-cover{
+                height:100%;
+                aspect-ratio:1;
+            }
+            
+            .artist-info{
+                transform:translateY(0);
+                position:absolute;
+                bottom:0;
+                background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.7) 70%,transparent 100%);
+                padding:2rem var(--gutter) var(--gutter);
+            }
+            
+            /* Mobile Modal Enhancements */
+            .artist-modal{
+                align-items:flex-end;
+            }
+            
+            .modal-content{
+                width:100%;
+                max-width:100%;
+                height:90vh;
+                border-radius:1.5rem 1.5rem 0 0;
+                transform:translateY(100%);
+            }
+            
+            .artist-modal.active .modal-content{
+                transform:translateY(0);
+            }
+            
+            .modal-close{
+                position:sticky;
+                top:1rem;
+                right:1rem;
+                background:rgba(255,255,255,0.9);
+                color:var(--ink);
+                backdrop-filter:blur(10px);
+                border:2px solid var(--ink);
+            }
+            
+            .modal-artist-header{
+                gap:2rem;
+                padding:2rem 1rem;
+            }
+            
+            .modal-artist-image{
+                height:50vh;
+                border-radius:1rem;
+                overflow:hidden;
+            }
+            
+            /* Mobile Player Enhancement */
+            .modal-music-section{
+                padding:2rem 1rem;
+                background:var(--ink);
+                color:var(--bg);
+            }
+            
+            .track{
+                padding:1.25rem 0;
+                position:relative;
+            }
+            
+            .track:active{
+                background:rgba(255,255,255,0.1);
+                padding-left:1rem;
+            }
+            
+            .progress-bar{
+                height:6px;
+                margin:1.5rem 0;
+                cursor:pointer;
+                position:relative;
+            }
+            
+            .progress-bar::before{
+                content:'';
+                position:absolute;
+                top:-10px;
+                bottom:-10px;
+                left:0;
+                right:0;
+            }
+            
+            /* Mobile Timeline */
+            .timeline{
+                padding-left:2rem;
+                position:relative;
+            }
+            
+            .timeline-line{
+                left:0;
+                top:0;
+                bottom:0;
+                right:auto;
+                width:2px;
+                height:100%;
+                background:linear-gradient(180deg, var(--ink) 0%, var(--accent) 50%, var(--success) 100%);
+            }
+            
+            .timeline-item{
+                padding-left:2rem;
+                padding-top:0;
+                margin-bottom:3rem;
+            }
+            
+            .timeline-marker{
+                left:-6px;
+                top:0;
+            }
+            
+            /* Mobile Case Studies */
+            .case-image{
+                width:100%;
+                max-width:none;
+                height:50vh;
+                margin-bottom:2rem;
+            }
+            
+            .case-section{
+                margin-bottom:1.5rem;
+            }
+            
+            .case-deal{
+                padding:2rem 1.5rem;
+                margin-inline:-1rem;
+            }
+            
+            /* Mobile Synergy Network */
+            .synergy-network{
+                height:auto;
+                padding:2rem 0;
+            }
+            
+            .synergy-node{
+                position:relative !important;
+                width:100%;
+                margin-bottom:1rem;
+                text-align:center;
+                padding:1.5rem;
+            }
+            
+            .synergy-lines{
+                display:none;
+            }
+            
+            .multiplier-callout{
+                position:relative;
+                margin-top:2rem;
+                bottom:auto;
+            }
+            
+            /* Mobile Financial Tables */
+            .financial-year{
+                margin-bottom:2rem;
+                overflow-x:auto;
+            }
+            
+            table{
+                font-size:var(--step--1);
+                min-width:280px;
+            }
+            
+            table td{
+                padding:0.75rem 0.5rem;
+            }
+            
+            /* Mobile partnership Section */
+            .partnership-section{
+                padding:4rem 1rem;
+                margin-inline:-1rem;
+            }
+            
+            .partnership-grid{
+                grid-template-columns:1fr;
+                gap:3rem;
+                text-align:center;
+            }
+            
+            /* Mobile Footer */
+            .footer{
+                padding-block:4rem;
+            }
+            
+            .footer-title{
+                font-size:var(--step-4);
+            }
+            
+            /* Mobile Quotes */
+            .quote{
+                font-size:var(--step-2);
+                margin-block:3rem;
+                padding-left:1.5rem;
+                border-left-width:3px;
+            }
+            
+            /* Swipe Hints */
+            .swipe-hint{
+                display:block;
+                text-align:center;
+                font-size:var(--step--2);
+                opacity:0.5;
+                margin-top:1rem;
+                text-transform:uppercase;
+                letter-spacing:0.1em;
+            }
+            
+            /* Performance Optimizations */
+            .artist-card,
+            .concept-card,
+            .case-section,
+            .financial-year,
+            .timeline-item{
+                will-change:transform;
+            }
+            
+            /* Reduced Motion Support */
+            @media(prefers-reduced-motion: reduce){
+                *{
+                    animation:none !important;
+                    transition:none !important;
+                }
+            }
+            
+            /* Touch Feedback */
+            .artist-card:active,
+            .btn:active,
+            .social-link:active,
+            .nav-link:active{
+                transform:scale(0.98);
+            }
+            
+            /* iOS Safe Areas */
+            .nav{
+                padding-top:max(1rem, env(safe-area-inset-top));
+            }
+            
+            .footer{
+                padding-bottom:max(4rem, env(safe-area-inset-bottom));
+            }
+            
+            /* Improved Tap Targets */
+            .track,
+            .social-link,
+            .nav-link{
+                position:relative;
+            }
+            
+            .track::before,
+            .social-link::before,
+            .nav-link::before{
+                content:'';
+                position:absolute;
+                top:-8px;
+                bottom:-8px;
+                left:-12px;
+                right:-12px;
+            }
+        }
+        
+        /* Small Mobile Optimizations */
+        @media(max-width:375px){
+            .display{
+                font-size:clamp(2.5rem,18vw,6rem);
+            }
+            
+            .modal-artist-info h2{
+                font-size:var(--step-3);
+            }
+            
+            .partnership-number{
+                font-size:var(--step-4);
+            }
+        }
+        
+        /* Landscape Mobile */
+        @media(max-width:768px) and (orientation:landscape){
+            .hero{
+                min-height:auto;
+                padding:3rem 0;
+            }
+            
+            .modal-content{
+                height:100vh;
+                border-radius:0;
+            }
+            
+            .modal-artist-image{
+                height:40vh;
+            }
+        }
+    </style>
+
+    <style>
+        .playlist-embed {
+            max-width: 640px;
+            margin: 3rem auto;
+        }
+
+        /* ———————————— Record Player Styles */
+        .record-player-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 3rem auto;
+            max-width: 640px;
+        }
+
+        .artwork {
+            display: inline-block;
+            width: 15em;
+            position: relative;
+            overflow: hidden;
+            border-radius: 50%;
+            box-shadow: 0 .3em .7em rgba(0,0,0,.25);
+            cursor: pointer;
+            -webkit-backface-visibility: hidden;
+            transform: translate3d(0,0,0);
+            transition: all 0.3s ease;
+        }
+
+        .artwork:hover {
+            transform: translate3d(0,-4px,0) scale(1.02);
+            box-shadow: 0 .5em 1em rgba(0,0,0,.35);
+        }
+
+        .artwork:before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url(https://res.cloudinary.com/amogl/image/upload/v1489850644/Codepen/Disks/shine.png) no-repeat center/cover;
+            mix-blend-mode: overlay;
+            border-radius: 50%;
+        }
+
+        .artwork:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 1em;
+            height: 1em;
+            background: var(--bg);
+            transform: translate(-50%,-50%);
+            border-radius: 50%;
+            box-shadow: inset 0 .2em .2em rgba(0,0,0,.25);
+            z-index: 2;
+        }
+
+        .artwork img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 50%;
+            animation: spin 6s linear infinite;
+        }
+
+        .record-hint {
+            font-size: var(--step--1);
+            opacity: 0.6;
+            margin-top: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            text-align: center;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ———————————— Player Modal */
+        #playerModal {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,.95);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        #playerModal .modal-content {
+            max-width: 640px;
+            width: 90%;
+            background: var(--bg);
+            border-radius: 24px;
+            padding: 1.5rem;
+            box-shadow: 0 0 2rem rgba(0,0,0,.1);
+            position: relative;
+            border: 2px solid var(--ink);
+        }
+
+        #playerModal .close-btn {
+            position: absolute;
+            top: .5rem;
+            right: .75rem;
+            font-size: 1.5rem;
+            line-height: 1;
+            color: var(--ink);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #playerModal .close-btn:hover {
+            color: var(--accent);
+            transform: rotate(90deg);
+        }
+
+        /* ———————————— Picture-in-Picture Mini Player */
+        #pip {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            width: 260px;
+            display: none;
+            z-index: 9998;
+            background: var(--bg);
+            border: 2px solid var(--ink);
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,.15);
+        }
+
+        #pip iframe {
+            border-radius: 14px;
+            width: 100%;
+            height: 140px;
+        }
+
+        #pip .close-btn {
+            position: absolute;
+            top: -.75rem;
+            right: -.5rem;
+            background: var(--ink);
+            color: var(--bg);
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        #pip .close-btn:hover {
+            background: var(--accent);
+        }
+    </style>
+
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner container">
+            <div class="nav-logo">ALL MY FRIENDS</div>
+            <div class="nav-burger" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#intro" class="nav-link active" onclick="closeMobileNav()">Intro</a></li>
+                <li><a href="#artists" class="nav-link" onclick="closeMobileNav()">Artists</a></li>
+                <li><a href="#future" class="nav-link" onclick="closeMobileNav()">Future</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Hero / Intro -->
+    <section id="intro" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div style="margin-bottom: 4rem; display: block; width: 100%; overflow: visible; min-height: 560px;">
+                    <style>
+                        .amf-logo {
+                            --logo-unit: 102px;
+                            --bar-width: 77px;
+                            --gap: calc(var(--logo-unit) / 12);
+                            --black: #000;
+                            --white: #fff;
+                            --font-family: 'Helvetica Neue', Arial, sans-serif;
+                        }
+
+                        .amf-logo-wrapper {
+                            width: 100%;
+                            height: 560px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 15rem 2rem 2rem 2rem
+                        }
+
+                        .amf-logo-container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-start;
+                            user-select: none;
+                        }
+
+                        .amf-logo-elements {
+                            display: flex;
+                            align-items: flex-end;
+                            gap: var(--gap);
+                        }
+
+                        .amf-logo-a .amf-circle {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--black);
+                            color: var(--white);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border: 1px solid var(--white);
+                            border-radius: 50%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            animation: amfRotateKnob 6s linear infinite;
+                        }
+
+                        .amf-rounded-bar {
+                            width: var(--bar-width);
+                            background: var(--black);
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            border-radius: calc(var(--bar-width)/2);
+                            position: relative;
+                            overflow: hidden;
+                            display: flex;
+                            align-items: flex-end;
+                            justify-content: center;
+                        }
+
+                        .amf-bar-m {
+                            height: calc(var(--logo-unit) * 2);
+                        }
+
+                        .amf-bar-f {
+                            height: calc(var(--logo-unit) * 3.7);
+                            top: calc(var(--logo-unit) * 0.8);
+                        }
+
+                        .amf-rounded-bar .amf-letter {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--white);
+                            color: var(--black);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border-radius: 50%;
+                            position: absolute;
+                            bottom: 0;
+                            left: 50%;
+                            transform: translateX(-50%);
+                        }
+
+                        .amf-bar-m .amf-letter {
+                            animation: amfSliderUpDown 6s ease-in-out infinite alternate;
+                        }
+
+                        .amf-bar-f .amf-letter {
+                            animation: amfSliderDownUp 6.5s ease-in-out infinite alternate;
+                        }
+
+                        @keyframes amfSliderUpDown {
+                            0%, 100% { bottom: 0; }
+                            50%      { bottom: 60%; }
+                        }
+                        @keyframes amfSliderDownUp {
+                            0%, 100% { bottom: 60%; }
+                            50%      { bottom: 0; }
+                        }
+                        @keyframes amfRotateKnob {
+                            from { transform: rotate(0deg); }
+                            to   { transform: rotate(360deg); }
+                        }
+
+                        .amf-logo-a,
+                        .amf-bar-m {
+                            transform: translateY(24px);
+                        }
+
+                        .amf-logo-text {
+                            display: inline-block;
+                            white-space: nowrap;
+                            margin-top: calc(var(--logo-unit) / 2.5);
+                            margin-left: calc(var(--bar-width) * 2 + var(--gap));
+                            transform: translateX(-100%);
+                            font-family: var(--font-family);
+                            font-size: calc(var(--logo-unit) / 3.4);
+                            text-transform: uppercase;
+                            letter-spacing: -0.5px;
+                            color: var(--black);
+                            line-height: 0.8;
+                            font-weight: bold;
+                        }
+
+                        .amf-logo-text div:first-child {
+                            margin: 0;
+                        }
+
+                        .amf-logo-text div:last-child {
+                            margin: 0;
+                            display: block;
+                            text-align: right;
+                        }
+
+                        @media (max-height: 560px), (max-width: 500px) {
+                            .amf-logo-wrapper { transform: scale(0.7); }
+                        }
+                        @media (max-height: 440px), (max-width: 400px) {
+                            .amf-logo-wrapper { transform: scale(0.6); }
+                        }
+                        @media (max-width: 500px) {
+                            .amf-logo {
+                                --logo-unit: 80px;
+                                --bar-width: 64px;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="amf-logo">
+                        <div class="amf-logo-wrapper">
+                            <div class="amf-logo-container">
+                                <div class="amf-logo-elements">
+                                    <div class="amf-logo-a">
+                                        <div class="amf-circle">A</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-m">
+                                        <div class="amf-letter">M</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-f">
+                                        <div class="amf-letter">F</div>
+                                    </div>
+                                </div>
+                                <div class="amf-logo-text">
+                                    <div>ALL MY FRIENDS</div>
+                                    <div>INC</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="lead">Building the future of artist development<br>through vision-focused partnership and genuine partnership</p>
+                <div class="spacer-md"></div>
+                <p class="opacity-50">Founded February 2022 by Theo Battaglia<br>3+ years operating lean • 7 strategic artists • 100% partner mentality</p>
+            </div>
+        </div>
+        <div class="hero-image"></div>
+    </section>
+    
+    <!-- Who We Are -->
+    <section style="position:relative;">
+        <div class="abstract-corner"></div>
+        
+        <div class="container">
+            <p class="section-marker">01 — WHO WE ARE</p>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <h2 data-misreg="THE EVOLVED">THE EVOLVED<br>MANAGEMENT<br>COMPANY</h2>
+                    <div class="spacer-md"></div>
+                    <p class="lead">
+                        All My Friends Inc. is a bootstrapped venture built on the conviction that real, 
+                        lasting artist development isn't a temporary highway to a destination—it's an 
+                        evolving journey that grows alongside the artist.
+                    </p>
+                </div>
+                <div class="col-4">
+                    <!-- Spinning Record Player -->
+                    <div class="record-player-container" style="margin: 0; align-items: flex-end;">
+                        <div class="artwork" id="record">
+                            <img src="https://tyymaqwprqsupipyalpj.supabase.co/storage/v1/object/sign/private-project-art/37f85415-ab63-460d-ba3c-6f49be594c1e/fb62fcf70ef5d11fb0860b3dede52ddae8c1a69b.png?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJwcml2YXRlLXByb2plY3QtYXJ0LzM3Zjg1NDE1LWFiNjMtNDYwZC1iYTNjLTZmNDliZTU5NGMxZS9mYjYyZmNmNzBlZjVkMTFmYjA4NjBiM2RlZGU1MmRkYWU4YzFhNjliLnBuZyIsImlhdCI6MTc1MDEyNDY5OSwiZXhwIjoxNzYwNDkyNjk5fQ.YSgGSRDN75_qs4h0HYtlC3xiAi_ed0lt7m-D7Cbfl7g" alt="All My Friends Playlist">
+                        </div>
+                        <p class="record-hint">Click to play our roster playlist</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="concept-cards">
+                <div class="concept-card problem">
+                    <h5>The Problem</h5>
+                    <p>• Profit-extraction mindset: Artists seen merely as revenue channels<br>
+                    • Misaligned incentives: Agencies push short-term wins over long-term growth<br>
+                    • Limited equity participation: Upfront cash but no meaningful ownership<br>
+                    • Reactivity over strategy: Ad-hoc decisions miss trend anticipation</p>
+                </div>
+                <div class="concept-card solution">
+                    <h5>Our Solution</h5>
+                    <p>• vision-focused partnership: Each artist as dynamic talent with compounding value<br>
+                    • Equity alignment: Artists become true partners, not just clients<br>
+                    • Game-theoretic insight: Anticipate industry shifts before mainstream<br>
+                    • Long-horizon partnership: Sustained development and creative runway</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="quote">
+                We don't treat our artists like product.<br>
+                We treat them like partners.<br>
+                It's not just what we do—it's who we are.
+            </div>
+        </div>
+    </section>
+    
+    <!-- Artist Showcase -->
+    <section id="artists">
+        <div class="container">
+            <p class="section-marker">02 — OUR ARTISTS</p>
+            
+            <div class="grid">
+                <div class="col-10">
+                    <h2>MEET THE <span data-misreg="ROSTER">ROSTER</span></h2>
+                    <p class="lead">Click any artist to explore their story, hear exclusive demos, and discover their journey</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="artist-grid">
+                <!-- Hudson Ingram -->
+                <div class="artist-card" data-artist="hudson">
+                    <img src="https://allmyfriendsinc.com/uploads/upload-1748121117525-242753559.jpeg" 
+                         alt="Hudson Ingram" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Hudson Ingram</div>
+                        <div class="artist-role">Artist • Interscope/Dessner JV</div>
+                    </div>
+                </div>
+                
+                <!-- Jack Schrepferman -->
+                <div class="artist-card" data-artist="jack">
+                    <img src="https://allmyfriendsinc.com/uploads/upload-1748120927291-42815401.png" 
+                         alt="Jack Schrepferman" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Jack Schrepferman</div>
+                        <div class="artist-role">Producer • Kobalt</div>
+                    </div>
+                </div>
+                
+                <!-- Ruby Plume -->
+                <div class="artist-card" data-artist="ruby">
+                    <img src="https://allmyfriendsinc.com/uploads/upload-1748121131532-324221674.png" 
+                         alt="Ruby Plume" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Ruby Plume</div>
+                        <div class="artist-role">Artist/Songwriter</div>
+                    </div>
+                </div>
+                
+                <!-- Kate Stephenson -->
+                <div class="artist-card" data-artist="kate">
+                    <img src="https://allmyfriendsinc.com/uploads/upload-1748120863747-270939313.jpg" 
+                         alt="Kate Stephenson" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Kate Stephenson</div>
+                        <div class="artist-role">Artist/Creator</div>
+                    </div>
+                </div>
+                
+                <!-- Leon Sharplin -->
+                <div class="artist-card" data-artist="leon">
+                    <img src="https://allmyfriendsinc.com/uploads/upload-1751081737021-755156096.png" 
+                         alt="Leon Sharplin" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Leon Sharplin</div>
+                        <div class="artist-role">Producer/Artist</div>
+                    </div>
+                </div>
+                
+                <!-- Tom Siletto -->
+                <div class="artist-card" data-artist="tom">
+                    <img src="https://allmyfriendsinc.com/uploads/upload-1748121102073-915680969.png" 
+                         alt="Tom Siletto" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Tom Siletto</div>
+                        <div class="artist-role">Artist</div>
+                    </div>
+                </div>
+                
+                <!-- Conall Cafferty -->
+                <div class="artist-card" data-artist="conall">
+                    <img src="https://allmyfriendsinc.com/uploads/upload-1748123456690-945730077.png" 
+                         alt="Conall Cafferty" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Conall Cafferty</div>
+                        <div class="artist-role">Artist/Songwriter</div>
+                    </div>
+                </div>
+            </div>
+            <p class="swipe-hint">Tap to explore</p>
+        </div>
+        
+<!-- ARTIST MODALS WITH EMBEDS - FULL REPLACEMENT -->
+
+<div class="artist-modal" id="artist-modal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">×</button>
+
+    <!-- HUDSON INGRAM -->
+    <div id="hudson-modal">
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          <img src="https://allmyfriendsinc.com/uploads/upload-1748121117525-242753559.jpeg" alt="Hudson Ingram">
+        </div>
+        <div class="modal-artist-info">
+          <h2>Hudson Ingram</h2>
+          <div class="modal-artist-role">Artist • Interscope/Dessner JV</div>
+          <p class="artist-bio">Hudson Ingram, an 18-year-old Nashville-based artist from Texas, makes music that feels as big as commercial pop but is built on a foundation of sharp songwriting and real musicianship. The son of country artist Jack Ingram, he grew up immersed in storytelling, developing a style that merges intimate, deeply felt lyrics with hooks that hit on first listen. Obsessed with the craft, self-taught in production, and relentless in his pursuit of mastery, Hudson is carving his own lane—one that feels classic, yet completely his own.</p>
+          <div class="social-links">[Insert Social Links]</div>
+        </div>
+      </div>
+      <div class="modal-music-section">
+        <h3 class="modal-section-title">Music</h3>
+        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TEoWLLmvBCMx" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- JACK SCHREPFERMAN -->
+    <div id="jack-modal">
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          <img src="https://allmyfriendsinc.com/uploads/upload-1748120927291-42815401.png" alt="Jack Schrepferman">
+        </div>
+        <div class="modal-artist-info">
+          <h2>Jack Schrepferman</h2>
+          <div class="modal-artist-role">Producer • Kobalt</div>
+          <p class="artist-bio">Jack Schrepferman is a Nashville-based multi genre songwriter, producer, and multi-instrumentalist known for crafting song-centered music that seamlessly blends pop sensibility with bold, innovative production. At just 21, his catalogue has amassed over 70 million streams across all genres, with recent singles cut by Dasha (Warner), Dhruv (RCA), Steinza (Santa Ana), Midwxst (Geffen), and Astrid S (Island).
+
+Jack spent his formative years working closely with Grammy-nominated, multi-platinum producer JT Daly, contributing to projects for artists such as Benson Boone, Tai Verdes, Bully, and PVRIS at MMK Studios. This experience laid the foundation for Jack's adaptable and artist-first approach, regardless of musical style.
+
+Jack's work has also included placements for brands like Michael Kors and Amazon. He is actively collaborating with both emerging and established artists / writers, including Jensen McRae, Johnny Orlando, M-Phazes, Geoff Warburton alongside developing sounds with rising independent talents such as Hudson Ingram, Ryman, Conall Cafferty, Kenzie Cait, and Casper Sage.</p>
+          <div class="social-links">[Insert Social Links]</div>
+        </div>
+      </div>
+      <div class="modal-music-section">
+        <h3 class="modal-section-title">Music</h3>
+        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/WNFeGYKaapgk" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- RUBY PLUME -->
+    <div id="ruby-modal">
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          <img src="https://allmyfriendsinc.com/uploads/upload-1748121131532-324221674.png" alt="Ruby Plume">
+        </div>
+        <div class="modal-artist-info">
+          <h2>Ruby Plume</h2>
+          <div class="modal-artist-role">Artist/Songwriter</div>
+          <p class="artist-bio">Ruby Plume is an alt-folk-pop artist from Boston whose intricate storytelling and lush guitar melodies form a liminal, daydreamy musical canvas. Her vocals carry a quiet intensity, layering youthful clarity over emotional depth reminiscent of artists who defined alt-pop for a new generation.
+
+Ruby's songs are subtly prismatic—shifting effortlessly between vivid emotion and elusive mystery, warmth and introspection.
+
+Beyond her standout singer-songwriter talent, Ruby is a poly-artistic force, incorporating guitar finesse, imaginative illustration, and mixed-media art into her creative arsenal. These visual explorations deepen the vivid daydream that is her developing world—rounding out a creative universe that feels both tangible and dreamlike.</p>
+          <div class="social-links">[Insert Social Links]</div>
+        </div>
+      </div>
+      <div class="modal-music-section">
+        <h3 class="modal-section-title">Music</h3>
+        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TzHxY2K2S4gX" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- TOM SILETTO -->
+    <div id="tom-modal">
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          <img src="https://allmyfriendsinc.com/uploads/upload-1748121102073-915680969.png" alt="Tom Siletto">
+        </div>
+        <div class="modal-artist-info">
+          <h2>Tom Siletto</h2>
+          <div class="modal-artist-role">Artist</div>
+          <p class="artist-bio">Tom Siletto is an emerging artist in the indie folk/pop scene whose introspective, candid songwriting draws listeners in as if in conversation with a close friend. He seamlessly blends strong lyricism and haunting instrumentation, evoking the gloomy cliffs of Northern California where he grew up. 
+
+Siletto is also part of the duo Darling, which has amassed devoted listeners after just two released songs. Their first single, 'couldn't i,' garnered about 200k streams on Spotify alone in the first month, without help from editorial playlists.</p>
+          <div class="social-links">[Insert Social Links]</div>
+        </div>
+      </div>
+      <div class="modal-music-section">
+        <h3 class="modal-section-title">Music</h3>
+        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/LzuqcxQvWcrM" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- CONALL CAFFERTY -->
+    <div id="conall-modal">
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          <img src="https://allmyfriendsinc.com/uploads/upload-1748123456690-945730077.png" alt="Conall Cafferty">
+        </div>
+        <div class="modal-artist-info">
+          <h2>Conall Cafferty</h2>
+          <div class="modal-artist-role">Artist/Songwriter</div>
+          <p class="artist-bio">Conall Cafferty—a 20-year-old singer-songwriter from Montclair, NJ now rooted in Nashville—pairs a self-taught, blues-bred guitar style and distinctive vocal tone with the sharp lyricism he honed during a stint at Belmont's songwriting program and a brief turn on American Idol. His songs fuse porch-born intimacy with the kind of hooks that can fill a room, reflecting influences that range from B.B. King to Damien Rice while never losing their raw, first-take authenticity. Recent co-writes with Jonas Connor, Jack Schrepferman, Jake Finch, and Collin Pastore show Conall carving a lane where indie-twinged Americana feels both deeply personal and ready for the biggest stages.</p>
+          <div class="social-links">[Insert Social Links]</div>
+        </div>
+      </div>
+      <div class="modal-music-section">
+        <h3 class="modal-section-title">Music</h3>
+        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/auMykkLeigIV" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- KATE STEPHENSON -->
+    <div id="kate-modal">
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          <img src="https://allmyfriendsinc.com/uploads/upload-1748120863747-270939313.jpg" alt="Kate Stephenson">
+        </div>
+        <div class="modal-artist-info">
+          <h2>Kate Stephenson</h2>
+          <div class="modal-artist-role">Artist/Creator</div>
+          <p class="artist-bio">Kate Stephenson is a Nashville-based folk-pop experimentalist from the Illinois suburbs. Raised backstage while her orchestral-musician parents rehearsed and classically trained from childhood, she carries that precision in her bones—then deliberately bends it into spellbinding shapes, using detuned guitars, off-kilter drum loops, and cinematic lyric lines to conjure something unmistakably her own.
+
+Her work lives where confessional storytelling meets sonic risk: finger-picked melodies collide with glitchy samples, strings swell into sudden dissonance, and off-the-cuff humor disarms before the next emotional gut punch lands. Recording, mixing, and mutating most tracks herself, Stephenson prizes autonomy over polish, chasing the imperfect take that feels undeniable. The result is a daring, true-artist catalogue that stretches folk honesty across pop's elastic edges while always keeping the listener within whispered reach.</p>
+          <div class="social-links">[Insert Social Links]</div>
+        </div>
+      </div>
+      <div class="modal-music-section">
+        <h3 class="modal-section-title">Music</h3>
+        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/DvbwudWvMBk1" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+    <!-- LEON SHARPLIN -->
+    <div id="leon-modal">
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          <img src="https://allmyfriendsinc.com/uploads/upload-1751081737021-755156096.png" alt="Leon Sharplin">
+        </div>
+        <div class="modal-artist-info">
+          <h2>Leon Sharplin</h2>
+          <div class="modal-artist-role">Producer/Artist</div>
+          <p class="artist-bio">Leon Sharplin is a Los Angeles–based producer, songwriter, and multi-instrumentalist from New Zealand whose Berklee-honed chops let him weave finger-picked guitars, chamber-ready strings, and surgically sculpted synths into one seamless folk-pop-R&B mosaic. His "special sauce" is intentional contrast: live instruments tracked with audiophile care, then bent through sleek electronic sound design until the familiar feels future-bound yet instantly cohesive.
+
+In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifying an artist's own voice—whether that means ghosting behind the console, layering harmony on a vintage bass, or deconstructing a beat until it breathes. A former metal guitarist who detoured through jazz and hip-hop, Sharplin now carries a genre-fluid toolkit and an obsessive attention to detail that turns half-formed sketches into fully realized worlds. The through-line is always the same: serve the song, push the edges, and make the atypical sound inevitable.</p>
+          <div class="social-links">[Insert Social Links]</div>
+        </div>
+      </div>
+      <div class="modal-music-section">
+        <h3 class="modal-section-title">Music</h3>
+        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/ob42rf6hvgMB" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+    </section>
+    
+    <!-- Meet Theo -->
+    <section style="background:#FAFAFA;" class="founder-section">
+        <div class="container">
+            <p class="section-marker">03 — MEET THE FOUNDER</p>
+            
+            <div class="founder-content">
+                <div>
+                    <h2>THEO<br>BATTAGLIA</h2>
+                    <p class="lead">Founder</p>
+                    <div class="spacer-md"></div>
+                    <p>
+                        With a background spanning major labels (<strong>10K Projects</strong>), entertainment studios 
+                        (<strong>HBO</strong>, <strong>Warner Bros</strong>), and tech innovators (<strong>Apple</strong>), I've witnessed firsthand how 
+                        traditional management commodifies talent rather than cultivating it.
+                    </p>
+                    <p>
+                        I launched All My Friends Inc. in 2022 to prove that real, lasting artist 
+                        development—rooted in visionary strategy and genuine partnership—can yield 
+                        stellar commercial results while nurturing creative evolution.
+                    </p>
+                </div>
+                <div class="founder-image">
+                    <img src="https://admin.allmyfriendsinc.com/uploads/upload-1751584655185-135257080.png" alt="Theo Battaglia">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    
+    <!-- Future Plans -->
+    <section id="future">
+        <div class="container">
+            <p class="section-marker">04 — FUTURE VISION</p>
+            
+            <div class="grid">
+                <div class="col-10">
+                    <h2 data-misreg="30 ARTISTS BY 2030">30 ARTISTS<br>BY 2030</h2>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        Building a self-sustaining ecosystem where artists, producers, and songwriters 
+                        grow together – creating compounding value through genuine collaboration.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <h4>Roster Evolution</h4>
+            <div class="spacer-sm"></div>
+            
+            <div class="metrics-grid">
+                <div class="metric-item">
+                    <div class="metric-value" style="font-size:var(--step-3);">2025</div>
+                    <div class="metric-label">Current</div>
+                    <p style="font-size:var(--step--1);margin-top:0.5rem;">5 Artists<br>2 Producers/Writers<br>(71% / 29%)</p>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" style="font-size:var(--step-3);">2027</div>
+                    <div class="metric-label">Growing</div>
+                    <p style="font-size:var(--step--1);margin-top:0.5rem;">10 Artists<br>5 Producers/Writers<br>(67% / 33%)</p>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" style="font-size:var(--step-3);">2029</div>
+                    <div class="metric-label">Balanced</div>
+                    <p style="font-size:var(--step--1);margin-top:0.5rem;">16 Artists<br>9 Producers/Writers<br>(64% / 36%)</p>
+                </div>
+                <div class="metric-item">
+                    <div class="metric-value" style="font-size:var(--step-3);">2030</div>
+                    <div class="metric-label">Target</div>
+                    <p style="font-size:var(--step--1);margin-top:0.5rem;">18 Artists<br>12 Producers/Writers<br>(60% / 40%)</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-12">
+                    <p><strong>Strategic Balance:</strong> As we scale, we're intentionally building a more balanced roster. 
+                    and touring revenue. This 60/40 split creates financial stability and creative synergy.</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="quote">
+                Every artist becomes a node in our network,<br>
+                creating opportunities for others while building their own career
+            </div>
+        </div>
+    </section>
+    
+
+    
+    <!-- Financials -->
+    
+    <!-- partnership Ask -->
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <h2 class="footer-title">All My Friends</h2>
+            <p class="lead text-center">
+                Building lasting careers through<br>
+                vision, partnership, and genuine care
+            </p>
+            
+            <div class="spacer-md"></div>
+            
+            <a href="#" id="download-pdf" class="btn btn-primary">Download as PDF</a>
+            
+            <div class="spacer-xl"></div>
+            
+            <p class="opacity-50">© 2025 All My Friends Inc.</p>
+        </div>
+    </footer>
+    
+    <!-- Player Modal -->
+    <div id="playerModal">
+        <div class="modal-content">
+            <button class="close-btn" id="closeModal" aria-label="Close modal">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Picture-in-Picture Mini Player -->
+    <div id="pip">
+        <button class="close-btn" id="closePip" aria-label="Close mini player">✕</button>
+    </div>
+
+    <!-- Minimal JS -->
+<script>
+// Mobile Navigation
+function toggleMobileNav() {
+  const burger = document.querySelector('.nav-burger');
+  const navLinks = document.querySelector('.nav-links');
+  burger.classList.toggle('active');
+  navLinks.classList.toggle('active');
+}
+
+function closeMobileNav() {
+  const burger = document.querySelector('.nav-burger');
+  const navLinks = document.querySelector('.nav-links');
+  burger.classList.remove('active');
+  navLinks.classList.remove('active');
+}
+
+// Active nav highlighting
+const sections = document.querySelectorAll('section[id]');
+const navLinks = document.querySelectorAll('.nav-link');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    if (scrollY >= section.offsetTop - 100) {
+      current = section.id;
+    }
+  });
+
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+});
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// Modal Functionality for Artist Cards
+function openModal(artistId) {
+  document.getElementById('artist-modal').classList.add('active');
+  const modals = document.querySelectorAll('#artist-modal > .modal-content > div[id$="-modal"]');
+  modals.forEach(m => m.style.display = 'none');
+  const target = document.getElementById(artistId + '-modal');
+  if (target) target.style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('artist-modal').classList.remove('active');
+  const modals = document.querySelectorAll('#artist-modal > .modal-content > div[id$="-modal"]');
+  modals.forEach(m => m.style.display = 'none');
+}
+
+function initializeArtistCards() {
+  document.querySelectorAll('.artist-card').forEach(card => {
+    card.addEventListener('click', () => openModal(card.dataset.artist));
+  });
+
+  const modal = document.getElementById('artist-modal');
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+}
+
+// Synergy Lines
+function drawSynergyLines() {
+  const container = document.querySelector('.synergy-lines');
+  const nodes = document.querySelectorAll('.synergy-node');
+  if (window.innerWidth <= 768) return;
+  container.innerHTML = '';
+  const connections = [
+    [0, 1], [0, 2], [0, 3], [0, 4],
+    [1, 2], [1, 4], [1, 6], [5, 2],
+    [5, 3], [5, 6], [0, 5]
+  ];
+  connections.forEach(([from, to]) => {
+    const fromNode = nodes[from];
+    const toNode = nodes[to];
+    if (fromNode && toNode) {
+      const fromRect = fromNode.getBoundingClientRect();
+      const toRect = toNode.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+      const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+      const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+      const y2 = toRect.top + toRect.height / 2 - containerRect.top;
+      const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+      const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+      const line = document.createElement('div');
+      line.className = 'synergy-line';
+      line.style.width = `${length}px`;
+      line.style.left = `${x1}px`;
+      line.style.top = `${y1}px`;
+      line.style.transform = `rotate`;
+      container.appendChild(line);
+    }
+  });
+}
+
+// Download PDF
+function downloadPDF() {
+  const originalTitle = document.title;
+  document.title = 'All My Friends Inc - Company Overview 2025';
+  document.body.classList.add('printing');
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove('printing');
+    document.title = originalTitle;
+  }, 100);
+}
+
+// Mobile Touch Gestures
+let touchStartX = 0;
+let touchEndX = 0;
+function handleGesture() {
+  // No-op since music player is removed
+}
+
+// Record Player Functionality
+const record = document.getElementById('record');
+const playerModal = document.getElementById('playerModal');
+const modalBody = document.getElementById('modalBody');
+const pip = document.getElementById('pip');
+let playlistIframe;
+
+// Helper: create or move the iframe into a target node
+function mountPlayer(target) {
+  if (!playlistIframe) {
+    playlistIframe = document.createElement('iframe');
+    playlistIframe.src = 'https://untitled.stream/embed/hmNPUhuH0OUE';
+    playlistIframe.width = '100%';
+    playlistIframe.height = '344';
+    playlistIframe.allow = 'picture-in-picture; fullscreen';
+    playlistIframe.frameBorder = '0';
+    playlistIframe.loading = 'lazy';
+    playlistIframe.style.borderRadius = '24px';
+  }
+  target.appendChild(playlistIframe);
+}
+
+// Open full modal on record click
+function openPlayerModal() {
+  if (record && playerModal && modalBody) {
+    mountPlayer(modalBody);
+    pip.style.display = 'none';
+    playerModal.style.display = 'flex';
+  }
+}
+
+// Minimize to small player
+function minimizePlayer() {
+  if (playerModal && pip) {
+    playerModal.style.display = 'none';
+    mountPlayer(pip);
+    pip.style.display = 'block';
+  }
+}
+
+// Fully close & stop playback
+function closePlayer() {
+  if (playlistIframe) {
+    playlistIframe.remove();
+    playlistIframe = null;
+  }
+  if (pip) {
+    pip.style.display = 'none';
+  }
+}
+
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  initializeArtistCards();
+  setTimeout(drawSynergyLines, 100);
+  window.addEventListener('resize', drawSynergyLines);
+  
+  // Record Player Event Listeners
+  if (record) {
+    record.addEventListener('click', openPlayerModal);
+  }
+  
+  const closeModalBtn = document.getElementById('closeModal');
+  if (closeModalBtn) {
+    closeModalBtn.addEventListener('click', minimizePlayer);
+  }
+  
+  const closePipBtn = document.getElementById('closePip');
+  if (closePipBtn) {
+    closePipBtn.addEventListener('click', closePlayer);
+  }
+  
+  // Click backdrop to minimize
+  if (playerModal) {
+    playerModal.addEventListener('click', e => {
+      if (e.target === playerModal) minimizePlayer();
+    });
+  }
+  
+  const pdfButton = document.getElementById('download-pdf');
+  if (pdfButton) {
+    pdfButton.addEventListener('click', e => {
+      e.preventDefault();
+      downloadPDF();
+    });
+  }
+  const modalContent = document.querySelector('.modal-content');
+  if (modalContent) {
+    modalContent.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+    modalContent.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleGesture(); });
+  }
+  document.body.addEventListener('touchmove', e => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+});
+</script>
+
+</body>
+</html>
