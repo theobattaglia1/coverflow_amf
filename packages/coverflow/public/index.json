@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "hudson_hero": {
+      "type": "hudson-hero",
+      "settings": {}
+    }
+  },
+  "order": ["hudson_hero"]
+} 
