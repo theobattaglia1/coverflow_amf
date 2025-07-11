@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stage Plot</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background-color: #ffffff;
+      color: #111;
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 40px 20px;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      max-width: 1200px;
+      width: 100%;
+      align-items: start;
+    }
+
+    .stage-diagram {
+      background: #f5f5f5;
+      padding: 24px;
+      border-radius: 12px;
+      text-align: center;
+      position: relative;
+    }
+
+    .stage-diagram img {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .legend {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .legend h1 {
+      font-size: 28px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin: 0;
+    }
+
+    .legend-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .legend-item-number {
+      font-weight: bold;
+      font-size: 18px;
+      min-width: 24px;
+    }
+
+    .legend-item-text {
+      font-size: 15px;
+      max-width: 400px;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        gap: 32px;
+      }
+
+      .legend h1 {
+        font-size: 22px;
+      }
+
+      .legend-item-text {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="stage-diagram">
+      <img src="Stage%20Plot.png" alt="Stage Plot Diagram">
+    </div>
+    <div class="legend">
+      <h1>Stage Legend</h1>
+      <div class="legend-item">
+        <div class="legend-item-number">1.</div>
+        <div class="legend-item-text">Vocal Mic<br>Center-stage boom mic for vocals</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-item-number">2.</div>
+        <div class="legend-item-text">Acoustic Guitar<br>Plugged into DI: primary performance instrument</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-item-number">3.</div>
+        <div class="legend-item-text">Wedge Monitor (L)<br>Foldback monitor for vocals + guitar blend</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-item-number">4.</div>
+        <div class="legend-item-text">Wedge Monitor (R)<br>Duplicate monitor (if stereo or needed for room fill)</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-item-number">5.</div>
+        <div class="legend-item-text">DI Box (Acoustic)<br>Active DI positioned just upstage-right of artist</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-item-number">6.</div>
+        <div class="legend-item-text">Power Drop (Pedal)<br>120 V Edison drop near downstage-left pedal zone</div>
+      </div>
+      <div class="legend-item">
+        <div class="legend-item-number">7.</div>
+        <div class="legend-item-text">Chair (Artist-supplied)</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

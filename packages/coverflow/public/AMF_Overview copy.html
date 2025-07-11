@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hudson Ingram – Official Site</title>
+
+<!-- -----  BASIC RESET  ----- -->
+<style>
+:root{
+    --brand: #0063B2;          /* Pantone 18-4245 Electric Blue Lemonade :contentReference[oaicite:0]{index=0} */
+    --black: #111;
+    --white: #fff;
+    --grid-gap: 4vw;          /* 4-pt modular spacing scaled */
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:url("https://allmyfriendsinc.com/uploads/upload-1752102975913-294092840.png") center/cover no-repeat fixed;color:var(--white);}
+
+body{display:grid;grid-template-rows:1fr auto}
+
+/* -----  HERO  ----- */
+.hero{
+    position:relative;
+    display:grid;
+    align-content:center;
+    padding:0 var(--grid-gap);
+    min-height:100vh;
+}
+
+.logo{
+    width:clamp(16rem,40vw,36rem);
+    height:auto;
+    animation:fadeIn 1.2s ease-out both;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:none;}}
+/* -----  LINKS  ----- */
+.links{
+    margin-top:2rem;
+    display:flex;flex-wrap:wrap;gap:1.25rem;
+}
+.links a{
+    text-decoration:none;
+    font-size:1rem;
+    font-weight:500;
+    letter-spacing:0.05em;
+    color:var(--white);
+    position:relative;
+    padding-bottom:2px;
+    transition:color .25s ease;
+}
+.links a::after{                /* Swiss-clean underline reveal */
+    content:"";
+    position:absolute;left:0;bottom:0;
+    width:100%;height:1.5px;
+    background:var(--brand);
+    transform:scaleX(0);
+    transform-origin:left;
+    transition:transform .25s ease;
+}
+.links a:hover{color:var(--brand);}
+.links a:hover::after{transform:scaleX(1);}
+
+/* -----  FOOTER  ----- */
+footer{
+    padding:1.5rem var(--grid-gap);
+    display:flex;flex-direction:column;row-gap:0.75rem;
+    font-size:0.9rem;
+    border-top:1px solid rgba(255,255,255,0.3);
+}
+footer a{color:var(--white);text-decoration:none;}
+footer a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<section class="hero">
+    <div>
+        <img src="https://allmyfriendsinc.com/uploads/upload-1752102895885-649919476.png" alt="Hudson Ingram" class="logo">
+
+        <nav class="links">
+            <a href="https://open.spotify.com/artist/1BRxpuKTlqnqSofTbVx4oo" target="_blank">Spotify</a>
+            <a href="https://music.apple.com/us/artist/hudson-ingram/1670252125" target="_blank">Apple Music</a>
+            <a href="https://www.instagram.com/hudson.ingram/?hl=en" target="_blank">Instagram</a>
+            <a href="https://www.tiktok.com/@hudson.ingram?lang=en" target="_blank">TikTok</a>
+            <a href="https://www.youtube.com/@HudsonIngram" target="_blank">YouTube</a>
+        </nav>
+    </div>
+</section>
+
+<footer>
+    <span>© 2025 Hudson Ingram. All rights reserved.</span>
+    <span>Contact → <a href="mailto:hi@allmyfriendsinc.com">hi@allmyfriendsinc.com</a></span>
+</footer>
+
+</body>
+</html>
