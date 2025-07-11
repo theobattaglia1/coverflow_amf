@@ -77,8 +77,8 @@
     }
 
     .bar-f {
-      height: calc(var(--logo-unit) * 3.7);
-      top: calc(var(--logo-unit) * 0.8);
+      height: calc(var(--logo-unit) * 4.45);
+      top: calc(var(--logo-unit) * 1.55);
     }
 
     .rounded-bar .letter {
@@ -92,6 +92,9 @@
       bottom: 0;
       left: 50%;
       transform: translateX(-50%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     .bar-m .letter {
@@ -123,15 +126,15 @@
     .logo-text {
       display: inline-block;
       white-space: nowrap;
-      margin-top: calc(var(--logo-unit) / 5.5);
+      margin-top: calc(var(--logo-unit) / 4);
       margin-left: calc(var(--bar-width) * 2 + var(--gap));
       transform: translateX(-100%);
       font-family: var(--font-family);
-      font-size: calc(var(--logo-unit) / 1.7);
+      font-size: calc(var(--logo-unit) / 1.7 * 0.75);
       text-transform: uppercase;
       letter-spacing: -0.5px;
-      color: var(--black);
-      line-height: 1;
+      color: var(--white);
+      line-height: 0.8;
       font-weight: bold;
     }
 
