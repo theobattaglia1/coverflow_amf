@@ -337,63 +337,161 @@ async function loadAssets() {
   try {
     const res = await fetch('/data/assets.json');
     const data = await res.json();
-    assets = data.assets || {};
-    folders = Object.keys(assets);
+    
+    // Handle migration from flat structure or initialize empty structure
+    if (Array.isArray(data.images) && !data.folders) {
+      assets = {
+        folders: [],
+        images: data.images || []
+      };
+    } else if (data.assets) {
+      // Legacy format - convert to new format
+      assets = {
+        folders: Object.keys(data.assets || {}).map(name => ({
+          name,
+          type: 'folder',
+          children: (data.assets[name] || []).map(item => ({ ...item, type: 'image' }))
+        })),
+        images: []
+      };
+    } else {
+      assets = data;
+    }
+    
+    // Ensure proper structure
+    if (!assets.folders) assets.folders = [];
+    if (!assets.images) assets.images = [];
+    
     renderFolders();
     renderAssets();
   } catch (err) {
     console.error('Failed to load assets:', err);
+    assets = { folders: [], images: [] };
+    renderFolders();
+    renderAssets();
   }
 }
 
 function renderFolders() {
   const folderTree = document.getElementById('folderTree');
+  if (!folderTree) return;
+  
   folderTree.innerHTML = '';
   
   // Root folder
   const rootItem = document.createElement('li');
-  rootItem.className = 'folder-item' + (currentFolder === '' ? ' active' : '');
-  rootItem.textContent = 'ROOT';
-  rootItem.onclick = () => selectFolder('');
+  rootItem.className = 'folder-item' + (currentPath === '' ? ' active' : '');
+  rootItem.innerHTML = `
+    <span onclick="navigateToFolder('')" style="cursor: pointer;">ROOT</span>
+  `;
+  rootItem.dataset.path = '';
   folderTree.appendChild(rootItem);
   
-  // Other folders
-  folders.forEach(folder => {
+  // Render hierarchical folders
+  function renderFolder(folder, level = 0) {
     const li = document.createElement('li');
-    li.className = 'folder-item' + (currentFolder === folder ? ' active' : '');
-    li.textContent = folder.toUpperCase();
-    li.onclick = () => selectFolder(folder);
+    const indent = level * 20;
+    const hasChildren = folder.children && folder.children.filter(c => c.type === 'folder').length > 0;
+    const folderPath = folder.path || folder.name;
+    
+    li.className = 'folder-item' + (currentPath === folderPath ? ' active' : '');
+    li.dataset.path = folderPath;
+    li.style.paddingLeft = `${indent}px`;
+    
+    li.innerHTML = `
+      <span>${hasChildren ? '▸' : '·'}</span>
+      <span onclick="navigateToFolder('${folderPath}')" style="cursor: pointer; text-transform: uppercase;">
+        ${folder.name}
+      </span>
+      <div style="margin-left: auto; opacity: 0.6; display: none;" class="folder-actions">
+        <button onclick="renameFolder('${folderPath}')" style="background: none; border: none; color: inherit; cursor: pointer;" title="Rename">✎</button>
+        <button onclick="deleteFolder('${folderPath}')" style="background: none; border: none; color: inherit; cursor: pointer;" title="Delete">✕</button>
+      </div>
+    `;
+    
+    // Show actions on hover
+    li.addEventListener('mouseenter', () => {
+      li.querySelector('.folder-actions').style.display = 'flex';
+    });
+    li.addEventListener('mouseleave', () => {
+      li.querySelector('.folder-actions').style.display = 'none';
+    });
+    
     folderTree.appendChild(li);
-  });
-}
-
-function selectFolder(folder) {
-  currentFolder = folder;
-  renderFolders();
-  renderAssets();
+    
+    // Render children
+    if (hasChildren) {
+      folder.children.filter(c => c.type === 'folder').forEach(child => {
+        renderFolder({...child, path: folderPath + '/' + child.name}, level + 1);
+      });
+    }
+  }
+  
+  // Render all top-level folders
+  if (assets.folders) {
+    assets.folders.forEach(folder => renderFolder(folder));
+  }
 }
 
 function renderAssets() {
   const container = document.getElementById('assetsContainer');
+  if (!container) return;
+  
   container.innerHTML = '';
   
-  const folderAssets = currentFolder ? (assets[currentFolder] || []) : 
-    Object.values(assets).flat();
+  // Get items in current folder
+  const { images } = getCurrentFolderItems();
   
-  folderAssets.forEach(asset => {
+  if (images.length === 0) {
+    container.innerHTML = '<p style="color: var(--grey-500); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO IMAGES IN THIS FOLDER</p>';
+    return;
+  }
+  
+  images.forEach((image, index) => {
     const div = document.createElement('div');
     div.className = 'asset-item';
     div.innerHTML = `
-      <img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy">
+      <img src="${image.url}" alt="${image.name || 'Asset'}" loading="lazy"
+           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'100\\'%3E%3Crect fill=\\'%23333\\' width=\\'200\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\' font-size=\\'10\\' font-family=\\'monospace\\'%3EBROKEN%3C/text%3E%3C/svg%3E'">
+      <input type="text" value="${image.name || ''}" placeholder="UNTITLED" 
+             onchange="updateAssetName('${image.url}', this.value)" 
+             style="margin-bottom: var(--space-sm);">
+      <div style="font-family: var(--font-mono); font-size: 0.625rem; word-break: break-all; margin-bottom: var(--space-sm); cursor: pointer; opacity: 0.6;"
+           onclick="copyToClipboard('${image.url}')" title="CLICK TO COPY">
+        ${image.url}
+      </div>
+      <button onclick="deleteAsset('${image.url}')" style="width: 100%;">DELETE</button>
     `;
-    
-    div.onclick = () => {
-      navigator.clipboard.writeText(asset.url);
-      showToast('URL COPIED TO CLIPBOARD');
-    };
     
     container.appendChild(div);
   });
+}
+
+// Get items in current folder
+function getCurrentFolderItems() {
+  if (currentPath === '' || !currentPath) {
+    return {
+      folders: assets.folders || [],
+      images: assets.images || []
+    };
+  }
+  
+  // Navigate to current folder
+  const pathParts = currentPath.split('/').filter(Boolean);
+  let current = assets;
+  
+  for (const part of pathParts) {
+    const folder = (current.folders || current.children || []).find(f => 
+      (f.type === 'folder' || !f.type) && f.name === part
+    );
+    if (!folder) return { folders: [], images: [] };
+    current = folder;
+  }
+  
+  return {
+    folders: (current.children || []).filter(c => c.type === 'folder'),
+    images: (current.children || []).filter(c => c.type === 'image')
+  };
 }
 
 // Drag and drop functionality
@@ -664,11 +762,333 @@ async function deleteSelected() {
   showToast(`DELETED ${count} COVERS`);
 }
 
-// Fix: Define setupAssetDropzone if not present
-if (typeof setupAssetDropzone !== 'function') {
-  function setupAssetDropzone(dropzone) {
-    // No-op: drag-and-drop for assets is not implemented yet
-    // Prevent error if called
-    console.warn('setupAssetDropzone called but not implemented.');
+// Asset management functions
+let currentPath = '';
+
+// Create new folder
+async function createNewFolder() {
+  const name = prompt('ENTER FOLDER NAME:');
+  if (!name) return;
+  
+  showLoading();
+  try {
+    const res = await fetch('/api/folder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: currentPath, name })
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error);
+    }
+    
+    showToast('FOLDER CREATED SUCCESSFULLY');
+    await loadAssets();
+  } catch (err) {
+    showToast(err.message || 'FAILED TO CREATE FOLDER', 5000);
+  } finally {
+    hideLoading();
   }
-} 
+}
+
+// Rename folder
+async function renameFolder(path) {
+  const oldName = path.split('/').pop();
+  const newName = prompt('ENTER NEW NAME:', oldName);
+  if (!newName || newName === oldName) return;
+  
+  showLoading();
+  try {
+    const res = await fetch('/api/folder/rename', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path, newName })
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error);
+    }
+    
+    showToast('FOLDER RENAMED SUCCESSFULLY');
+    await loadAssets();
+  } catch (err) {
+    showToast(err.message || 'FAILED TO RENAME FOLDER', 5000);
+  } finally {
+    hideLoading();
+  }
+}
+
+// Delete folder
+async function deleteFolder(path) {
+  if (!confirm(`DELETE FOLDER "${path.split('/').pop().toUpperCase()}" AND ALL ITS CONTENTS?`)) return;
+  
+  showLoading();
+  try {
+    const res = await fetch('/api/folder', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path })
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error);
+    }
+    
+    showToast('FOLDER DELETED SUCCESSFULLY');
+    if (currentPath.startsWith(path)) {
+      navigateToFolder('');
+    }
+    await loadAssets();
+  } catch (err) {
+    showToast(err.message || 'FAILED TO DELETE FOLDER', 5000);
+  } finally {
+    hideLoading();
+  }
+}
+
+// Navigate to folder
+function navigateToFolder(path) {
+  currentPath = path;
+  
+  // Update active folder
+  document.querySelectorAll('.folder-item').forEach(item => {
+    item.classList.toggle('active', item.dataset && item.dataset.path === path);
+  });
+  
+  renderAssets();
+}
+
+// Update asset name
+function updateAssetName(url, name) {
+  // Find and update the asset
+  function updateInStructure(items) {
+    for (let item of items) {
+      if (item.type === 'image' && item.url === url) {
+        item.name = name;
+        return true;
+      }
+      if (item.children) {
+        if (updateInStructure(item.children)) return true;
+      }
+    }
+    return false;
+  }
+  
+  // Check root images
+  if (assets.images) {
+    const rootImage = assets.images.find(img => img.url === url);
+    if (rootImage) {
+      rootImage.name = name;
+    } else {
+      // Check in folders
+      if (assets.folders) {
+        updateInStructure(assets.folders);
+      }
+    }
+  }
+  
+  saveAssets();
+}
+
+// Delete asset
+async function deleteAsset(url) {
+  if (!confirm('DELETE THIS ASSET?')) return;
+  
+  // Remove from structure
+  function removeFromStructure(items) {
+    for (let i = 0; i < items.length; i++) {
+      if (items[i].type === 'image' && items[i].url === url) {
+        items.splice(i, 1);
+        return true;
+      }
+      if (items[i].children) {
+        if (removeFromStructure(items[i].children)) return true;
+      }
+    }
+    return false;
+  }
+  
+  // Check root images
+  if (assets.images) {
+    const rootIndex = assets.images.findIndex(img => img.url === url);
+    if (rootIndex !== -1) {
+      assets.images.splice(rootIndex, 1);
+    } else {
+      // Check in folders
+      if (assets.folders) {
+        assets.folders.forEach(folder => {
+          if (folder.children) {
+            removeFromStructure(folder.children);
+          }
+        });
+      }
+    }
+  }
+  
+  await saveAssets();
+  renderAssets();
+}
+
+// Copy to clipboard
+function copyToClipboard(text) {
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('URL COPIED TO CLIPBOARD');
+  }).catch(() => {
+    showToast('FAILED TO COPY TO CLIPBOARD', 5000);
+  });
+}
+
+// Save assets
+async function saveAssets() {
+  try {
+    const res = await fetch('/save-assets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(assets)
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server error ${res.status}`);
+    }
+
+    console.log("✅ Assets saved");
+  } catch (err) {
+    console.error("❌ Error saving assets:", err);
+    showToast('FAILED TO SAVE ASSETS', 5000);
+  }
+}
+
+// Setup asset dropzone
+function setupAssetDropzone(dropzone) {
+  if (!dropzone) return;
+  
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  // Highlight drop zone
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.add('active');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.remove('active');
+    }, false);
+  });
+
+  // Handle dropped files
+  dropzone.addEventListener('drop', handleAssetDrop, false);
+
+  // Also allow click to upload
+  dropzone.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.onchange = e => handleAssetUpload(e.target.files);
+    input.click();
+  });
+}
+
+// Handle asset drop
+async function handleAssetDrop(e) {
+  const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+  
+  if (files.length === 0) {
+    showToast('PLEASE DROP IMAGE FILES ONLY');
+    return;
+  }
+  
+  await handleAssetUpload(files);
+}
+
+// Handle asset upload
+async function handleAssetUpload(files) {
+  showLoading();
+  
+  try {
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('image', file);
+      if (currentPath) {
+        formData.append('folder', currentPath);
+      }
+      
+      const res = await fetch('/upload-image', {
+        method: 'POST',
+        body: formData
+      });
+      
+      const data = await res.json();
+      
+      if (res.ok) {
+        // Add to assets in current folder
+        const newAsset = {
+          type: 'image',
+          url: data.url,
+          name: file.name.replace(/\.[^/.]+$/, ''),
+          uploadedAt: new Date().toISOString()
+        };
+        
+        if (!assets) assets = { folders: [], images: [] };
+        
+        if (currentPath === '' || !currentPath) {
+          if (!assets.images) assets.images = [];
+          assets.images.push(newAsset);
+        } else {
+          // Navigate to current folder and add
+          const pathParts = currentPath.split('/').filter(Boolean);
+          let current = assets;
+          
+          for (const part of pathParts) {
+            let folder = (current.folders || current.children || []).find(f => 
+              (f.type === 'folder' || !f.type) && f.name === part
+            );
+            if (!folder) {
+              folder = { name: part, type: 'folder', children: [] };
+              if (!current.folders) current.folders = [];
+              current.folders.push(folder);
+            }
+            current = folder;
+          }
+          
+          if (!current.children) current.children = [];
+          current.children.push(newAsset);
+        }
+        
+        showToast(`UPLOADED ${file.name.toUpperCase()}`);
+      } else {
+        throw new Error(data.error || 'Upload failed');
+      }
+    }
+    
+    await saveAssets();
+    renderAssets();
+  } catch (err) {
+    showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 5000);
+    console.error(err);
+  } finally {
+    hideLoading();
+  }
+}
+
+// Make functions globally available
+window.createNewFolder = createNewFolder;
+window.renameFolder = renameFolder;
+window.deleteFolder = deleteFolder;
+window.navigateToFolder = navigateToFolder;
+window.updateAssetName = updateAssetName;
+window.deleteAsset = deleteAsset;
+window.copyToClipboard = copyToClipboard; 
