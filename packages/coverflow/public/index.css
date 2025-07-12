@@ -895,7 +895,7 @@ html, body {
 /* === MOBILE LAYOUT (VERTICAL & ELEGANT) === */
 @media (max-width: 768px) {
   body {
-    padding-top: 300px; /* Increased even more to accommodate larger logo */
+    padding-top: 340px; /* Increased to accommodate logo + filter bar */
     padding-bottom: 0;
     font-size: 18px;
     line-height: 1.4;
@@ -927,7 +927,7 @@ html, body {
   /* === MOBILE FILTER BAR (BELOW LOGO) === */
   .filter-nav {
     position: fixed;
-    top: 220px; /* Adjusted for the larger logo container */
+    top: 280px; /* Moved further down to be below the logo container */
     left: 0;
     right: 0;
     padding: 8px 12px; /* Slightly less padding */
