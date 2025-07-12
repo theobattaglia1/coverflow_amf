@@ -178,9 +178,9 @@ coverflowEl.addEventListener('touchend', e => {
   const isCurrentlyMobile = window.innerWidth <= 768;
   
   if (isCurrentlyMobile) {
-    // Mobile: vertical swipes
+    // Mobile: vertical swipes (reversed direction)
     if (Math.abs(diffY) > 60 && Math.abs(diffY) > Math.abs(diffX)) {
-      setActiveIndex(activeIndex + (diffY < 0 ? -1 : 1));
+      setActiveIndex(activeIndex + (diffY < 0 ? 1 : -1)); // Reversed: swipe up = next, swipe down = previous
     }
   } else {
     // Desktop: horizontal swipes
