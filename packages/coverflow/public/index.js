@@ -162,15 +162,32 @@ function updateAmbient() {
   }, {passive:true});
 })();
 
-// 4) Horizontal swipe/wheel only
+// 4) Enhanced swipe/wheel for mobile vertical layout
 let wheelCooldown = false,
-    touchStartX   = 0;
+    touchStartX   = 0,
+    touchStartY   = 0;
 
 coverflowEl.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
-coverflowEl.addEventListener('touchstart', e => { touchStartX = e.touches[0].screenX; }, { passive: true });
+coverflowEl.addEventListener('touchstart', e => { 
+  touchStartX = e.touches[0].screenX;
+  touchStartY = e.touches[0].screenY;
+}, { passive: true });
 coverflowEl.addEventListener('touchend', e => {
-  const diff = e.changedTouches[0].screenX - touchStartX;
-  if (Math.abs(diff) > 60) setActiveIndex(activeIndex + (diff < 0 ? 1 : -1));
+  const diffX = e.changedTouches[0].screenX - touchStartX;
+  const diffY = e.changedTouches[0].screenY - touchStartY;
+  const isCurrentlyMobile = window.innerWidth <= 768;
+  
+  if (isCurrentlyMobile) {
+    // Mobile: vertical swipes
+    if (Math.abs(diffY) > 60 && Math.abs(diffY) > Math.abs(diffX)) {
+      setActiveIndex(activeIndex + (diffY < 0 ? -1 : 1));
+    }
+  } else {
+    // Desktop: horizontal swipes
+    if (Math.abs(diffX) > 60) {
+      setActiveIndex(activeIndex + (diffX < 0 ? 1 : -1));
+    }
+  }
 }, { passive: true });
 
 window.addEventListener('wheel', e => {
@@ -200,20 +217,45 @@ fetch('/data/styles.json')
     console.log('Using default styles');
   });
 
-// 6) Layout params
+// 6) Layout params - Enhanced for mobile vertical layout
 function updateLayoutParameters() {
   const vw = window.innerWidth;
+  const isCurrentlyMobile = vw <= 768;
 
-  if (isMobile) {
-    // on mobile, use larger spacing to accommodate bigger/flipped cards
-    coverSpacing   = Math.max(180, vw * 0.30);
-    anglePerOffset = 50;
-    minScale       = 0.45;
+  if (isCurrentlyMobile) {
+    // Mobile uses vertical layout - no coverflow spacing needed
+    coverSpacing   = 0;
+    anglePerOffset = 0;
+    minScale       = 0.95;
+    
+    // Update container for vertical layout
+    const container = document.getElementById('coverflow-container');
+    if (container) {
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.alignItems = 'center';
+      container.style.gap = 'clamp(16px, 4vh, 32px)';
+      container.style.width = '100%';
+      container.style.maxWidth = '400px';
+      container.style.margin = '0 auto';
+    }
   } else {
-    // original desktop spacing with better minimum
-    coverSpacing   = Math.max(150, vw * 0.18); // Increased minimum from 120 to 150
+    // Desktop coverflow parameters
+    coverSpacing   = Math.max(150, vw * 0.18);
     anglePerOffset = vw < 600 ? 50 : 65;
     minScale       = vw < 600 ? 0.45 : 0.5;
+    
+    // Reset container for horizontal layout
+    const container = document.getElementById('coverflow-container');
+    if (container) {
+      container.style.display = '';
+      container.style.flexDirection = '';
+      container.style.alignItems = '';
+      container.style.gap = '';
+      container.style.width = '';
+      container.style.maxWidth = '';
+      container.style.margin = '';
+    }
   }
 }
 
@@ -418,45 +460,88 @@ function setupLazyLoading() {
   });
 }
 
-// 8) 3D layout
+// 8) 3D layout - Enhanced for mobile vertical layout
 function renderCoverFlow() {
+  const isCurrentlyMobile = window.innerWidth <= 768;
+  
   document.querySelectorAll('.cover').forEach(cover => {
     const i      = +cover.dataset.index;
     const offset = i - activeIndex;
-    const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
-    const scale  = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
-    const tx     = eff * coverSpacing;
-    const ry     = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
-
-    // Apply transform without breaking the breathing animation
-    if (offset === 0) {
-      cover.style.transform = `
-        translateX(${tx}px)
-        scale(${scale})
-        rotateY(${ry}deg)
-      `;
+    
+    if (isCurrentlyMobile) {
+      // Mobile vertical layout - simpler positioning
+      cover.style.position = 'relative';
+      cover.style.left = '';
+      cover.style.top = '';
+      
+      if (offset === 0) {
+        cover.style.transform = 'scale(1.05)';
+        cover.style.opacity = '1';
+        cover.style.filter = 'none';
+        cover.style.zIndex = '10';
+      } else {
+        cover.style.transform = 'scale(0.95)';
+        cover.style.opacity = '0.7';
+        cover.style.filter = 'blur(1px)';
+        cover.style.zIndex = '1';
+      }
     } else {
-      cover.style.transform = `
-        translate(-50%,-50%)
-        translateX(${tx}px)
-        scale(${scale})
-        rotateY(${ry}deg)
-      `;
+      // Desktop coverflow positioning
+      const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
+      const scale  = Math.max(minScale, 1 - Math.abs(offset) * 0.08);
+      const tx     = eff * coverSpacing;
+      const ry     = Math.max(-maxAngle, Math.min(offset * -anglePerOffset, maxAngle));
+
+      cover.style.position = 'absolute';
+      cover.style.left = '50%';
+      cover.style.top = '50%';
+      cover.style.opacity = '';
+      
+      // Apply transform without breaking the breathing animation
+      if (offset === 0) {
+        cover.style.transform = `
+          translateX(${tx}px)
+          scale(${scale})
+          rotateY(${ry}deg)
+        `;
+      } else {
+        cover.style.transform = `
+          translate(-50%,-50%)
+          translateX(${tx}px)
+          scale(${scale})
+          rotateY(${ry}deg)
+        `;
+      }
+      
+      // Dynamic shadow opacity based on position
+      cover.style.setProperty('--shadow-opacity', 
+        offset === 0 ? '0.6' : `${0.3 - Math.abs(offset) * 0.05}`);
+      
+      cover.style.filter = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset),4)}px)`;
+      
+      // Enhanced z-index calculation to ensure proper layering
+      const baseZ = 1000; // Start with a high base to avoid conflicts
+      cover.style.zIndex = baseZ + (covers.length - Math.abs(offset)) * 10;
     }
-    
-    // Dynamic shadow opacity based on position
-    cover.style.setProperty('--shadow-opacity', 
-      offset === 0 ? '0.6' : `${0.3 - Math.abs(offset) * 0.05}`);
-    
-    cover.style.filter = offset === 0 ? 'none' : `blur(${Math.min(Math.abs(offset),4)}px)`;
-    
-    // Enhanced z-index calculation to ensure proper layering
-    const baseZ = 1000; // Start with a high base to avoid conflicts
-    cover.style.zIndex = baseZ + (covers.length - Math.abs(offset)) * 10;
     
     cover.querySelector('.flip-container')?.classList.remove('flipped');
     cover.classList.toggle('cover-active', offset === 0);
   });
+  
+  // Scroll to active cover on mobile
+  if (isCurrentlyMobile) {
+    setTimeout(() => {
+      const activeCover = document.querySelector('.cover-active');
+      if (activeCover) {
+        activeCover.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+          inline: 'center'
+        });
+      }
+    }, 100);
+  }
+  
   updateAmbient();
 }
 
@@ -793,3 +878,4 @@ document.addEventListener('keydown', () => {
 document.addEventListener('mousedown', () => {
   document.body.classList.remove('keyboard-nav');
 });
+
