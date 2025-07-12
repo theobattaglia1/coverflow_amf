@@ -895,7 +895,7 @@ html, body {
 /* === MOBILE LAYOUT (VERTICAL & ELEGANT) === */
 @media (max-width: 768px) {
   body {
-    padding-top: 280px; /* Reduced from 340px for more balanced layout */
+    padding-top: 270px; /* Reduced from 280px */
     padding-bottom: 0;
     font-size: 18px;
     line-height: 1.4;
@@ -908,7 +908,7 @@ html, body {
     left: 0;
     right: 0;
     justify-content: center;
-    padding: 24px clamp(16px, 4vw, 24px) 20px; /* Reduced from 40px/32px to 24px/20px */
+    padding: 24px clamp(16px, 4vw, 24px) 10px; /* Reduced bottom padding from 20px to 10px */
     margin: 0; /* Remove margins for fixed positioning */
     background: rgba(0,0,0,0.95);
     backdrop-filter: blur(20px) saturate(1.2);
@@ -927,7 +927,7 @@ html, body {
   /* === MOBILE FILTER BAR (BELOW LOGO) === */
   .filter-nav {
     position: fixed;
-    top: 220px; /* Adjusted down from 280px to 220px for the reduced logo padding */
+    top: 210px; /* Reduced from 220px */
     left: 0;
     right: 0;
     padding: 8px 12px; /* Slightly less padding */
