@@ -895,7 +895,7 @@ html, body {
 /* === MOBILE LAYOUT (VERTICAL & ELEGANT) === */
 @media (max-width: 768px) {
   body {
-    padding-top: 260px; /* Much more space for logo and filter bar */
+    padding-top: 300px; /* Increased even more to accommodate larger logo */
     padding-bottom: 0;
     font-size: 18px;
     line-height: 1.4;
@@ -908,23 +908,26 @@ html, body {
     left: 0;
     right: 0;
     justify-content: center;
-    padding: 40px clamp(16px, 4vw, 24px) 32px; /* Much more padding: 40px top, 32px bottom */
+    padding: 40px clamp(16px, 4vw, 24px) 32px; /* Keep the generous padding */
     margin: 0; /* Remove margins for fixed positioning */
     background: rgba(0,0,0,0.95);
     backdrop-filter: blur(20px) saturate(1.2);
     border-bottom: 1px solid rgba(255,255,255,0.06);
     z-index: 101; /* Above filter bar */
+    height: auto; /* Let height adjust to content */
+    min-height: 200px; /* Ensure minimum height for full logo */
   }
 
   .logo-frame {
-    max-width: 240px !important; /* Slightly smaller for fixed header */
-    height: 100px !important; /* Proportional height */
+    max-width: 280px !important; /* Slightly wider for mobile */
+    height: 140px !important; /* Much taller to show full logo */
+    overflow: visible !important; /* Ensure nothing gets clipped */
   }
 
   /* === MOBILE FILTER BAR (BELOW LOGO) === */
   .filter-nav {
     position: fixed;
-    top: 180px; /* Moved much further down to accommodate larger logo padding */
+    top: 220px; /* Adjusted for the larger logo container */
     left: 0;
     right: 0;
     padding: 8px 12px; /* Slightly less padding */
