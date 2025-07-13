@@ -344,6 +344,12 @@ async function loadAssets() {
         folders: [],
         images: data.images || []
       };
+    } else if (Array.isArray(data.children) && !data.folders) {
+      // PATCH: support legacy/miswritten structure
+      assets = {
+        folders: data.children,
+        images: data.images || []
+      };
     } else if (data.assets) {
       // Legacy format - convert to new format
       assets = {
@@ -443,26 +449,31 @@ function renderAssets() {
   const { images } = getCurrentFolderItems();
   
   if (images.length === 0) {
-    container.innerHTML = '<p style="color: var(--grey-500); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO IMAGES IN THIS FOLDER</p>';
+    container.innerHTML = '<p style="color: var(--grey-500); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO ASSETS IN THIS FOLDER</p>';
     return;
   }
   
-  images.forEach((image, index) => {
+  images.forEach((asset, index) => {
+    let mediaTag = '';
+    if (asset.type === 'video') {
+      mediaTag = `<video src="${asset.url}" controls style="width:100%;height:180px;object-fit:cover;background:#222;"></video>`;
+    } else if (asset.type === 'audio') {
+      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
+    } else {
+      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy"
+           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
+    }
     const div = document.createElement('div');
     div.className = 'asset-item';
     div.innerHTML = `
-      <img src="${image.url}" alt="${image.name || 'Asset'}" loading="lazy"
-           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'100\\'%3E%3Crect fill=\\'%23333\\' width=\\'200\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\' font-size=\\'10\\' font-family=\\'monospace\\'%3EBROKEN%3C/text%3E%3C/svg%3E'">
-      <input type="text" value="${image.name || ''}" placeholder="UNTITLED" 
-             onchange="updateAssetName('${image.url}', this.value)" 
-             style="margin-bottom: var(--space-sm);">
+      ${mediaTag}
+      <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)" style="margin-bottom: var(--space-sm);">
       <div style="font-family: var(--font-mono); font-size: 0.625rem; word-break: break-all; margin-bottom: var(--space-sm); cursor: pointer; opacity: 0.6;"
-           onclick="copyToClipboard('${image.url}')" title="CLICK TO COPY">
-        ${image.url}
+           onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
+        ${asset.url}
       </div>
-      <button onclick="deleteAsset('${image.url}')" style="width: 100%;">DELETE</button>
+      <button onclick="deleteAsset('${asset.url}')" style="width: 100%;">DELETE</button>
     `;
-    
     container.appendChild(div);
   });
 }
@@ -932,10 +943,24 @@ async function deleteAsset(url) {
   renderAssets();
 }
 
-// Copy to clipboard
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('URL COPIED TO CLIPBOARD');
+// Copy to clipboard (full URL)
+function copyToClipboardFullPath(urlOrPath, isFolder = false) {
+  let fullUrl = urlOrPath;
+  // If it's a folder, build the full path
+  if (isFolder) {
+    // Remove leading/trailing slashes
+    let cleanPath = urlOrPath.replace(/^\/+|\/+$/g, '');
+    fullUrl = window.location.origin + '/admin/assets/' + cleanPath;
+  } else {
+    // If url is relative, prepend origin
+    if (/^\//.test(urlOrPath)) {
+      fullUrl = window.location.origin + urlOrPath;
+    } else if (!/^https?:\/\//.test(urlOrPath)) {
+      fullUrl = window.location.origin + '/' + urlOrPath;
+    }
+  }
+  navigator.clipboard.writeText(fullUrl).then(() => {
+    showToast('FULL URL COPIED TO CLIPBOARD');
   }).catch(() => {
     showToast('FAILED TO COPY TO CLIPBOARD', 5000);
   });
@@ -995,7 +1020,7 @@ function setupAssetDropzone(dropzone) {
   dropzone.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/*,video/*,audio/*';
     input.multiple = true;
     input.onchange = e => handleAssetUpload(e.target.files);
     input.click();
@@ -1004,10 +1029,10 @@ function setupAssetDropzone(dropzone) {
 
 // Handle asset drop
 async function handleAssetDrop(e) {
-  const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/'));
+  const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/') || f.type.startsWith('video/') || f.type.startsWith('audio/'));
   
   if (files.length === 0) {
-    showToast('PLEASE DROP IMAGE FILES ONLY');
+    showToast('PLEASE DROP IMAGE, VIDEO, OR AUDIO FILES ONLY');
     return;
   }
   
@@ -1021,7 +1046,7 @@ async function handleAssetUpload(files) {
   try {
     for (const file of files) {
       const formData = new FormData();
-      formData.append('image', file);
+      formData.append('file', file);
       if (currentPath) {
         formData.append('folder', currentPath);
       }
@@ -1035,8 +1060,11 @@ async function handleAssetUpload(files) {
       
       if (res.ok) {
         // Add to assets in current folder
+        let assetType = 'image';
+        if (file.type.startsWith('video/')) assetType = 'video';
+        else if (file.type.startsWith('audio/')) assetType = 'audio';
         const newAsset = {
-          type: 'image',
+          type: assetType,
           url: data.url,
           name: file.name.replace(/\.[^/.]+$/, ''),
           uploadedAt: new Date().toISOString()
@@ -1091,4 +1119,4 @@ window.deleteFolder = deleteFolder;
 window.navigateToFolder = navigateToFolder;
 window.updateAssetName = updateAssetName;
 window.deleteAsset = deleteAsset;
-window.copyToClipboard = copyToClipboard; 
+window.copyToClipboardFullPath = copyToClipboardFullPath; 
