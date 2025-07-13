@@ -338,35 +338,22 @@ async function loadAssets() {
     const res = await fetch('/data/assets.json');
     const data = await res.json();
     
-    // Handle migration from flat structure or initialize empty structure
-    if (Array.isArray(data.images) && !data.folders) {
-      assets = {
-        folders: [],
-        images: data.images || []
-      };
-    } else if (Array.isArray(data.children) && !data.folders) {
-      // PATCH: support legacy/miswritten structure
-      assets = {
-        folders: data.children,
-        images: data.images || []
-      };
-    } else if (data.assets) {
-      // Legacy format - convert to new format
-      assets = {
-        folders: Object.keys(data.assets || {}).map(name => ({
-          name,
-          type: 'folder',
-          children: (data.assets[name] || []).map(item => ({ ...item, type: 'image' }))
-        })),
-        images: []
-      };
-    } else {
-      assets = data;
-    }
-    
-    // Ensure proper structure
-    if (!assets.folders) assets.folders = [];
-    if (!assets.images) assets.images = [];
+    // Merge both folders and children at the top level, deduplicated by name
+    let folders = [];
+    if (Array.isArray(data.folders)) folders = folders.concat(data.folders);
+    if (Array.isArray(data.children)) folders = folders.concat(data.children);
+    // Deduplicate by folder name
+    const seen = new Set();
+    folders = folders.filter(f => {
+      if (!f || !f.name) return false;
+      if (seen.has(f.name)) return false;
+      seen.add(f.name);
+      return true;
+    });
+    assets = {
+      folders,
+      images: data.images || []
+    };
     
     renderFolders();
     renderAssets();
