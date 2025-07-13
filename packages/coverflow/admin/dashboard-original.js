@@ -517,20 +517,30 @@ function renderAssets() {
         <div style="font-size: 48px; margin-bottom: var(--space-md); opacity: 0.8;">◐</div>
         <div style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${folder.name}</div>
         <button onclick="navigateToFolder('${currentPath ? currentPath + '/' : ''}${folder.name}')">OPEN</button>
+        <button onclick="copyToClipboardFullPath('${currentPath ? currentPath + '/' : ''}${folder.name}', true)">COPY FOLDER LINK</button>
       </div>
     `),
-    // Render images
-    ...images.map((image, index) => `
-      <div class="asset-item" draggable="true" data-type="image" data-index="${index}">
-        <img src="${image.url}" alt="${image.name || 'Asset'}" 
-             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'100\\'%3E%3Crect fill=\\'%23333\\' width=\\'200\\' height=\\'100\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\' font-size=\\'10\\' font-family=\\'monospace\\'%3EBROKEN%3C/text%3E%3C/svg%3E'">
-        <input type="text" value="${image.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${image.url}', this.value)">
-        <div class="url-display" onclick="copyToClipboard('${image.url}')" title="CLICK TO COPY">
-          ${image.url}
+    // Render assets (images, video, audio)
+    ...images.map((asset, index) => {
+      let mediaTag = '';
+      if (asset.type === 'video') {
+        mediaTag = `<video src="${asset.url}" controls style="width:100%;height:180px;object-fit:cover;background:#222;"></video>`;
+      } else if (asset.type === 'audio') {
+        mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
+      } else {
+        mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
+      }
+      return `
+      <div class="asset-item" draggable="true" data-type="${asset.type}" data-index="${index}">
+        ${mediaTag}
+        <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)">
+        <div class="url-display" onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
+          ${asset.url}
         </div>
-        <button onclick="deleteAsset('${image.url}')">DELETE</button>
+        <button onclick="deleteAsset('${asset.url}')">DELETE</button>
       </div>
-    `)
+      `;
+    })
   ].join('');
   
   // Setup drag and drop for assets
@@ -684,10 +694,26 @@ async function deleteAsset(url) {
   renderAssets();
 }
 
-// Copy to clipboard
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text).then(() => {
-    showToast('Copied to clipboard!');
+// Copy to clipboard (full URL)
+function copyToClipboardFullPath(urlOrPath, isFolder = false) {
+  let fullUrl = urlOrPath;
+  // If it's a folder, build the full path
+  if (isFolder) {
+    // Remove leading/trailing slashes
+    let cleanPath = urlOrPath.replace(/^\/+|\/+$/g, '');
+    fullUrl = window.location.origin + '/admin/assets/' + cleanPath;
+  } else {
+    // If url is relative, prepend origin
+    if (/^\//.test(urlOrPath)) {
+      fullUrl = window.location.origin + urlOrPath;
+    } else if (!/^https?:\/\//.test(urlOrPath)) {
+      fullUrl = window.location.origin + '/' + urlOrPath;
+    }
+  }
+  navigator.clipboard.writeText(fullUrl).then(() => {
+    showToast('FULL URL COPIED TO CLIPBOARD');
+  }).catch(() => {
+    showToast('FAILED TO COPY TO CLIPBOARD', 5000);
   });
 }
 
@@ -983,7 +1009,7 @@ function setupAssetUploadDragAndDrop() {
   dropzone.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*';
+    input.accept = 'image/*,video/*,audio/*';
     input.multiple = true;
     input.onchange = e => handleFiles(e.target.files, 'asset');
     input.click();
@@ -1001,8 +1027,8 @@ async function handleFiles(files, type = 'cover') {
   const originalText = dropzone.textContent;
   
   for (const file of files) {
-    if (!file || !file.type.startsWith('image/')) {
-      showToast('Please upload only image files', 'error');
+    if (!file || (!file.type.startsWith('image/') && !file.type.startsWith('video/') && !file.type.startsWith('audio/'))) {
+      showToast('Please upload only image, video, or audio files', 'error');
       continue;
     }
 
@@ -1011,9 +1037,10 @@ async function handleFiles(files, type = 'cover') {
     dropzone.style.opacity = '0.5';
 
     try {
-      // Upload image
+      // Upload file
       const formData = new FormData();
-      formData.append('image', file);
+      // Use 'file' instead of 'image' for generality
+      formData.append('file', file);
       if (type === 'asset') {
         formData.append('folder', currentPath);
       }
@@ -1029,10 +1056,10 @@ async function handleFiles(files, type = 'cover') {
       }
 
       const { url } = await uploadRes.json();
-      console.log('Image uploaded:', url);
+      console.log('Asset uploaded:', url);
 
       if (type === 'cover') {
-        // Create new cover
+        // Create new cover (unchanged)
         const tempTitle = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
         
         const newCover = {
@@ -1062,8 +1089,11 @@ async function handleFiles(files, type = 'cover') {
         showToast('Cover added! Click "Edit" to add details.');
       } else {
         // Add to assets in current folder
+        let assetType = 'image';
+        if (file.type.startsWith('video/')) assetType = 'video';
+        else if (file.type.startsWith('audio/')) assetType = 'audio';
         const newAsset = {
-          type: 'image',
+          type: assetType,
           url: url,
           name: file.name.replace(/\.[^/.]+$/, ''),
           uploadedAt: new Date().toISOString()
@@ -1099,14 +1129,13 @@ async function handleFiles(files, type = 'cover') {
       }
       
     } catch (err) {
-      console.error('Upload error:', err);
-      showToast(`Upload failed: ${err.message}`, 'error');
+      showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 'error');
+      console.error(err);
+    } finally {
+      dropzone.textContent = originalText;
+      dropzone.style.opacity = '';
     }
   }
-  
-  // Restore dropzone
-  dropzone.textContent = originalText;
-  dropzone.style.opacity = '1';
 }
 
 // User management functions
