@@ -326,6 +326,12 @@ async function loadAssets() {
         folders: [],
         images: data.images || []
       };
+    } else if (Array.isArray(data.children) && !data.folders) {
+      // PATCH: support legacy/miswritten structure
+      assets = {
+        folders: data.children,
+        images: data.images || []
+      };
     } else {
       assets = data;
     }
