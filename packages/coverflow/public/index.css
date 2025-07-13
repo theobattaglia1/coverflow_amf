@@ -911,7 +911,7 @@ html, body {
     right: 0;
     justify-content: center;
     padding: 24px clamp(16px, 4vw, 24px) 3px; /* Reduced bottom padding from 5px to 3px */
-    margin: 0; /* Remove margins for fixed positioning */
+    margin: 0 0 8px 0; /* Reduce space below logo */
     background: rgba(0,0,0,0.95);
     backdrop-filter: blur(20px) saturate(1.2);
     border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -937,7 +937,7 @@ html, body {
     backdrop-filter: blur(16px) saturate(1.1);
     border-bottom: 1px solid rgba(255,255,255,0.06);
     z-index: 100;
-    margin: 0;
+    margin-top: 0; /* Remove extra space above filter bar */
   }
   
   .filter-container {

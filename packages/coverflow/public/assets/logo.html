@@ -162,6 +162,14 @@
         --bar-width: 40px;
       }
     }
+    @media (max-width: 600px) {
+      .logo-text {
+        margin-top: calc(var(--logo-unit) / 2.5); /* Add more breathing room below bars */
+      }
+      .logo-container {
+        margin-bottom: 32px; /* Reduce space below logo */
+      }
+    }
   </style>
 </head>
 <body>
