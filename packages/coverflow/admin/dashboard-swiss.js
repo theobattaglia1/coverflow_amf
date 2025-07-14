@@ -283,6 +283,9 @@ async function handleModalImageUpload(file) {
       if (input) {
         input.value = data.url;
         input.dispatchEvent(new Event('input'));
+        // Also update the preview image
+        const preview = input.closest('.form-group').querySelector('img');
+        if (preview) preview.src = data.url;
       }
       showToast('IMAGE UPLOADED');
     } else {

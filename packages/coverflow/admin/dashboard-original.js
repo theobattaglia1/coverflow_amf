@@ -1132,7 +1132,7 @@ async function handleFiles(files, type = 'cover') {
       showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 'error');
       console.error(err);
     } finally {
-      dropzone.textContent = originalText;
+  dropzone.textContent = originalText;
       dropzone.style.opacity = '';
     }
   }
