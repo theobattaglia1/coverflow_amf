@@ -233,6 +233,8 @@ function editCover(cover) {
     cover.category = formData.get('category').split(',').map(c => c.trim()).filter(Boolean);
     cover.spotifyEmbed = formData.get('spotifyEmbed');
     cover.contactEmail = formData.get('contactEmail');
+    cover.frontImage = formData.get('frontImage');
+    cover.backImage = formData.get('backImage');
     
     hasChanges = true;
     updateSaveButton();
