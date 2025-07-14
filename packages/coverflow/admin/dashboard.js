@@ -13,7 +13,8 @@ let batchMode = false;
 let selectedCovers = new Set();
 
 // Initialize
-document.addEventListener('DOMContentLoaded', init);
+// On page load, call loadCovers
+window.addEventListener('DOMContentLoaded', loadCovers);
 
 async function init() {
   // Don't check auth here - server already handles it
@@ -44,19 +45,16 @@ async function init() {
   setupKeyboardShortcuts();
 }
 
-// Load covers with smooth animation
+// Load covers from covers.json (or backend)
 async function loadCovers() {
-  showLoading();
-  
   try {
     const res = await fetch('/data/covers.json');
     covers = await res.json();
     renderCovers();
   } catch (err) {
-    showToast('FAILED TO LOAD COVERS', 5000);
-    console.error(err);
-  } finally {
-    hideLoading();
+    console.error('Failed to load covers:', err);
+    covers = [];
+    renderCovers();
   }
 }
 
