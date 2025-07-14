@@ -663,3 +663,64 @@ async function deleteSelected() {
   
   showToast(`DELETED ${count} COVERS`);
 } 
+
+// Image Library Modal for dashboard
+let dashboardImageLibraryTarget = null;
+
+window.openImageLibrary = function(inputField) {
+  dashboardImageLibraryTarget = inputField;
+  let modal = document.getElementById('dashboardImageLibraryModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'dashboardImageLibraryModal';
+    modal.style.position = 'fixed';
+    modal.style.inset = '0';
+    modal.style.background = 'rgba(0,0,0,0.85)';
+    modal.style.zIndex = '9999';
+    modal.style.display = 'flex';
+    modal.style.alignItems = 'center';
+    modal.style.justifyContent = 'center';
+    modal.innerHTML = `
+      <div style="background: #fff; padding: 32px; max-width: 900px; width: 90vw; max-height: 80vh; overflow-y: auto; border-radius: 8px; position: relative;">
+        <button id="closeDashboardImageLibrary" style="position: absolute; top: 16px; right: 16px; font-size: 2rem; background: none; border: none; cursor: pointer;">&times;</button>
+        <h2 style="margin-top:0;">Select Image</h2>
+        <div id="dashboardImageLibraryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px;"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    document.getElementById('closeDashboardImageLibrary').onclick = closeImageLibrary;
+  } else {
+    modal.style.display = 'flex';
+  }
+  // Populate images
+  const grid = document.getElementById('dashboardImageLibraryGrid');
+  grid.innerHTML = '';
+  const allImages = (assets.images || []).concat(...(assets.folders||[]).flatMap(f=>f.children||[]).filter(c=>c.type==='image'));
+  if (allImages.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#888;">No images found.</div>';
+  } else {
+    allImages.forEach(img => {
+      const div = document.createElement('div');
+      div.style.cursor = 'pointer';
+      div.style.border = '1px solid #ccc';
+      div.style.padding = '4px';
+      div.style.background = '#fafafa';
+      div.innerHTML = `<img src="${img.url}" style="width:100%; aspect-ratio:1; object-fit:cover;"><div style="font-size:0.8em; text-align:center; margin-top:4px;">${img.name||''}</div>`;
+      div.onclick = () => {
+        const input = document.querySelector(`#editCoverForm input[name='${dashboardImageLibraryTarget}']`);
+        if (input) {
+          input.value = img.url;
+          input.dispatchEvent(new Event('input'));
+        }
+        closeImageLibrary();
+      };
+      grid.appendChild(div);
+    });
+  }
+};
+
+window.closeImageLibrary = function() {
+  const modal = document.getElementById('dashboardImageLibraryModal');
+  if (modal) modal.style.display = 'none';
+  dashboardImageLibraryTarget = null;
+}; 
