@@ -168,7 +168,7 @@ function editCover(cover) {
       
       <div class="form-group">
         <label class="form-label">CATEGORIES</label>
-        <input type="text" class="form-input" name="category" value="${Array.isArray(cover.category) ? cover.category.join(', ') : (cover.category || '')}" 
+        <input type="text" class="form-input" name="category" value="${(cover.category || []).join(', ')}" 
                placeholder="ARTISTS, SONGWRITERS, PRODUCERS">
       </div>
       
@@ -188,9 +188,9 @@ function editCover(cover) {
         <div class="form-group">
           <label class="form-label">FRONT IMAGE</label>
           <div style="position: relative;">
-            <img src="${cover.frontImage || '/placeholder.jpg'}" style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
-            <input type="text" class="form-input" name="frontImage" value="${cover.frontImage || ''}" style="margin-bottom: 8px;">
-            <button type="button" class="btn" onclick="openImageLibrary('frontImage')" style="width: 100%;">
+            <img src="${cover.frontImage || '/placeholder.jpg'}" 
+                 style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <button type="button" class="btn" onclick="selectImage('frontImage', ${cover.id})" style="width: 100%;">
               CHANGE IMAGE
             </button>
           </div>
@@ -199,20 +199,12 @@ function editCover(cover) {
         <div class="form-group">
           <label class="form-label">BACK IMAGE</label>
           <div style="position: relative;">
-            <img src="${cover.backImage || '/placeholder.jpg'}" style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
-            <input type="text" class="form-input" name="backImage" value="${cover.backImage || ''}" style="margin-bottom: 8px;">
-            <button type="button" class="btn" onclick="openImageLibrary('backImage')" style="width: 100%;">
+            <img src="${cover.backImage || '/placeholder.jpg'}" 
+                 style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <button type="button" class="btn" onclick="selectImage('backImage', ${cover.id})" style="width: 100%;">
               CHANGE IMAGE
             </button>
           </div>
-        </div>
-      </div>
-      
-      <div class="form-group">
-        <label class="form-label">UPLOAD NEW IMAGE</label>
-        <div id="modalDropzone" style="border: 2px dashed #ccc; padding: 16px; text-align: center; cursor: pointer; margin-bottom: 12px;">
-          <span id="modalDropzoneText">Drag & drop or click to upload</span>
-          <input type="file" id="modalDropzoneInput" style="display:none;" accept="image/*">
         </div>
       </div>
       
@@ -234,8 +226,6 @@ function editCover(cover) {
     cover.category = formData.get('category').split(',').map(c => c.trim()).filter(Boolean);
     cover.spotifyEmbed = formData.get('spotifyEmbed');
     cover.contactEmail = formData.get('contactEmail');
-    cover.frontImage = formData.get('frontImage');
-    cover.backImage = formData.get('backImage');
     
     hasChanges = true;
     updateSaveButton();
@@ -245,60 +235,6 @@ function editCover(cover) {
   };
   
   openModal();
-
-  setTimeout(() => {
-    const dropzone = document.getElementById('modalDropzone');
-    const input = document.getElementById('modalDropzoneInput');
-    dropzone.onclick = () => input.click();
-    dropzone.ondragover = e => { e.preventDefault(); dropzone.style.background = '#f0f0f0'; };
-    dropzone.ondragleave = e => { e.preventDefault(); dropzone.style.background = ''; };
-    dropzone.ondrop = e => {
-      e.preventDefault();
-      dropzone.style.background = '';
-      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleModalImageUpload(e.dataTransfer.files[0]);
-      }
-    };
-    input.onchange = e => {
-      if (input.files && input.files[0]) {
-        handleModalImageUpload(input.files[0]);
-      }
-    };
-  }, 0);
-}
-
-async function handleModalImageUpload(file) {
-  const dropText = document.getElementById('modalDropzoneText');
-  dropText.textContent = 'Uploading...';
-  try {
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('folder', currentPath || '');
-    const res = await fetch('/upload-image', { method: 'POST', body: formData });
-    const data = await res.json();
-    if (res.ok && data.url) {
-      // Add to assets immediately
-      if (!assets.images) assets.images = [];
-      assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
-      // Update all preview images in the modal with old /uploads/ src
-      document.querySelectorAll('#coverModal img').forEach(img => {
-        if (img.src.includes('/uploads/')) img.src = data.url;
-      });
-      // Update the first image input field if present
-      const input = document.querySelector("#editCoverForm input[type='text'][name*='Image']");
-      if (input) {
-        input.value = data.url;
-        input.dispatchEvent(new Event('input'));
-      }
-      showToast('IMAGE UPLOADED');
-    } else {
-      showToast('UPLOAD FAILED: ' + (data.error || 'Unknown error'), 5000);
-    }
-  } catch (err) {
-    showToast('UPLOAD FAILED: ' + err.message, 5000);
-  } finally {
-    dropText.textContent = 'Drag & drop or click to upload';
-  }
 }
 
 // Batch mode functionality
@@ -415,10 +351,10 @@ async function loadAssets() {
       seen.add(f.name);
       return true;
     });
-    assets = {
+      assets = {
       folders,
-      images: data.images || []
-    };
+        images: data.images || []
+      };
     
     renderFolders();
     renderAssets();
@@ -495,6 +431,7 @@ function renderAssets() {
   const container = document.getElementById('assetsContainer');
   if (!container) return;
   container.innerHTML = '';
+  // Get items in current folder
   const { images } = getCurrentFolderItems();
   if (images.length === 0) {
     container.innerHTML = '<p style="color: var(--grey-500); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO ASSETS IN THIS FOLDER</p>';
@@ -505,20 +442,34 @@ function renderAssets() {
     if (!type && asset.url) {
       if (/\.(mp4|webm|mov|avi)$/i.test(asset.url)) type = 'video';
       else if (/\.(mp3|wav|m4a|aac|ogg)$/i.test(asset.url)) type = 'audio';
-      else type = 'image';
+      else if (/\.(png|jpe?g|gif|bmp|webp)$/i.test(asset.url)) type = 'image';
+      else type = 'other';
     }
     let mediaTag = '';
     if (type === 'video') {
-      mediaTag = `<video src="${asset.url}" controls style="width:100%;height:180px;object-fit:cover;background:#222;"></video>`;
+      mediaTag = `<video src="${asset.url}" controls preload="metadata" style="width:100%;height:180px;object-fit:cover;background:#222;" poster="">
+        Sorry, your browser doesn't support embedded videos.
+      </video>`;
     } else if (type === 'audio') {
-      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
+      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;">
+        Sorry, your browser doesn't support embedded audio.
+      </audio>`;
+    } else if (type === 'image') {
+      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy" style="width:100%;height:180px;object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
     } else {
-      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy"
-           onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
+      mediaTag = `<div style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#eee;color:#888;font-size:1.2em;">Unsupported</div>`;
     }
     const div = document.createElement('div');
     div.className = 'asset-item';
-    div.innerHTML = mediaTag + `<div style='font-size:0.8em;text-align:center;margin-top:4px;'>${asset.name||''}</div>`;
+    div.innerHTML = `
+      ${mediaTag}
+      <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)" style="margin-bottom: var(--space-sm);">
+      <div style="font-family: var(--font-mono); font-size: 0.625rem; word-break: break-all; margin-bottom: var(--space-sm); cursor: pointer; opacity: 0.6;"
+           onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
+        ${asset.url}
+      </div>
+      <button onclick="deleteAsset('${asset.url}')" style="width: 100%;">DELETE</button>
+    `;
     container.appendChild(div);
   });
 }
@@ -1189,78 +1140,3 @@ window.navigateToFolder = navigateToFolder;
 window.updateAssetName = updateAssetName;
 window.deleteAsset = deleteAsset;
 window.copyToClipboardFullPath = copyToClipboardFullPath; 
-
-// Image Library Modal for dashboard
-let dashboardImageLibraryTarget = null;
-
-window.openImageLibrary = function(inputField) {
-  dashboardImageLibraryTarget = inputField;
-  let modal = document.getElementById('dashboardImageLibraryModal');
-  if (!modal) {
-    modal = document.createElement('div');
-    modal.id = 'dashboardImageLibraryModal';
-    modal.style.position = 'fixed';
-    modal.style.inset = '0';
-    modal.style.background = 'rgba(0,0,0,0.85)';
-    modal.style.zIndex = '9999';
-    modal.style.display = 'flex';
-    modal.style.alignItems = 'center';
-    modal.style.justifyContent = 'center';
-    modal.innerHTML = `
-      <div style="background: #fff; padding: 32px; max-width: 900px; width: 90vw; max-height: 80vh; overflow-y: auto; border-radius: 8px; position: relative;">
-        <button id="closeDashboardImageLibrary" style="position: absolute; top: 16px; right: 16px; font-size: 2rem; background: none; border: none; cursor: pointer;">&times;</button>
-        <h2 style="margin-top:0;">Select Asset</h2>
-        <div id="dashboardImageLibraryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px;"></div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    document.getElementById('closeDashboardImageLibrary').onclick = closeImageLibrary;
-  } else {
-    modal.style.display = 'flex';
-  }
-  // Populate assets
-  const grid = document.getElementById('dashboardImageLibraryGrid');
-  grid.innerHTML = '';
-  const allAssets = (assets.images || []).concat(...(assets.folders||[]).flatMap(f=>f.children||[]));
-  if (allAssets.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#888;">No assets found.</div>';
-  } else {
-    allAssets.forEach(asset => {
-      let type = asset.type;
-      if (!type && asset.url) {
-        if (/\.(mp4|webm|mov|avi)$/i.test(asset.url)) type = 'video';
-        else if (/\.(mp3|wav|m4a|aac|ogg)$/i.test(asset.url)) type = 'audio';
-        else type = 'image';
-      }
-      let mediaTag = '';
-      if (type === 'video') {
-        mediaTag = `<video src="${asset.url}" controls style="width:100%;height:100px;object-fit:cover;background:#222;"></video>`;
-      } else if (type === 'audio') {
-        mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
-      } else {
-        mediaTag = `<img src="${asset.url}" style="width:100%; aspect-ratio:1; object-fit:cover;">`;
-      }
-      const div = document.createElement('div');
-      div.style.cursor = 'pointer';
-      div.style.border = '1px solid #ccc';
-      div.style.padding = '4px';
-      div.style.background = '#fafafa';
-      div.innerHTML = mediaTag + `<div style="font-size:0.8em; text-align:center; margin-top:4px;">${asset.name||''}</div>`;
-      div.onclick = () => {
-        const input = document.querySelector(`#editCoverForm input[name='${dashboardImageLibraryTarget}']`);
-        if (input) {
-          input.value = asset.url;
-          input.dispatchEvent(new Event('input'));
-        }
-        closeImageLibrary();
-      };
-      grid.appendChild(div);
-    });
-  }
-};
-
-window.closeImageLibrary = function() {
-  const modal = document.getElementById('dashboardImageLibraryModal');
-  if (modal) modal.style.display = 'none';
-  dashboardImageLibraryTarget = null;
-}; 

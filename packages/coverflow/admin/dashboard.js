@@ -446,15 +446,22 @@ function renderAssets() {
     if (!type && asset.url) {
       if (/\.(mp4|webm|mov|avi)$/i.test(asset.url)) type = 'video';
       else if (/\.(mp3|wav|m4a|aac|ogg)$/i.test(asset.url)) type = 'audio';
-      else type = 'image';
+      else if (/\.(png|jpe?g|gif|bmp|webp)$/i.test(asset.url)) type = 'image';
+      else type = 'other';
     }
     let mediaTag = '';
     if (type === 'video') {
-      mediaTag = `<video src="${asset.url}" controls style="width:100%;height:180px;object-fit:cover;background:#222;"></video>`;
+      mediaTag = `<video src="${asset.url}" controls preload="metadata" style="width:100%;height:180px;object-fit:cover;background:#222;" poster="">
+        Sorry, your browser doesn't support embedded videos.
+      </video>`;
     } else if (type === 'audio') {
-      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
+      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;">
+        Sorry, your browser doesn't support embedded audio.
+      </audio>`;
+    } else if (type === 'image') {
+      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy" style="width:100%;height:180px;object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
     } else {
-      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy">`;
+      mediaTag = `<div style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#eee;color:#888;font-size:1.2em;">Unsupported</div>`;
     }
     const div = document.createElement('div');
     div.className = 'asset-item';
