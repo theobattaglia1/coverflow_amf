@@ -1041,9 +1041,8 @@ async function handleAssetUpload(files) {
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
-      if (currentPath) {
-        formData.append('folder', currentPath);
-      }
+      // Always send the folder name ('' for root, or currentPath for subfolders)
+      formData.append('folder', currentPath || '');
       
       const res = await fetch('/upload-image', {
         method: 'POST',
