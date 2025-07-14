@@ -42,6 +42,7 @@ async function init() {
   setupEventListeners();
   setupDragAndDrop();
   setupKeyboardShortcuts();
+  updateCurrentFolderIndicator();
 }
 
 // Load covers with smooth animation
@@ -770,6 +771,13 @@ async function deleteSelected() {
 // Asset management functions
 let currentPath = '';
 
+// Add this function to update the current folder indicator
+function updateCurrentFolderIndicator() {
+  const indicator = document.getElementById('currentFolderIndicator');
+  if (!indicator) return;
+  indicator.textContent = `Current Folder: ${currentPath || 'ROOT'}`;
+}
+
 // Create new folder
 async function createNewFolder() {
   const name = prompt('ENTER FOLDER NAME:');
@@ -1041,9 +1049,12 @@ async function handleAssetUpload(files) {
     for (const file of files) {
       const formData = new FormData();
       formData.append('file', file);
-      // Always send the folder name ('' for root, or currentPath for subfolders)
       formData.append('folder', currentPath || '');
-      
+      // Log currentPath and FormData contents
+      console.log('[UPLOAD] currentPath:', currentPath);
+      for (let [key, value] of formData.entries()) {
+        console.log(`[UPLOAD] FormData: ${key} =`, value);
+      }
       const res = await fetch('/upload-image', {
         method: 'POST',
         body: formData

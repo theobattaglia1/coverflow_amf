@@ -877,7 +877,11 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.single('file'), (re
   const url = process.env.NODE_ENV === 'production'
     ? `https://allmyfriendsinc.com/uploads/${relativePath}`
     : `/uploads/${relativePath}`;
-  console.log('[UPLOAD] Returning URL:', url);
+  // Robust logging
+  console.log('[UPLOAD] req.body.folder:', folder);
+  console.log('[UPLOAD] req.file.filename:', req.file.filename);
+  console.log('[UPLOAD] relativePath:', relativePath);
+  console.log('[UPLOAD] url:', url);
   res.json({
     url,
     filename: req.file.filename,
