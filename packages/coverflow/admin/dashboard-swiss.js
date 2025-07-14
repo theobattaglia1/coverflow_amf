@@ -168,7 +168,7 @@ function editCover(cover) {
       
       <div class="form-group">
         <label class="form-label">CATEGORIES</label>
-        <input type="text" class="form-input" name="category" value="${(cover.category || []).join(', ')}" 
+        <input type="text" class="form-input" name="category" value="${Array.isArray(cover.category) ? cover.category.join(', ') : (cover.category || '')}" 
                placeholder="ARTISTS, SONGWRITERS, PRODUCERS">
       </div>
       
