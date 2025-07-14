@@ -441,10 +441,17 @@ function renderAssets() {
   }
   
   images.forEach((asset, index) => {
+    // Infer type if missing
+    let type = asset.type;
+    if (!type && asset.url) {
+      if (/\.(mp4|webm|mov|avi)$/i.test(asset.url)) type = 'video';
+      else if (/\.(mp3|wav|m4a|aac|ogg)$/i.test(asset.url)) type = 'audio';
+      else type = 'image';
+    }
     let mediaTag = '';
-    if (asset.type === 'video') {
+    if (type === 'video') {
       mediaTag = `<video src="${asset.url}" controls style="width:100%;height:180px;object-fit:cover;background:#222;"></video>`;
-    } else if (asset.type === 'audio') {
+    } else if (type === 'audio') {
       mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
     } else {
       mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy"
@@ -1047,12 +1054,23 @@ async function handleAssetUpload(files) {
       
       if (res.ok) {
         // Add to assets in current folder
-        let assetType = 'image';
-        if (file.type.startsWith('video/')) assetType = 'video';
-        else if (file.type.startsWith('audio/')) assetType = 'audio';
+        let assetType = data.type || 'image';
+        // Fallback: infer from file type
+        if (!assetType && file.type) {
+          if (file.type.startsWith('video/')) assetType = 'video';
+          else if (file.type.startsWith('audio/')) assetType = 'audio';
+          else assetType = 'image';
+        }
+        // Ensure url is correct
+        let url = data.url;
+        if (!/^https?:\/\//.test(url) && !url.startsWith('/uploads')) {
+          if (assetType === 'video') url = '/uploads/video/' + file.name;
+          else if (assetType === 'audio') url = '/uploads/audio/' + file.name;
+          else url = '/uploads/' + file.name;
+        }
         const newAsset = {
           type: assetType,
-          url: data.url,
+          url: url,
           name: file.name.replace(/\.[^/.]+$/, ''),
           uploadedAt: new Date().toISOString()
         };
