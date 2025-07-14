@@ -207,6 +207,14 @@ function editCover(cover) {
         </div>
       </div>
       
+      <div class="form-group">
+        <label class="form-label">UPLOAD NEW IMAGE</label>
+        <div id="modalDropzone" style="border: 2px dashed #ccc; padding: 16px; text-align: center; cursor: pointer; margin-bottom: 12px;">
+          <span id="modalDropzoneText">Drag & drop or click to upload</span>
+          <input type="file" id="modalDropzoneInput" style="display:none;" accept="image/*">
+        </div>
+      </div>
+      
       <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
         <button type="button" class="btn" onclick="closeModal()">CANCEL</button>
         <button type="submit" class="btn btn-primary">SAVE CHANGES</button>
@@ -234,6 +242,56 @@ function editCover(cover) {
   };
   
   openModal();
+
+  setTimeout(() => {
+    const dropzone = document.getElementById('modalDropzone');
+    const input = document.getElementById('modalDropzoneInput');
+    dropzone.onclick = () => input.click();
+    dropzone.ondragover = e => { e.preventDefault(); dropzone.style.background = '#f0f0f0'; };
+    dropzone.ondragleave = e => { e.preventDefault(); dropzone.style.background = ''; };
+    dropzone.ondrop = e => {
+      e.preventDefault();
+      dropzone.style.background = '';
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        handleModalImageUpload(e.dataTransfer.files[0]);
+      }
+    };
+    input.onchange = e => {
+      if (input.files && input.files[0]) {
+        handleModalImageUpload(input.files[0]);
+      }
+    };
+  }, 0);
+}
+
+async function handleModalImageUpload(file) {
+  const dropText = document.getElementById('modalDropzoneText');
+  dropText.textContent = 'Uploading...';
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', currentFolder || ''); // Assuming currentFolder is accessible here
+    const res = await fetch('/upload-image', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (res.ok && data.url) {
+      // Add to assets immediately
+      if (!assets.images) assets.images = [];
+      assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
+      // Set as frontImage by default
+      const input = document.querySelector("#editCoverForm input[name='frontImage']");
+      if (input) {
+        input.value = data.url;
+        input.dispatchEvent(new Event('input'));
+      }
+      showToast('IMAGE UPLOADED');
+    } else {
+      showToast('UPLOAD FAILED: ' + (data.error || 'Unknown error'), 5000);
+    }
+  } catch (err) {
+    showToast('UPLOAD FAILED: ' + err.message, 5000);
+  } finally {
+    dropText.textContent = 'Drag & drop or click to upload';
+  }
 }
 
 // Batch mode functionality
