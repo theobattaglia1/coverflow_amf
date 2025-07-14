@@ -278,14 +278,15 @@ async function handleModalImageUpload(file) {
       // Add to assets immediately
       if (!assets.images) assets.images = [];
       assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
-      // Set as frontImage by default
-      const input = document.querySelector("#editCoverForm input[name='frontImage']");
+      // Update all preview images in the modal with old /uploads/ src
+      document.querySelectorAll('#coverModal img').forEach(img => {
+        if (img.src.includes('/uploads/')) img.src = data.url;
+      });
+      // Update the first image input field if present
+      const input = document.querySelector("#editCoverForm input[type='text'][name*='Image']");
       if (input) {
         input.value = data.url;
         input.dispatchEvent(new Event('input'));
-        // Also update the preview image
-        const preview = input.closest('.form-group').querySelector('img');
-        if (preview) preview.src = data.url;
       }
       showToast('IMAGE UPLOADED');
     } else {
