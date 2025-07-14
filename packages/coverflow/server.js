@@ -575,8 +575,14 @@ const assetStorage = multer.diskStorage({
     // Sanitize folder path
     const sanitizedFolder = folder.split('/').filter(part => part && part !== '.' && part !== '..' && !part.includes('\\')).join('/');
     const destPath = path.join(UPLOADS_DIR, subdir, sanitizedFolder);
-    await fs.promises.mkdir(destPath, { recursive: true });
-    cb(null, destPath);
+    try {
+      await fs.promises.mkdir(destPath, { recursive: true });
+      console.log('[UPLOAD] Saving to:', destPath);
+      cb(null, destPath);
+    } catch (err) {
+      console.error('[UPLOAD ERROR] Failed to create directory:', destPath, err);
+      cb(err, destPath);
+    }
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
@@ -856,7 +862,10 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
 
 // Unified asset upload endpoint
 app.post('/upload-image', requireAuth('editor'), assetUpload.single('file'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file provided' });
+  if (!req.file) {
+    console.error('[UPLOAD ERROR] No file provided');
+    return res.status(400).json({ error: 'No file provided' });
+  }
   const folder = req.body.folder || '';
   let subdir = '';
   if (req.file.mimetype.startsWith('video/')) subdir = 'video';
@@ -867,6 +876,7 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.single('file'), (re
   const url = process.env.NODE_ENV === 'production'
     ? `https://allmyfriendsinc.com/uploads/${relativePath}`
     : `/uploads/${relativePath}`;
+  console.log('[UPLOAD] Returning URL:', url);
   res.json({
     url,
     filename: req.file.filename,
