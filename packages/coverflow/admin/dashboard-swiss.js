@@ -550,7 +550,7 @@ async function handleCoverDrop(e) {
 
 async function uploadAndCreateCover(file) {
   const formData = new FormData();
-  formData.append('image', file);
+  formData.append('file', file);
   
   showLoading();
   

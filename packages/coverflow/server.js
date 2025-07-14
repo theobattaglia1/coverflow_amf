@@ -862,20 +862,22 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
   }
 });
 
-// Unified asset upload endpoint (GCS)
-app.post('/upload-image', requireAuth('editor'), async (req, res) => {
-  if (!req.file) {
+// Unified asset upload endpoint (GCS, accept both 'file' and 'image')
+app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, res) => {
+  // Accept both 'file' and 'image' fields
+  const file = req.files?.find(f => f.fieldname === 'file' || f.fieldname === 'image');
+  if (!file) {
     console.error('[UPLOAD ERROR] No file provided');
     return res.status(400).json({ error: 'No file provided' });
   }
   const folder = req.body.folder || '';
   let subdir = '';
-  if (req.file.mimetype.startsWith('video/')) subdir = 'video';
-  else if (req.file.mimetype.startsWith('audio/')) subdir = 'audio';
+  if (file.mimetype.startsWith('video/')) subdir = 'video';
+  else if (file.mimetype.startsWith('audio/')) subdir = 'audio';
   // Build GCS path
-  const gcsPath = [subdir, folder, req.file.originalname].filter(Boolean).join('/');
+  const gcsPath = [subdir, folder, file.originalname].filter(Boolean).join('/');
   const blob = bucket.file(gcsPath);
-  const blobStream = blob.createWriteStream({ resumable: false, contentType: req.file.mimetype });
+  const blobStream = blob.createWriteStream({ resumable: false, contentType: file.mimetype });
   blobStream.on('error', err => {
     console.error('[UPLOAD ERROR] GCS:', err);
     res.status(500).json({ error: err.message });
@@ -885,12 +887,12 @@ app.post('/upload-image', requireAuth('editor'), async (req, res) => {
     console.log('[UPLOAD] GCS publicUrl:', publicUrl);
     res.json({
       url: publicUrl,
-      filename: req.file.originalname,
+      filename: file.originalname,
       folder: folder,
-      type: req.file.mimetype.split('/')[0]
+      type: file.mimetype.split('/')[0]
     });
   });
-  blobStream.end(req.file.buffer);
+  blobStream.end(file.buffer);
 });
 
 // Audio upload
