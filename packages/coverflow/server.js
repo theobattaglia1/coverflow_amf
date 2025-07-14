@@ -11,6 +11,7 @@ import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
+import { Storage } from '@google-cloud/storage';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -861,8 +862,8 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
   }
 });
 
-// Unified asset upload endpoint
-app.post('/upload-image', requireAuth('editor'), assetUpload.single('file'), (req, res) => {
+// Unified asset upload endpoint (GCS)
+app.post('/upload-image', requireAuth('editor'), async (req, res) => {
   if (!req.file) {
     console.error('[UPLOAD ERROR] No file provided');
     return res.status(400).json({ error: 'No file provided' });
@@ -871,23 +872,25 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.single('file'), (re
   let subdir = '';
   if (req.file.mimetype.startsWith('video/')) subdir = 'video';
   else if (req.file.mimetype.startsWith('audio/')) subdir = 'audio';
-  // Build relative path
-  const relativePath = path.join(subdir, folder, req.file.filename).replace(/\\/g, '/');
-  // Build public URL
-  const url = process.env.NODE_ENV === 'production'
-    ? `https://allmyfriendsinc.com/uploads/${relativePath}`
-    : `/uploads/${relativePath}`;
-  // Robust logging
-  console.log('[UPLOAD] req.body.folder:', folder);
-  console.log('[UPLOAD] req.file.filename:', req.file.filename);
-  console.log('[UPLOAD] relativePath:', relativePath);
-  console.log('[UPLOAD] url:', url);
-  res.json({
-    url,
-    filename: req.file.filename,
-    folder: folder,
-    type: req.file.mimetype.split('/')[0]
+  // Build GCS path
+  const gcsPath = [subdir, folder, req.file.originalname].filter(Boolean).join('/');
+  const blob = bucket.file(gcsPath);
+  const blobStream = blob.createWriteStream({ resumable: false, contentType: req.file.mimetype });
+  blobStream.on('error', err => {
+    console.error('[UPLOAD ERROR] GCS:', err);
+    res.status(500).json({ error: err.message });
   });
+  blobStream.on('finish', () => {
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+    console.log('[UPLOAD] GCS publicUrl:', publicUrl);
+    res.json({
+      url: publicUrl,
+      filename: req.file.originalname,
+      folder: folder,
+      type: req.file.mimetype.split('/')[0]
+    });
+  });
+  blobStream.end(req.file.buffer);
 });
 
 // Audio upload
