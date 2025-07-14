@@ -727,8 +727,8 @@
                     renderTracks(artistId, artistTracks[artistId]);
                     
                 // Reinitialize sortable
-                if (artistTracks[artistId].length > 0) {
-                    sortableInstances[artistId] = new Sortable(document.getElementById(`tracks-${artistId}`), {
+                if (artistTracks[artist.id].length > 0) {
+                    sortableInstances[artist.id] = new Sortable(document.getElementById(`tracks-${artist.id}`), {
                         animation: 120,
                         easing: "cubic-bezier(.16,1,.3,1)",
                         ghostClass: 'sortable-ghost',
@@ -768,32 +768,45 @@
             });
         }
 
-        function renderTracks(artistId, tracks) {
-            if (!tracks || tracks.length === 0) {
-                return '<p class="empty-state">NO TRACKS UPLOADED YET</p>';
-            }
-            
-            return tracks.map((track, index) => `
-                <div class="track-item">
-                    <span class="track-number">${(index + 1).toString().padStart(2, '0')}</span>
-                    <div class="track-info">
-                        <input type="text" class="track-title" value="${track.title}" 
-                               onchange="updateTrackTitle('${artistId}', ${index}, this.value)"
-                               ${currentUser.role === 'viewer' ? 'disabled' : ''}>
-                        <div class="track-file">
-                            ${track.filename || 'AUDIO FILE'}
-                            <span class="track-duration">${track.duration || '0:00'}</span>
-                        </div>
-                    </div>
-                    <div class="track-actions">
-                        <audio controls>
-                            <source src="${track.url}" type="audio/mpeg">
-                        </audio>
-                        <button class="btn btn-danger" onclick="deleteTrack('${artistId}', ${index})"
-                                ${currentUser.role === 'viewer' ? 'disabled' : ''} style="padding: var(--space-sm) var(--space-md); font-size: 0.75rem;">DELETE</button>
-                    </div>
+        // Helper to get a signed URL for an audio file
+        async function getSignedAudioUrl(gcsPath) {
+          const res = await fetch('/api/generate-audio-link', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gcsPath })
+          });
+          if (!res.ok) throw new Error('Failed to get signed URL');
+          const data = await res.json();
+          return data.url;
+        }
+
+        // Patch renderTracks to use signed URLs for audio
+        async function renderTracks(artistId, tracks) {
+          // Fetch signed URLs for all tracks
+          const urls = await Promise.all((tracks || []).map(track =>
+            track.gcsPath ? getSignedAudioUrl(track.gcsPath) : Promise.resolve(track.url)
+          ));
+          return (tracks || []).map((track, index) => `
+            <div class="track-item">
+              <span class="track-number">${(index + 1).toString().padStart(2, '0')}</span>
+              <div class="track-info">
+                <input type="text" class="track-title" value="${track.title}" 
+                       onchange="updateTrackTitle('${artistId}', ${index}, this.value)"
+                       ${currentUser.role === 'viewer' ? 'disabled' : ''}>
+                <div class="track-file">
+                  ${track.filename || 'AUDIO FILE'}
+                  <span class="track-duration">${track.duration || '0:00'}</span>
                 </div>
-            `).join('');
+              </div>
+              <div class="track-actions">
+                <audio controls>
+                  <source src="${urls[index]}" type="audio/mpeg">
+                </audio>
+                <button class="btn btn-danger" onclick="deleteTrack('${artistId}', ${index})"
+                        ${currentUser.role === 'viewer' ? 'disabled' : ''} style="padding: var(--space-sm) var(--space-md); font-size: 0.75rem;">DELETE</button>
+              </div>
+            </div>
+          `).join('');
         }
 
         async function updateTrackTitle(artistId, trackIndex, newTitle) {
