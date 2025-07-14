@@ -190,7 +190,7 @@ function editCover(cover) {
           <div style="position: relative;">
             <img src="${cover.frontImage || '/placeholder.jpg'}" 
                  style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
-            <button type="button" class="btn" onclick="selectImage('frontImage', ${cover.id})" style="width: 100%;">
+            <button type="button" class="btn" onclick="openImageLibrary('frontImage')" style="width: 100%;">
               CHANGE IMAGE
             </button>
           </div>
@@ -201,7 +201,7 @@ function editCover(cover) {
           <div style="position: relative;">
             <img src="${cover.backImage || '/placeholder.jpg'}" 
                  style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
-            <button type="button" class="btn" onclick="selectImage('backImage', ${cover.id})" style="width: 100%;">
+            <button type="button" class="btn" onclick="openImageLibrary('backImage')" style="width: 100%;">
               CHANGE IMAGE
             </button>
           </div>
