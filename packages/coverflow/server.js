@@ -572,6 +572,7 @@ const assetStorage = multer.diskStorage({
     else if (file.mimetype.startsWith('audio/')) subdir = 'audio';
     // Images go to root uploads or folder
     const folder = req.body.folder || '';
+    console.log('[UPLOAD] req.body.folder:', folder); // Log the folder received from frontend
     // Sanitize folder path
     const sanitizedFolder = folder.split('/').filter(part => part && part !== '.' && part !== '..' && !part.includes('\\')).join('/');
     const destPath = path.join(UPLOADS_DIR, subdir, sanitizedFolder);
