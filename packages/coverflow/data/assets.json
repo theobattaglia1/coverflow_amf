@@ -17,14 +17,12 @@
           "uploadedAt": "2025-07-14T01:42:59.614Z"
         }
       ]
-    }
-  ],
-  "images": [],
-  "children": [
+    },
     {
       "type": "folder",
       "name": "Hudson Ingram",
       "children": []
     }
-  ]
+  ],
+  "images": []
 }
