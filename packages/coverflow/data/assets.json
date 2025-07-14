@@ -19,5 +19,12 @@
       ]
     }
   ],
-  "images": []
+  "images": [],
+  "children": [
+    {
+      "type": "folder",
+      "name": "Hudson Ingram",
+      "children": []
+    }
+  ]
 }
