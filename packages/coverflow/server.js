@@ -564,14 +564,17 @@ app.post('/force-github-backup', requireAuth('admin'), async (req, res) => {
 // Enhanced multer setup with folder support
 fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 
-const storage = multer.diskStorage({
+// Enhanced multer setup for all asset types
+const assetStorage = multer.diskStorage({
   destination: async (req, file, cb) => {
+    let subdir = '';
+    if (file.mimetype.startsWith('video/')) subdir = 'video';
+    else if (file.mimetype.startsWith('audio/')) subdir = 'audio';
+    // Images go to root uploads or folder
     const folder = req.body.folder || '';
-    // Sanitize the folder path to prevent path traversal
-    const sanitizedFolder = folder.split('/').filter(part => 
-      part && part !== '.' && part !== '..' && !part.includes('\\')
-    ).join('/');
-    const destPath = path.join(UPLOADS_DIR, sanitizedFolder);
+    // Sanitize folder path
+    const sanitizedFolder = folder.split('/').filter(part => part && part !== '.' && part !== '..' && !part.includes('\\')).join('/');
+    const destPath = path.join(UPLOADS_DIR, subdir, sanitizedFolder);
     await fs.promises.mkdir(destPath, { recursive: true });
     cb(null, destPath);
   },
@@ -582,23 +585,15 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 10 * 1024 * 1024 },
+const assetUpload = multer({
+  storage: assetStorage,
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB max
   fileFilter: (req, file, cb) => {
-    // Check MIME type
-    if (!file.mimetype.startsWith('image/')) {
-      return cb(new Error('Only image files are allowed'));
+    // Allow image, video, audio
+    if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/') || file.mimetype.startsWith('audio/')) {
+      return cb(null, true);
     }
-    
-    // Check file extension
-    const allowedExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
-    const ext = path.extname(file.originalname).toLowerCase();
-    if (!allowedExtensions.includes(ext)) {
-      return cb(new Error('Invalid file extension'));
-    }
-    
-    cb(null, true);
+    cb(new Error('Only image, video, or audio files are allowed'));
   }
 });
 
@@ -859,17 +854,24 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
   }
 });
 
-// Image upload - UPDATED WITH PRODUCTION URL
-app.post('/upload-image', requireAuth('editor'), upload.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No image provided' });
+// Unified asset upload endpoint
+app.post('/upload-image', requireAuth('editor'), assetUpload.single('file'), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: 'No file provided' });
   const folder = req.body.folder || '';
-  const relativePath = path.join(folder, req.file.filename);
+  let subdir = '';
+  if (req.file.mimetype.startsWith('video/')) subdir = 'video';
+  else if (req.file.mimetype.startsWith('audio/')) subdir = 'audio';
+  // Build relative path
+  const relativePath = path.join(subdir, folder, req.file.filename).replace(/\\/g, '/');
+  // Build public URL
+  const url = process.env.NODE_ENV === 'production'
+    ? `https://allmyfriendsinc.com/uploads/${relativePath}`
+    : `/uploads/${relativePath}`;
   res.json({
-    url: process.env.NODE_ENV === 'production' 
-      ? `https://allmyfriendsinc.com/uploads/${relativePath.replace(/\\/g, '/')}` 
-      : `/uploads/${relativePath.replace(/\\/g, '/')}`,
+    url,
     filename: req.file.filename,
-    folder: folder
+    folder: folder,
+    type: req.file.mimetype.split('/')[0]
   });
 });
 
