@@ -1,10 +1,17 @@
 {
-  "images": [],
-  "children": [
+  "folders": [
     {
       "type": "folder",
       "name": "Hudson",
-      "children": []
+      "children": [
+        {
+          "type": "image",
+          "url": "https://allmyfriendsinc.com/uploads/Hudson/upload-1752457352319-120324891.png",
+          "name": "PNG image",
+          "uploadedAt": "2025-07-14T01:42:32.381Z"
+        }
+      ]
     }
-  ]
+  ],
+  "images": []
 }
