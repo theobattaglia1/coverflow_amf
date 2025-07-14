@@ -1050,10 +1050,15 @@ async function handleAssetUpload(files) {
         body: formData
       });
       
-      const data = await res.json();
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        showToast('UPLOAD FAILED: INVALID SERVER RESPONSE', 5000);
+        continue;
+      }
       
-      if (res.ok) {
-        // Add to assets in current folder
+      if (res.ok && data && data.url) {
         let assetType = data.type || 'image';
         // Fallback: infer from file type
         if (!assetType && file.type) {
@@ -1061,12 +1066,10 @@ async function handleAssetUpload(files) {
           else if (file.type.startsWith('audio/')) assetType = 'audio';
           else assetType = 'image';
         }
-        // Ensure url is correct
-        let url = data.url;
-        if (!/^https?:\/\//.test(url) && !url.startsWith('/uploads')) {
-          if (assetType === 'video') url = '/uploads/video/' + file.name;
-          else if (assetType === 'audio') url = '/uploads/audio/' + file.name;
-          else url = '/uploads/' + file.name;
+        const url = data.url;
+        if (!url || typeof url !== 'string' || !/^https?:\/\//.test(url) && !url.startsWith('/uploads')) {
+          showToast('UPLOAD FAILED: INVALID URL', 5000);
+          continue;
         }
         const newAsset = {
           type: assetType,
@@ -1103,7 +1106,8 @@ async function handleAssetUpload(files) {
         
         showToast(`UPLOADED ${file.name.toUpperCase()}`);
       } else {
-        throw new Error(data.error || 'Upload failed');
+        showToast('UPLOAD FAILED: ' + (data && data.error ? data.error.toUpperCase() : 'UNKNOWN ERROR'), 5000);
+        continue;
       }
     }
     
