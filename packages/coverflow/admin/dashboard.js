@@ -187,8 +187,8 @@ function editCover(cover) {
         <div class="form-group">
           <label class="form-label">FRONT IMAGE</label>
           <div style="position: relative;">
-            <img src="${cover.frontImage || '/placeholder.jpg'}" 
-                 style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <img src="${cover.frontImage || '/placeholder.jpg'}" style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <input type="text" class="form-input" name="frontImage" value="${cover.frontImage || ''}" style="margin-bottom: 8px;">
             <button type="button" class="btn" onclick="openImageLibrary('frontImage')" style="width: 100%;">
               CHANGE IMAGE
             </button>
@@ -198,8 +198,8 @@ function editCover(cover) {
         <div class="form-group">
           <label class="form-label">BACK IMAGE</label>
           <div style="position: relative;">
-            <img src="${cover.backImage || '/placeholder.jpg'}" 
-                 style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <img src="${cover.backImage || '/placeholder.jpg'}" style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <input type="text" class="form-input" name="backImage" value="${cover.backImage || ''}" style="margin-bottom: 8px;">
             <button type="button" class="btn" onclick="openImageLibrary('backImage')" style="width: 100%;">
               CHANGE IMAGE
             </button>
