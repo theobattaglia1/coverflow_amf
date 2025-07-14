@@ -494,19 +494,13 @@ function renderFolders() {
 function renderAssets() {
   const container = document.getElementById('assetsContainer');
   if (!container) return;
-  
   container.innerHTML = '';
-  
-  // Get items in current folder
   const { images } = getCurrentFolderItems();
-  
   if (images.length === 0) {
     container.innerHTML = '<p style="color: var(--grey-500); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO ASSETS IN THIS FOLDER</p>';
     return;
   }
-  
   images.forEach((asset, index) => {
-    // Infer type if missing
     let type = asset.type;
     if (!type && asset.url) {
       if (/\.(mp4|webm|mov|avi)$/i.test(asset.url)) type = 'video';
@@ -524,15 +518,7 @@ function renderAssets() {
     }
     const div = document.createElement('div');
     div.className = 'asset-item';
-    div.innerHTML = `
-      ${mediaTag}
-      <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)" style="margin-bottom: var(--space-sm);">
-      <div style="font-family: var(--font-mono); font-size: 0.625rem; word-break: break-all; margin-bottom: var(--space-sm); cursor: pointer; opacity: 0.6;"
-           onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
-        ${asset.url}
-      </div>
-      <button onclick="deleteAsset('${asset.url}')" style="width: 100%;">DELETE</button>
-    `;
+    div.innerHTML = mediaTag + `<div style='font-size:0.8em;text-align:center;margin-top:4px;'>${asset.name||''}</div>`;
     container.appendChild(div);
   });
 }
@@ -1223,7 +1209,7 @@ window.openImageLibrary = function(inputField) {
     modal.innerHTML = `
       <div style="background: #fff; padding: 32px; max-width: 900px; width: 90vw; max-height: 80vh; overflow-y: auto; border-radius: 8px; position: relative;">
         <button id="closeDashboardImageLibrary" style="position: absolute; top: 16px; right: 16px; font-size: 2rem; background: none; border: none; cursor: pointer;">&times;</button>
-        <h2 style="margin-top:0;">Select Image</h2>
+        <h2 style="margin-top:0;">Select Asset</h2>
         <div id="dashboardImageLibraryGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px;"></div>
       </div>
     `;
@@ -1232,24 +1218,38 @@ window.openImageLibrary = function(inputField) {
   } else {
     modal.style.display = 'flex';
   }
-  // Populate images
+  // Populate assets
   const grid = document.getElementById('dashboardImageLibraryGrid');
   grid.innerHTML = '';
-  const allImages = (assets.images || []).concat(...(assets.folders||[]).flatMap(f=>f.children||[]).filter(c=>c.type==='image'));
-  if (allImages.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#888;">No images found.</div>';
+  const allAssets = (assets.images || []).concat(...(assets.folders||[]).flatMap(f=>f.children||[]));
+  if (allAssets.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#888;">No assets found.</div>';
   } else {
-    allImages.forEach(img => {
+    allAssets.forEach(asset => {
+      let type = asset.type;
+      if (!type && asset.url) {
+        if (/\.(mp4|webm|mov|avi)$/i.test(asset.url)) type = 'video';
+        else if (/\.(mp3|wav|m4a|aac|ogg)$/i.test(asset.url)) type = 'audio';
+        else type = 'image';
+      }
+      let mediaTag = '';
+      if (type === 'video') {
+        mediaTag = `<video src="${asset.url}" controls style="width:100%;height:100px;object-fit:cover;background:#222;"></video>`;
+      } else if (type === 'audio') {
+        mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
+      } else {
+        mediaTag = `<img src="${asset.url}" style="width:100%; aspect-ratio:1; object-fit:cover;">`;
+      }
       const div = document.createElement('div');
       div.style.cursor = 'pointer';
       div.style.border = '1px solid #ccc';
       div.style.padding = '4px';
       div.style.background = '#fafafa';
-      div.innerHTML = `<img src="${img.url}" style="width:100%; aspect-ratio:1; object-fit:cover;"><div style="font-size:0.8em; text-align:center; margin-top:4px;">${img.name||''}</div>`;
+      div.innerHTML = mediaTag + `<div style="font-size:0.8em; text-align:center; margin-top:4px;">${asset.name||''}</div>`;
       div.onclick = () => {
         const input = document.querySelector(`#editCoverForm input[name='${dashboardImageLibraryTarget}']`);
         if (input) {
-          input.value = img.url;
+          input.value = asset.url;
           input.dispatchEvent(new Event('input'));
         }
         closeImageLibrary();
