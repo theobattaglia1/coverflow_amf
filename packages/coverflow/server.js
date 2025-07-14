@@ -295,30 +295,6 @@ app.get('/hudson-deck.html',
 // Static files for PUBLIC site (no auth required) - MOVED AFTER ADMIN HANDLER
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 
-// In development, proxy upload requests to production if file doesn't exist locally
-if (process.env.NODE_ENV !== 'production') {
-  app.use('/uploads', (req, res, next) => {
-    const localPath = path.join(UPLOADS_DIR, req.path);
-    
-    // Check if file exists locally
-    if (fs.existsSync(localPath)) {
-      // Serve local file
-      return express.static(UPLOADS_DIR, {
-        setHeaders: res => res.setHeader('Cache-Control', 'no-store')
-      })(req, res, next);
-    }
-    
-    // Proxy to production
-    console.log(`Proxying ${req.path} to production...`);
-    res.redirect(`https://www.allmyfriendsinc.com/uploads${req.path}`);
-  });
-} else {
-  // Production - serve uploads normally
-  app.use('/uploads', express.static(UPLOADS_DIR, {
-    setHeaders: res => res.setHeader('Cache-Control', 'no-store')
-  }));
-}
-
 // Admin routes for main domain (with /admin prefix)
 app.use('/admin', (req, res, next) => {
   // Always allow access to login page and its assets
