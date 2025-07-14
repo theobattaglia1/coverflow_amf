@@ -349,7 +349,7 @@ const assetUpload = multer({
   fileFilter: (req, file, cb) => {
     if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/') || file.mimetype.startsWith('audio/')) {
       return cb(null, true);
-    }
+  }
     cb(new Error('Only image, video, or audio files are allowed'));
   }
 });
@@ -620,7 +620,7 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
   blobStream.on('finish', () => {
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
     console.log('[UPLOAD] GCS publicUrl:', publicUrl);
-    res.json({
+  res.json({
       url: publicUrl,
       filename: file.originalname,
       folder: folder,
@@ -645,13 +645,38 @@ app.post('/upload-audio', requireAuth('editor'), audioUpload.single('audio'), as
     res.status(500).json({ error: err.message });
   });
   blobStream.on('finish', () => {
-    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+    // Instead of returning a public URL, return the GCS path
     res.json({
-      url: publicUrl,
+      gcsPath: gcsPath,
       originalName: file.originalname
     });
   });
   blobStream.end(file.buffer);
+});
+
+// Helper to generate signed URL for a GCS file
+async function generateSignedUrl(gcsPath, expiresSeconds = 3600) {
+  const storage = new Storage();
+  const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+  const file = bucket.file(gcsPath);
+  const [url] = await file.getSignedUrl({
+    action: 'read',
+    expires: Date.now() + expiresSeconds * 1000
+  });
+  return url;
+}
+
+// Endpoint to generate a signed URL for an audio file
+app.post('/api/generate-audio-link', requireAuth('editor'), async (req, res) => {
+  try {
+    const { gcsPath, expiresSeconds } = req.body;
+    if (!gcsPath) return res.status(400).json({ error: 'Missing gcsPath' });
+    const url = await generateSignedUrl(gcsPath, expiresSeconds || 3600);
+    res.json({ url });
+  } catch (err) {
+    console.error('Error generating signed URL:', err);
+    res.status(500).json({ error: 'Failed to generate signed URL' });
+  }
 });
 
 // Cover management
@@ -875,5 +900,29 @@ app.listen(PORT, () => {
   console.log(`Admin interface: http://localhost:${PORT}/admin/`);
   if (process.env.NODE_ENV === 'production') {
     console.log(`Admin subdomain: https://admin.allmyfriendsinc.com/`);
+  }
+});
+
+// List all assets in GCS (images, videos, audio)
+app.get('/api/list-assets', requireAuth('editor'), async (req, res) => {
+  try {
+    const { prefix = '' } = req.query;
+    const storage = new Storage();
+    const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+    const [files] = await bucket.getFiles({ prefix });
+    // Filter for images, videos, audio
+    const assetFiles = files.filter(f => /\.(png|jpe?g|gif|bmp|webp|mp4|webm|mov|avi|mp3|wav|m4a|aac|ogg)$/i.test(f.name));
+    const assets = assetFiles.map(f => ({
+      name: f.name.split('/').pop(),
+      gcsPath: f.name,
+      url: `https://storage.googleapis.com/${bucket.name}/${f.name}`,
+      contentType: f.metadata.contentType || '',
+      size: f.metadata.size || 0,
+      updated: f.metadata.updated || ''
+    }));
+    res.json({ assets });
+  } catch (err) {
+    console.error('Error listing assets:', err);
+    res.status(500).json({ error: 'Failed to list assets' });
   }
 });

@@ -399,11 +399,10 @@ async function pushLive() {
 // Asset management
 async function loadAssets() {
   try {
-    const res = await fetch('/data/assets.json');
+    const res = await fetch('/api/list-assets');
     const data = await res.json();
-    assets = data.assets || {};
-    folders = Object.keys(assets);
-    renderFolders();
+    // data.assets is an array of asset objects
+    assets = { images: data.assets };
     renderAssets();
   } catch (err) {
     console.error('Failed to load assets:', err);
@@ -440,7 +439,7 @@ function selectFolder(folder) {
 function renderAssets() {
   const container = document.getElementById('assetsContainer');
   container.innerHTML = '';
-  const folderAssets = currentFolder ? (assets[currentFolder] || []) : Object.values(assets).flat();
+  const folderAssets = currentFolder ? (assets.images || []) : Object.values(assets).flat();
   folderAssets.forEach(asset => {
     let type = asset.type;
     if (!type && asset.url) {

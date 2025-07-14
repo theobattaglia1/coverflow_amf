@@ -336,33 +336,13 @@ async function pushLive() {
 // Asset management
 async function loadAssets() {
   try {
-    const res = await fetch('/data/assets.json');
+    const res = await fetch('/api/list-assets');
     const data = await res.json();
-    
-    // Merge both folders and children at the top level, deduplicated by name
-    let folders = [];
-    if (Array.isArray(data.folders)) folders = folders.concat(data.folders);
-    if (Array.isArray(data.children)) folders = folders.concat(data.children);
-    // Deduplicate by folder name
-    const seen = new Set();
-    folders = folders.filter(f => {
-      if (!f || !f.name) return false;
-      if (seen.has(f.name)) return false;
-      seen.add(f.name);
-      return true;
-    });
-      assets = {
-      folders,
-        images: data.images || []
-      };
-    
-    renderFolders();
+    // data.assets is an array of asset objects
+    assets = { images: data.assets };
     renderAssets();
   } catch (err) {
     console.error('Failed to load assets:', err);
-    assets = { folders: [], images: [] };
-    renderFolders();
-    renderAssets();
   }
 }
 
