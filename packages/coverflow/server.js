@@ -6,7 +6,6 @@ import fs from 'fs';
 import multer from 'multer';
 import bcrypt from 'bcrypt';
 import session from 'express-session';
-import { Octokit } from '@octokit/rest';
 import { fileURLToPath } from 'url';
 import crypto from 'crypto';
 import cors from 'cors';
@@ -19,7 +18,7 @@ const __dirname = path.dirname(__filename);
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const ADMIN_DIR = path.join(__dirname, 'admin');
 const DATA_DIR = path.join(__dirname, 'data');
-const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, 'uploads');
+// Removed UPLOADS_DIR and all local upload logic
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -242,11 +241,6 @@ app.use((req, res, next) => {
       return next();
     }
     
-    // Allow test-github and force-github-backup routes
-    if (req.path === '/test-github' || req.path === '/force-github-backup') {
-      return next();
-    }
-    
     // Handle root path
     if (req.path === '/' || req.path === '') {
       if (isAuthenticated(req)) {
@@ -372,232 +366,11 @@ app.use('/data', express.static(DATA_DIR, {
   setHeaders: res => res.setHeader('Cache-Control', 'no-store')
 }));
 
-// GitHub integration with debouncing
-const octokit = new Octokit({ auth: process.env.GITHUB_TOKEN });
-const GH_OWNER = 'theobattaglia1';
-const GH_REPO = 'coverflow_amf';
-
-// Debounce queue for GitHub sync with size limit
-class GitHubSyncQueue {
-  constructor(maxQueueSize = 100) {
-    this.queue = new Map();
-    this.timers = new Map();
-    this.processing = false;
-    this.maxQueueSize = maxQueueSize;
-    this.errorCount = 0;
-    this.maxErrors = 5;
-  }
-
-  add(filePath, content, message, debounceMs = 5000) {
-    // Prevent queue from growing too large
-    if (this.queue.size >= this.maxQueueSize) {
-      console.error(`GitHub sync queue full (${this.maxQueueSize} items), dropping oldest items`);
-      // Remove oldest items
-      const keysToRemove = Array.from(this.queue.keys()).slice(0, 10);
-      keysToRemove.forEach(key => {
-        this.queue.delete(key);
-        if (this.timers.has(key)) {
-          clearTimeout(this.timers.get(key));
-          this.timers.delete(key);
-        }
-      });
-    }
-    
-    // Clear existing timer
-    if (this.timers.has(filePath)) {
-      clearTimeout(this.timers.get(filePath));
-    }
-
-    // Set new timer
-    const timer = setTimeout(() => {
-      this.queue.set(filePath, { content, message });
-      this.timers.delete(filePath);
-      this.process();
-    }, debounceMs);
-
-    this.timers.set(filePath, timer);
-  }
-
-  async process() {
-    if (this.processing || this.queue.size === 0) return;
-    
-    // Stop processing if too many errors
-    if (this.errorCount >= this.maxErrors) {
-      console.error('Too many GitHub sync errors, clearing queue');
-      this.queue.clear();
-      this.errorCount = 0;
-      return;
-    }
-    
-    this.processing = true;
-    
-    for (const [filePath, { content, message }] of this.queue) {
-      try {
-        await writeJsonToGitHub(filePath, content, message);
-        this.queue.delete(filePath);
-        this.errorCount = 0; // Reset error count on success
-      } catch (error) {
-        console.error(`Failed to sync ${filePath}:`, error);
-        this.errorCount++;
-        
-        // Remove from queue after 3 attempts
-        const attempts = (this.attempts.get(filePath) || 0) + 1;
-        if (attempts >= 3) {
-          console.error(`Giving up on ${filePath} after 3 attempts`);
-          this.queue.delete(filePath);
-          this.attempts.delete(filePath);
-        } else {
-          this.attempts.set(filePath, attempts);
-        }
-      }
-    }
-    
-    this.processing = false;
-    
-    // Process again if there are items in queue
-    if (this.queue.size > 0) {
-      setTimeout(() => this.process(), 5000);
-    }
-  }
-  
-  attempts = new Map();
-}
-
-const gitHubSync = new GitHubSyncQueue();
-
-async function writeJsonToGitHub(filePath, jsonString, commitMsg) {
-  console.log(`📤 Attempting to push to GitHub: ${filePath}`);
-  
-  try {
-    if (!process.env.GITHUB_TOKEN) {
-      throw new Error('GITHUB_TOKEN not set!');
-    }
-    
-    let sha;
-    try {
-      const { data } = await octokit.repos.getContent({
-        owner: GH_OWNER,
-        repo: GH_REPO,
-        path: filePath
-      });
-      sha = data.sha;
-      console.log(`📄 File exists, SHA: ${sha}`);
-    } catch (err) {
-      if (err.status !== 404) throw err;
-      console.log(`📄 File doesn't exist, will create new`);
-    }
-
-    const result = await octokit.repos.createOrUpdateFileContents({
-      owner: GH_OWNER,
-      repo: GH_REPO,
-      path: filePath,
-      message: commitMsg,
-      content: Buffer.from(jsonString).toString('base64'),
-      sha
-    });
-
-    console.log(`✅ GitHub push successful: ${result.data.commit.sha}`);
-    return { success: true };
-  } catch (err) {
-    console.error(`❌ GitHub push failed for ${filePath}:`, err.message);
-    console.error('Full error:', err);
-    throw err;
-  }
-}
-
-// Test GitHub endpoint
-app.post('/test-github', requireAuth('admin'), async (req, res) => {
-  try {
-    const testContent = {
-      message: "GitHub sync test",
-      timestamp: new Date().toISOString(),
-      randomNumber: Math.random()
-    };
-    
-    const result = await writeJsonToGitHub(
-      'test-github-sync.json',
-      JSON.stringify(testContent, null, 2),
-      'Test GitHub sync'
-    );
-    
-    res.json({ success: true, result });
-  } catch (err) {
-    console.error('GitHub test failed:', err);
-    res.json({ success: false, error: err.message });
-  }
-});
-
-// Force GitHub backup endpoint
-app.post('/force-github-backup', requireAuth('admin'), async (req, res) => {
-  console.log('🔄 Starting forced GitHub backup...');
-  
-  try {
-    // Read current data
-    const covers = JSON.parse(
-      await fs.promises.readFile(path.join(DATA_DIR, 'covers.json'), 'utf-8')
-    );
-    const assets = JSON.parse(
-      await fs.promises.readFile(path.join(DATA_DIR, 'assets.json'), 'utf-8')
-    );
-    
-    // Push to GitHub
-    console.log('📤 Pushing covers.json...');
-    await writeJsonToGitHub(
-      'packages/coverflow/data/covers.json',
-      JSON.stringify(covers, null, 2),
-      `🔄 Force backup - ${new Date().toISOString()}`
-    );
-    
-    console.log('📤 Pushing assets.json...');
-    await writeJsonToGitHub(
-      'packages/coverflow/data/assets.json',
-      JSON.stringify(assets, null, 2),
-      `🔄 Force backup - ${new Date().toISOString()}`
-    );
-    
-    res.json({ success: true, message: 'Backup complete' });
-  } catch (err) {
-    console.error('❌ Backup failed:', err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-});
-
-// Enhanced multer setup with folder support
-fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-
-// Enhanced multer setup for all asset types
-const assetStorage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    let subdir = '';
-    if (file.mimetype.startsWith('video/')) subdir = 'video';
-    else if (file.mimetype.startsWith('audio/')) subdir = 'audio';
-    // Images go to root uploads or folder
-    const folder = req.body.folder || '';
-    console.log('[UPLOAD] req.body.folder:', folder); // Log the folder received from frontend
-    // Sanitize folder path
-    const sanitizedFolder = folder.split('/').filter(part => part && part !== '.' && part !== '..' && !part.includes('\\')).join('/');
-    const destPath = path.join(UPLOADS_DIR, subdir, sanitizedFolder);
-    try {
-      await fs.promises.mkdir(destPath, { recursive: true });
-      console.log('[UPLOAD] Saving to:', destPath);
-      cb(null, destPath);
-    } catch (err) {
-      console.error('[UPLOAD ERROR] Failed to create directory:', destPath, err);
-      cb(err, destPath);
-    }
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `upload-${uniqueSuffix}${ext}`);
-  }
-});
-
+// Set up multer for memory storage only (for GCS uploads)
 const assetUpload = multer({
-  storage: assetStorage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB max
   fileFilter: (req, file, cb) => {
-    // Allow image, video, audio
     if (file.mimetype.startsWith('image/') || file.mimetype.startsWith('video/') || file.mimetype.startsWith('audio/')) {
       return cb(null, true);
     }
@@ -605,38 +378,19 @@ const assetUpload = multer({
   }
 });
 
-// Audio upload configuration
-const audioStorage = multer.diskStorage({
-  destination: async (req, file, cb) => {
-    const audioDir = path.join(UPLOADS_DIR, 'audio');
-    await fs.promises.mkdir(audioDir, { recursive: true });
-    cb(null, audioDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
-    const ext = path.extname(file.originalname);
-    cb(null, `audio-${uniqueSuffix}${ext}`);
-  }
-});
-
 const audioUpload = multer({
-  storage: audioStorage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 50 * 1024 * 1024 },
   fileFilter: (req, file, cb) => {
     const allowedMimes = ['audio/mpeg', 'audio/mp3', 'audio/wav', 'audio/m4a', 'audio/webm'];
     const allowedExtensions = ['.mp3', '.wav', '.m4a', '.webm', '.mpeg'];
-    
-    // Check MIME type
     if (!allowedMimes.includes(file.mimetype)) {
       return cb(new Error('Only audio files are allowed'));
     }
-    
-    // Check file extension
     const ext = path.extname(file.originalname).toLowerCase();
     if (!allowedExtensions.includes(ext)) {
       return cb(new Error('Invalid audio file extension'));
     }
-    
     cb(null, true);
   }
 });
@@ -792,7 +546,7 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
     current.children.push({ type: 'folder', name, children: [] });
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
+    // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
 
     res.json({ success: true });
   } catch (err) {
@@ -821,7 +575,7 @@ app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
     parent.children = parent.children.filter(c => !(c.type === 'folder' && c.name === folderName));
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🗑️ Delete folder');
+    // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🗑️ Delete folder');
 
     res.json({ success: true });
   } catch (err) {
@@ -853,7 +607,7 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
     folder.name = newName;
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '✏️ Rename folder');
+    // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '✏️ Rename folder');
 
     res.json({ success: true });
   } catch (err) {
@@ -879,6 +633,8 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
   else if (file.mimetype.startsWith('audio/')) subdir = 'audio';
   // Build GCS path
   const gcsPath = [subdir, folder, file.originalname].filter(Boolean).join('/');
+  const storage = new Storage();
+  const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
   const blob = bucket.file(gcsPath);
   const blobStream = blob.createWriteStream({ resumable: false, contentType: file.mimetype });
   blobStream.on('error', err => {
@@ -898,13 +654,28 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
   blobStream.end(file.buffer);
 });
 
-// Audio upload
-app.post('/upload-audio', requireAuth('editor'), audioUpload.single('audio'), (req, res) => {
+// Audio upload (GCS only)
+app.post('/upload-audio', requireAuth('editor'), audioUpload.single('audio'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'No audio file provided' });
-  res.json({
-    url: `/uploads/audio/${req.file.filename}`,
-    originalName: req.file.originalname
+  const file = req.file;
+  const folder = req.body.folder || '';
+  const gcsPath = ['audio', folder, file.originalname].filter(Boolean).join('/');
+  const storage = new Storage();
+  const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
+  const blob = bucket.file(gcsPath);
+  const blobStream = blob.createWriteStream({ resumable: false, contentType: file.mimetype });
+  blobStream.on('error', err => {
+    console.error('[UPLOAD ERROR] GCS:', err);
+    res.status(500).json({ error: err.message });
   });
+  blobStream.on('finish', () => {
+    const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+    res.json({
+      url: publicUrl,
+      originalName: file.originalname
+    });
+  });
+  blobStream.end(file.buffer);
 });
 
 // Cover management
@@ -962,7 +733,7 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
           });
           
           await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-          gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), `📁 Create artist folder: ${cover.artistDetails.name}`);
+          // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), `📁 Create artist folder: ${cover.artistDetails.name}`);
         }
       }
     } else {
@@ -971,12 +742,12 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
 
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
     
-    // Queue GitHub sync (non-blocking)
-    gitHubSync.add(
-      'packages/coverflow/data/covers.json', 
-      JSON.stringify(covers, null, 2), 
-      `Update cover: ${cover.albumTitle || 'Untitled'}`
-    );
+    // Removed queue GitHub sync (non-blocking)
+    // Removed gitHubSync.add(
+    //   'packages/coverflow/data/covers.json', 
+    //   JSON.stringify(covers, null, 2), 
+    //   `Update cover: ${cover.albumTitle || 'Untitled'}`
+    // );
     
     res.json({ success: true, githubSync: 'queued' });
   } catch (err) {
@@ -995,7 +766,7 @@ app.post('/delete-cover', requireAuth('editor'), async (req, res) => {
     covers = covers.filter(c => String(c.id) !== String(id));
     
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    gitHubSync.add('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Delete cover');
+    // Removed gitHubSync.add('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Delete cover');
     
     res.json({ success: true });
   } catch (err) {
@@ -1009,7 +780,7 @@ app.post('/save-covers', requireAuth('editor'), async (req, res) => {
     const jsonPath = path.join(DATA_DIR, 'covers.json');
     
     await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
-    gitHubSync.add('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Update covers order');
+    // Removed gitHubSync.add('packages/coverflow/data/covers.json', JSON.stringify(covers, null, 2), 'Update covers order');
     
     res.json({ success: true });
   } catch (err) {
@@ -1024,7 +795,7 @@ app.post('/save-assets', requireAuth('editor'), async (req, res) => {
     const jsonPath = path.join(DATA_DIR, 'assets.json');
     
     await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
-    gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), 'Update assets');
+    // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), 'Update assets');
     
     res.json({ success: true });
   } catch (err) {
@@ -1058,7 +829,7 @@ app.post('/save-artist-tracks', requireAuth('editor'), async (req, res) => {
     allTracks[artistId] = tracks;
     
     await fs.promises.writeFile(tracksPath, JSON.stringify(allTracks, null, 2));
-    gitHubSync.add('packages/coverflow/data/artist-tracks.json', JSON.stringify(allTracks, null, 2), 'Update artist tracks');
+    // Removed gitHubSync.add('packages/coverflow/data/artist-tracks.json', JSON.stringify(allTracks, null, 2), 'Update artist tracks');
     
     res.json({ success: true });
   } catch (err) {
