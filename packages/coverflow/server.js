@@ -864,6 +864,9 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
 
 // Unified asset upload endpoint (GCS, accept both 'file' and 'image')
 app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, res) => {
+  // Debug logging
+  console.log('req.files:', req.files);
+  console.log('req.body:', req.body);
   // Accept both 'file' and 'image' fields
   const file = req.files?.find(f => f.fieldname === 'file' || f.fieldname === 'image');
   if (!file) {
