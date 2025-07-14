@@ -798,6 +798,7 @@ window.openImageLibrary = function(inputField) {
       div.style.background = '#fafafa';
       div.innerHTML = mediaTag + `<div style="font-size:0.8em; text-align:center; margin-top:4px;">${asset.name||''}</div>`;
       div.onclick = () => {
+        // Always set the GCS URL as the value
         const input = document.querySelector(`#editCoverForm input[name='${dashboardImageLibraryTarget}']`);
         if (input) {
           input.value = asset.url;
