@@ -16,22 +16,20 @@
             --bg:#FFFFFF;
             --ink:#000000;
             --accent:#0000FF; /* Classic blue */
-            
-            /* Fluid Type Scale - Tighter */
+            /* Fluid Type Scale - Tighter, now more compact */
             --step--2: clamp(.625rem,.7vw,.75rem);
             --step--1: clamp(.75rem,.85vw,.875rem);
             --step-0:  clamp(.875rem,1vw,1rem);
-            --step-1:  clamp(1rem,1.2vw,1.25rem);
-            --step-2:  clamp(1.5rem,2vw,2rem);
-            --step-3:  clamp(2.25rem,3vw,3rem);
-            --step-4:  clamp(3rem,5vw,5rem);
-            --step-5:  clamp(4rem,8vw,8rem);
-            --step-6:  clamp(6rem,12vw,12rem);
-            
+            --step-1:  clamp(.9rem,1vw,1.1rem);
+            --step-2:  clamp(1.1rem,1.2vw,1.3rem);
+            --step-3:  clamp(1.5rem,1.8vw,2rem);
+            --step-4:  clamp(2rem,2.5vw,2.5rem);
+            --step-5:  clamp(2.5rem,4vw,4rem);
+            --step-6:  clamp(3rem,6vw,6rem);
             /* Grid & Spacing */
-            --gutter:1.5rem;
+            --gutter:1.2rem;
             --max-width:1280px;
-            --section-space:12rem;
+            --section-space:5.5rem;
         }
         
         /* ———————————— 2. Base Typography */
@@ -61,15 +59,15 @@
         h5{font-size:var(--step-2);letter-spacing:-.02em;}
         
         .display{
-            font-size:clamp(5rem,20vw,18rem);
+            font-size:clamp(2.5rem,8vw,7rem); /* Reduce by ~50% */
             font-weight:900;
-            line-height:.8;
+            line-height:.9;
             letter-spacing:-.08em;
             text-transform:uppercase;
         }
         
         p{
-            margin-bottom:1.5rem;
+            margin-bottom:1rem;
             max-width:65ch;
         }
         
@@ -245,7 +243,7 @@
             font-size:var(--step--2);
             font-weight:700;
             letter-spacing:-.02em;
-            margin-bottom:4rem;
+            margin-bottom:2rem;
             opacity:.2;
         }
         
@@ -558,11 +556,11 @@
         }
         
         /* ———————————— 14. Utilities */
-        .spacer-xs{height:2rem;}
-        .spacer-sm{height:4rem;}
-        .spacer-md{height:6rem;}
-        .spacer-lg{height:8rem;}
-        .spacer-xl{height:12rem;}
+        .spacer-xs{height:1rem;}
+        .spacer-sm{height:2rem;}
+        .spacer-md{height:3rem;}
+        .spacer-lg{height:4rem;}
+        .spacer-xl{height:6rem;}
         
         .text-center{text-align:center;}
         .opacity-50{opacity:.5;}
@@ -664,6 +662,40 @@
             section{padding-block:3rem;}
             .hero-image,.large-image{transform:none;}
         }
+        /* ———————————— 18. Editorial Section Header Accent ———————————— */
+        .section-header-accent {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .header-bar {
+            width: 8px;
+            height: 2.5rem;
+            background: var(--accent);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        h2.section-title {
+            position: relative;
+            z-index: 1;
+            background: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        h2.section-title[data-section]::before {
+            content: attr(data-section);
+            position: absolute;
+            left: -2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3.5rem;
+            color: var(--accent);
+            opacity: 0.08;
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+        }
     </style>
 </head>
 <body>
@@ -711,7 +743,10 @@
             
             <div class="grid">
                 <div class="col-8">
-                    <h2 data-misreg="THE EVOLVED">THE EVOLVED<br>AMERICAN<br>STORYTELLER</h2>
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="01">THE EVOLVED<br>AMERICAN<br>STORYTELLER</h2>
+                    </div>
                     <div class="spacer-md"></div>
                     <p class="lead">
                         Hudson occupies untapped territory in the market — the sophisticated vulnerability that made Taylor Swift a generation's voice, delivered through a distinctly masculine lens.
@@ -784,7 +819,10 @@
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>A CULTURAL<br>VACUUM</h2>
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="02">A CULTURAL<br>VACUUM</h2>
+                    </div>
                     <div class="spacer-md"></div>
                     <p class="lead">
                         There's a visible vacuum in pop culture: we lack an authentic, scale-worthy male artist that captures the emotional honesty and accessibility of legacy names like Bieber, Mendes, or Mayer.
@@ -832,7 +870,10 @@
             
             <div class="grid">
                 <div class="col-7">
-                    <h2>THE THOUGHTFUL<br>PROVOCATEUR</h2>
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="03">THE THOUGHTFUL<br>PROVOCATEUR</h2>
+                    </div>
                     <div class="spacer-md"></div>
                     <p class="lead">
                         Every touchpoint reinforces Hudson's core identity: the thoughtful provocateur who makes depth feel effortless.
@@ -887,7 +928,10 @@
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>EMOTIONAL<br>INTELLIGENCE</h2>
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="04">EMOTIONAL<br>INTELLIGENCE</h2>
+                    </div>
                     <div class="spacer-md"></div>
                     <p class="lead">
                         Hudson is the boy-next-door with emotional intelligence. A modern American heartthrob. Magnetic without being performative.
@@ -914,7 +958,10 @@
     <section class="music-bg">
         <div class="container">
             <p class="section-marker">05 — HUDSON IN 5 WORDS</p>
-            
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="05">HUDSON IN<br>5 WORDS</h2>
+            </div>
             <div class="words-display">
                 <span>EARNEST.</span>
                 <span>MAGNETIC.</span>
@@ -940,7 +987,10 @@
             
             <div class="grid">
                 <div class="col-10">
-                    <h2 data-misreg="SONIC ARCHITECTURE">SONIC<br>ARCHITECTURE</h2>
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="06">SONIC<br>ARCHITECTURE</h2>
+                    </div>
                 </div>
             </div>
             
@@ -998,6 +1048,10 @@
     <section id="visual">
         <div class="container">
             <p class="section-marker">07 — VISUAL STRATEGY</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="07">VISUAL<br>STRATEGY</h2>
+            </div>
             
             <div class="creative-layout">
                 <div class="creative-text">
@@ -1089,7 +1143,10 @@
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>TACTILE &<br>INTIMATE</h2>
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="08">TACTILE &<br>INTIMATE</h2>
+                    </div>
                     <div class="spacer-md"></div>
                     <p class="lead">
                         Visual tone = tactile, intimate, and cinematic. Hudson feels like someone you almost know—or wish you did.
@@ -1137,11 +1194,13 @@
     <section class="music-bg">
         <div class="container">
             <p class="section-marker">09 — ARTFUL, NOT EXPENSIVE</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="09">CONSTRAINT AS<br>BRAND CODE</h2>
+            </div>
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>CONSTRAINT AS<br>BRAND CODE</h2>
-                    <div class="spacer-md"></div>
                     <p class="lead">
                         Hudson's brand doesn't need glossy budgets. Everything should feel considered, raw, and beautiful.
                     </p>
@@ -1190,11 +1249,13 @@
         
         <div class="container">
             <p class="section-marker">10 — CONTENT PILLAR STRATEGY</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="10">FIVE CORE<br>CONTENT STREAMS</h2>
+            </div>
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>FIVE CORE<br>CONTENT STREAMS</h2>
-                    <div class="spacer-md"></div>
                     <p class="lead">
                         Content strategy follows a simple rule: if it doesn't deepen Hudson's story or strengthen fan connection, it doesn't exist.
                     </p>
@@ -1261,10 +1322,12 @@
     <section class="music-bg">
         <div class="container">
             <p class="section-marker">11 — DIGITAL ECOSYSTEM PHILOSOPHY</p>
-            
             <div class="grid">
                 <div class="col-10">
-                    <h2>STORYTELLING WITHOUT<br>COMPROMISE</h2>
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="11">STORYTELLING WITHOUT<br>COMPROMISE</h2>
+                    </div>
                 </div>
             </div>
             
@@ -1330,18 +1393,10 @@
     <section>
         <div class="container">
             <p class="section-marker">12 — MEDIA STRATEGY THOUGHTSTARTERS</p>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <h2>BUILDING CREDIBILITY<br>THAT SCALES</h2>
-                    <div class="spacer-md"></div>
-                    <p class="lead">
-                        Build Hudson's story from the inside out — earning tastemaker devotion that creates the cultural momentum mainstream media cannot ignore.
-                    </p>
-                </div>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="12">BUILDING CREDIBILITY<br>THAT SCALES</h2>
             </div>
-            
-            <div class="spacer-lg"></div>
             
             <div class="grid">
                 <div class="col-12">
@@ -1399,11 +1454,13 @@
     <section class="music-bg">
         <div class="container">
             <p class="section-marker">13 — WHERE DISCOVERY HAPPENS</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="13">CULTURAL<br>PLACEMENT</h2>
+            </div>
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>CULTURAL<br>PLACEMENT</h2>
-                    <div class="spacer-md"></div>
                     <p class="lead">
                         Build credibility and early fandom by being discoverable in the right places. Let people "find" Hudson and claim him as their own gem.
                     </p>
@@ -1453,11 +1510,13 @@
     <section>
         <div class="container">
             <p class="section-marker">14 — PARTNERSHIP ALIGNMENT</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="14">BRAND RELATIONSHIPS<br>THAT ENHANCE</h2>
+            </div>
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>BRAND RELATIONSHIPS<br>THAT ENHANCE</h2>
-                    <div class="spacer-md"></div>
                     <p class="lead">
                         Every partnership must pass the inevitability test — feeling like a natural extension of Hudson's world rather than a commercial intrusion.
                     </p>
@@ -1517,11 +1576,13 @@
         
         <div class="container">
             <p class="section-marker">15 — LIVE PERFORMANCE PHILOSOPHY</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="15">THE STAGE AS<br>SACRED SPACE</h2>
+            </div>
             
             <div class="grid">
                 <div class="col-8">
-                    <h2>THE STAGE AS<br>SACRED SPACE</h2>
-                    <div class="spacer-md"></div>
                     <p class="lead">
                         Hudson's live show transforms any venue into an intimate conversation, scaling emotional connection rather than just production value.
                     </p>
@@ -1593,8 +1654,10 @@
     <section id="vision">
         <div class="container">
             <p class="section-marker">16 — LONG-TERM VISION</p>
-            
-            <h2 data-misreg="12-24 MONTHS">12—24<br>MONTHS</h2>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="16">12—24<br>MONTHS</h2>
+            </div>
             
             <div class="spacer-md"></div>
             
