@@ -100,7 +100,7 @@ const requireAuth = (requiredRole = 'viewer') => {
       if (req.xhr || req.headers.accept?.includes('application/json')) {
         return res.status(401).json({ error: 'Authentication required' });
       }
-      return res.redirect('/admin/login.html');
+      return res.redirect('/login.html');
     }
     const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     const userRole = req.session.user.role;
@@ -161,19 +161,42 @@ async function saveUsers(users) {
 app.use((req, res, next) => {
   if (isAdminSubdomain(req)) {
     console.log(`Admin subdomain request: ${req.method} ${req.path}`);
-    if (['/api/', '/data/', '/upload'].some(p => req.path.startsWith(p)) || ['/save-cover', '/delete-cover', '/save-covers', '/save-assets', '/push-live'].includes(req.path)) {
-      return next();
-    }
-    if (req.path === '/' || req.path === '') {
-      return res.sendFile(path.join(ADMIN_DIR, isAuthenticated(req) ? 'index-swiss.html' : 'login.html'));
-    }
-    if (req.path.startsWith('/admin')) {
-      req.url = req.url.replace('/admin', '');
-    }
-    return express.static(ADMIN_DIR)(req, res, next);
+    // First, try to serve static files from the ADMIN_DIR
+    express.static(ADMIN_DIR)(req, res, (err) => {
+      // If the static file is not found, or there's an error, move to other routes
+      if (err) {
+        return next(err);
+      }
+      // If a file was served, the response is already sent.
+      // If not, we check our specific routes.
+      if (res.headersSent) {
+        return;
+      }
+
+      // API and data routes should pass through to their handlers
+      if (req.path.startsWith('/api/') || req.path.startsWith('/data/')) {
+        return next();
+      }
+
+      // Handle root path for authenticated vs unauthenticated users
+      if (req.path === '/' || req.path === '') {
+        if (isAuthenticated(req)) {
+          return res.sendFile(path.join(ADMIN_DIR, 'index-swiss.html'));
+        } else {
+          return res.redirect('/login.html');
+        }
+      }
+      
+      // If we reach here, it means no static file was found and no specific route matched.
+      // Let the next handlers try, or it will eventually 404.
+      next();
+    });
+  } else {
+    // Not an admin subdomain, continue to public routes
+    next();
   }
-  next();
 });
+
 
 // Basic auth for specific public files
 app.get('/hudson-deck.html', basicAuth({ users: { 'guest': 'MakeItTogether25!' }, challenge: true }), (req, res) => {
