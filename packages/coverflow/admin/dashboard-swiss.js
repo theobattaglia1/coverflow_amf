@@ -348,12 +348,17 @@ async function pushLive() {
 
 // Asset management
 async function loadAssets() {
+  // Load folders from assets.json as before
   const res = await fetch('/data/assets.json');
   const data = await res.json();
   console.log('[FRONTEND] Loaded assets.json:', data);
   assets = data;
   checkForNonGCSUrls();
   renderFolders();
+  // Load images from GCS
+  const gcsRes = await fetch('/api/list-gcs-assets');
+  const gcsData = await gcsRes.json();
+  assets.images = gcsData.images.map(url => ({ url, type: 'image' }));
   renderAssets();
 }
 
