@@ -745,8 +745,19 @@ let currentPath = '';
 
 // Add this function to update the current folder indicator
 function updateCurrentFolderIndicator() {
-  const indicator = document.getElementById('currentFolderIndicator');
-  if (!indicator) return;
+  let indicator = document.getElementById('currentFolderIndicator');
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'currentFolderIndicator';
+    indicator.style.fontFamily = 'var(--font-mono)';
+    indicator.style.fontSize = '0.9em';
+    indicator.style.marginBottom = '8px';
+    indicator.style.color = '#888';
+    const dropzone = document.getElementById('assetDropzone');
+    if (dropzone && dropzone.parentNode) {
+      dropzone.parentNode.insertBefore(indicator, dropzone);
+    }
+  }
   indicator.textContent = `Current Folder: ${currentPath || 'ROOT'}`;
 }
 
@@ -837,6 +848,7 @@ async function deleteFolder(path) {
 // Navigate to folder
 function navigateToFolder(path) {
   currentPath = path;
+  updateCurrentFolderIndicator();
   
   // Update active folder
   document.querySelectorAll('.folder-item').forEach(item => {
