@@ -507,20 +507,26 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
       if (!current.folders) current.folders = [];
       let folder = current.folders.find(f => f.name === part);
       if (!folder) {
-        folder = { name: part, children: [] };
+        folder = { name: part, type: 'folder', children: [], folders: [] };
         current.folders.push(folder);
       }
       current = folder;
     }
 
     if (!current.children) current.children = [];
+    if (!current.folders) current.folders = [];
 
-    // Check if folder already exists
-    if (current.children.find(c => c.type === 'folder' && c.name === name)) {
+    // Check if folder already exists in either array
+    const existsInChildren = current.children.find(c => c.type === 'folder' && c.name === name);
+    const existsInFolders = current.folders.find(f => f.type === 'folder' && f.name === name);
+    if (existsInChildren || existsInFolders) {
       return res.status(400).json({ error: 'Folder already exists' });
     }
 
-    current.children.push({ type: 'folder', name, children: [] });
+    // Create new folder object
+    const newFolder = { type: 'folder', name, children: [], folders: [] };
+    current.children.push(newFolder);
+    current.folders.push(newFolder);
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
     // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
