@@ -349,17 +349,22 @@ function renderFolders() {
   `;
   rootItem.dataset.path = '';
   folderTree.appendChild(rootItem);
+
+  // Helper to merge and deduplicate folders by name
+  function mergeFoldersAndChildren(obj) {
+    let all = [];
+    if (Array.isArray(obj.folders)) all = all.concat(obj.folders);
+    if (Array.isArray(obj.children)) all = all.concat(obj.children);
+    const seen = new Set();
+    return all.filter(f => f && f.type === 'folder' && f.name && !seen.has(f.name) && seen.add(f.name));
+  }
+
   // Render hierarchical folders
   function renderFolder(folder, level = 0) {
     const li = document.createElement('li');
     const indent = level * 20;
     // Merge folders and children arrays, deduplicate by name
-    let allChildren = [];
-    if (Array.isArray(folder.folders)) allChildren = allChildren.concat(folder.folders);
-    if (Array.isArray(folder.children)) allChildren = allChildren.concat(folder.children);
-    // Deduplicate by name
-    const seen = new Set();
-    allChildren = allChildren.filter(f => f && f.type === 'folder' && f.name && !seen.has(f.name) && seen.add(f.name));
+    const allChildren = mergeFoldersAndChildren(folder);
     const hasChildren = allChildren.length > 0;
     const folderPath = folder.path || folder.name;
     li.className = 'folder-item' + (currentPath === folderPath ? ' active' : '');
@@ -389,12 +394,9 @@ function renderFolders() {
       });
     }
   }
+
   // Merge root folders and children, deduplicate by name
-  let allRootFolders = [];
-  if (Array.isArray(assets.folders)) allRootFolders = allRootFolders.concat(assets.folders);
-  if (Array.isArray(assets.children)) allRootFolders = allRootFolders.concat(assets.children);
-  const seenRoot = new Set();
-  allRootFolders = allRootFolders.filter(f => f && f.type === 'folder' && f.name && !seenRoot.has(f.name) && seenRoot.add(f.name));
+  const allRootFolders = mergeFoldersAndChildren(assets);
   allRootFolders.forEach(folder => renderFolder(folder));
 }
 
