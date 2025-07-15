@@ -1151,7 +1151,12 @@ window.openImageLibrary = function(inputField) {
   // Populate images
   const grid = document.getElementById('dashboardImageLibraryGrid');
   grid.innerHTML = '';
-  const allImages = (assets.images || []).filter(a => a.type === 'image');
+  const imageExts = ['.png','.jpg','.jpeg','.gif','.webp','.svg','.tif','.tiff'];
+  const allImages = (assets.images || []).filter(a => {
+    if (!a.url) return false;
+    const url = a.url.toLowerCase();
+    return imageExts.some(ext => url.endsWith(ext));
+  });
   if (allImages.length === 0) {
     grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; color:#888;">No images found.</div>';
   } else {
