@@ -153,87 +153,78 @@ function createCoverElement(cover, index) {
 function editCover(cover) {
   const modal = document.getElementById('coverModal');
   const modalBody = document.getElementById('modalBody');
-  
   modalBody.innerHTML = `
     <form id="editCoverForm" style="display: grid; gap: var(--space-lg);">
       <div class="form-group">
         <label class="form-label">ALBUM TITLE</label>
         <input type="text" class="form-input" name="albumTitle" value="${cover.albumTitle || ''}" required>
       </div>
-      
       <div class="form-group">
         <label class="form-label">ARTIST NAME</label>
         <input type="text" class="form-input" name="coverLabel" value="${cover.coverLabel || ''}" required>
       </div>
-      
       <div class="form-group">
         <label class="form-label">CATEGORIES</label>
         <input type="text" class="form-input" name="category" value="${Array.isArray(cover.category) ? cover.category.join(', ') : (cover.category ? cover.category : '')}" 
                placeholder="ARTISTS, SONGWRITERS, PRODUCERS">
       </div>
-      
       <div class="form-group">
         <label class="form-label">SPOTIFY EMBED URL</label>
         <input type="url" class="form-input" name="spotifyEmbed" value="${cover.spotifyEmbed || ''}"
                placeholder="https://open.spotify.com/track/...">
       </div>
-      
       <div class="form-group">
         <label class="form-label">CONTACT EMAIL</label>
         <input type="email" class="form-input" name="contactEmail" value="${cover.contactEmail || ''}"
                placeholder="artist@example.com">
       </div>
-      
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-md);">
         <div class="form-group">
           <label class="form-label">FRONT IMAGE</label>
           <div style="position: relative;">
-            <img src="${cover.frontImage || '/placeholder.jpg'}" 
+            <img id="frontImagePreview" src="${cover.frontImage || '/placeholder.jpg'}" 
                  style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <input type="hidden" name="frontImage" value="${cover.frontImage || ''}">
             <button type="button" class="btn" onclick="openImageLibrary('frontImage')" style="width: 100%;">
               CHANGE IMAGE
             </button>
           </div>
         </div>
-        
         <div class="form-group">
           <label class="form-label">BACK IMAGE</label>
           <div style="position: relative;">
-            <img src="${cover.backImage || '/placeholder.jpg'}" 
+            <img id="backImagePreview" src="${cover.backImage || '/placeholder.jpg'}" 
                  style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
+            <input type="hidden" name="backImage" value="${cover.backImage || ''}">
             <button type="button" class="btn" onclick="openImageLibrary('backImage')" style="width: 100%;">
               CHANGE IMAGE
             </button>
           </div>
         </div>
       </div>
-      
       <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
         <button type="button" class="btn" onclick="closeModal()">CANCEL</button>
         <button type="submit" class="btn btn-primary">SAVE CHANGES</button>
       </div>
     </form>
   `;
-  
   // Form submit handler
   document.getElementById('editCoverForm').onsubmit = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    
-    // Update cover data
     cover.albumTitle = formData.get('albumTitle');
     cover.coverLabel = formData.get('coverLabel');
     cover.category = formData.get('category').split(',').map(c => c.trim()).filter(Boolean);
     cover.spotifyEmbed = formData.get('spotifyEmbed');
     cover.contactEmail = formData.get('contactEmail');
-    
+    cover.frontImage = formData.get('frontImage');
+    cover.backImage = formData.get('backImage');
     hasChanges = true;
     updateSaveButton();
     renderCovers();
     closeModal();
     showToast('COVER UPDATED');
   };
-  
   openModal();
 }
 
@@ -1171,7 +1162,11 @@ window.openImageLibrary = function(inputField) {
         const input = document.querySelector(`#editCoverForm input[name='${dashboardImageLibraryTarget}']`);
         if (input) {
           input.value = img.url;
-          input.dispatchEvent(new Event('input'));
+        }
+        // Update preview image
+        const preview = document.getElementById(`${dashboardImageLibraryTarget}Preview`);
+        if (preview) {
+          preview.src = img.url;
         }
         closeImageLibrary();
       };
