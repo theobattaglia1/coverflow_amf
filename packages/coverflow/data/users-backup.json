@@ -1,0 +1,17 @@
+[
+  {
+    "username": "admin",
+    "hash": "$2b$10$uqMTv6H85w0x2QwoE2iQWuJ29hKMMXMawMq0h/ecDtA4ZJf5mGVHm",
+    "role": "admin"
+  },
+  {
+    "username": "editor",
+    "hash": "$2b$10$5QGmHg0bNOI0dKjT.UmYr.6mWZG0CCXeNYXcWkT0R5tPjqGO0hGlq",
+    "role": "editor"
+  },
+  {
+    "username": "viewer",
+    "hash": "$2b$10$5QGmHg0bNOI0dKjT.UmYr.6mWZG0CCXeNYXcWkT0R5tPjqGO0hGlq",
+    "role": "viewer"
+  }
+]

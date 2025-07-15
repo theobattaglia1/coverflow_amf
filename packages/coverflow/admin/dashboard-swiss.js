@@ -1,3 +1,25 @@
+/*
+Recommended Automated Test Cases for Folder Management:
+
+1. Folder Creation:
+   - Create a folder at root and in a subfolder. Verify it appears in the UI and in assets.json (under children).
+   - Attempt to create a duplicate folder. Verify error is shown and no duplicate is created.
+
+2. Folder Deletion:
+   - Delete a folder at root and in a subfolder. Verify it is removed from the UI and assets.json.
+   - Attempt to delete a non-existent folder. Verify error is shown.
+
+3. Folder Renaming:
+   - Rename a folder at root and in a subfolder. Verify the new name appears in the UI and assets.json.
+   - Attempt to rename to a duplicate name. Verify error is shown.
+
+4. UI Consistency:
+   - After each operation, reload the page and verify the folder structure matches assets.json.
+   - Test with legacy assets.json containing only folders, only children, or both.
+
+5. Data Integrity:
+   - Run the migration script and verify all folders are under children, with no folders arrays remaining.
+*/
 /**
  * AMF ADMIN DASHBOARD — SWISS MODERNISM EDITION
  * Professional, fluid interactions with editorial restraint
@@ -326,14 +348,34 @@ async function pushLive() {
 
 // Asset management
 async function loadAssets() {
-  try {
-    const res = await fetch('/api/list-assets');
-    const data = await res.json();
-    // data.assets is an array of asset objects
-    assets = { images: data.assets };
-    renderAssets();
-  } catch (err) {
-    console.error('Failed to load assets:', err);
+  const res = await fetch('/data/assets.json');
+  const data = await res.json();
+  console.log('[FRONTEND] Loaded assets.json:', data);
+  assets = data;
+  checkForNonGCSUrls();
+  renderFolders();
+  renderAssets();
+}
+
+function checkForNonGCSUrls() {
+  function scan(obj) {
+    if (Array.isArray(obj)) return obj.some(scan);
+    if (obj && typeof obj === 'object') {
+      for (const key in obj) {
+        if (typeof obj[key] === 'string' && key === 'url' && !obj[key].startsWith('https://storage.googleapis.com/')) {
+          return true;
+        }
+        if (scan(obj[key])) return true;
+      }
+    }
+    return false;
+  }
+  if (scan(assets)) {
+    console.warn('[ADMIN WARNING] Non-GCS image URL detected in assets.json!');
+    const warning = document.createElement('div');
+    warning.textContent = 'WARNING: Some image URLs are not GCS URLs!';
+    warning.style = 'background: #ffcc00; color: #222; padding: 8px; font-weight: bold; text-align: center;';
+    document.body.insertBefore(warning, document.body.firstChild);
   }
 }
 
@@ -365,6 +407,7 @@ function renderFolders() {
     const indent = level * 20;
     // Merge folders and children arrays, deduplicate by name
     const allChildren = mergeFoldersAndChildren(folder);
+    console.log(`[FRONTEND] Rendering folder '${folder.name}' at level ${level}, children:`, allChildren.map(f => f.name));
     const hasChildren = allChildren.length > 0;
     const folderPath = folder.path || folder.name;
     li.className = 'folder-item' + (currentPath === folderPath ? ' active' : '');
@@ -397,6 +440,7 @@ function renderFolders() {
 
   // Merge root folders and children, deduplicate by name
   const allRootFolders = mergeFoldersAndChildren(assets);
+  console.log('[FRONTEND] Merged root folders:', allRootFolders.map(f => f.name));
   allRootFolders.forEach(folder => renderFolder(folder));
 }
 

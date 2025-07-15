@@ -277,10 +277,6 @@ async function handleModalImageUpload(file) {
       // Add to assets immediately
       if (!assets.images) assets.images = [];
       assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
-      // Update all preview images in the modal with old /uploads/ src
-      document.querySelectorAll('#coverModal img').forEach(img => {
-        if (img.src.includes('/uploads/')) img.src = data.url;
-      });
       // Update the first image input field if present
       const input = document.querySelector("#editCoverForm input[type='text'][name*='Image']");
       if (input) {

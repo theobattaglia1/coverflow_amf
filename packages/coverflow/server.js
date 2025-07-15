@@ -520,6 +520,7 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
     const existsInChildren = current.children.find(c => c.type === 'folder' && c.name === name);
     const existsInFolders = current.folders.find(f => f.type === 'folder' && f.name === name);
     if (existsInChildren || existsInFolders) {
+      console.log(`[CREATE FOLDER] Folder already exists: ${name} in path: ${folderPath}`);
       return res.status(400).json({ error: 'Folder already exists' });
     }
 
@@ -527,6 +528,9 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
     const newFolder = { type: 'folder', name, children: [], folders: [] };
     current.children.push(newFolder);
     current.folders.push(newFolder);
+    console.log(`[CREATE FOLDER] Added folder '${name}' to both children and folders at path: ${folderPath}`);
+    console.log('Current children:', current.children.map(f => f.name));
+    console.log('Current folders:', current.folders.map(f => f.name));
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
     // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '📁 Create folder');
@@ -556,6 +560,10 @@ app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
 
     if (!parent.children) parent.children = [];
     parent.children = parent.children.filter(c => !(c.type === 'folder' && c.name === folderName));
+    parent.folders = parent.folders ? parent.folders.filter(f => !(f.type === 'folder' && f.name === folderName)) : [];
+    console.log(`[DELETE FOLDER] Deleted folder '${folderName}' from children and folders at path: ${pathParts.join('/')}`);
+    console.log('Current children:', parent.children.map(f => f.name));
+    console.log('Current folders:', parent.folders.map(f => f.name));
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
     // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '🗑️ Delete folder');
@@ -588,6 +596,13 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
     if (!folder) return res.status(404).json({ error: 'Folder not found' });
 
     folder.name = newName;
+    if (parent.folders) {
+      const folderInFolders = parent.folders.find(f => f.type === 'folder' && f.name === oldName);
+      if (folderInFolders) folderInFolders.name = newName;
+    }
+    console.log(`[RENAME FOLDER] Renamed folder '${oldName}' to '${newName}' in children and folders at path: ${pathParts.join('/')}`);
+    console.log('Current children:', parent.children.map(f => f.name));
+    console.log('Current folders:', parent.folders ? parent.folders.map(f => f.name) : []);
 
     await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
     // Removed gitHubSync.add('packages/coverflow/data/assets.json', JSON.stringify(assets, null, 2), '✏️ Rename folder');

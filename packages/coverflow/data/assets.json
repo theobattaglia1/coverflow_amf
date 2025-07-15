@@ -1,5 +1,6 @@
 {
-  "folders": [
+  "images": [],
+  "children": [
     {
       "type": "folder",
       "name": "Hudson",
@@ -23,6 +24,5 @@
       "name": "Hudson Ingram",
       "children": []
     }
-  ],
-  "images": []
+  ]
 }
