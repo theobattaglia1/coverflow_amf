@@ -945,7 +945,7 @@ app.listen(PORT, () => {
 });
 
 // List all assets in GCS (images, videos, audio)
-app.get('/api/list-assets', requireAuth('editor'), async (req, res) => {
+app.get('/api/list-gcs-assets', requireAuth('editor'), async (req, res) => {
   try {
     const { prefix = '' } = req.query;
     const storage = new Storage();
