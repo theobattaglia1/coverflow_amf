@@ -340,9 +340,7 @@ async function loadAssets() {
 function renderFolders() {
   const folderTree = document.getElementById('folderTree');
   if (!folderTree) return;
-  
   folderTree.innerHTML = '';
-  
   // Root folder
   const rootItem = document.createElement('li');
   rootItem.className = 'folder-item' + (currentPath === '' ? ' active' : '');
@@ -351,18 +349,22 @@ function renderFolders() {
   `;
   rootItem.dataset.path = '';
   folderTree.appendChild(rootItem);
-  
   // Render hierarchical folders
   function renderFolder(folder, level = 0) {
     const li = document.createElement('li');
     const indent = level * 20;
-    const hasChildren = folder.children && folder.children.filter(c => c.type === 'folder').length > 0;
+    // Merge folders and children arrays, deduplicate by name
+    let allChildren = [];
+    if (Array.isArray(folder.folders)) allChildren = allChildren.concat(folder.folders);
+    if (Array.isArray(folder.children)) allChildren = allChildren.concat(folder.children);
+    // Deduplicate by name
+    const seen = new Set();
+    allChildren = allChildren.filter(f => f && f.type === 'folder' && f.name && !seen.has(f.name) && seen.add(f.name));
+    const hasChildren = allChildren.length > 0;
     const folderPath = folder.path || folder.name;
-    
     li.className = 'folder-item' + (currentPath === folderPath ? ' active' : '');
     li.dataset.path = folderPath;
     li.style.paddingLeft = `${indent}px`;
-    
     li.innerHTML = `
       <span>${hasChildren ? '▸' : '·'}</span>
       <span onclick="navigateToFolder('${folderPath}')" style="cursor: pointer; text-transform: uppercase;">
@@ -373,29 +375,27 @@ function renderFolders() {
         <button onclick="deleteFolder('${folderPath}')" style="background: none; border: none; color: inherit; cursor: pointer;" title="Delete">✕</button>
       </div>
     `;
-    
-    // Show actions on hover
     li.addEventListener('mouseenter', () => {
       li.querySelector('.folder-actions').style.display = 'flex';
     });
     li.addEventListener('mouseleave', () => {
       li.querySelector('.folder-actions').style.display = 'none';
     });
-    
     folderTree.appendChild(li);
-    
     // Render children
     if (hasChildren) {
-      folder.children.filter(c => c.type === 'folder').forEach(child => {
-        renderFolder({...child, path: folderPath + '/' + child.name}, level + 1);
+      allChildren.forEach(child => {
+        renderFolder({ ...child, path: folderPath + '/' + child.name }, level + 1);
       });
     }
   }
-  
-  // Render all top-level folders
-  if (assets.folders) {
-    assets.folders.forEach(folder => renderFolder(folder));
-  }
+  // Merge root folders and children, deduplicate by name
+  let allRootFolders = [];
+  if (Array.isArray(assets.folders)) allRootFolders = allRootFolders.concat(assets.folders);
+  if (Array.isArray(assets.children)) allRootFolders = allRootFolders.concat(assets.children);
+  const seenRoot = new Set();
+  allRootFolders = allRootFolders.filter(f => f && f.type === 'folder' && f.name && !seenRoot.has(f.name) && seenRoot.add(f.name));
+  allRootFolders.forEach(folder => renderFolder(folder));
 }
 
 function renderAssets() {
@@ -448,28 +448,36 @@ function renderAssets() {
 // Get items in current folder
 function getCurrentFolderItems() {
   if (currentPath === '' || !currentPath) {
+    // Merge root folders and children, deduplicate by name
+    let allRootFolders = [];
+    if (Array.isArray(assets.folders)) allRootFolders = allRootFolders.concat(assets.folders);
+    if (Array.isArray(assets.children)) allRootFolders = allRootFolders.concat(assets.children);
+    const seenRoot = new Set();
+    allRootFolders = allRootFolders.filter(f => f && f.type === 'folder' && f.name && !seenRoot.has(f.name) && seenRoot.add(f.name));
     return {
-      folders: assets.folders || [],
+      folders: allRootFolders,
       images: assets.images || []
     };
   }
-  
   // Navigate to current folder
   const pathParts = currentPath.split('/').filter(Boolean);
   let current = assets;
-  
   for (const part of pathParts) {
-    const folder = (current.folders || current.children || []).find(f => 
-      (f.type === 'folder' || !f.type) && f.name === part
-    );
+    const allFolders = [];
+    if (Array.isArray(current.folders)) allFolders.push(...current.folders);
+    if (Array.isArray(current.children)) allFolders.push(...current.children);
+    const folder = allFolders.find(f => (f.type === 'folder' || !f.type) && f.name === part);
     if (!folder) return { folders: [], images: [] };
     current = folder;
   }
-  
-  return {
-    folders: (current.children || []).filter(c => c.type === 'folder'),
-    images: (current.children || []).filter(c => c.type === 'image')
-  };
+  // Merge children and folders at this level
+  let allFolders = [];
+  if (Array.isArray(current.children)) allFolders = allFolders.concat(current.children);
+  if (Array.isArray(current.folders)) allFolders = allFolders.concat(current.folders);
+  const seen = new Set();
+  const folders = allFolders.filter(f => f && f.type === 'folder' && f.name && !seen.has(f.name) && seen.add(f.name));
+  const images = allFolders.filter(f => f && f.type === 'image');
+  return { folders, images };
 }
 
 // Drag and drop functionality
