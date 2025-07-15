@@ -1016,7 +1016,7 @@ async function handleAssetDrop(e) {
 // Handle asset upload
 async function handleAssetUpload(files) {
   showLoading();
-  
+  let uploadedAny = false;
   try {
     for (const file of files) {
       const formData = new FormData();
@@ -1031,7 +1031,6 @@ async function handleAssetUpload(files) {
         method: 'POST',
         body: formData
       });
-      
       let data;
       try {
         data = await res.json();
@@ -1039,62 +1038,23 @@ async function handleAssetUpload(files) {
         showToast('UPLOAD FAILED: INVALID SERVER RESPONSE', 5000);
         continue;
       }
-      
       if (res.ok && data && data.url) {
-        let assetType = data.type || 'image';
-        // Fallback: infer from file type
-        if (!assetType && file.type) {
-          if (file.type.startsWith('video/')) assetType = 'video';
-          else if (file.type.startsWith('audio/')) assetType = 'audio';
-          else assetType = 'image';
-        }
-        const url = data.url;
-        if (!url || typeof url !== 'string' || !/^https?:\/\//.test(url) && !url.startsWith('/uploads')) {
-          showToast('UPLOAD FAILED: INVALID URL', 5000);
-          continue;
-        }
-        const newAsset = {
-          type: assetType,
-          url: url,
-          name: file.name.replace(/\.[^/.]+$/, ''),
-          uploadedAt: new Date().toISOString()
-        };
-        
-        if (!assets) assets = { folders: [], images: [] };
-        
-        if (currentPath === '' || !currentPath) {
-          if (!assets.images) assets.images = [];
-          assets.images.push(newAsset);
+        uploadedAny = true;
+        // Warn if TIFF
+        if (/\.tif{1,2}$/i.test(file.name)) {
+          showToast('UPLOAD SUCCESSFUL, BUT TIFF IMAGES MAY NOT PREVIEW IN BROWSERS', 7000);
         } else {
-          // Navigate to current folder and add
-          const pathParts = currentPath.split('/').filter(Boolean);
-          let current = assets;
-          
-          for (const part of pathParts) {
-            let folder = (current.folders || current.children || []).find(f => 
-              (f.type === 'folder' || !f.type) && f.name === part
-            );
-            if (!folder) {
-              folder = { name: part, type: 'folder', children: [] };
-              if (!current.folders) current.folders = [];
-              current.folders.push(folder);
-            }
-            current = folder;
-          }
-          
-          if (!current.children) current.children = [];
-          current.children.push(newAsset);
+          showToast(`UPLOADED ${file.name.toUpperCase()}`);
         }
-        
-        showToast(`UPLOADED ${file.name.toUpperCase()}`);
       } else {
         showToast('UPLOAD FAILED: ' + (data && data.error ? data.error.toUpperCase() : 'UNKNOWN ERROR'), 5000);
         continue;
       }
     }
-    
-    await saveAssets();
-    renderAssets();
+    if (uploadedAny) {
+      await loadAssets();
+      renderAssets();
+    }
   } catch (err) {
     showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 5000);
     console.error(err);
