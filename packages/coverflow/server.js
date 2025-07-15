@@ -24,6 +24,8 @@ const DATA_DIR = path.join(__dirname, 'data');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+console.log("--- Executing /packages/coverflow/server.js @ " + new Date().toISOString() + " ---");
+
 // Trust proxy in production (for secure cookies behind reverse proxy)
 if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
