@@ -11,6 +11,7 @@ import crypto from 'crypto';
 import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Storage } from '@google-cloud/storage';
+import sharp from 'sharp';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -598,7 +599,7 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
   console.log('req.files:', req.files);
   console.log('req.body:', req.body);
   // Accept both 'file' and 'image' fields
-  const file = req.files?.find(f => f.fieldname === 'file' || f.fieldname === 'image');
+  let file = req.files?.find(f => f.fieldname === 'file' || f.fieldname === 'image');
   if (!file) {
     console.error('[UPLOAD ERROR] No file provided');
     return res.status(400).json({ error: 'No file provided' });
@@ -607,12 +608,29 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
   let subdir = '';
   if (file.mimetype.startsWith('video/')) subdir = 'video';
   else if (file.mimetype.startsWith('audio/')) subdir = 'audio';
+
+  // TIFF conversion logic
+  let buffer = file.buffer;
+  let filename = file.originalname;
+  let contentType = file.mimetype;
+  if (/\.tif{1,2}$/i.test(filename) || file.mimetype === 'image/tiff') {
+    try {
+      buffer = await sharp(file.buffer).png().toBuffer();
+      filename = filename.replace(/\.(tif{1,2})$/i, '.png');
+      contentType = 'image/png';
+      console.log(`[UPLOAD] Converted TIFF to PNG: ${filename}`);
+    } catch (err) {
+      console.error('[UPLOAD ERROR] Failed to convert TIFF:', err);
+      return res.status(500).json({ error: 'Failed to convert TIFF to PNG' });
+    }
+  }
+
   // Build GCS path
-  const gcsPath = [subdir, folder, file.originalname].filter(Boolean).join('/');
+  const gcsPath = [subdir, folder, filename].filter(Boolean).join('/');
   const storage = new Storage();
   const bucket = storage.bucket(process.env.GCS_BUCKET_NAME);
   const blob = bucket.file(gcsPath);
-  const blobStream = blob.createWriteStream({ resumable: false, contentType: file.mimetype });
+  const blobStream = blob.createWriteStream({ resumable: false, contentType });
   blobStream.on('error', err => {
     console.error('[UPLOAD ERROR] GCS:', err);
     res.status(500).json({ error: err.message });
@@ -620,14 +638,14 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
   blobStream.on('finish', () => {
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
     console.log('[UPLOAD] GCS publicUrl:', publicUrl);
-  res.json({
+    res.json({
       url: publicUrl,
-      filename: file.originalname,
-      folder: folder,
-      type: file.mimetype.split('/')[0]
+      filename,
+      folder,
+      type: contentType.split('/')[0]
     });
   });
-  blobStream.end(file.buffer);
+  blobStream.end(buffer);
 });
 
 // Audio upload (GCS only)
