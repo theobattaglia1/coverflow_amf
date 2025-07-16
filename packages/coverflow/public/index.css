@@ -20,7 +20,7 @@ html, body {
   display: flex;
   justify-content: flex-start; /* Left-align for editorial style */
   padding: 0 clamp(8px, 1.5vw, 24px); /* Match filter bar margins */
-  margin: clamp(2rem, 10vh, 3rem) 0 clamp(1.5rem, 6vh, 2.5rem); /* Adjusted bottom margin */
+  margin: clamp(2rem, 10vh, 3rem) 0 clamp(3rem, 8vh, 4rem); /* Increased bottom margin for F bar clearance */
   position: relative;
   z-index: 5;
 }
