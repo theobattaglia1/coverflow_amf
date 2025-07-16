@@ -55,11 +55,9 @@ async function checkAuth() {
   try {
     const res = await fetch('/api/me');
     if (!res.ok) {
-      // Handle authentication failure properly
       if (res.status === 401) {
         console.log('Authentication required, redirecting to login');
-        stopSessionKeepalive();
-        window.location.href = '/admin/login.html';
+        window.location.href = '/login.html';
         return false;
       }
       throw new Error(`Auth check failed: ${res.status}`);
@@ -69,38 +67,30 @@ async function checkAuth() {
     currentUser = data.user;
     
     // Update UI based on user role
-    if (currentUser) {
-      document.getElementById('username').textContent = currentUser.username.toUpperCase();
-      document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
-      
-      if (currentUser.role === 'admin') {
-        document.getElementById('usersSection').style.display = 'block';
-        loadUsers();
-      }
+    if (typeof updateUIForUserRole === 'function') {
+      updateUIForUserRole(currentUser.role);
     }
-    
     return true;
   } catch (err) {
     console.error('Auth check failed:', err);
-    // Redirect to login on any auth failure
-    stopSessionKeepalive();
-    window.location.href = '/admin/login.html';
+    // Only redirect to login if it's actually an auth issue
+    // Don't redirect on network errors
+    if (err.message.includes('401') || err.message.includes('Auth check failed')) {
+      window.location.href = '/login.html';
+    }
     return false;
   }
 }
 
 // Session keepalive functionality
 function startSessionKeepalive() {
-  if (sessionKeepalive) return; // Already running
-  
   sessionKeepalive = setInterval(async () => {
     try {
       const res = await fetch('/api/me');
       if (!res.ok && res.status === 401) {
         clearInterval(sessionKeepalive);
-        sessionKeepalive = null;
         showToast('SESSION EXPIRED - PLEASE LOGIN AGAIN');
-        setTimeout(() => window.location.href = '/admin/login.html', 2000);
+        setTimeout(() => window.location.href = '/login.html', 2000);
       }
     } catch (err) {
       // Ignore network errors, but log them
@@ -120,14 +110,35 @@ function stopSessionKeepalive() {
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  // Check authentication first
-  const isAuthenticated = await checkAuth();
-  if (!isAuthenticated) {
-    return; // checkAuth will handle redirect
+  try {
+    // Try to load user info, but don't redirect if it fails
+    const res = await fetch('/api/me');
+    if (res.ok) {
+      const data = await res.json();
+      if (data.user) {
+        currentUser = data.user;
+        document.getElementById('username').textContent = data.user.username.toUpperCase();
+        document.getElementById('userRole').textContent = data.user.role.toUpperCase();
+        
+        if (data.user.role === 'admin') {
+          document.getElementById('usersSection').style.display = 'block';
+          loadUsers();
+        }
+        
+        // Start session keepalive only if authenticated
+        startSessionKeepalive();
+      }
+    } else {
+      // If not authenticated, redirect to login
+      window.location.href = '/login.html';
+      return;
+    }
+  } catch (err) {
+    console.error('Failed to load user info:', err);
+    // Only redirect if it's clearly an auth issue
+    window.location.href = '/login.html';
+    return;
   }
-  
-  // Start session keepalive after successful auth
-  startSessionKeepalive();
   
   await loadCovers();
   await loadAssets();
@@ -376,12 +387,12 @@ async function saveChanges() {
     // Handle authentication errors specifically
     if (res.status === 401) {
       showToast('SESSION EXPIRED - REDIRECTING TO LOGIN');
-      setTimeout(() => window.location.href = '/admin/login.html', 1000);
+      setTimeout(() => window.location.href = '/login.html', 1000);
       return;
     }
     
     if (!res.ok) {
-      const errorData = await safeJsonParse(res).catch(() => ({}));
+      const errorData = await safeJsonParse(res);
       throw new Error(errorData.error || `Server error ${res.status}`);
     }
     
@@ -431,12 +442,12 @@ async function pushLive() {
     // Handle authentication errors
     if (res.status === 401) {
       showToast('SESSION EXPIRED - REDIRECTING TO LOGIN');
-      setTimeout(() => window.location.href = '/admin/login.html', 1000);
+      setTimeout(() => window.location.href = '/login.html', 1000);
       return;
     }
     
     if (!res.ok) {
-      const errorData = await safeJsonParse(res).catch(() => ({}));
+      const errorData = await safeJsonParse(res);
       throw new Error(errorData.error || `Push failed: ${res.status}`);
     }
     
@@ -475,7 +486,7 @@ async function loadAssets() {
     const gcsRes = await fetch('/api/list-gcs-assets');
     if (gcsRes.status === 401) {
       showToast('AUTHENTICATION REQUIRED FOR GCS ASSETS');
-      window.location.href = '/admin/login.html';
+      window.location.href = '/login.html';
       return;
     }
     
