@@ -267,14 +267,42 @@ app.get('/hudson-deck.html', basicAuth({ users: { 'guest': 'MakeItTogether25!' }
 // Static files for PUBLIC site
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 
-// Static files for /data directory (JSON files)
-app.use('/data', express.static(DATA_DIR));
+// Static files for /data directory (JSON files) with better error handling
+app.use('/data', (req, res, next) => {
+  // Add CORS headers for data requests
+  res.header('Access-Control-Allow-Origin', req.get('Origin') || '*');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  
+  // Log data requests for debugging
+  console.log(`Data request: ${req.method} ${req.path} from ${req.get('Host')}`);
+  
+  express.static(DATA_DIR)(req, res, (err) => {
+    if (err) {
+      console.error('Error serving data file:', err);
+      res.status(404).json({ error: 'Data file not found', path: req.path });
+    } else {
+      next();
+    }
+  });
+});
 
 // Multer setup for file uploads
 const assetUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
 const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true });
 
 // --- API Endpoints ---
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({
+    status: 'healthy',
+    timestamp: new Date().toISOString(),
+    environment: process.env.NODE_ENV || 'development',
+    uptime: process.uptime(),
+    memory: process.memoryUsage(),
+    version: '1.0.0'
+  });
+});
 
 // Authentication
 app.post('/api/login', loginLimiter, async (req, res) => {
@@ -616,6 +644,44 @@ app.post('/push-live', requireAuth('editor'), async (req, res) => {
         console.error('Push Live error:', err);
         res.status(500).json({ error: 'Failed to push live', details: err.message });
     }
+});
+
+// Data backup and recovery endpoints
+app.get('/api/backup/list', requireAuth('admin'), async (req, res) => {
+  try {
+    const files = await fs.promises.readdir(DATA_DIR);
+    const backups = files.filter(f => f.endsWith('-backup.json')).map(f => ({
+      name: f,
+      type: f.replace('-backup.json', ''),
+      path: `/data/${f}`
+    }));
+    res.json({ backups });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to list backups', details: err.message });
+  }
+});
+
+app.post('/api/backup/restore/:type', requireAuth('admin'), async (req, res) => {
+  try {
+    const { type } = req.params;
+    const backupPath = path.join(DATA_DIR, `${type}-backup.json`);
+    const mainPath = path.join(DATA_DIR, `${type}.json`);
+    
+    // Check if backup exists
+    await fs.promises.access(backupPath);
+    
+    // Copy backup to main file
+    await fs.promises.copyFile(backupPath, mainPath);
+    
+    // Invalidate cache
+    dataCache.invalidate(type);
+    
+    console.log(`Restored ${type} from backup by user: ${req.session.user?.username}`);
+    res.json({ success: true, message: `Restored ${type} from backup` });
+  } catch (err) {
+    console.error('Backup restore error:', err);
+    res.status(500).json({ error: 'Failed to restore backup', details: err.message });
+  }
 });
 
 // Start Server
