@@ -512,6 +512,167 @@ a:hover {
   filter: grayscale(0%);
 }
 
+/* Multi-select enhancements */
+.folder-item.drop-target {
+  background: var(--accent-dim);
+  border-left-color: var(--accent);
+}
+
+.asset-item {
+  border: 2px solid transparent;
+  transition: all var(--transition);
+}
+
+.asset-item.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.asset-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.asset-checkbox {
+  position: absolute;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  width: 20px;
+  height: 20px;
+  z-index: 10;
+  accent-color: var(--accent);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.asset-multi-select-mode .asset-checkbox,
+.asset-item:hover .asset-checkbox,
+.asset-item.selected .asset-checkbox {
+  opacity: 1;
+}
+
+.asset-content {
+  position: relative;
+  height: 100%;
+}
+
+.asset-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9);
+  color: white;
+  padding: var(--space-xs);
+  transform: translateY(100%);
+  transition: transform var(--transition);
+}
+
+.asset-item:hover .asset-info,
+.asset-item.selected .asset-info {
+  transform: translateY(0);
+}
+
+.asset-name-input {
+  background: transparent;
+  border: none;
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  width: 100%;
+  margin-bottom: var(--space-xs);
+}
+
+.asset-name-input:focus {
+  outline: 1px solid var(--accent);
+}
+
+.asset-url {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  opacity: 0.7;
+  cursor: pointer;
+  margin-bottom: var(--space-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.asset-url:hover {
+  opacity: 1;
+}
+
+.asset-delete {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid rgba(255, 0, 0, 0.5);
+  color: white;
+  font-size: 0.625rem;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.asset-delete:hover {
+  background: rgba(255, 0, 0, 0.4);
+}
+
+/* Multi-select controls */
+.multi-select-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.asset-multi-select-mode .multi-select-controls #selectAllBtn,
+.asset-multi-select-mode .multi-select-controls #deselectAllBtn {
+  display: inline-block !important;
+}
+
+.selection-counter {
+  color: var(--accent);
+  font-weight: 700;
+  letter-spacing: var(--tracking-mono);
+}
+
+/* Drag preview */
+.drag-preview {
+  background: var(--accent);
+  color: white;
+  padding: var(--space-sm);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-mono);
+  border-radius: 4px;
+}
+
+/* Dragging state */
+.dragging-assets .asset-item.selected {
+  opacity: 0.5;
+}
+
+.dragging-assets .folder-item {
+  position: relative;
+}
+
+.dragging-assets .folder-item::after {
+  content: 'DROP HERE';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.625rem;
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.dragging-assets .folder-item.drop-target::after {
+  opacity: 1;
+}
+
 /* Media Library Enhancements */
 .media-library-toggle {
   background: none;
