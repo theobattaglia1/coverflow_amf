@@ -33,31 +33,101 @@ let currentFolder = '';
 let hasChanges = false;
 let batchMode = false;
 let selectedCovers = new Set();
+let currentUser = null;
+let sessionKeepalive = null;
+
+// Utility function to safely parse JSON responses
+async function safeJsonParse(response) {
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    // If it's HTML (like a login page), extract error message
+    if (text.includes('<!DOCTYPE')) {
+      return { error: 'Received HTML response instead of JSON - likely authentication issue' };
+    }
+    return { error: 'Invalid JSON response', details: text.substring(0, 100) };
+  }
+}
+
+// Enhanced authentication check with proper error handling
+async function checkAuth() {
+  try {
+    const res = await fetch('/api/me');
+    if (!res.ok) {
+      // Handle authentication failure properly
+      if (res.status === 401) {
+        console.log('Authentication required, redirecting to login');
+        stopSessionKeepalive();
+        window.location.href = '/login.html';
+        return false;
+      }
+      throw new Error(`Auth check failed: ${res.status}`);
+    }
+    
+    const data = await res.json();
+    currentUser = data.user;
+    
+    // Update UI based on user role
+    if (currentUser) {
+      document.getElementById('username').textContent = currentUser.username.toUpperCase();
+      document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
+      
+      if (currentUser.role === 'admin') {
+        document.getElementById('usersSection').style.display = 'block';
+        loadUsers();
+      }
+    }
+    
+    return true;
+  } catch (err) {
+    console.error('Auth check failed:', err);
+    // Redirect to login on any auth failure
+    stopSessionKeepalive();
+    window.location.href = '/login.html';
+    return false;
+  }
+}
+
+// Session keepalive functionality
+function startSessionKeepalive() {
+  if (sessionKeepalive) return; // Already running
+  
+  sessionKeepalive = setInterval(async () => {
+    try {
+      const res = await fetch('/api/me');
+      if (!res.ok && res.status === 401) {
+        clearInterval(sessionKeepalive);
+        sessionKeepalive = null;
+        showToast('SESSION EXPIRED - PLEASE LOGIN AGAIN');
+        setTimeout(() => window.location.href = '/login.html', 2000);
+      }
+    } catch (err) {
+      // Ignore network errors, but log them
+      console.warn('Session keepalive failed:', err);
+    }
+  }, 5 * 60 * 1000); // Check every 5 minutes
+}
+
+function stopSessionKeepalive() {
+  if (sessionKeepalive) {
+    clearInterval(sessionKeepalive);
+    sessionKeepalive = null;
+  }
+}
 
 // Initialize
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
-  // Don't check auth here - server already handles it
-  // await checkAuth();
-  
-  // Just load the user info without redirecting
-  try {
-    const res = await fetch('/api/me');
-    const data = await res.json();
-    
-    if (data.user) {
-      document.getElementById('username').textContent = data.user.username.toUpperCase();
-      document.getElementById('userRole').textContent = data.user.role.toUpperCase();
-      
-      if (data.user.role === 'admin') {
-        document.getElementById('usersSection').style.display = 'block';
-        loadUsers();
-      }
-    }
-  } catch (err) {
-    console.error('Failed to load user info:', err);
+  // Check authentication first
+  const isAuthenticated = await checkAuth();
+  if (!isAuthenticated) {
+    return; // checkAuth will handle redirect
   }
+  
+  // Start session keepalive after successful auth
+  startSessionKeepalive();
   
   await loadCovers();
   await loadAssets();
@@ -288,6 +358,12 @@ async function saveChanges() {
     return;
   }
   
+  // Check auth before attempting save
+  const isAuthenticated = await checkAuth();
+  if (!isAuthenticated) {
+    return;
+  }
+  
   showLoading();
   
   try {
@@ -297,16 +373,29 @@ async function saveChanges() {
       body: JSON.stringify(covers)
     });
     
-    if (res.ok) {
-      hasChanges = false;
-      updateSaveButton();
-      showToast('CHANGES SAVED SUCCESSFULLY');
-    } else {
-      throw new Error('Save failed');
+    // Handle authentication errors specifically
+    if (res.status === 401) {
+      showToast('SESSION EXPIRED - REDIRECTING TO LOGIN');
+      setTimeout(() => window.location.href = '/login.html', 1000);
+      return;
     }
+    
+    if (!res.ok) {
+      const errorData = await safeJsonParse(res).catch(() => ({}));
+      throw new Error(errorData.error || `Server error ${res.status}`);
+    }
+    
+    const result = await res.json();
+    hasChanges = false;
+    updateSaveButton();
+    showToast('CHANGES SAVED SUCCESSFULLY');
+    
+    // Reload covers to verify save
+    await loadCovers();
+    
   } catch (err) {
-    showToast('FAILED TO SAVE CHANGES', 5000);
-    console.error(err);
+    console.error('Save failed:', err);
+    showToast(`FAILED TO SAVE: ${err.message}`, 5000);
   } finally {
     hideLoading();
   }
@@ -328,19 +417,40 @@ function updateSaveButton() {
 async function pushLive() {
   if (!confirm('PUSH ALL CHANGES TO LIVE SITE?')) return;
   
+  // Check auth before attempting push
+  const isAuthenticated = await checkAuth();
+  if (!isAuthenticated) {
+    return;
+  }
+  
   showLoading();
   
   try {
     const res = await fetch('/push-live', { method: 'POST' });
     
-    if (res.ok) {
-      showToast('SUCCESSFULLY PUSHED TO LIVE');
-    } else {
-      throw new Error('Push failed');
+    // Handle authentication errors
+    if (res.status === 401) {
+      showToast('SESSION EXPIRED - REDIRECTING TO LOGIN');
+      setTimeout(() => window.location.href = '/login.html', 1000);
+      return;
     }
+    
+    if (!res.ok) {
+      const errorData = await safeJsonParse(res).catch(() => ({}));
+      throw new Error(errorData.error || `Push failed: ${res.status}`);
+    }
+    
+    const result = await res.json();
+    showToast('SUCCESSFULLY PUSHED TO LIVE');
+    
+    // Optional: Show validation results
+    if (result.validation) {
+      console.log('Push validation results:', result.validation);
+    }
+    
   } catch (err) {
-    showToast('FAILED TO PUSH LIVE', 5000);
-    console.error(err);
+    console.error('Push failed:', err);
+    showToast(`FAILED TO PUSH LIVE: ${err.message}`, 5000);
   } finally {
     hideLoading();
   }
@@ -348,18 +458,49 @@ async function pushLive() {
 
 // Asset management
 async function loadAssets() {
-  // Load folders from assets.json as before
-  const res = await fetch('/data/assets.json');
-  const data = await res.json();
-  console.log('[FRONTEND] Loaded assets.json:', data);
-  assets = data;
-  checkForNonGCSUrls();
-  renderFolders();
-  // Load images from GCS
-  const gcsRes = await fetch('/api/list-gcs-assets');
-  const gcsData = await gcsRes.json();
-  assets.images = gcsData.images.map(url => ({ url, type: 'image' }));
-  renderAssets();
+  try {
+    // Load structured folders from assets.json
+    const res = await fetch('/data/assets.json');
+    if (!res.ok) throw new Error(`Failed to load assets.json: ${res.status}`);
+    
+    const data = await res.json();
+    console.log('[FRONTEND] Loaded assets.json:', data);
+    assets = data;
+    
+    // Check for non-GCS URLs and warn
+    checkForNonGCSUrls();
+    renderFolders();
+    
+    // Load images from GCS
+    const gcsRes = await fetch('/api/list-gcs-assets');
+    if (gcsRes.status === 401) {
+      showToast('AUTHENTICATION REQUIRED FOR GCS ASSETS');
+      window.location.href = '/login.html';
+      return;
+    }
+    
+    if (!gcsRes.ok) {
+      throw new Error(`Failed to load GCS assets: ${gcsRes.status}`);
+    }
+    
+    const gcsData = await gcsRes.json();
+    
+    // Merge GCS images with existing assets structure
+    if (gcsData.images) {
+      assets.images = gcsData.images.map(url => ({ 
+        url, 
+        type: 'image',
+        name: url.split('/').pop(),
+        source: 'gcs'
+      }));
+    }
+    
+    renderAssets();
+    
+  } catch (err) {
+    console.error('Failed to load assets:', err);
+    showToast(`FAILED TO LOAD ASSETS: ${err.message}`, 5000);
+  }
 }
 
 function checkForNonGCSUrls() {
