@@ -261,7 +261,7 @@ app.use((req, res, next) => {
       // Handle root path for authenticated vs unauthenticated users
       if (req.path === '/' || req.path === '') {
         if (isAuthenticated(req)) {
-          return res.sendFile(path.join(ADMIN_DIR, 'index-swiss.html'));
+          return res.sendFile(path.join(ADMIN_DIR, 'index.html'));
         } else {
           return res.redirect('/login.html');
         }
@@ -284,7 +284,7 @@ if (process.env.NODE_ENV === 'development') {
     console.log('Hit /admin route, checking auth...');
     console.log('isAuthenticated result:', isAuthenticated(req));
     if (isAuthenticated(req)) {
-      const filePath = path.join(ADMIN_DIR, 'index-swiss.html');
+      const filePath = path.join(ADMIN_DIR, 'index.html');
       console.log('Serving admin file:', filePath);
       res.sendFile(filePath);
     } else {

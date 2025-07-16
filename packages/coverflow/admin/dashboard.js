@@ -12,9 +12,18 @@ let hasChanges = false;
 let batchMode = false;
 let selectedCovers = new Set();
 
+// Enhanced state for new features
+let currentViewMode = 'grid';
+let showFullView = false;
+let currentPage = 1;
+let coversPerPage = 20;
+let searchTerm = '';
+let categoryFilter = '';
+let sortOrder = 'index';
+let recentCovers = [];
+
 // Initialize
-// On page load, call loadCovers
-window.addEventListener('DOMContentLoaded', loadCovers);
+window.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   // Don't check auth here - server already handles it
@@ -43,6 +52,9 @@ async function init() {
   setupEventListeners();
   setupDragAndDrop();
   setupKeyboardShortcuts();
+  
+  // Initialize enhanced features
+  initializeEnhancedCovers();
 }
 
 // Load covers from covers.json (or backend)
@@ -86,8 +98,8 @@ function renderCovers(searchTerm = '') {
     }, index * 50);
   });
   
-  // Initialize Sortable with smooth animations
-  if (!searchTerm) {
+  // Initialize Sortable with smooth animations (if available)
+  if (!searchTerm && typeof Sortable !== 'undefined') {
     new Sortable(container, {
       animation: 200,
       ghostClass: 'sortable-ghost',
@@ -809,4 +821,453 @@ window.closeImageLibrary = function() {
   const modal = document.getElementById('dashboardImageLibraryModal');
   if (modal) modal.style.display = 'none';
   dashboardImageLibraryTarget = null;
-}; 
+};
+
+// ===================
+// ENHANCED COVERS INTERFACE FUNCTIONS
+// ===================
+
+function initializeEnhancedCovers() {
+  // Set up event listeners for enhanced features
+  setupSearchAndFilters();
+  setupViewModeToggles();
+  renderRecentCovers();
+  
+  // Show progressive disclosure by default
+  showFullView = false;
+  updateCoversDisplay();
+}
+
+function setupSearchAndFilters() {
+  const searchInput = document.getElementById('coverSearch');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const sortOrder = document.getElementById('sortOrder');
+  
+  let searchTimeout;
+  
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchTerm = e.target.value.toLowerCase();
+        currentPage = 1;
+        renderCurrentView();
+      }, 300);
+    });
+  }
+  
+  if (categoryFilter) {
+    categoryFilter.addEventListener('change', (e) => {
+      categoryFilter = e.target.value;
+      currentPage = 1;
+      renderCurrentView();
+    });
+  }
+  
+  if (sortOrder) {
+    sortOrder.addEventListener('change', (e) => {
+      sortOrder = e.target.value;
+      currentPage = 1;
+      renderCurrentView();
+    });
+  }
+}
+
+function setupViewModeToggles() {
+  document.querySelectorAll('.view-toggle').forEach(button => {
+    button.addEventListener('click', () => {
+      const viewMode = button.dataset.view;
+      setViewMode(viewMode);
+    });
+  });
+}
+
+function getFilteredAndSortedCovers() {
+  let filtered = covers.filter(cover => {
+    // Search filter
+    if (searchTerm) {
+      const searchFields = [
+        cover.albumTitle || '',
+        cover.coverLabel || '',
+        cover.artistDetails?.name || '',
+        ...(Array.isArray(cover.category) ? cover.category : [cover.category || ''])
+      ].join(' ').toLowerCase();
+      
+      if (!searchFields.includes(searchTerm)) {
+        return false;
+      }
+    }
+    
+    // Category filter
+    if (categoryFilter) {
+      const categories = Array.isArray(cover.category) ? cover.category : [cover.category || ''];
+      if (!categories.includes(categoryFilter)) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+  
+  // Sort
+  filtered.sort((a, b) => {
+    switch (sortOrder) {
+      case 'title':
+        return (a.albumTitle || '').localeCompare(b.albumTitle || '');
+      case 'title-desc':
+        return (b.albumTitle || '').localeCompare(a.albumTitle || '');
+      case 'date':
+        return new Date(b.id) - new Date(a.id); // Newer first (higher ID)
+      case 'date-desc':
+        return new Date(a.id) - new Date(b.id); // Older first (lower ID)
+      default: // 'index'
+        return (a.index || 0) - (b.index || 0);
+    }
+  });
+  
+  return filtered;
+}
+
+function getRecentCovers() {
+  // Get the 6-8 most recently edited covers (based on ID as timestamp)
+  return [...covers]
+    .sort((a, b) => new Date(b.id) - new Date(a.id))
+    .slice(0, 8);
+}
+
+function renderRecentCovers() {
+  const container = document.getElementById('recentCoversContainer');
+  if (!container) return;
+  
+  const recent = getRecentCovers();
+  
+  container.innerHTML = recent.map(cover => createCompactCoverElement(cover)).join('');
+}
+
+function createCompactCoverElement(cover) {
+  return `
+    <div class="cover-item-compact" data-id="${cover.id}" onclick="editCover(${JSON.stringify(cover).replace(/"/g, '&quot;')})">
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy">
+      <div class="cover-meta-compact">
+        <div>${(cover.albumTitle || 'UNTITLED').slice(0, 20)}</div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleFullCoversView() {
+  showFullView = !showFullView;
+  updateCoversDisplay();
+}
+
+function updateCoversDisplay() {
+  const recentSection = document.getElementById('recentlyEditedSection');
+  const controlsSection = document.getElementById('coversControls');
+  const mainContainer = document.getElementById('coversMainContainer');
+  
+  if (showFullView) {
+    recentSection.style.display = 'none';
+    controlsSection.style.display = 'flex';
+    mainContainer.style.display = 'block';
+    renderCurrentView();
+  } else {
+    recentSection.style.display = 'block';
+    controlsSection.style.display = 'none';
+    mainContainer.style.display = 'none';
+    renderRecentCovers();
+  }
+}
+
+function setViewMode(mode) {
+  currentViewMode = mode;
+  
+  // Update toggle buttons
+  document.querySelectorAll('.view-toggle').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+  
+  // Hide all view containers
+  document.getElementById('coversContainer').style.display = 'none';
+  document.getElementById('coversListContainer').style.display = 'none';
+  document.getElementById('coversCoverflowContainer').style.display = 'none';
+  
+  // Show current view container
+  const containers = {
+    'grid': 'coversContainer',
+    'list': 'coversListContainer', 
+    'coverflow': 'coversCoverflowContainer'
+  };
+  
+  document.getElementById(containers[mode]).style.display = 'block';
+  
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  if (!showFullView) return;
+  
+  const filtered = getFilteredAndSortedCovers();
+  const startIndex = (currentPage - 1) * coversPerPage;
+  const endIndex = startIndex + coversPerPage;
+  const pageCovers = filtered.slice(startIndex, endIndex);
+  
+  switch (currentViewMode) {
+    case 'grid':
+      renderGridView(pageCovers);
+      break;
+    case 'list':
+      renderListView(pageCovers);
+      break;
+    case 'coverflow':
+      renderCoverflowView(pageCovers);
+      break;
+  }
+  
+  updatePagination(filtered.length);
+}
+
+function renderGridView(pageCovers) {
+  const container = document.getElementById('coversContainer');
+  container.innerHTML = pageCovers.map(cover => createEnhancedCoverElement(cover)).join('');
+  
+  // Initialize sortable if not in search mode (and Sortable is available)
+  if (!searchTerm && sortOrder === 'index' && typeof Sortable !== 'undefined') {
+    new Sortable(container, {
+      animation: 200,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      onEnd: (evt) => {
+        // Update cover order
+        const newCovers = [...covers];
+        const [movedCover] = newCovers.splice(evt.oldIndex, 1);
+        newCovers.splice(evt.newIndex, 0, movedCover);
+        covers = newCovers;
+        
+        // Update indices
+        covers.forEach((cover, i) => cover.index = i);
+        hasChanges = true;
+        updateSaveButton();
+      }
+    });
+  }
+}
+
+function renderListView(pageCovers) {
+  const container = document.getElementById('coversListContainer');
+  container.innerHTML = pageCovers.map(cover => createListCoverElement(cover)).join('');
+}
+
+function renderCoverflowView(pageCovers) {
+  const container = document.getElementById('coversCoverflowContainer');
+  container.innerHTML = pageCovers.map(cover => createCoverflowCoverElement(cover)).join('');
+  
+  // Add coverflow scroll behavior
+  setupCoverflowNavigation(container);
+}
+
+function createEnhancedCoverElement(cover) {
+  const isSelected = selectedCovers.has(cover.id);
+  const categories = Array.isArray(cover.category) ? cover.category.join(', ') : (cover.category || '');
+  
+  return `
+    <div class="cover-item ${isSelected ? 'selected' : ''}" data-id="${cover.id}">
+      ${batchMode ? `<input type="checkbox" class="batch-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleCoverSelection('${cover.id}')">` : ''}
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy"
+           onclick="handleCoverClick('${cover.id}')">
+      <div class="cover-index">${(cover.index || 0) + 1}</div>
+      <div class="cover-meta">
+        <div>${cover.albumTitle || 'UNTITLED'}</div>
+        <div>${cover.coverLabel || '—'}</div>
+        <div class="cover-categories">${categories.toUpperCase()}</div>
+      </div>
+    </div>
+  `;
+}
+
+function createListCoverElement(cover) {
+  const isSelected = selectedCovers.has(cover.id);
+  const categories = Array.isArray(cover.category) ? cover.category.join(', ') : (cover.category || '');
+  const dateAdded = new Date(parseInt(cover.id)).toLocaleDateString();
+  
+  return `
+    <div class="cover-item-list ${isSelected ? 'selected' : ''}" data-id="${cover.id}" onclick="handleCoverClick('${cover.id}')">
+      ${batchMode ? `<input type="checkbox" class="batch-checkbox" ${isSelected ? 'checked' : ''} onchange="toggleCoverSelection('${cover.id}')">` : ''}
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-thumb"
+           loading="lazy">
+      <div class="cover-meta-list">
+        <div class="cover-title">${cover.albumTitle || 'UNTITLED'}</div>
+        <div class="cover-artist">${cover.coverLabel || '—'}</div>
+        <div class="cover-categories">${categories}</div>
+      </div>
+      <div class="cover-date">${dateAdded}</div>
+      <div class="cover-actions">
+        <button class="btn btn-sm" onclick="editCover(${JSON.stringify(cover).replace(/"/g, '&quot;')}); event.stopPropagation();">EDIT</button>
+      </div>
+    </div>
+  `;
+}
+
+function createCoverflowCoverElement(cover) {
+  return `
+    <div class="cover-item-coverflow" data-id="${cover.id}" onclick="handleCoverClick('${cover.id}')">
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image-coverflow"
+           loading="lazy">
+      <div class="cover-meta">
+        <div>${cover.albumTitle || 'UNTITLED'}</div>
+        <div>${cover.coverLabel || '—'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function setupCoverflowNavigation(container) {
+  const items = container.querySelectorAll('.cover-item-coverflow');
+  let focusedIndex = 0;
+  
+  function updateFocus(index) {
+    items.forEach((item, i) => {
+      item.classList.toggle('focused', i === index);
+    });
+    
+    // Scroll focused item into view
+    if (items[index]) {
+      items[index].scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }
+  
+  container.addEventListener('click', (e) => {
+    const item = e.target.closest('.cover-item-coverflow');
+    if (item) {
+      const index = Array.from(items).indexOf(item);
+      focusedIndex = index;
+      updateFocus(index);
+    }
+  });
+  
+  // Initialize with first item focused
+  if (items.length > 0) {
+    updateFocus(0);
+  }
+}
+
+function handleCoverClick(coverId) {
+  if (batchMode) {
+    toggleCoverSelection(coverId);
+  } else {
+    const cover = covers.find(c => c.id === coverId);
+    if (cover) {
+      editCover(cover);
+    }
+  }
+}
+
+function updatePagination(totalItems) {
+  const totalPages = Math.ceil(totalItems / coversPerPage);
+  const controls = document.getElementById('paginationControls');
+  const pageInfo = document.getElementById('pageInfo');
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  
+  if (totalPages <= 1) {
+    controls.style.display = 'none';
+    return;
+  }
+  
+  controls.style.display = 'flex';
+  pageInfo.textContent = `${currentPage} / ${totalPages}`;
+  prevBtn.disabled = currentPage <= 1;
+  nextBtn.disabled = currentPage >= totalPages;
+}
+
+function changePage(direction) {
+  const filtered = getFilteredAndSortedCovers();
+  const totalPages = Math.ceil(filtered.length / coversPerPage);
+  
+  currentPage = Math.max(1, Math.min(totalPages, currentPage + direction));
+  renderCurrentView();
+}
+
+// Enhanced batch operations
+function toggleBatchMode() {
+  batchMode = !batchMode;
+  
+  const batchBtn = document.getElementById('batchModeBtn');
+  const batchOps = document.getElementById('batchOperations');
+  const exportBtn = document.getElementById('exportBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  
+  if (batchMode) {
+    batchBtn.textContent = 'EXIT BATCH';
+    batchBtn.classList.add('btn-danger');
+    batchOps.style.display = 'flex';
+    exportBtn.style.display = 'inline-block';
+    deleteBtn.style.display = 'inline-block';
+    document.body.classList.add('batch-active');
+  } else {
+    batchBtn.textContent = 'BATCH MODE';
+    batchBtn.classList.remove('btn-danger');
+    batchOps.style.display = 'none';
+    exportBtn.style.display = 'none';
+    deleteBtn.style.display = 'none';
+    document.body.classList.remove('batch-active');
+    selectedCovers.clear();
+  }
+  
+  renderCurrentView();
+  updateBatchInfo();
+}
+
+function toggleCoverSelection(coverId) {
+  if (selectedCovers.has(coverId)) {
+    selectedCovers.delete(coverId);
+  } else {
+    selectedCovers.add(coverId);
+  }
+  
+  updateBatchInfo();
+  renderCurrentView();
+}
+
+function selectAllCovers() {
+  const filtered = getFilteredAndSortedCovers();
+  filtered.forEach(cover => selectedCovers.add(cover.id));
+  updateBatchInfo();
+  renderCurrentView();
+}
+
+function clearSelection() {
+  selectedCovers.clear();
+  updateBatchInfo();
+  renderCurrentView();
+}
+
+function updateBatchInfo() {
+  const countEl = document.getElementById('selectedCount');
+  if (countEl) {
+    countEl.textContent = selectedCovers.size;
+  }
+}
+
+// Make functions available globally
+window.toggleFullCoversView = toggleFullCoversView;
+window.setViewMode = setViewMode;
+window.handleCoverClick = handleCoverClick;
+window.changePage = changePage;
+window.toggleCoverSelection = toggleCoverSelection;
+window.selectAllCovers = selectAllCovers;
+window.clearSelection = clearSelection; 
