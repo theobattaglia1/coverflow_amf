@@ -87,6 +87,10 @@ function isAuthenticated(req) {
 }
 
 function isAdminSubdomain(req) {
+  // In development, treat localhost as admin subdomain if accessing /admin/ paths
+  if (process.env.NODE_ENV === 'development') {
+    return req.hostname.startsWith('admin.') || req.path.startsWith('/admin/');
+  }
   return req.hostname.startsWith('admin.');
 }
 
@@ -161,6 +165,7 @@ async function saveUsers(users) {
 app.use((req, res, next) => {
   if (isAdminSubdomain(req)) {
     console.log(`Admin subdomain request: ${req.method} ${req.path}`);
+    
     // First, try to serve static files from the ADMIN_DIR
     express.static(ADMIN_DIR)(req, res, (err) => {
       // If the static file is not found, or there's an error, move to other routes
@@ -196,6 +201,19 @@ app.use((req, res, next) => {
     next();
   }
 });
+
+// Development mode: Add specific routes for /admin/* paths
+if (process.env.NODE_ENV === 'development') {
+  app.use('/admin', express.static(ADMIN_DIR));
+  
+  app.get('/admin', (req, res) => {
+    if (isAuthenticated(req)) {
+      res.sendFile(path.join(ADMIN_DIR, 'index-swiss.html'));
+    } else {
+      res.redirect('/admin/login.html');
+    }
+  });
+}
 
 
 // Basic auth for specific public files
@@ -477,6 +495,37 @@ app.post('/save-assets', requireAuth('editor'), async (req, res) => {
         res.json({ success: true });
     } catch (err) {
         res.status(500).json({ error: 'Failed to save assets', details: err.message });
+    }
+});
+
+// Push Live Endpoint - Finalizes all changes and makes them live
+app.post('/push-live', requireAuth('editor'), async (req, res) => {
+    try {
+        // This endpoint serves as a final "publish" step for all changes
+        // Since individual saves already persist data, this mainly validates and confirms
+        console.log(`--- Push Live request at ${new Date().toISOString()} by user: ${req.session.user?.username} ---`);
+        
+        // Validate that data files exist and are readable
+        const coversPath = path.join(DATA_DIR, 'covers.json');
+        const assetsPath = path.join(DATA_DIR, 'assets.json');
+        
+        try {
+            await fs.promises.access(coversPath, fs.constants.R_OK);
+            await fs.promises.access(assetsPath, fs.constants.R_OK);
+        } catch (err) {
+            console.error('Data files not accessible during push-live:', err);
+            return res.status(500).json({ error: 'Data files not accessible', details: err.message });
+        }
+        
+        // Invalidate all caches to ensure fresh data
+        dataCache.invalidate('covers');
+        dataCache.invalidate('assets');
+        
+        console.log('--- Push Live completed successfully ---');
+        res.json({ success: true, message: 'Changes pushed live successfully' });
+    } catch (err) {
+        console.error('Push Live error:', err);
+        res.status(500).json({ error: 'Failed to push live', details: err.message });
     }
 });
 
