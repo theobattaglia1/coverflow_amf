@@ -1,5 +1,5 @@
 // This script now synchronizes your GCS bucket with your local assets.json file.
-// Run this file once to populate your assets dashboard.
+// It includes extra logging to diagnose why assets might not be added.
 
 import fs from 'fs';
 import path from 'path';
@@ -33,7 +33,10 @@ async function syncGcsToAssets() {
   if (!assetsData.images) {
     assetsData.images = [];
   }
-
+  
+  const existingUrls = new Set(assetsData.images.map(img => img.url));
+  console.log(`[DEBUG] Found ${existingUrls.size} existing assets in local assets.json.`);
+  
   // 2. Fetch all files from the GCS bucket
   try {
     const storage = new Storage({ keyFilename: GCS_KEYFILE });
@@ -41,7 +44,6 @@ async function syncGcsToAssets() {
     const [files] = await bucket.getFiles();
     console.log(`✅ Found ${files.length} total files in GCS bucket.`);
 
-    const existingUrls = new Set(assetsData.images.map(img => img.url));
     let newAssetsAdded = 0;
 
     // 3. Add any missing GCS files to the assets.json data
@@ -49,22 +51,23 @@ async function syncGcsToAssets() {
       const publicUrl = `${GCS_BUCKET_URL}/${file.name}`;
       const contentType = file.metadata.contentType || '';
       
-      // Skip folders and non-media files
-      if (file.name.endsWith('/') || !contentType.startsWith('image/')) {
+      // --- FIX: Include both images and videos in the sync ---
+      const isMedia = contentType.startsWith('image/') || contentType.startsWith('video/');
+      if (file.name.endsWith('/') || !isMedia) {
           continue;
       }
-
+      
       if (!existingUrls.has(publicUrl)) {
         console.log(`  ➕ Adding new asset: ${file.name}`);
         assetsData.images.push({
           url: publicUrl,
-          type: 'image', // Or determine from contentType
+          type: contentType.split('/')[0], // 'image' or 'video'
           filename: path.basename(file.name)
         });
         newAssetsAdded++;
       }
     }
-
+    
     // 4. Write the updated data back to the file if changes were made
     if (newAssetsAdded > 0) {
       await fs.promises.writeFile(assetsFilePath, JSON.stringify(assetsData, null, 2));
