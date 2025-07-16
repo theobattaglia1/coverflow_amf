@@ -36,6 +36,14 @@ let selectedCovers = new Set();
 let currentUser = null;
 let sessionKeepalive = null;
 
+// Media Library state
+let mediaLibraryExpanded = false;
+let currentView = 'grid';
+let assetsPerPage = 24;
+let currentPage = 0;
+let filteredAssets = [];
+let sortBy = 'name';
+
 // Utility function to safely parse JSON responses
 async function safeJsonParse(response) {
   const text = await response.text();
@@ -145,7 +153,9 @@ async function init() {
   setupEventListeners();
   setupDragAndDrop();
   setupKeyboardShortcuts();
+  setupMediaLibraryEventListeners();
   updateCurrentFolderIndicator();
+  renderRecentAssets();
 }
 
 // Load covers with smooth animation
@@ -507,6 +517,7 @@ async function loadAssets() {
     }
     
     renderAssets();
+    renderRecentAssets();
     
   } catch (err) {
     console.error('Failed to load assets:', err);
@@ -602,50 +613,10 @@ function renderFolders() {
 }
 
 function renderAssets() {
-  const container = document.getElementById('assetsContainer');
-  if (!container) return;
-  container.innerHTML = '';
-  // Get items in current folder
-  const { images } = getCurrentFolderItems();
-  if (images.length === 0) {
-    container.innerHTML = '<p style="color: var(--grey-500); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO ASSETS IN THIS FOLDER</p>';
-    return;
-  }
-  images.forEach((asset, index) => {
-    let type = asset.type;
-    if (!type && asset.url) {
-      if (/\.(mp4|webm|mov|avi)$/i.test(asset.url)) type = 'video';
-      else if (/\.(mp3|wav|m4a|aac|ogg)$/i.test(asset.url)) type = 'audio';
-      else if (/\.(png|jpe?g|gif|bmp|webp)$/i.test(asset.url)) type = 'image';
-      else type = 'other';
-    }
-    let mediaTag = '';
-    if (type === 'video') {
-      mediaTag = `<video src="${asset.url}" controls preload="metadata" style="width:100%;height:180px;object-fit:cover;background:#222;" poster="">
-        Sorry, your browser doesn't support embedded videos.
-      </video>`;
-    } else if (type === 'audio') {
-      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;">
-        Sorry, your browser doesn't support embedded audio.
-      </audio>`;
-    } else if (type === 'image') {
-      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy" style="width:100%;height:180px;object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
-    } else {
-      mediaTag = `<div style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#eee;color:#888;font-size:1.2em;">Unsupported</div>`;
-    }
-    const div = document.createElement('div');
-    div.className = 'asset-item';
-    div.innerHTML = `
-      ${mediaTag}
-      <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)" style="margin-bottom: var(--space-sm);">
-      <div style="font-family: var(--font-mono); font-size: 0.625rem; word-break: break-all; margin-bottom: var(--space-sm); cursor: pointer; opacity: 0.6;"
-           onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
-        ${asset.url}
-      </div>
-      <button onclick="deleteAsset('${asset.url}')" style="width: 100%;">DELETE</button>
-    `;
-    container.appendChild(div);
-  });
+  // Reset pagination when rendering
+  currentPage = 0;
+  filteredAssets = [];
+  renderAssetsWithView();
 }
 
 // Get items in current folder
@@ -1293,7 +1264,358 @@ window.deleteFolder = deleteFolder;
 window.navigateToFolder = navigateToFolder;
 window.updateAssetName = updateAssetName;
 window.deleteAsset = deleteAsset;
-window.copyToClipboardFullPath = copyToClipboardFullPath; 
+window.copyToClipboardFullPath = copyToClipboardFullPath;
+
+// Media Library Functions
+window.toggleMediaLibrary = function() {
+  mediaLibraryExpanded = !mediaLibraryExpanded;
+  const content = document.getElementById('mediaLibraryContent');
+  const toggle = document.getElementById('mediaLibraryToggle');
+  const toggleText = toggle.querySelector('.toggle-text');
+  
+  if (mediaLibraryExpanded) {
+    content.style.display = 'block';
+    toggle.classList.add('expanded');
+    toggleText.textContent = 'COLLAPSE';
+  } else {
+    content.style.display = 'none';
+    toggle.classList.remove('expanded');
+    toggleText.textContent = 'EXPAND';
+  }
+};
+
+window.switchView = function(view) {
+  currentView = view;
+  
+  // Update view mode buttons
+  document.querySelectorAll('.view-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+  
+  // Update asset grid classes
+  const assetGrid = document.getElementById('assetsContainer');
+  assetGrid.className = `asset-grid ${view}-view`;
+  
+  // Re-render assets with new view
+  renderAssets();
+};
+
+function setupMediaLibraryEventListeners() {
+  // View mode buttons
+  document.querySelectorAll('.view-mode-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      switchView(btn.dataset.view);
+    });
+  });
+  
+  // Search functionality
+  const searchInput = document.getElementById('assetSearch');
+  if (searchInput) {
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        filterAndRenderAssets();
+      }, 300);
+    });
+  }
+  
+  // Sort functionality
+  const sortSelect = document.getElementById('assetSort');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      sortBy = e.target.value;
+      filterAndRenderAssets();
+    });
+  }
+}
+
+function renderRecentAssets() {
+  const container = document.getElementById('recentAssetsGrid');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // Get all assets and sort by date (most recent first)
+  const allAssets = getAllAssets();
+  const recentAssets = allAssets
+    .filter(asset => asset.uploadedAt || asset.lastModified)
+    .sort((a, b) => {
+      const dateA = new Date(a.uploadedAt || a.lastModified || 0);
+      const dateB = new Date(b.uploadedAt || b.lastModified || 0);
+      return dateB - dateA;
+    })
+    .slice(0, 8); // Show last 8 uploads
+  
+  if (recentAssets.length === 0) {
+    container.innerHTML = '<p style="color: var(--grey-500); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO RECENT UPLOADS</p>';
+    return;
+  }
+  
+  recentAssets.forEach(asset => {
+    const div = document.createElement('div');
+    div.className = 'recent-asset-item';
+    
+    let mediaTag = '';
+    const type = getAssetType(asset);
+    
+    if (type === 'image') {
+      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy">`;
+    } else if (type === 'video') {
+      mediaTag = `<video src="${asset.url}" preload="metadata" style="width:100%;height:100%;object-fit:cover;"></video>`;
+    } else if (type === 'audio') {
+      mediaTag = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:var(--grey-200);"><span style="font-size:2rem;">🎵</span></div>`;
+    } else {
+      mediaTag = `<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:var(--grey-200);"><span style="font-size:1rem;">📄</span></div>`;
+    }
+    
+    div.innerHTML = `
+      ${mediaTag}
+      <div class="asset-name">${asset.name || 'Untitled'}</div>
+    `;
+    
+    div.onclick = () => {
+      navigator.clipboard.writeText(asset.url);
+      showToast('URL COPIED TO CLIPBOARD');
+    };
+    
+    container.appendChild(div);
+  });
+}
+
+function getAllAssets() {
+  const allAssets = [];
+  
+  // Add root level images
+  if (assets.images) {
+    allAssets.push(...assets.images);
+  }
+  
+  // Add images from folders recursively
+  function addFromFolder(folder) {
+    if (folder.children) {
+      folder.children.forEach(child => {
+        if (child.type === 'image') {
+          allAssets.push(child);
+        } else if (child.type === 'folder') {
+          addFromFolder(child);
+        }
+      });
+    }
+    if (folder.folders) {
+      folder.folders.forEach(subfolder => addFromFolder(subfolder));
+    }
+  }
+  
+  // Process both folders and children arrays
+  if (assets.folders) {
+    assets.folders.forEach(folder => addFromFolder(folder));
+  }
+  if (assets.children) {
+    assets.children.forEach(child => {
+      if (child.type === 'folder') {
+        addFromFolder(child);
+      } else if (child.type === 'image') {
+        allAssets.push(child);
+      }
+    });
+  }
+  
+  return allAssets;
+}
+
+function getAssetType(asset) {
+  if (asset.type) return asset.type;
+  
+  if (!asset.url) return 'other';
+  
+  const url = asset.url.toLowerCase();
+  if (/\.(mp4|webm|mov|avi)$/i.test(url)) return 'video';
+  if (/\.(mp3|wav|m4a|aac|ogg)$/i.test(url)) return 'audio';
+  if (/\.(png|jpe?g|gif|bmp|webp|svg|tif{1,2})$/i.test(url)) return 'image';
+  return 'other';
+}
+
+function getAssetSize(asset) {
+  // This would need server support to get actual file sizes
+  // For now, return a placeholder
+  return asset.size || 'Unknown';
+}
+
+function getAssetDate(asset) {
+  const date = new Date(asset.uploadedAt || asset.lastModified || Date.now());
+  return date.toLocaleDateString();
+}
+
+function filterAndRenderAssets() {
+  const searchTerm = document.getElementById('assetSearch')?.value.toLowerCase() || '';
+  const { images } = getCurrentFolderItems();
+  
+  // Filter assets based on search term
+  filteredAssets = images.filter(asset => {
+    if (!searchTerm) return true;
+    return (asset.name || '').toLowerCase().includes(searchTerm) ||
+           (asset.url || '').toLowerCase().includes(searchTerm);
+  });
+  
+  // Sort filtered assets
+  filteredAssets.sort((a, b) => {
+    switch (sortBy) {
+      case 'name':
+        return (a.name || '').localeCompare(b.name || '');
+      case 'date':
+        const dateA = new Date(a.uploadedAt || a.lastModified || 0);
+        const dateB = new Date(b.uploadedAt || b.lastModified || 0);
+        return dateB - dateA;
+      case 'size':
+        return (b.size || 0) - (a.size || 0);
+      case 'type':
+        return getAssetType(a).localeCompare(getAssetType(b));
+      default:
+        return 0;
+    }
+  });
+  
+  renderAssets();
+}
+
+// Enhanced renderAssets function that supports different views
+function renderAssetsWithView() {
+  const container = document.getElementById('assetsContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // Use filtered assets if available, otherwise get current folder items
+  const assetsToShow = filteredAssets.length > 0 || document.getElementById('assetSearch')?.value 
+    ? filteredAssets 
+    : getCurrentFolderItems().images;
+  
+  if (assetsToShow.length === 0) {
+    container.innerHTML = '<p style="color: var(--grey-500); grid-column: 1/-1; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">NO ASSETS IN THIS FOLDER</p>';
+    return;
+  }
+  
+  // Pagination
+  const startIndex = currentPage * assetsPerPage;
+  const endIndex = startIndex + assetsPerPage;
+  const paginatedAssets = assetsToShow.slice(startIndex, endIndex);
+  
+  paginatedAssets.forEach((asset, index) => {
+    const div = document.createElement('div');
+    div.className = 'asset-item';
+    
+    const type = getAssetType(asset);
+    let mediaTag = '';
+    
+    if (type === 'video') {
+      mediaTag = `<video src="${asset.url}" controls preload="metadata" style="width:100%;height:180px;object-fit:cover;background:#222;" poster="">
+        Sorry, your browser doesn't support embedded videos.
+      </video>`;
+    } else if (type === 'audio') {
+      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;">
+        Sorry, your browser doesn't support embedded audio.
+      </audio>`;
+    } else if (type === 'image') {
+      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy" style="width:100%;height:180px;object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
+    } else {
+      mediaTag = `<div style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#eee;color:#888;font-size:1.2em;">Unsupported</div>`;
+    }
+    
+    // Render based on current view
+    if (currentView === 'list') {
+      div.innerHTML = `
+        ${mediaTag}
+        <div class="list-view-name">${asset.name || 'Untitled'}</div>
+        <div class="list-view-size">${getAssetSize(asset)}</div>
+        <div class="list-view-date">${getAssetDate(asset)}</div>
+        <div class="list-view-type">${type.toUpperCase()}</div>
+      `;
+    } else {
+      // Grid and coverflow views use similar markup
+      div.innerHTML = `
+        ${mediaTag}
+        <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)" style="margin-bottom: var(--space-sm);">
+        <div style="font-family: var(--font-mono); font-size: 0.625rem; word-break: break-all; margin-bottom: var(--space-sm); cursor: pointer; opacity: 0.6;"
+             onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
+          ${asset.url}
+        </div>
+        <button onclick="deleteAsset('${asset.url}')" style="width: 100%;">DELETE</button>
+      `;
+    }
+    
+    if (currentView === 'list') {
+      div.onclick = () => {
+        navigator.clipboard.writeText(asset.url);
+        showToast('URL COPIED TO CLIPBOARD');
+      };
+    }
+    
+    container.appendChild(div);
+  });
+  
+  // Add pagination controls if needed
+  addPaginationControls(assetsToShow.length);
+}
+
+function addPaginationControls(totalAssets) {
+  const totalPages = Math.ceil(totalAssets / assetsPerPage);
+  if (totalPages <= 1) return;
+  
+  const container = document.getElementById('assetsContainer');
+  const paginationDiv = document.createElement('div');
+  paginationDiv.className = 'pagination-controls';
+  paginationDiv.style.cssText = `
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-lg);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+  `;
+  
+  // Previous button
+  if (currentPage > 0) {
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = '← PREV';
+    prevBtn.className = 'btn';
+    prevBtn.onclick = () => {
+      currentPage--;
+      renderAssetsWithView();
+    };
+    paginationDiv.appendChild(prevBtn);
+  }
+  
+  // Page numbers
+  const startPage = Math.max(0, currentPage - 2);
+  const endPage = Math.min(totalPages - 1, currentPage + 2);
+  
+  for (let i = startPage; i <= endPage; i++) {
+    const pageBtn = document.createElement('button');
+    pageBtn.textContent = i + 1;
+    pageBtn.className = i === currentPage ? 'btn btn-primary' : 'btn';
+    pageBtn.onclick = () => {
+      currentPage = i;
+      renderAssetsWithView();
+    };
+    paginationDiv.appendChild(pageBtn);
+  }
+  
+  // Next button
+  if (currentPage < totalPages - 1) {
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'NEXT →';
+    nextBtn.className = 'btn';
+    nextBtn.onclick = () => {
+      currentPage++;
+      renderAssetsWithView();
+    };
+    paginationDiv.appendChild(nextBtn);
+  }
+  
+  container.appendChild(paginationDiv);
+} 
 
 let dashboardImageLibraryTarget = null;
 

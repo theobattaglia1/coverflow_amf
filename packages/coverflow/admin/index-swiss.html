@@ -19,7 +19,7 @@
       
       <nav class="admin-nav">
         <a href="#covers" class="active">COVERS</a>
-        <a href="#assets">ASSETS</a>
+        <a href="#assets">MEDIA LIBRARY</a>
         <a href="#audio">AUDIO</a>
         <a href="#users">USERS</a>
         
@@ -72,12 +72,44 @@
         </div>
       </section>
 
-      <!-- 02 — ASSETS -->
+      <!-- 02 — MEDIA LIBRARY -->
       <section class="section" id="assetsSection">
         <div class="section-marker">
           <span class="section-number">02 —</span>
-          <h1 class="section-title" data-text="ASSETS">ASSETS</h1>
+          <h1 class="section-title" data-text="MEDIA LIBRARY">MEDIA LIBRARY</h1>
+          <button class="media-library-toggle" id="mediaLibraryToggle" onclick="toggleMediaLibrary()">
+            <span class="toggle-icon">▼</span>
+            <span class="toggle-text">EXPAND</span>
+          </button>
         </div>
+        
+        <!-- Recently Added Preview (always visible) -->
+        <div class="recently-added-preview">
+          <h3>RECENTLY ADDED</h3>
+          <div class="recent-assets-grid" id="recentAssetsGrid">
+            <!-- Recent assets will be loaded here -->
+          </div>
+        </div>
+        
+        <!-- Full Media Library (collapsible) -->
+        <div class="media-library-content" id="mediaLibraryContent" style="display: none;">
+          <!-- View Mode Controls -->
+          <div class="view-controls">
+            <div class="view-modes">
+              <button class="view-mode-btn active" data-view="grid" title="Grid View">⊞</button>
+              <button class="view-mode-btn" data-view="list" title="List View">☰</button>
+              <button class="view-mode-btn" data-view="coverflow" title="Coverflow View">≋</button>
+            </div>
+            <div class="library-actions">
+              <input type="text" class="search-input" id="assetSearch" placeholder="SEARCH ASSETS...">
+              <select class="sort-select" id="assetSort">
+                <option value="name">SORT BY NAME</option>
+                <option value="date">SORT BY DATE</option>
+                <option value="size">SORT BY SIZE</option>
+                <option value="type">SORT BY TYPE</option>
+              </select>
+            </div>
+          </div>
         
         <div class="asset-browser">
           <!-- Folder navigation -->
@@ -102,6 +134,7 @@
             </div>
           </div>
         </div>
+        </div> <!-- End media-library-content -->
       </section>
 
       <!-- 03 — USERS -->
