@@ -42,19 +42,95 @@
           <span class="section-number">01 —</span>
           <h1 class="section-title" data-text="COVERS">COVERS</h1>
         </div>
-        
-        <!-- Search functionality -->
-        <div class="search-container">
-          <input type="text" 
-                 class="search-input" 
-                 id="coverSearch" 
-                 placeholder="SEARCH BY TITLE OR ARTIST..."
-                 autocomplete="off">
+
+        <!-- Progressive Disclosure: Recently Edited Section -->
+        <div class="recently-edited-section" id="recentlyEditedSection">
+          <div class="subsection-header">
+            <h3 class="subsection-title">RECENTLY EDITED</h3>
+            <button class="btn-text" onclick="toggleFullCoversView()">VIEW ALL →</button>
+          </div>
+          <div class="recent-covers-grid" id="recentCoversContainer">
+            <!-- Recent covers will be dynamically loaded -->
+          </div>
+        </div>
+
+        <!-- Enhanced Controls -->
+        <div class="covers-controls" id="coversControls" style="display: none;">
+          <!-- View Mode Toggles -->
+          <div class="view-mode-toggles">
+            <button class="view-toggle active" data-view="grid" onclick="setViewMode('grid')" title="Grid View">
+              <span class="view-icon">⊞</span>
+            </button>
+            <button class="view-toggle" data-view="list" onclick="setViewMode('list')" title="List View">
+              <span class="view-icon">□</span>
+            </button>
+            <button class="view-toggle" data-view="coverflow" onclick="setViewMode('coverflow')" title="Coverflow View">
+              <span class="view-icon">≋</span>
+            </button>
+          </div>
+
+          <!-- Enhanced Search and Filters -->
+          <div class="search-filter-container">
+            <input type="text" 
+                   class="search-input" 
+                   id="coverSearch" 
+                   placeholder="SEARCH BY TITLE, ARTIST, OR CATEGORY..."
+                   autocomplete="off">
+            
+            <div class="filter-controls">
+              <select class="filter-select" id="categoryFilter">
+                <option value="">ALL CATEGORIES</option>
+                <option value="artist">ARTIST</option>
+                <option value="songwriter">SONGWRITER</option>
+                <option value="producer">PRODUCER</option>
+                <option value="about us">ABOUT US</option>
+              </select>
+              
+              <select class="filter-select" id="sortOrder">
+                <option value="index">MANUAL ORDER</option>
+                <option value="title">TITLE A-Z</option>
+                <option value="title-desc">TITLE Z-A</option>
+                <option value="date">NEWEST FIRST</option>
+                <option value="date-desc">OLDEST FIRST</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Batch Operations Bar -->
+          <div class="batch-operations" id="batchOperations" style="display: none;">
+            <div class="batch-info">
+              <span id="selectedCount">0</span> SELECTED
+            </div>
+            <div class="batch-actions">
+              <button class="btn btn-sm" onclick="selectAllCovers()">SELECT ALL</button>
+              <button class="btn btn-sm" onclick="clearSelection()">CLEAR</button>
+              <button class="btn btn-sm" onclick="exportSelected()">EXPORT</button>
+              <button class="btn btn-danger btn-sm" onclick="deleteSelected()">DELETE</button>
+            </div>
+          </div>
         </div>
         
-        <!-- Cover grid with editorial layout -->
-        <div class="covers-container" id="coversContainer">
-          <!-- Covers will be dynamically loaded -->
+        <!-- Main Covers Container -->
+        <div class="covers-main-container" id="coversMainContainer" style="display: none;">
+          <!-- Different view modes will be rendered here -->
+          <div class="covers-container covers-view-grid" id="coversContainer">
+            <!-- Covers will be dynamically loaded -->
+          </div>
+          
+          <div class="covers-container covers-view-list" id="coversListContainer" style="display: none;">
+            <!-- List view will be rendered here -->
+          </div>
+          
+          <div class="covers-container covers-view-coverflow" id="coversCoverflowContainer" style="display: none;">
+            <!-- Coverflow view will be rendered here -->
+          </div>
+
+          <!-- Pagination Controls -->
+          <div class="pagination-controls" id="paginationControls" style="display: none;">
+            <button class="btn btn-sm" id="prevPage" onclick="changePage(-1)">← PREV</button>
+            <span class="page-info" id="pageInfo">1 / 1</span>
+            <button class="btn btn-sm" id="nextPage" onclick="changePage(1)">NEXT →</button>
+          </div>
         </div>
         
         <!-- Dropzone: Minimal design -->
@@ -63,7 +139,7 @@
         </div>
         
         <!-- Action buttons: Brutalist elegance -->
-        <div style="display: flex; gap: var(--space-md); margin-top: var(--space-xl);">
+        <div class="covers-actions">
           <button class="btn btn-primary" onclick="saveChanges()">SAVE CHANGES</button>
           <button class="btn" onclick="toggleBatchMode()" id="batchModeBtn">BATCH MODE</button>
           <button class="btn" onclick="exportCovers()" style="display: none;" id="exportBtn">EXPORT SELECTED</button>
@@ -262,7 +338,7 @@ document.addEventListener('keydown', (e) => {
 </script>
 
 <!-- Load the main dashboard script -->
-<script src="dashboard-swiss.js"></script>
+<script src="dashboard.js"></script>
 
 </body>
 </html> 
