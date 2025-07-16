@@ -393,10 +393,10 @@ async function pushLive() {
 // Asset management
 async function loadAssets() {
   try {
-    const res = await fetch('/api/list-assets');
+    const res = await fetch('/api/list-gcs-assets');
     const data = await res.json();
-    // data.assets is an array of asset objects
-    assets = { images: data.assets };
+    // data.images is an array of URL strings from GCS
+    assets = { images: data.images.map(url => ({ url, name: url.split('/').pop(), type: 'image' })) };
     renderAssets();
   } catch (err) {
     console.error('Failed to load assets:', err);

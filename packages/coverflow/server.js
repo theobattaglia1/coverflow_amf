@@ -34,7 +34,9 @@ const PORT = process.env.PORT || 10000; // Use Render's default port
 // --- Best Practice: Initialize GCS Client and Bucket Name Once ---
 // This single instance is reused for all GCS operations, which is more efficient.
 const gcsStorage = new Storage({
-  keyFilename: '/etc/secrets/service-account.json' // Correct path for Render Secret Files
+  keyFilename: process.env.NODE_ENV === 'production' 
+    ? '/etc/secrets/service-account.json' // Correct path for Render Secret Files
+    : path.join(__dirname, '../../gcp/service-account.json') // Local development path
 });
 const gcsBucketName = process.env.GCS_BUCKET_NAME || 'allmyfriends-assets-2025';
 
@@ -500,6 +502,20 @@ app.get('/api/list-gcs-assets', requireAuth('editor'), async (req, res) => {
 
   } catch (err) {
     console.error('--- ERROR IN /api/list-gcs-assets ---', err);
+    
+    // In development mode, return mock data when GCS is not available
+    if (process.env.NODE_ENV === 'development') {
+      console.log('--- DEVELOPMENT MODE: Returning mock GCS assets ---');
+      const mockAssets = [
+        `https://storage.googleapis.com/${gcsBucketName}/sample-cover-1.jpg`,
+        `https://storage.googleapis.com/${gcsBucketName}/sample-cover-2.jpg`,
+        `https://storage.googleapis.com/${gcsBucketName}/sample-cover-3.jpg`,
+        `https://storage.googleapis.com/${gcsBucketName}/album-art/demo-album.png`,
+        `https://storage.googleapis.com/${gcsBucketName}/assets/uploaded-image.jpg`
+      ];
+      return res.json({ images: mockAssets });
+    }
+    
     res.status(500).json({
       error: 'Failed to list GCS assets',
       details: err.message,
