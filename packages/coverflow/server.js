@@ -280,15 +280,20 @@ app.use((req, res, next) => {
 
 // Development mode: Add specific routes for /admin/* paths
 if (process.env.NODE_ENV === 'development') {
-  app.use('/admin', express.static(ADMIN_DIR));
-  
   app.get('/admin', (req, res) => {
+    console.log('Hit /admin route, checking auth...');
+    console.log('isAuthenticated result:', isAuthenticated(req));
     if (isAuthenticated(req)) {
-      res.sendFile(path.join(ADMIN_DIR, 'index-swiss.html'));
+      const filePath = path.join(ADMIN_DIR, 'index-swiss.html');
+      console.log('Serving admin file:', filePath);
+      res.sendFile(filePath);
     } else {
+      console.log('Not authenticated, redirecting to login');
       res.redirect('/admin/login.html');
     }
   });
+  
+  app.use('/admin', express.static(ADMIN_DIR));
 }
 
 
