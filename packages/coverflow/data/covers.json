@@ -22,10 +22,13 @@
   },
   {
     "id": "1743756368892",
-    "category": "artist, songwriter",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
     "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748121102073-915680969.png",
     "albumTitle": "Tom Siletto",
-    "coverLabel": "he's not fucking signed",
+    "coverLabel": " (TEST EDIT)",
     "fontFamily": "",
     "fontSize": "",
     "music": {
@@ -39,7 +42,10 @@
       "spotifyLink": "https://open.spotify.com/track/5LlRJdKv3lU4NmYOQrnNm4?si=b5f5e0b903884eca",
       "image": "https://allmyfriendsinc.com/uploads/bd34a93201c51e17c2699f51c522cee0"
     },
-    "index": 1
+    "index": 1,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": ""
   },
   {
     "id": "1743755620790",
