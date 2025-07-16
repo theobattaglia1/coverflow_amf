@@ -88,8 +88,11 @@ function isAuthenticated(req) {
 
 function isAdminSubdomain(req) {
   // In development, treat localhost as admin subdomain if accessing /admin/ paths
+  // or if the Host header indicates admin subdomain
   if (process.env.NODE_ENV === 'development') {
-    return req.hostname.startsWith('admin.') || req.path.startsWith('/admin/');
+    return req.hostname.startsWith('admin.') || 
+           req.path.startsWith('/admin/') ||
+           req.get('Host')?.startsWith('admin.');
   }
   return req.hostname.startsWith('admin.');
 }
@@ -153,9 +156,41 @@ async function loadUsers() {
     return users;
 }
 
+// Safe file write with backup
+async function safeWriteJson(filePath, data) {
+  const backupPath = filePath.replace('.json', '-backup.json');
+  const tempPath = filePath + '.tmp';
+  
+  try {
+    // Create backup if original file exists
+    try {
+      await fs.promises.access(filePath);
+      await fs.promises.copyFile(filePath, backupPath);
+    } catch (err) {
+      // Original file doesn't exist, no backup needed
+    }
+    
+    // Write to temporary file first
+    await fs.promises.writeFile(tempPath, JSON.stringify(data, null, 2));
+    
+    // Atomic move to final location
+    await fs.promises.rename(tempPath, filePath);
+    
+    console.log(`Successfully saved ${filePath}`);
+  } catch (err) {
+    // Clean up temp file if it exists
+    try {
+      await fs.promises.unlink(tempPath);
+    } catch (unlinkErr) {
+      // Ignore unlink errors
+    }
+    throw err;
+  }
+}
+
 async function saveUsers(users) {
   const usersPath = path.join(DATA_DIR, 'users.json');
-  await fs.promises.writeFile(usersPath, JSON.stringify(users, null, 2));
+  await safeWriteJson(usersPath, users);
   userCache.invalidate('users');
 }
 
@@ -164,12 +199,13 @@ async function saveUsers(users) {
 // Admin subdomain handler
 app.use((req, res, next) => {
   if (isAdminSubdomain(req)) {
-    console.log(`Admin subdomain request: ${req.method} ${req.path}`);
+    console.log(`Admin subdomain request: ${req.method} ${req.path} from ${req.get('Host')}`);
     
     // First, try to serve static files from the ADMIN_DIR
     express.static(ADMIN_DIR)(req, res, (err) => {
       // If the static file is not found, or there's an error, move to other routes
       if (err) {
+        console.error('Static file error in admin handler:', err);
         return next(err);
       }
       // If a file was served, the response is already sent.
@@ -178,8 +214,14 @@ app.use((req, res, next) => {
         return;
       }
 
-      // API and data routes should pass through to their handlers
-      if (req.path.startsWith('/api/') || req.path.startsWith('/data/')) {
+      // Admin endpoints that should pass through to their handlers
+      const adminEndpoints = [
+        '/api/', '/data/', '/upload-image', '/save-cover', '/delete-cover', 
+        '/save-covers', '/save-assets', '/push-live'
+      ];
+      
+      if (adminEndpoints.some(endpoint => req.path.startsWith(endpoint) || req.path === endpoint.slice(0, -1))) {
+        console.log(`Passing through admin endpoint: ${req.path}`);
         return next();
       }
 
@@ -194,6 +236,7 @@ app.use((req, res, next) => {
       
       // If we reach here, it means no static file was found and no specific route matched.
       // Let the next handlers try, or it will eventually 404.
+      console.log(`No specific handler found for admin path: ${req.path}, passing to next`);
       next();
     });
   } else {
@@ -444,18 +487,24 @@ app.post('/save-cover', requireAuth('editor'), async (req, res) => {
         if (!cover || !cover.id) {
             return res.status(400).json({ error: 'Invalid cover data', details: 'Missing ID' });
         }
+        
         const jsonPath = path.join(DATA_DIR, 'covers.json');
         let covers = await readJsonFile(jsonPath, 'covers') || [];
         const idx = covers.findIndex(c => String(c.id) === String(cover.id));
+        
         if (idx === -1) {
             covers.push(cover);
+            console.log(`Added new cover: ${cover.id} - ${cover.albumTitle || 'Untitled'}`);
         } else {
             covers[idx] = cover;
+            console.log(`Updated cover: ${cover.id} - ${cover.albumTitle || 'Untitled'}`);
         }
-        await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
+        
+        await safeWriteJson(jsonPath, covers);
         dataCache.invalidate('covers');
         res.json({ success: true });
     } catch (err) {
+        console.error('Save cover error:', err);
         res.status(500).json({ error: 'Failed to save cover', details: err.message });
     }
 });
@@ -477,11 +526,17 @@ app.post('/delete-cover', requireAuth('editor'), async (req, res) => {
 app.post('/save-covers', requireAuth('editor'), async (req, res) => {
     try {
         const covers = req.body;
+        if (!Array.isArray(covers)) {
+            return res.status(400).json({ error: 'Invalid data format', details: 'Expected array of covers' });
+        }
+        
         const jsonPath = path.join(DATA_DIR, 'covers.json');
-        await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
+        await safeWriteJson(jsonPath, covers);
         dataCache.invalidate('covers');
-        res.json({ success: true });
+        console.log(`Bulk saved ${covers.length} covers`);
+        res.json({ success: true, count: covers.length });
     } catch (err) {
+        console.error('Save covers error:', err);
         res.status(500).json({ error: 'Failed to save covers', details: err.message });
     }
 });
@@ -490,10 +545,12 @@ app.post('/save-assets', requireAuth('editor'), async (req, res) => {
     try {
         const assets = req.body;
         const jsonPath = path.join(DATA_DIR, 'assets.json');
-        await fs.promises.writeFile(jsonPath, JSON.stringify(assets, null, 2));
+        await safeWriteJson(jsonPath, assets);
         dataCache.invalidate('assets');
+        console.log('Assets data saved successfully');
         res.json({ success: true });
     } catch (err) {
+        console.error('Save assets error:', err);
         res.status(500).json({ error: 'Failed to save assets', details: err.message });
     }
 });
@@ -501,20 +558,45 @@ app.post('/save-assets', requireAuth('editor'), async (req, res) => {
 // Push Live Endpoint - Finalizes all changes and makes them live
 app.post('/push-live', requireAuth('editor'), async (req, res) => {
     try {
-        // This endpoint serves as a final "publish" step for all changes
-        // Since individual saves already persist data, this mainly validates and confirms
         console.log(`--- Push Live request at ${new Date().toISOString()} by user: ${req.session.user?.username} ---`);
         
-        // Validate that data files exist and are readable
-        const coversPath = path.join(DATA_DIR, 'covers.json');
-        const assetsPath = path.join(DATA_DIR, 'assets.json');
+        // Validate that all critical data files exist and are readable
+        const criticalFiles = [
+            { path: path.join(DATA_DIR, 'covers.json'), name: 'covers' },
+            { path: path.join(DATA_DIR, 'assets.json'), name: 'assets' }
+        ];
         
-        try {
-            await fs.promises.access(coversPath, fs.constants.R_OK);
-            await fs.promises.access(assetsPath, fs.constants.R_OK);
-        } catch (err) {
-            console.error('Data files not accessible during push-live:', err);
-            return res.status(500).json({ error: 'Data files not accessible', details: err.message });
+        const validationResults = [];
+        
+        for (const file of criticalFiles) {
+            try {
+                await fs.promises.access(file.path, fs.constants.R_OK);
+                const data = await fs.promises.readFile(file.path, 'utf-8');
+                const parsed = JSON.parse(data);
+                validationResults.push({
+                    file: file.name,
+                    status: 'ok',
+                    size: data.length,
+                    records: Array.isArray(parsed) ? parsed.length : Object.keys(parsed).length
+                });
+            } catch (err) {
+                console.error(`Validation failed for ${file.name}:`, err);
+                validationResults.push({
+                    file: file.name,
+                    status: 'error',
+                    error: err.message
+                });
+            }
+        }
+        
+        // Check if any validations failed
+        const failed = validationResults.filter(r => r.status === 'error');
+        if (failed.length > 0) {
+            return res.status(500).json({ 
+                error: 'Pre-flight validation failed', 
+                details: failed,
+                message: 'Cannot push live with invalid data files'
+            });
         }
         
         // Invalidate all caches to ensure fresh data
@@ -522,7 +604,14 @@ app.post('/push-live', requireAuth('editor'), async (req, res) => {
         dataCache.invalidate('assets');
         
         console.log('--- Push Live completed successfully ---');
-        res.json({ success: true, message: 'Changes pushed live successfully' });
+        console.log('Validation results:', validationResults);
+        
+        res.json({ 
+            success: true, 
+            message: 'Changes pushed live successfully',
+            validation: validationResults,
+            timestamp: new Date().toISOString()
+        });
     } catch (err) {
         console.error('Push Live error:', err);
         res.status(500).json({ error: 'Failed to push live', details: err.message });
