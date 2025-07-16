@@ -59,7 +59,7 @@ async function checkAuth() {
       if (res.status === 401) {
         console.log('Authentication required, redirecting to login');
         stopSessionKeepalive();
-        window.location.href = '/login.html';
+        window.location.href = '/admin/login.html';
         return false;
       }
       throw new Error(`Auth check failed: ${res.status}`);
@@ -84,7 +84,7 @@ async function checkAuth() {
     console.error('Auth check failed:', err);
     // Redirect to login on any auth failure
     stopSessionKeepalive();
-    window.location.href = '/login.html';
+    window.location.href = '/admin/login.html';
     return false;
   }
 }
@@ -100,7 +100,7 @@ function startSessionKeepalive() {
         clearInterval(sessionKeepalive);
         sessionKeepalive = null;
         showToast('SESSION EXPIRED - PLEASE LOGIN AGAIN');
-        setTimeout(() => window.location.href = '/login.html', 2000);
+        setTimeout(() => window.location.href = '/admin/login.html', 2000);
       }
     } catch (err) {
       // Ignore network errors, but log them
@@ -376,7 +376,7 @@ async function saveChanges() {
     // Handle authentication errors specifically
     if (res.status === 401) {
       showToast('SESSION EXPIRED - REDIRECTING TO LOGIN');
-      setTimeout(() => window.location.href = '/login.html', 1000);
+      setTimeout(() => window.location.href = '/admin/login.html', 1000);
       return;
     }
     
@@ -431,7 +431,7 @@ async function pushLive() {
     // Handle authentication errors
     if (res.status === 401) {
       showToast('SESSION EXPIRED - REDIRECTING TO LOGIN');
-      setTimeout(() => window.location.href = '/login.html', 1000);
+      setTimeout(() => window.location.href = '/admin/login.html', 1000);
       return;
     }
     
@@ -475,7 +475,7 @@ async function loadAssets() {
     const gcsRes = await fetch('/api/list-gcs-assets');
     if (gcsRes.status === 401) {
       showToast('AUTHENTICATION REQUIRED FOR GCS ASSETS');
-      window.location.href = '/login.html';
+      window.location.href = '/admin/login.html';
       return;
     }
     
