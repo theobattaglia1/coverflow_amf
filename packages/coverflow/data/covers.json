@@ -1,10 +1,12 @@
 [
   {
     "id": "1743757227077",
-    "category": "about us",
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748123196717-564850242.png",
+    "category": [
+      "about us"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Contact.png",
     "albumTitle": "contact",
-    "coverLabel": "",
+    "coverLabel": "contact",
     "fontFamily": "",
     "fontSize": "",
     "music": {
@@ -18,7 +20,10 @@
       "spotifyLink": "",
       "image": ""
     },
-    "index": 0
+    "index": 0,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Contact.png"
   },
   {
     "id": "1743756368892",
@@ -26,7 +31,7 @@
       "artist",
       "songwriter"
     ],
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748121102073-915680969.png",
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png",
     "albumTitle": "Tom Siletto",
     "coverLabel": " (TEST EDIT)",
     "fontFamily": "",
@@ -45,12 +50,15 @@
     "index": 1,
     "spotifyEmbed": "",
     "contactEmail": "",
-    "backImage": ""
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png"
   },
   {
     "id": "1743755620790",
-    "category": "artist, songwriter",
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748121131532-324221674.png",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png",
     "albumTitle": "Ruby Plume",
     "coverLabel": "Mututal Friends / AWAL",
     "fontFamily": "",
@@ -66,12 +74,18 @@
       "spotifyLink": "https://open.spotify.com/track/2BeBp0IazmkqGVc0PxxDye?si=95799ccf1a97435f",
       "image": "https://allmyfriendsinc.com/uploads/b7d5aec19b44b906b6e79ede9b380850"
     },
-    "index": 2
+    "index": 2,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png"
   },
   {
     "id": "1",
-    "category": "artist, songwriter",
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748121117525-242753559.jpeg",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png",
     "albumTitle": "Hudson Ingram",
     "coverLabel": "Interscope / Aaron Dessner",
     "fontFamily": "",
@@ -87,12 +101,18 @@
       "spotifyLink": "https://open.spotify.com/playlist/5ey2AEb1NXYUlsBgjxPVl3?si=df022033c9334cf1",
       "image": "https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15"
     },
-    "index": 3
+    "index": 3,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png"
   },
   {
     "id": "1743755607527",
-    "category": "producer, songwriter",
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748120927291-42815401.png",
+    "category": [
+      "producer",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png",
     "albumTitle": "Jack Schrepferman",
     "coverLabel": "100 Publishing / Kobalt",
     "fontFamily": "",
@@ -108,12 +128,18 @@
       "spotifyLink": "https://open.spotify.com/playlist/0Yli4gIVDEyxG5XQAKkgkV?si=4447905899154961",
       "image": "https://allmyfriendsinc.com/uploads/26141c34120831f1c15f6b66fac2e9cc"
     },
-    "index": 4
+    "index": 4,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png"
   },
   {
     "id": "1748123180827",
-    "category": "artist, songwriter",
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748123456690-945730077.png",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png",
     "albumTitle": "Conall Cafferty",
     "coverLabel": "Capitol Records",
     "fontFamily": "",
@@ -129,12 +155,18 @@
       "spotifyLink": "https://open.spotify.com/album/5rRR9yqNS9chVPDktzNyUI?si=xpaJaMrdQfCwAaVfrpWUng",
       "image": "/uploads/upload-1748123456690-945730077.png"
     },
-    "index": 5
+    "index": 5,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png"
   },
   {
     "id": "1748120863760",
-    "category": "artist, songwriter",
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/upload-1748120863747-270939313.jpg",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg",
     "albumTitle": "Kate Stephenson",
     "coverLabel": "Independent",
     "fontFamily": "",
@@ -150,12 +182,18 @@
       "spotifyLink": "https://open.spotify.com/playlist/37i9dQZF1DZ06evO3siDPZ?si=140d783cd51348b8",
       "image": "/uploads/upload-1748120863747-270939313.jpg"
     },
-    "index": 6
+    "index": 6,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg"
   },
   {
     "id": "1751664621537",
-    "category": "producer, songwriter",
-    "frontImage": "https://allmyfriendsinc.com/uploads/upload-1751664621430-139857834.png",
+    "category": [
+      "producer",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png",
     "albumTitle": "Leon Sharplin",
     "coverLabel": "Producer",
     "fontFamily": "",
@@ -173,26 +211,9 @@
     },
     "createArtistFolder": false,
     "artistId": "leon-sharplin",
-    "index": 7
-  },
-  {
-    "id": "test123",
-    "albumTitle": "Test Album",
-    "category": [
-      "test"
-    ],
-    "frontImage": "https://example.com/test.jpg"
-  },
-  {
-    "id": "test456",
-    "albumTitle": "Test Album 2",
-    "category": [
-      "test"
-    ],
-    "frontImage": "https://example.com/test2.jpg"
-  },
-  {
-    "id": "final-test",
-    "albumTitle": "Final Test"
+    "index": 7,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png"
   }
 ]
