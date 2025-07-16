@@ -16,6 +16,7 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Storage } from '@google-cloud/storage';
 import sharp from 'sharp';
+import { execSync } from 'child_process';
 
 // --- Diagnostic Log ---
 // This line confirms that the correct file is being executed on Render.
@@ -194,6 +195,36 @@ async function saveUsers(users) {
   const usersPath = path.join(DATA_DIR, 'users.json');
   await safeWriteJson(usersPath, users);
   userCache.invalidate('users');
+}
+
+// Helper: Git commit and push automation
+function gitAutoSyncDataFiles() {
+  if (process.env.ENABLE_GIT_SYNC !== 'true') {
+    console.log('[GIT SYNC] Skipped: ENABLE_GIT_SYNC is not set to true');
+    return;
+  }
+  try {
+    const coversPath = path.join(DATA_DIR, 'covers.json');
+    const assetsPath = path.join(DATA_DIR, 'assets.json');
+    execSync(`git add "${coversPath}" "${assetsPath}"`, { stdio: 'inherit' });
+    execSync('git config user.name "AMF Admin Bot"', { stdio: 'inherit' });
+    execSync('git config user.email "admin-bot@allmyfriendsinc.com"', { stdio: 'inherit' });
+    execSync('git commit -m "Auto-sync covers and assets after push live"', { stdio: 'inherit' });
+    let pushCmd = 'git push';
+    if (process.env.GIT_TOKEN) {
+      // Use HTTPS with token for authentication
+      const repo = process.env.GIT_REPO_URL || 'https://github.com/theobattaglia1/coverflow_amf.git';
+      pushCmd = `git push https://${process.env.GIT_TOKEN}@${repo.replace(/^https:\/\//, '')} main`;
+    }
+    execSync(pushCmd, { stdio: 'inherit' });
+    console.log('[GIT SYNC] Successfully committed and pushed covers.json and assets.json');
+  } catch (err) {
+    if (err.message && err.message.includes('nothing to commit')) {
+      console.log('[GIT SYNC] No changes to commit');
+    } else {
+      console.error('[GIT SYNC] Failed to commit and push:', err);
+    }
+  }
 }
 
 // --- Routing ---
@@ -646,6 +677,8 @@ app.post('/push-live', requireAuth('editor'), async (req, res) => {
         // Invalidate all caches to ensure fresh data
         dataCache.invalidate('covers');
         dataCache.invalidate('assets');
+        // --- GIT SYNC: Commit and push covers.json and assets.json ---
+        gitAutoSyncDataFiles();
         
         console.log('--- Push Live completed successfully ---');
         console.log('Validation results:', validationResults);
