@@ -44,6 +44,13 @@ let currentPage = 0;
 let filteredAssets = [];
 let sortBy = 'name';
 
+// Multi-select asset state management
+let selectedAssets = new Set();
+let assetMultiSelectMode = false;
+let lastSelectedAssetIndex = -1;
+let draggedAssets = new Set();
+let isDraggingAssets = false;
+
 // Utility function to safely parse JSON responses
 async function safeJsonParse(response) {
   const text = await response.text();
@@ -558,6 +565,10 @@ function renderFolders() {
     <span onclick="navigateToFolder('')" style="cursor: pointer;">ROOT</span>
   `;
   rootItem.dataset.path = '';
+  
+  // Add drop zone functionality to root folder
+  setupFolderDropZone(rootItem, '');
+  
   folderTree.appendChild(rootItem);
 
   // Helper to merge and deduplicate folders by name
@@ -597,6 +608,10 @@ function renderFolders() {
     li.addEventListener('mouseleave', () => {
       li.querySelector('.folder-actions').style.display = 'none';
     });
+    
+    // Add drop zone functionality to folder
+    setupFolderDropZone(li, folderPath);
+    
     folderTree.appendChild(li);
     // Render children
     if (hasChildren) {
@@ -610,6 +625,32 @@ function renderFolders() {
   const allRootFolders = mergeFoldersAndChildren(assets);
   console.log('[FRONTEND] Merged root folders:', allRootFolders.map(f => f.name));
   allRootFolders.forEach(folder => renderFolder(folder));
+}
+
+function setupFolderDropZone(element, folderName) {
+  element.addEventListener('dragover', (e) => {
+    if (isDraggingAssets) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      element.classList.add('drop-target');
+    }
+  });
+  
+  element.addEventListener('dragleave', (e) => {
+    element.classList.remove('drop-target');
+  });
+  
+  element.addEventListener('drop', (e) => {
+    if (isDraggingAssets) {
+      e.preventDefault();
+      element.classList.remove('drop-target');
+      
+      const draggedAssetUrls = e.dataTransfer.getData('text/plain').split(',');
+      if (draggedAssetUrls.length > 0 && draggedAssetUrls[0]) {
+        moveSelectedAssetsToFolder(folderName);
+      }
+    }
+  });
 }
 
 function renderAssets() {
@@ -775,6 +816,34 @@ function setupKeyboardShortcuts() {
     if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
       e.preventDefault();
       toggleBatchMode();
+    }
+    
+    // Multi-select asset shortcuts
+    if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+      e.preventDefault();
+      if (assetMultiSelectMode) {
+        selectAllAssets();
+      }
+    }
+    
+    // Escape to deselect all assets
+    if (e.key === 'Escape') {
+      if (selectedAssets.size > 0) {
+        e.preventDefault();
+        deselectAllAssets();
+      }
+    }
+    
+    // Cmd/Ctrl + M for multi-select mode toggle
+    if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
+      e.preventDefault();
+      toggleMultiSelectMode();
+    }
+    
+    // Delete key to delete selected assets
+    if (e.key === 'Delete' && selectedAssets.size > 0) {
+      e.preventDefault();
+      deleteSelectedAssets();
     }
   });
 }
@@ -1502,8 +1571,15 @@ function renderAssetsWithView() {
   const paginatedAssets = assetsToShow.slice(startIndex, endIndex);
   
   paginatedAssets.forEach((asset, index) => {
+    const assetId = asset.url; // Use URL as unique identifier
+    const globalIndex = startIndex + index; // Global index for selection tracking
+    const isSelected = selectedAssets.has(assetId);
+    
     const div = document.createElement('div');
-    div.className = 'asset-item';
+    div.className = `asset-item ${isSelected ? 'selected' : ''}`;
+    div.dataset.assetId = assetId;
+    div.dataset.assetIndex = globalIndex;
+    div.draggable = true;
     
     const type = getAssetType(asset);
     let mediaTag = '';
@@ -1522,6 +1598,16 @@ function renderAssetsWithView() {
       mediaTag = `<div style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#eee;color:#888;font-size:1.2em;">Unsupported</div>`;
     }
     
+    // Multi-select checkbox
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'asset-checkbox';
+    checkbox.checked = isSelected;
+    checkbox.onclick = (e) => {
+      e.stopPropagation();
+      toggleAssetSelection(assetId, globalIndex, e);
+    };
+    
     // Render based on current view
     if (currentView === 'list') {
       div.innerHTML = `
@@ -1531,24 +1617,30 @@ function renderAssetsWithView() {
         <div class="list-view-date">${getAssetDate(asset)}</div>
         <div class="list-view-type">${type.toUpperCase()}</div>
       `;
+      div.onclick = (e) => handleAssetClick(e, assetId, globalIndex);
     } else {
       // Grid and coverflow views use similar markup
-      div.innerHTML = `
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'asset-content';
+      contentDiv.innerHTML = `
         ${mediaTag}
-        <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)" style="margin-bottom: var(--space-sm);">
-        <div style="font-family: var(--font-mono); font-size: 0.625rem; word-break: break-all; margin-bottom: var(--space-sm); cursor: pointer; opacity: 0.6;"
-             onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
-          ${asset.url}
+        <div class="asset-info">
+          <input type="text" class="asset-name-input" value="${asset.name || asset.filename || 'UNTITLED'}" 
+                 onchange="updateAssetName('${assetId}', this.value)" onclick="event.stopPropagation()">
+          <div class="asset-url" onclick="copyAssetUrl('${assetId}')" title="CLICK TO COPY FULL URL">
+            ${asset.url}
+          </div>
+          <button class="btn btn-danger asset-delete" onclick="deleteAsset('${assetId}')" onclick="event.stopPropagation()">DELETE</button>
         </div>
-        <button onclick="deleteAsset('${asset.url}')" style="width: 100%;">DELETE</button>
       `;
-    }
-    
-    if (currentView === 'list') {
-      div.onclick = () => {
-        navigator.clipboard.writeText(asset.url);
-        showToast('URL COPIED TO CLIPBOARD');
-      };
+      
+      div.appendChild(checkbox);
+      div.appendChild(contentDiv);
+      
+      // Event handlers for multi-select and drag
+      div.addEventListener('click', (e) => handleAssetClick(e, assetId, globalIndex));
+      div.addEventListener('dragstart', (e) => handleAssetDragStart(e, assetId));
+      div.addEventListener('dragend', (e) => handleAssetDragEnd(e));
     }
     
     container.appendChild(div);
@@ -1685,3 +1777,243 @@ window.closeImageLibrary = function() {
   if (modal) modal.style.display = 'none';
   dashboardImageLibraryTarget = null;
 }; 
+
+// Multi-select asset functionality
+function toggleAssetSelection(assetId, index, event) {
+  if (event.shiftKey && lastSelectedAssetIndex !== -1) {
+    // Shift+click: select range
+    const start = Math.min(lastSelectedAssetIndex, index);
+    const end = Math.max(lastSelectedAssetIndex, index);
+    const assetsToShow = filteredAssets.length > 0 || document.getElementById('assetSearch')?.value 
+      ? filteredAssets 
+      : getCurrentFolderItems().images;
+    
+    for (let i = start; i <= end; i++) {
+      if (i < assetsToShow.length) {
+        selectedAssets.add(assetsToShow[i].url);
+      }
+    }
+  } else if (event.ctrlKey || event.metaKey) {
+    // Ctrl/Cmd+click: toggle individual selection
+    if (selectedAssets.has(assetId)) {
+      selectedAssets.delete(assetId);
+    } else {
+      selectedAssets.add(assetId);
+    }
+  } else {
+    // Regular click: toggle individual selection
+    if (selectedAssets.has(assetId)) {
+      selectedAssets.delete(assetId);
+    } else {
+      selectedAssets.add(assetId);
+    }
+  }
+  
+  lastSelectedAssetIndex = index;
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+}
+
+function handleAssetClick(event, assetId, index) {
+  if (event.target.type === 'checkbox') return; // Already handled by checkbox
+  if (event.target.tagName === 'INPUT' || event.target.tagName === 'BUTTON') return; // Ignore form elements
+  
+  if (!assetMultiSelectMode) {
+    // Normal mode: copy URL to clipboard
+    copyAssetUrl(assetId);
+    return;
+  }
+  
+  // Multi-select mode
+  toggleAssetSelection(assetId, index, event);
+}
+
+function selectAllAssets() {
+  const assetsToShow = filteredAssets.length > 0 || document.getElementById('assetSearch')?.value 
+    ? filteredAssets 
+    : getCurrentFolderItems().images;
+  selectedAssets.clear();
+  assetsToShow.forEach(asset => selectedAssets.add(asset.url));
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+  showToast(`${assetsToShow.length} ASSETS SELECTED`);
+}
+
+function deselectAllAssets() {
+  selectedAssets.clear();
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+  showToast('ALL ASSETS DESELECTED');
+}
+
+function toggleMultiSelectMode() {
+  assetMultiSelectMode = !assetMultiSelectMode;
+  document.body.classList.toggle('asset-multi-select-mode', assetMultiSelectMode);
+  
+  const toggleBtn = document.getElementById('assetMultiSelectToggle');
+  const selectAllBtn = document.getElementById('selectAllBtn');
+  const deselectAllBtn = document.getElementById('deselectAllBtn');
+  
+  if (toggleBtn) {
+    toggleBtn.textContent = assetMultiSelectMode ? 'EXIT MULTI-SELECT' : 'MULTI-SELECT';
+  }
+  
+  if (selectAllBtn) {
+    selectAllBtn.style.display = assetMultiSelectMode ? 'inline-block' : 'none';
+  }
+  
+  if (deselectAllBtn) {
+    deselectAllBtn.style.display = assetMultiSelectMode ? 'inline-block' : 'none';
+  }
+  
+  if (!assetMultiSelectMode) {
+    selectedAssets.clear();
+  }
+  
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+  showToast(assetMultiSelectMode ? 'MULTI-SELECT MODE ENABLED' : 'MULTI-SELECT MODE DISABLED');
+}
+
+function updateAssetSelectionCounter() {
+  const counter = document.getElementById('assetSelectionCounter');
+  if (counter) {
+    const count = selectedAssets.size;
+    counter.textContent = count > 0 ? `${count} SELECTED` : '';
+    counter.style.display = count > 0 ? 'block' : 'none';
+  }
+}
+
+function copyAssetUrl(assetId) {
+  navigator.clipboard.writeText(assetId);
+  showToast('URL COPIED TO CLIPBOARD');
+}
+
+function deleteSelectedAssets() {
+  if (selectedAssets.size === 0) return;
+  
+  const count = selectedAssets.size;
+  if (!confirm(`DELETE ${count} SELECTED ASSET${count > 1 ? 'S' : ''}?`)) return;
+  
+  showLoading();
+  
+  // Use bulk delete endpoint
+  fetch('/api/assets/bulk-delete', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      assetUrls: Array.from(selectedAssets)
+    })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      // Update local data structure
+      if (assets.images) {
+        assets.images = assets.images.filter(a => !selectedAssets.has(a.url));
+      }
+      
+      selectedAssets.clear();
+      renderAssetsWithView();
+      updateAssetSelectionCounter();
+      showToast(`${data.deletedCount} ASSET${data.deletedCount > 1 ? 'S' : ''} DELETED`);
+    } else {
+      throw new Error(data.error || 'Delete failed');
+    }
+  })
+  .catch(error => {
+    console.error('Failed to delete assets:', error);
+    showToast('FAILED TO DELETE ASSETS', 5000);
+  })
+  .finally(() => {
+    hideLoading();
+  });
+}
+
+// Drag and drop functionality for multi-select
+function handleAssetDragStart(event, assetId) {
+  if (!selectedAssets.has(assetId)) {
+    // If dragging an unselected item, select it and clear other selections
+    selectedAssets.clear();
+    selectedAssets.add(assetId);
+    renderAssetsWithView();
+  }
+  
+  draggedAssets = new Set(selectedAssets);
+  isDraggingAssets = true;
+  
+  // Set drag data
+  event.dataTransfer.setData('text/plain', Array.from(selectedAssets).join(','));
+  event.dataTransfer.effectAllowed = 'move';
+  
+  // Add visual feedback
+  document.body.classList.add('dragging-assets');
+  
+  // Create drag preview showing count
+  const dragPreview = document.createElement('div');
+  dragPreview.className = 'drag-preview';
+  dragPreview.textContent = `${selectedAssets.size} ASSET${selectedAssets.size > 1 ? 'S' : ''}`;
+  dragPreview.style.position = 'absolute';
+  dragPreview.style.top = '-1000px';
+  document.body.appendChild(dragPreview);
+  event.dataTransfer.setDragImage(dragPreview, 0, 0);
+  
+  setTimeout(() => document.body.removeChild(dragPreview), 0);
+}
+
+function handleAssetDragEnd(event) {
+  isDraggingAssets = false;
+  draggedAssets.clear();
+  document.body.classList.remove('dragging-assets');
+}
+
+// Asset bulk operations
+async function moveSelectedAssetsToFolder(targetFolder) {
+  if (selectedAssets.size === 0) {
+    showToast('NO ASSETS SELECTED');
+    return;
+  }
+  
+  showLoading();
+  
+  try {
+    const assetUrls = Array.from(selectedAssets);
+    const response = await fetch('/api/assets/bulk-move', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        assetUrls,
+        targetFolder: targetFolder || ''
+      })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      
+      // Update local data structure
+      const assetsToShow = filteredAssets.length > 0 || document.getElementById('assetSearch')?.value 
+        ? filteredAssets 
+        : getCurrentFolderItems().images;
+      const movedAssets = assetsToShow.filter(a => selectedAssets.has(a.url));
+      
+      // Remove from current location
+      if (assets.images) {
+        assets.images = assets.images.filter(a => !selectedAssets.has(a.url));
+      }
+      
+      selectedAssets.clear();
+      renderAssetsWithView();
+      renderFolders();
+      updateAssetSelectionCounter();
+      
+      showToast(`${assetUrls.length} ASSETS MOVED TO ${targetFolder || 'ROOT'}`);
+    } else {
+      throw new Error('Move operation failed');
+    }
+  } catch (error) {
+    console.error('Failed to move assets:', error);
+    showToast('FAILED TO MOVE ASSETS', 5000);
+  } finally {
+    hideLoading();
+  }
+} 

@@ -109,6 +109,12 @@
                 <option value="type">SORT BY TYPE</option>
               </select>
             </div>
+            <div class="multi-select-controls">
+              <button class="btn" id="assetMultiSelectToggle" onclick="toggleMultiSelectMode()">MULTI-SELECT</button>
+              <button class="btn" id="selectAllBtn" onclick="selectAllAssets()" style="display: none;">SELECT ALL</button>
+              <button class="btn" id="deselectAllBtn" onclick="deselectAllAssets()" style="display: none;">DESELECT ALL</button>
+              <span class="selection-counter" id="assetSelectionCounter"></span>
+            </div>
           </div>
         
         <div class="asset-browser">

@@ -488,6 +488,128 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
     }
 });
 
+// Bulk asset operations for multi-select drag-and-drop
+app.post('/api/assets/bulk-move', requireAuth('editor'), async (req, res) => {
+    try {
+        const { assetUrls, targetFolder } = req.body;
+        if (!Array.isArray(assetUrls) || assetUrls.length === 0) {
+            return res.status(400).json({ error: 'Invalid asset URLs provided' });
+        }
+        
+        const assetsPath = path.join(DATA_DIR, 'assets.json');
+        let assets = await readJsonFile(assetsPath, 'assets') || { images: [], folders: [] };
+        
+        // Ensure assets structure exists
+        if (!assets.images) assets.images = [];
+        if (!assets.folders) assets.folders = [];
+        
+        // Find assets to move
+        const assetsToMove = assets.images.filter(asset => assetUrls.includes(asset.url));
+        
+        if (assetsToMove.length === 0) {
+            return res.status(404).json({ error: 'No matching assets found' });
+        }
+        
+        // Remove assets from current location
+        assets.images = assets.images.filter(asset => !assetUrls.includes(asset.url));
+        
+        // Add folder property to moved assets
+        assetsToMove.forEach(asset => {
+            asset.folder = targetFolder || '';
+            asset.movedAt = new Date().toISOString();
+        });
+        
+        // For simplified implementation, we'll just add them back to the images array
+        // In a more complex implementation, you'd handle the folder structure properly
+        assets.images.push(...assetsToMove);
+        
+        await safeWriteJson(assetsPath, assets);
+        dataCache.invalidate('assets');
+        
+        console.log(`Bulk moved ${assetsToMove.length} assets to folder: ${targetFolder || 'ROOT'}`);
+        res.json({ 
+            success: true, 
+            movedCount: assetsToMove.length,
+            targetFolder: targetFolder || 'ROOT'
+        });
+    } catch (err) {
+        console.error('Bulk asset move error:', err);
+        res.status(500).json({ error: 'Failed to move assets', details: err.message });
+    }
+});
+
+app.delete('/api/assets/bulk-delete', requireAuth('editor'), async (req, res) => {
+    try {
+        const { assetUrls } = req.body;
+        if (!Array.isArray(assetUrls) || assetUrls.length === 0) {
+            return res.status(400).json({ error: 'Invalid asset URLs provided' });
+        }
+        
+        const assetsPath = path.join(DATA_DIR, 'assets.json');
+        let assets = await readJsonFile(assetsPath, 'assets') || { images: [], folders: [] };
+        
+        const initialCount = assets.images?.length || 0;
+        
+        // Remove assets from data structure
+        if (assets.images) {
+            assets.images = assets.images.filter(asset => !assetUrls.includes(asset.url));
+        }
+        
+        const deletedCount = initialCount - (assets.images?.length || 0);
+        
+        await safeWriteJson(assetsPath, assets);
+        dataCache.invalidate('assets');
+        
+        console.log(`Bulk deleted ${deletedCount} assets`);
+        res.json({ 
+            success: true, 
+            deletedCount,
+            remainingCount: assets.images?.length || 0
+        });
+    } catch (err) {
+        console.error('Bulk asset delete error:', err);
+        res.status(500).json({ error: 'Failed to delete assets', details: err.message });
+    }
+});
+
+app.put('/api/assets/bulk-update', requireAuth('editor'), async (req, res) => {
+    try {
+        const { updates } = req.body; // Array of { url, name, folder, ... }
+        if (!Array.isArray(updates) || updates.length === 0) {
+            return res.status(400).json({ error: 'Invalid updates provided' });
+        }
+        
+        const assetsPath = path.join(DATA_DIR, 'assets.json');
+        let assets = await readJsonFile(assetsPath, 'assets') || { images: [], folders: [] };
+        
+        if (!assets.images) assets.images = [];
+        
+        let updateCount = 0;
+        
+        // Apply updates
+        updates.forEach(update => {
+            const asset = assets.images.find(a => a.url === update.url);
+            if (asset) {
+                Object.assign(asset, update);
+                asset.updatedAt = new Date().toISOString();
+                updateCount++;
+            }
+        });
+        
+        await safeWriteJson(assetsPath, assets);
+        dataCache.invalidate('assets');
+        
+        console.log(`Bulk updated ${updateCount} assets`);
+        res.json({ 
+            success: true, 
+            updatedCount: updateCount
+        });
+    } catch (err) {
+        console.error('Bulk asset update error:', err);
+        res.status(500).json({ error: 'Failed to update assets', details: err.message });
+    }
+});
+
 
 // GCS Asset Upload
 app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, res) => {
