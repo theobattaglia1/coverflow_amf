@@ -15,11 +15,45 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+/* 
+ * SECURITY & OPTIMIZATION IMPROVEMENTS (2025-01-15):
+ * 
+ * 1. XSS PROTECTION: Added escapeHtml() utility to prevent cross-site scripting attacks
+ *    - All user input is now escaped before being inserted into HTML templates
+ *    - Affects: cover titles, labels, asset names, folder names, URLs
+ * 
+ * 2. PERFORMANCE OPTIMIZATION: Improved Sortable instance management
+ *    - Sortable is now only initialized once instead of destroyed/recreated on every render
+ *    - Reduces DOM manipulation overhead and improves UI responsiveness
+ * 
+ * 3. INPUT VALIDATION: Enhanced folder creation with client-side validation
+ *    - Checks for empty names, invalid characters, and length limits
+ *    - Provides immediate feedback to users
+ * 
+ * 4. ERROR HANDLING: Improved logout function robustness
+ *    - Always redirects to login even if logout request fails
+ *    - Prevents users from getting stuck in error state
+ * 
+ * 5. TOAST IMPROVEMENTS: Added null checks for toast element
+ *    - Prevents errors if toast element is missing from DOM
+ */
+
 let covers = [];
 let assets = { folders: [], images: [] };
 let sortableInstance = null;
 let currentPath = '';
 let currentUser = null;
+
+// Utility function to escape HTML and prevent XSS
+function escapeHtml(unsafe) {
+  if (typeof unsafe !== 'string') return unsafe;
+  return unsafe
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 // Batch operations
 let selectedCovers = new Set();
@@ -183,9 +217,14 @@ function getLoginUrl() {
   return isAdminSubdomain() ? '/' : '/login.html';
 }
 
-// Toast notifications with configurable duration
+// Toast notifications with configurable duration (improved error handling)
 function showToast(message, type = 'success', duration = 5000) {
   const toast = document.getElementById('toast');
+  if (!toast) {
+    console.error('Toast element not found');
+    return;
+  }
+  
   toast.textContent = message;
   toast.className = `toast show ${type}`;
   
@@ -240,14 +279,16 @@ async function checkAuth() {
   }
 }
 
-// Logout
+// Logout (improved to handle failures gracefully)
 async function logout() {
   try {
     await fetch('/api/logout', { method: 'POST' });
-    window.location.href = getLoginUrl();
   } catch (err) {
-    showToast('Logout failed', 'error');
+    console.warn('Logout request failed, but proceeding with redirect:', err);
+    showToast('Logout request failed, but you will be redirected', 'error');
   }
+  // Always redirect to login, even if logout request fails
+  window.location.href = getLoginUrl();
 }
 
 // Test GitHub connection
@@ -361,51 +402,54 @@ function updateLayoutParameters() {
   }
 }
 
-// Render covers
+// Render covers (optimized to avoid unnecessary Sortable re-initialization)
 function renderCovers() {
   const container = document.getElementById('coversContainer');
   
   if (covers.length === 0) {
     container.innerHTML = '<p style="color: var(--grey); font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 0.1em;">No covers yet. Drag an image below to add one.</p>';
+    // Destroy sortable instance if no covers
+    if (sortableInstance) {
+      sortableInstance.destroy();
+      sortableInstance = null;
+    }
     return;
   }
   
   container.innerHTML = covers.map((cover, index) => `
-    <div class="cover-card" data-id="${cover.id}">
+    <div class="cover-card" data-id="${escapeHtml(cover.id)}">
       <span class="index-badge">${(index + 1).toString().padStart(2, '0')}</span>
-      <img src="${cover.frontImage}" alt="${cover.albumTitle || 'Untitled'}" 
+      <img src="${escapeHtml(cover.frontImage)}" alt="${escapeHtml(cover.albumTitle || 'Untitled')}" 
            onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'200\\' height=\\'200\\'%3E%3Crect fill=\\'%23333\\' width=\\'200\\' height=\\'200\\'/%3E%3Ctext x=\\'50%25\\' y=\\'50%25\\' text-anchor=\\'middle\\' dy=\\'.3em\\' fill=\\'%23999\\' font-family=\\'monospace\\' font-size=\\'12\\'%3ENO IMAGE%3C/text%3E%3C/svg%3E'">
-      <button class="cover-card-edit" onclick="editCover('${cover.id}')">EDIT</button>
+      <button class="cover-card-edit" onclick="editCover('${escapeHtml(cover.id)}')">EDIT</button>
       <div class="cover-card-info">
-        <div class="cover-card-title">${cover.albumTitle || "UNTITLED"}</div>
-        <div class="cover-card-label">${cover.coverLabel || "NO LABEL"}</div>
+        <div class="cover-card-title">${escapeHtml(cover.albumTitle || "UNTITLED")}</div>
+        <div class="cover-card-label">${escapeHtml(cover.coverLabel || "NO LABEL")}</div>
       </div>
     </div>
   `).join("");
 
-  // Initialize or reinitialize Sortable
-  if (sortableInstance) {
-    sortableInstance.destroy();
+  // Initialize Sortable only if not already initialized
+  if (!sortableInstance) {
+    sortableInstance = new Sortable(container, {
+      animation: 120,
+      easing: "cubic-bezier(.16,1,.3,1)",
+      ghostClass: 'sortable-ghost',
+      onEnd: (evt) => {
+        // Update the covers array to match new order
+        const orderedIds = [...container.querySelectorAll('.cover-card')].map(c => c.dataset.id);
+        const newCovers = [];
+        
+        orderedIds.forEach(id => {
+          const cover = covers.find(c => String(c.id) === String(id));
+          if (cover) newCovers.push(cover);
+        });
+        
+        covers = newCovers;
+        console.log("🔄 Covers reordered");
+      }
+    });
   }
-  
-  sortableInstance = new Sortable(container, {
-    animation: 120,
-    easing: "cubic-bezier(.16,1,.3,1)",
-    ghostClass: 'sortable-ghost',
-    onEnd: (evt) => {
-      // Update the covers array to match new order
-      const orderedIds = [...container.querySelectorAll('.cover-card')].map(c => c.dataset.id);
-      const newCovers = [];
-      
-      orderedIds.forEach(id => {
-        const cover = covers.find(c => String(c.id) === String(id));
-        if (cover) newCovers.push(cover);
-      });
-      
-      covers = newCovers;
-      console.log("🔄 Covers reordered");
-    }
-  });
 }
 
 // Render folder tree
@@ -513,31 +557,31 @@ function renderAssets() {
   container.innerHTML = [
     // Render subfolders
     ...folders.map(folder => `
-      <div class="asset-item folder-item" draggable="true" data-type="folder" data-name="${folder.name}">
+      <div class="asset-item folder-item" draggable="true" data-type="folder" data-name="${escapeHtml(folder.name)}">
         <div style="font-size: 48px; margin-bottom: var(--space-md); opacity: 0.8;">◐</div>
-        <div style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${folder.name}</div>
-        <button onclick="navigateToFolder('${currentPath ? currentPath + '/' : ''}${folder.name}')">OPEN</button>
-        <button onclick="copyToClipboardFullPath('${currentPath ? currentPath + '/' : ''}${folder.name}', true)">COPY FOLDER LINK</button>
+        <div style="font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">${escapeHtml(folder.name)}</div>
+        <button onclick="navigateToFolder('${escapeHtml(currentPath ? currentPath + '/' : '')}${escapeHtml(folder.name)}')">OPEN</button>
+        <button onclick="copyToClipboardFullPath('${escapeHtml(currentPath ? currentPath + '/' : '')}${escapeHtml(folder.name)}', true)">COPY FOLDER LINK</button>
       </div>
     `),
     // Render assets (images, video, audio)
     ...images.map((asset, index) => {
       let mediaTag = '';
       if (asset.type === 'video') {
-        mediaTag = `<video src="${asset.url}" controls style="width:100%;height:180px;object-fit:cover;background:#222;"></video>`;
+        mediaTag = `<video src="${escapeHtml(asset.url)}" controls style="width:100%;height:180px;object-fit:cover;background:#222;"></video>`;
       } else if (asset.type === 'audio') {
-        mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;"></audio>`;
+        mediaTag = `<audio src="${escapeHtml(asset.url)}" controls style="width:100%;margin-bottom:8px;"></audio>`;
       } else {
-        mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
+        mediaTag = `<img src="${escapeHtml(asset.url)}" alt="${escapeHtml(asset.name || 'Asset')}" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
       }
       return `
-      <div class="asset-item" draggable="true" data-type="${asset.type}" data-index="${index}">
+      <div class="asset-item" draggable="true" data-type="${escapeHtml(asset.type)}" data-index="${index}">
         ${mediaTag}
-        <input type="text" value="${asset.name || ''}" placeholder="UNTITLED" onchange="updateAssetName('${asset.url}', this.value)">
-        <div class="url-display" onclick="copyToClipboardFullPath('${asset.url}')" title="CLICK TO COPY FULL URL">
-          ${asset.url}
+        <input type="text" value="${escapeHtml(asset.name || '')}" placeholder="UNTITLED" onchange="updateAssetName('${escapeHtml(asset.url)}', this.value)">
+        <div class="url-display" onclick="copyToClipboardFullPath('${escapeHtml(asset.url)}')" title="CLICK TO COPY FULL URL">
+          ${escapeHtml(asset.url)}
         </div>
-        <button onclick="deleteAsset('${asset.url}')">DELETE</button>
+        <button onclick="deleteAsset('${escapeHtml(asset.url)}')">DELETE</button>
       </div>
       `;
     })
@@ -547,17 +591,36 @@ function renderAssets() {
   setupAssetDragAndDrop();
 }
 
-// Create new folder
+// Create new folder (improved with input validation)
 async function createNewFolder() {
   const name = prompt('Enter folder name:');
   if (!name) return;
+  
+  // Input validation
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    showToast('Folder name cannot be empty', 'error');
+    return;
+  }
+  
+  // Check for invalid characters
+  if (/[<>:"/\\|?*]/.test(trimmedName)) {
+    showToast('Folder name contains invalid characters', 'error');
+    return;
+  }
+  
+  // Check length
+  if (trimmedName.length > 100) {
+    showToast('Folder name too long (max 100 characters)', 'error');
+    return;
+  }
   
   showLoading();
   try {
     const res = await fetch('/api/folder', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ path: currentPath, name })
+      body: JSON.stringify({ path: currentPath, name: trimmedName })
     });
     
     if (!res.ok) {
