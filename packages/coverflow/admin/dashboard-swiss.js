@@ -173,9 +173,15 @@ async function init() {
   setupMediaLibraryEventListeners();
   setupSearchAndFilters();
   setupViewModeToggles();
+  setupInfiniteScroll();
+  setupLazyLoading();
   updateCurrentFolderIndicator();
   renderRecentAssets();
   renderRecentCovers();
+  
+  // Show onboarding tips and create help button
+  showOnboardingTips();
+  createHelpButton();
 }
 
 // Load covers with smooth animation
@@ -1211,6 +1217,156 @@ function setupFocusTrap(modal) {
 // Expose modal functions globally
 window.openModal = openModal;
 window.closeModal = closeModal;
+
+// Infinite scroll implementation
+let isLoadingMore = false;
+let hasMoreAssets = true;
+
+function setupInfiniteScroll() {
+  const assetGrid = document.getElementById('assetGrid');
+  if (!assetGrid) return;
+  
+  const observer = new IntersectionObserver((entries) => {
+    const lastEntry = entries[0];
+    if (lastEntry.isIntersecting && !isLoadingMore && hasMoreAssets) {
+      loadMoreAssets();
+    }
+  }, {
+    threshold: 0.1,
+    rootMargin: '100px'
+  });
+  
+  // Create sentinel element
+  const sentinel = document.createElement('div');
+  sentinel.id = 'loadMoreSentinel';
+  sentinel.style.height = '10px';
+  assetGrid.parentNode.appendChild(sentinel);
+  observer.observe(sentinel);
+}
+
+async function loadMoreAssets() {
+  if (isLoadingMore || !hasMoreAssets) return;
+  
+  isLoadingMore = true;
+  showProgressIndicator('Loading more assets...', 50);
+  
+  try {
+    // Simulate loading more assets (in real implementation, this would fetch from server)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Increment page and load more
+    currentPage++;
+    const newAssets = await fetchAssetsPage(currentPage);
+    
+    if (newAssets.length === 0) {
+      hasMoreAssets = false;
+      showToast('No more assets to load');
+    } else {
+      // Append new assets to the current view
+      appendAssetsToGrid(newAssets);
+      showToast(`Loaded ${newAssets.length} more assets`);
+    }
+  } catch (error) {
+    showToast('Failed to load more assets', 5000);
+    console.error('Load more error:', error);
+  } finally {
+    isLoadingMore = false;
+    hideProgressIndicator();
+  }
+}
+
+function appendAssetsToGrid(newAssets) {
+  const assetGrid = document.getElementById('assetGrid');
+  if (!assetGrid) return;
+  
+  newAssets.forEach(asset => {
+    const assetElement = createAssetElement(asset);
+    assetGrid.appendChild(assetElement);
+    
+    // Lazy load images
+    lazyLoadImage(assetElement.querySelector('img'));
+  });
+}
+
+// Lazy loading implementation
+function setupLazyLoading() {
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        lazyLoadImage(img);
+        imageObserver.unobserve(img);
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '50px'
+  });
+  
+  // Observe all images with data-src attribute
+  document.querySelectorAll('img[data-src]').forEach(img => {
+    imageObserver.observe(img);
+  });
+}
+
+function lazyLoadImage(img) {
+  if (!img || !img.dataset.src) return;
+  
+  // Create a placeholder while loading
+  const placeholder = img.cloneNode();
+  placeholder.style.filter = 'blur(5px)';
+  
+  const newImg = new Image();
+  newImg.onload = () => {
+    img.src = newImg.src;
+    img.classList.add('loaded');
+    img.style.filter = 'none';
+  };
+  
+  newImg.onerror = () => {
+    img.src = '/placeholder.jpg';
+    img.classList.add('error');
+  };
+  
+  newImg.src = img.dataset.src;
+}
+
+// Enhanced image loading for covers
+function createCoverElementWithLazyLoading(cover, index) {
+  const div = document.createElement('div');
+  div.className = 'cover-item';
+  div.dataset.id = cover.id;
+  div.dataset.coverId = cover.id;
+  
+  const isSelected = selectedCovers.has(cover.id);
+  const rotation = (index % 3 === 0) ? -0.5 : (index % 3 === 1) ? 0.5 : 0;
+  
+  div.innerHTML = `
+    ${batchMode ? `<input type="checkbox" class="cover-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleCoverSelection('${cover.id}')">` : ''}
+    <img data-src="${cover.frontImage || '/placeholder.jpg'}" 
+         alt="${cover.albumTitle || 'Untitled'}" 
+         class="cover-image lazy"
+         loading="lazy"
+         src="/placeholder.jpg">
+    <div class="cover-meta">
+      <div class="cover-title">${cover.albumTitle || 'UNTITLED'}</div>
+      <div class="cover-artist">${cover.artistDetails?.name || cover.coverLabel || 'UNKNOWN ARTIST'}</div>
+    </div>
+  `;
+  
+  div.style.transform = `rotate(${rotation}deg)`;
+  div.style.opacity = '0';
+  div.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  
+  div.addEventListener('click', () => handleCoverClick(cover.id));
+  
+  // Lazy load the image
+  setTimeout(() => {
+    lazyLoadImage(div.querySelector('img'));
+  }, index * 50);
+  
+  return div;
+}
 
 // Toast notifications with click to dismiss
 function showToast(message, duration = 3000) {
@@ -2777,4 +2933,172 @@ function updateBatchCount() {
 window.clearSelection = clearSelection;
 window.changePage = changePage;
 window.setViewMode = setViewMode;
-window.handleCoverClick = handleCoverClick; 
+window.handleCoverClick = handleCoverClick;
+
+// Onboarding and help system
+function showOnboardingTips() {
+  const hasSeenTips = localStorage.getItem('amf-admin-tips-seen');
+  if (hasSeenTips) return;
+  
+  setTimeout(() => {
+    showHelpTip('batch-mode', 'Try using batch mode to select and manage multiple covers at once! Press Ctrl+B or click the BATCH MODE button.', 3000);
+    
+    setTimeout(() => {
+      showHelpTip('search', 'Use Ctrl+F to quickly search through your covers. You can search by title, artist, or category.', 3000);
+      
+      setTimeout(() => {
+        showHelpTip('keyboard', 'Keyboard shortcuts: Ctrl+F (search), Ctrl+B (batch), Ctrl+M (multi-select), ESC (exit modes)', 4000);
+        localStorage.setItem('amf-admin-tips-seen', 'true');
+      }, 4000);
+    }, 3500);
+  }, 2000);
+}
+
+function showHelpTip(anchor, message, duration = 3000) {
+  const tip = document.createElement('div');
+  tip.className = 'help-tip';
+  tip.style.cssText = `
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: #333;
+    color: white;
+    padding: var(--space-md);
+    border-radius: 8px;
+    max-width: 300px;
+    z-index: 9999;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: slideInRight 0.3s ease-out;
+  `;
+  
+  tip.innerHTML = `
+    <div style="margin-bottom: 8px;">${message}</div>
+    <button onclick="this.parentNode.remove()" style="background: none; border: 1px solid white; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">GOT IT</button>
+  `;
+  
+  document.body.appendChild(tip);
+  
+  setTimeout(() => {
+    if (tip.parentNode) {
+      tip.style.animation = 'slideOutRight 0.3s ease-in';
+      setTimeout(() => tip.remove(), 300);
+    }
+  }, duration);
+}
+
+// Help button and overlay
+function createHelpButton() {
+  const helpBtn = document.createElement('button');
+  helpBtn.innerHTML = '?';
+  helpBtn.className = 'help-button';
+  helpBtn.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  `;
+  
+  helpBtn.onclick = showHelpOverlay;
+  document.body.appendChild(helpBtn);
+}
+
+function showHelpOverlay() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  `;
+  
+  const helpContent = document.createElement('div');
+  helpContent.style.cssText = `
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    padding: var(--space-xl);
+    border-radius: 8px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+  `;
+  
+  helpContent.innerHTML = `
+    <h2 style="margin-top: 0;">Admin Dashboard Help</h2>
+    
+    <h3>Keyboard Shortcuts</h3>
+    <ul>
+      <li><kbd>Ctrl/Cmd + F</kbd> - Focus search box</li>
+      <li><kbd>Ctrl/Cmd + B</kbd> - Toggle batch mode</li>
+      <li><kbd>Ctrl/Cmd + M</kbd> - Toggle multi-select for assets</li>
+      <li><kbd>Ctrl/Cmd + A</kbd> - Select all (covers or assets)</li>
+      <li><kbd>Escape</kbd> - Exit batch mode or deselect all</li>
+      <li><kbd>Ctrl/Cmd + ←/→</kbd> - Navigate pages</li>
+      <li><kbd>Delete</kbd> - Delete selected assets</li>
+    </ul>
+    
+    <h3>Cover Management</h3>
+    <ul>
+      <li>Click any cover to edit its details</li>
+      <li>Use batch mode to select multiple covers for bulk operations</li>
+      <li>Drag and drop to reorder covers</li>
+      <li>Use different view modes: grid, list, or coverflow</li>
+    </ul>
+    
+    <h3>Asset Management</h3>
+    <ul>
+      <li>Drag and drop files to upload</li>
+      <li>Use folders to organize your assets</li>
+      <li>Multi-select mode for bulk operations</li>
+      <li>Copy asset URLs for use in covers</li>
+    </ul>
+    
+    <h3>Tips</h3>
+    <ul>
+      <li>Images are lazy-loaded for better performance</li>
+      <li>Use the search and filter options to find content quickly</li>
+      <li>Regular saves are recommended to prevent data loss</li>
+      <li>The system auto-saves when you make changes</li>
+    </ul>
+    
+    <div style="text-align: center; margin-top: var(--space-lg);">
+      <button class="btn" onclick="this.closest('.fixed').remove()">CLOSE</button>
+    </div>
+  `;
+  
+  overlay.appendChild(helpContent);
+  overlay.className = 'fixed';
+  document.body.appendChild(overlay);
+  
+  // Close on background click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
+  
+  // Close on ESC
+  document.addEventListener('keydown', function escHandler(e) {
+    if (e.key === 'Escape') {
+      document.removeEventListener('keydown', escHandler);
+      overlay.remove();
+    }
+  });
+} 
