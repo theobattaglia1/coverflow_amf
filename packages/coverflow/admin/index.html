@@ -177,12 +177,69 @@
             </div>
           </div>
         </div>
+        
+        <!-- Asset batch operations toolbar -->
+        <div class="batch-toolbar" id="assetBatchToolbar" style="display: none;">
+          <div class="batch-info">
+            <span id="assetSelectedCount">0</span> ASSETS SELECTED
+          </div>
+          <div class="batch-actions">
+            <button class="btn btn-sm" onclick="moveSelectedAssets()">MOVE</button>
+            <button class="btn btn-sm" onclick="downloadSelectedAssets()">DOWNLOAD</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSelectedAssets()">DELETE</button>
+            <button class="btn btn-sm" onclick="deselectAllAssets()">DESELECT ALL</button>
+          </div>
+        </div>
       </section>
 
-      <!-- 03 — USERS -->
-      <section class="section" id="usersSection" style="display: none;">
+      <!-- 03 — AUDIO -->
+      <section class="section" id="audioSection">
         <div class="section-marker">
           <span class="section-number">03 —</span>
+          <h1 class="section-title" data-text="AUDIO">AUDIO</h1>
+        </div>
+        
+        <div class="audio-browser">
+          <!-- Audio folder navigation -->
+          <div class="folder-panel">
+            <button class="btn btn-primary" onclick="createNewAudioFolder()" style="width: 100%; margin-bottom: var(--space-lg);">
+              + NEW FOLDER
+            </button>
+            <ul class="folder-list" id="audioFolderTree">
+              <!-- Audio folders will be dynamically loaded -->
+            </ul>
+          </div>
+          
+          <!-- Audio content -->
+          <div class="audio-content">
+            <div class="dropzone" id="audioDropzone">
+              <span class="dropzone-text">DROP AUDIO FILES HERE</span>
+            </div>
+            
+            <div class="audio-grid" id="audioContainer">
+              <!-- Audio files will be dynamically loaded -->
+            </div>
+          </div>
+        </div>
+        
+        <!-- Audio batch operations toolbar -->
+        <div class="batch-toolbar" id="audioBatchToolbar" style="display: none;">
+          <div class="batch-info">
+            <span id="audioSelectedCount">0</span> AUDIO FILES SELECTED
+          </div>
+          <div class="batch-actions">
+            <button class="btn btn-sm" onclick="moveSelectedAudio()">MOVE</button>
+            <button class="btn btn-sm" onclick="downloadSelectedAudio()">DOWNLOAD</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteSelectedAudio()">DELETE</button>
+            <button class="btn btn-sm" onclick="deselectAllAudio()">DESELECT ALL</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 04 — USERS -->
+      <section class="section" id="usersSection" style="display: none;">
+        <div class="section-marker">
+          <span class="section-number">04 —</span>
           <h1 class="section-title" data-text="USERS">USERS</h1>
         </div>
         
