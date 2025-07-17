@@ -868,6 +868,107 @@ async function uploadAndCreateCover(file) {
   }
 }
 
+// Setup asset dropzone functionality
+function setupAssetDropzone(dropzone) {
+  if (!dropzone) return;
+  
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, preventDefaults, false);
+  });
+
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+
+  // Highlight drop zone
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.add('active');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.remove('active');
+    }, false);
+  });
+
+  // Handle dropped files
+  dropzone.addEventListener('drop', handleAssetDrop, false);
+
+  // Also allow click to upload
+  dropzone.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*,video/*,audio/*';
+    input.multiple = true;
+    input.onchange = e => handleAssetUpload(e.target.files);
+    input.click();
+  });
+}
+
+// Handle asset drop
+async function handleAssetDrop(e) {
+  const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/') || f.type.startsWith('video/') || f.type.startsWith('audio/'));
+  
+  if (files.length === 0) {
+    showToast('PLEASE DROP IMAGE, VIDEO, OR AUDIO FILES ONLY');
+    return;
+  }
+  
+  await handleAssetUpload(files);
+}
+
+// Handle asset upload
+async function handleAssetUpload(files) {
+  showLoading();
+  let uploadedAny = false;
+  try {
+    for (const file of files) {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('folder', currentFolder || '');
+      
+      const res = await fetch('/upload-image', {
+        method: 'POST',
+        body: formData
+      });
+      
+      let data;
+      try {
+        data = await res.json();
+      } catch (err) {
+        showToast('UPLOAD FAILED: INVALID SERVER RESPONSE', 5000);
+        continue;
+      }
+      
+      if (res.ok && data && data.url) {
+        uploadedAny = true;
+        // Warn if TIFF
+        if (/\.tif{1,2}$/i.test(file.name)) {
+          showToast('UPLOAD SUCCESSFUL, BUT TIFF IMAGES MAY NOT PREVIEW IN BROWSERS', 7000);
+        } else {
+          showToast(`UPLOADED ${file.name.toUpperCase()}`);
+        }
+      } else {
+        showToast('UPLOAD FAILED: ' + (data && data.error ? data.error.toUpperCase() : 'UNKNOWN ERROR'), 5000);
+        continue;
+      }
+    }
+    if (uploadedAny) {
+      await loadAssets();
+      renderAssets();
+    }
+  } catch (err) {
+    showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 5000);
+    console.error(err);
+  } finally {
+    hideLoading();
+  }
+}
+
 // Search functionality
 function setupEventListeners() {
   // Cover search
