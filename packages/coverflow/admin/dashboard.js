@@ -28,6 +28,7 @@ let searchTerm = '';
 let categoryFilter = '';
 let sortOrder = 'index';
 let recentCovers = [];
+let mediaLibraryExpanded = false;
 
 // Initialize
 window.addEventListener('DOMContentLoaded', init);
@@ -1813,6 +1814,24 @@ function navigateToFolder(folder) {
   renderAssets();
 }
 
+// Media Library toggle function
+function toggleMediaLibrary() {
+  mediaLibraryExpanded = !mediaLibraryExpanded;
+  const content = document.getElementById('mediaLibraryContent');
+  const toggle = document.getElementById('mediaLibraryToggle');
+  const toggleText = toggle?.querySelector('.toggle-text');
+  
+  if (mediaLibraryExpanded) {
+    if (content) content.style.display = 'block';
+    if (toggle) toggle.classList.add('expanded');
+    if (toggleText) toggleText.textContent = 'COLLAPSE';
+  } else {
+    if (content) content.style.display = 'none';
+    if (toggle) toggle.classList.remove('expanded');
+    if (toggleText) toggleText.textContent = 'EXPAND';
+  }
+}
+
 // Make functions available globally
 window.toggleFullCoversView = toggleFullCoversView;
 window.setViewMode = setViewMode;
@@ -1827,6 +1846,12 @@ window.createNewFolder = createNewFolder;
 window.renameFolder = renameFolder;
 window.deleteFolder = deleteFolder;
 window.navigateToFolder = navigateToFolder;
+
+// Make asset management functions globally available
+window.selectAllAssets = selectAllAssets;
+window.deselectAllAssets = deselectAllAssets;
+window.toggleMultiSelectMode = toggleMultiSelectMode;
+window.toggleMediaLibrary = toggleMediaLibrary;
 
 // Export aliases for consistency with HTML
 window.exportSelected = exportCovers; 
