@@ -2560,6 +2560,49 @@ function handleAssetDragEnd(event) {
   document.body.classList.remove('dragging-assets');
 }
 
+// Keyboard navigation for accessibility
+function handleAssetKeydown(event, assetId, index) {
+  switch (event.key) {
+    case 'Enter':
+    case ' ':
+      event.preventDefault();
+      toggleAssetSelection(assetId, index);
+      break;
+    case 'ArrowRight':
+    case 'ArrowDown':
+      event.preventDefault();
+      focusNextAsset(index, 1);
+      break;
+    case 'ArrowLeft':
+    case 'ArrowUp':
+      event.preventDefault();
+      focusNextAsset(index, -1);
+      break;
+    case 'Escape':
+      if (selectedAssets.size > 0) {
+        event.preventDefault();
+        deselectAllAssets();
+      }
+      break;
+  }
+}
+
+function focusNextAsset(currentIndex, direction) {
+  const assets = document.querySelectorAll('.asset-item[tabindex="0"]');
+  const currentAsset = Array.from(assets).find(asset => 
+    parseInt(asset.dataset.assetIndex) === currentIndex
+  );
+  
+  if (currentAsset) {
+    const currentAssetIndex = Array.from(assets).indexOf(currentAsset);
+    const nextIndex = currentAssetIndex + direction;
+    
+    if (nextIndex >= 0 && nextIndex < assets.length) {
+      assets[nextIndex].focus();
+    }
+  }
+}
+
 // Asset bulk operations
 async function moveSelectedAssetsToFolder(targetFolder) {
   if (selectedAssets.size === 0) {
@@ -3016,9 +3059,17 @@ function showOnboardingTips() {
       showHelpTip('search', 'Use Ctrl+F to quickly search through your covers. You can search by title, artist, or category.', 3000);
       
       setTimeout(() => {
-        showHelpTip('keyboard', 'Keyboard shortcuts: Ctrl+F (search), Ctrl+B (batch), Ctrl+M (multi-select), ESC (exit modes)', 4000);
-        localStorage.setItem('amf-admin-tips-seen', 'true');
-      }, 4000);
+        showHelpTip('assets', 'NEW: Select assets to see the batch toolbar at the bottom! You can move, delete, or download multiple assets at once.', 4000);
+        
+        setTimeout(() => {
+          showHelpTip('audio', 'NEW: Check out the Audio section! Upload, play, and manage audio files with the same powerful tools.', 4000);
+          
+          setTimeout(() => {
+            showHelpTip('keyboard', 'Keyboard shortcuts: Ctrl+F (search), Ctrl+B (batch), Ctrl+M (multi-select), ESC (exit modes), Arrow keys (navigate)', 4000);
+            localStorage.setItem('amf-admin-tips-seen', 'true');
+          }, 4500);
+        }, 4000);
+      }, 3500);
     }, 3500);
   }, 2000);
 }
@@ -3137,6 +3188,19 @@ function showHelpOverlay() {
       <li>Use folders to organize your assets</li>
       <li>Multi-select mode for bulk operations</li>
       <li>Copy asset URLs for use in covers</li>
+      <li><strong>NEW:</strong> Batch toolbar appears when assets are selected</li>
+      <li><strong>NEW:</strong> Move selected assets between folders</li>
+      <li><strong>NEW:</strong> Drag assets directly to folders in the tree</li>
+      <li><strong>NEW:</strong> Use arrow keys to navigate between assets</li>
+    </ul>
+    
+    <h3>Audio Management</h3>
+    <ul>
+      <li><strong>NEW:</strong> Dedicated audio section with playback controls</li>
+      <li>Upload and organize audio files in folders</li>
+      <li>Edit metadata (filename) for audio files</li>
+      <li>Batch operations: move, delete, download audio files</li>
+      <li>Click to copy audio URLs</li>
     </ul>
     
     <h3>Tips</h3>
