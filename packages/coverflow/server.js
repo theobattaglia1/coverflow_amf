@@ -495,6 +495,88 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
     }
 });
 
+// Helper functions for asset management
+function findAssetRecursively(container, assetUrl) {
+    // Search in root images array
+    if (container.images) {
+        const asset = container.images.find(img => img.url === assetUrl);
+        if (asset) {
+            return { asset, parent: container, location: 'images' };
+        }
+    }
+    
+    // Search in children folders recursively
+    if (container.children) {
+        for (const child of container.children) {
+            if (child.type === 'folder') {
+                const result = findAssetRecursively(child, assetUrl);
+                if (result) {
+                    return result;
+                }
+            } else if (child.type === 'image' && child.url === assetUrl) {
+                // Found asset directly in children array
+                return { asset: child, parent: container, location: 'children' };
+            }
+        }
+    }
+    
+    return null;
+}
+
+function removeAssetFromLocation(container, assetUrl) {
+    // Remove from root images array
+    if (container.images) {
+        const index = container.images.findIndex(img => img.url === assetUrl);
+        if (index !== -1) {
+            return container.images.splice(index, 1)[0];
+        }
+    }
+    
+    // Remove from children array
+    if (container.children) {
+        const index = container.children.findIndex(child => child.type === 'image' && child.url === assetUrl);
+        if (index !== -1) {
+            return container.children.splice(index, 1)[0];
+        }
+        
+        // Remove from children folders recursively
+        for (const child of container.children) {
+            if (child.type === 'folder') {
+                const removed = removeAssetFromLocation(child, assetUrl);
+                if (removed) {
+                    return removed;
+                }
+            }
+        }
+    }
+    
+    return null;
+}
+
+function findFolderByPath(container, folderPath) {
+    if (!folderPath || folderPath === '' || folderPath === 'ROOT') {
+        return container; // Return root container
+    }
+    
+    const pathParts = folderPath.split('/').filter(Boolean);
+    let current = container;
+    
+    for (const part of pathParts) {
+        if (!current.children) {
+            return null; // Path doesn't exist
+        }
+        
+        const folder = current.children.find(child => child.type === 'folder' && child.name === part);
+        if (!folder) {
+            return null; // Folder not found
+        }
+        
+        current = folder;
+    }
+    
+    return current;
+}
+
 // Bulk asset operations for multi-select drag-and-drop
 app.post('/api/assets/bulk-move', requireAuth('editor'), async (req, res) => {
     try {
@@ -504,31 +586,55 @@ app.post('/api/assets/bulk-move', requireAuth('editor'), async (req, res) => {
         }
         
         const assetsPath = path.join(DATA_DIR, 'assets.json');
-        let assets = await readJsonFile(assetsPath, 'assets') || { images: [], folders: [] };
+        let assets = await readJsonFile(assetsPath, 'assets') || { images: [], children: [] };
         
         // Ensure assets structure exists
         if (!assets.images) assets.images = [];
-        if (!assets.folders) assets.folders = [];
+        if (!assets.children) assets.children = [];
         
-        // Find assets to move
-        const assetsToMove = assets.images.filter(asset => assetUrls.includes(asset.url));
+        // Find target folder
+        const targetFolderContainer = findFolderByPath(assets, targetFolder);
+        if (!targetFolderContainer) {
+            return res.status(404).json({ error: `Target folder not found: ${targetFolder}` });
+        }
+        
+        // Find and remove assets from their current locations
+        const assetsToMove = [];
+        for (const assetUrl of assetUrls) {
+            const removedAsset = removeAssetFromLocation(assets, assetUrl);
+            if (removedAsset) {
+                // Update asset metadata
+                removedAsset.folder = targetFolder || '';
+                removedAsset.movedAt = new Date().toISOString();
+                assetsToMove.push(removedAsset);
+            }
+        }
         
         if (assetsToMove.length === 0) {
             return res.status(404).json({ error: 'No matching assets found' });
         }
         
-        // Remove assets from current location
-        assets.images = assets.images.filter(asset => !assetUrls.includes(asset.url));
-        
-        // Add folder property to moved assets
-        assetsToMove.forEach(asset => {
-            asset.folder = targetFolder || '';
-            asset.movedAt = new Date().toISOString();
-        });
-        
-        // For simplified implementation, we'll just add them back to the images array
-        // In a more complex implementation, you'd handle the folder structure properly
-        assets.images.push(...assetsToMove);
+        // Insert assets into target location
+        if (!targetFolder || targetFolder === '' || targetFolder === 'ROOT') {
+            // Move to root images array
+            assets.images.push(...assetsToMove);
+        } else {
+            // Move to target folder's children array
+            if (!targetFolderContainer.children) {
+                targetFolderContainer.children = [];
+            }
+            
+            // Convert assets to the correct format for folder children
+            const folderAssets = assetsToMove.map(asset => ({
+                type: 'image',
+                url: asset.url,
+                name: asset.filename || asset.name || path.basename(asset.url),
+                uploadedAt: asset.uploadedAt || asset.movedAt,
+                ...asset
+            }));
+            
+            targetFolderContainer.children.push(...folderAssets);
+        }
         
         await safeWriteJson(assetsPath, assets);
         dataCache.invalidate('assets');
