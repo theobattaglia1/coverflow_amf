@@ -51,6 +51,16 @@ let lastSelectedAssetIndex = -1;
 let draggedAssets = new Set();
 let isDraggingAssets = false;
 
+// Enhanced state for new features from dashboard.js
+let currentViewMode = 'grid';
+let showFullView = false;
+let currentCoverPage = 1;
+let coversPerPage = 20;
+let searchTerm = '';
+let categoryFilter = '';
+let sortOrder = 'index';
+let recentCovers = [];
+
 // Utility function to safely parse JSON responses
 async function safeJsonParse(response) {
   const text = await response.text();
@@ -161,13 +171,22 @@ async function init() {
   setupDragAndDrop();
   setupKeyboardShortcuts();
   setupMediaLibraryEventListeners();
+  setupSearchAndFilters();
+  setupViewModeToggles();
+  setupInfiniteScroll();
+  setupLazyLoading();
   updateCurrentFolderIndicator();
   renderRecentAssets();
+  renderRecentCovers();
+  
+  // Show onboarding tips and create help button
+  showOnboardingTips();
+  createHelpButton();
 }
 
 // Load covers with smooth animation
 async function loadCovers() {
-  showLoading();
+  showLoading('covers');
   
   try {
     const res = await fetch('/data/covers.json');
@@ -183,53 +202,13 @@ async function loadCovers() {
 
 // Render covers with editorial layout
 function renderCovers(searchTerm = '') {
-  const container = document.getElementById('coversContainer');
-  container.innerHTML = '';
-  
-  // Filter covers based on search
-  const filteredCovers = covers.filter(cover => {
-    if (!searchTerm) return true;
-    const search = searchTerm.toLowerCase();
-    return (
-      cover.albumTitle?.toLowerCase().includes(search) ||
-      cover.coverLabel?.toLowerCase().includes(search) ||
-      cover.category?.some(cat => cat.toLowerCase().includes(search))
-    );
-  });
-  
-  // Create cover elements with staggered animation
-  filteredCovers.forEach((cover, index) => {
-    const coverEl = createCoverElement(cover, index);
-    container.appendChild(coverEl);
-    
-    // Staggered fade-in animation
-    setTimeout(() => {
-      coverEl.style.opacity = '1';
-      coverEl.style.transform = coverEl.style.transform.replace('translateY(20px)', 'translateY(0)');
-    }, index * 50);
-  });
-  
-  // Initialize Sortable with smooth animations
-  if (!searchTerm) {
-    new Sortable(container, {
-      animation: 200,
-      ghostClass: 'sortable-ghost',
-      chosenClass: 'sortable-chosen',
-      dragClass: 'sortable-drag',
-      onEnd: (evt) => {
-        // Update cover order
-        const newCovers = [...covers];
-        const [movedCover] = newCovers.splice(evt.oldIndex, 1);
-        newCovers.splice(evt.newIndex, 0, movedCover);
-        covers = newCovers;
-        
-        // Update indices
-        covers.forEach((cover, i) => cover.index = i);
-        hasChanges = true;
-        updateSaveButton();
-      }
-    });
+  // Update search term if provided
+  if (searchTerm !== undefined) {
+    this.searchTerm = searchTerm.toLowerCase();
   }
+  
+  // Use the new enhanced rendering system
+  renderCurrentView();
 }
 
 // Create cover element with professional styling
@@ -345,6 +324,11 @@ function editCover(cover) {
     closeModal();
     showToast('COVER UPDATED');
   };
+  
+  // Add modal dropzone functionality
+  const modalBodyElement = document.getElementById('modalBody');
+  setupModalDropzone(modalBodyElement);
+  
   openModal();
 }
 
@@ -354,12 +338,113 @@ function toggleBatchMode() {
   selectedCovers.clear();
   
   document.body.classList.toggle('batch-active', batchMode);
-  document.getElementById('batchModeBtn').textContent = batchMode ? 'EXIT BATCH' : 'BATCH MODE';
-  document.getElementById('exportBtn').style.display = batchMode ? 'block' : 'none';
-  document.getElementById('deleteBtn').style.display = batchMode ? 'block' : 'none';
+  
+  // Update batch mode button
+  const batchBtn = document.getElementById('batchModeBtn');
+  if (batchBtn) {
+    batchBtn.textContent = batchMode ? 'EXIT BATCH' : 'BATCH MODE';
+    batchBtn.classList.toggle('btn-danger', batchMode);
+  }
+  
+  // Create or update batch toolbar
+  createBatchToolbar();
+  
+  // Show/hide batch operations
+  const exportBtn = document.getElementById('exportBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  if (exportBtn) exportBtn.style.display = batchMode ? 'block' : 'none';
+  if (deleteBtn) deleteBtn.style.display = batchMode ? 'block' : 'none';
+  
+  // Add batch mode badge to header
+  createBatchBadge();
   
   if (!batchMode) {
     renderCovers();
+    removeBatchToolbar();
+    removeBatchBadge();
+  } else {
+    // Re-render to show checkboxes
+    renderCurrentView();
+  }
+}
+
+function createBatchToolbar() {
+  if (!batchMode) return;
+  
+  // Remove existing toolbar if present
+  removeBatchToolbar();
+  
+  const toolbar = document.createElement('div');
+  toolbar.id = 'batchToolbar';
+  toolbar.className = 'batch-toolbar';
+  toolbar.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--bg);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    animation: slideUp 0.3s ease-out;
+  `;
+  
+  toolbar.innerHTML = `
+    <span class="batch-count">0 selected</span>
+    <button class="btn btn-sm" onclick="selectAllCovers()">SELECT ALL</button>
+    <button class="btn btn-sm" onclick="clearSelection()">CLEAR</button>
+    <button class="btn btn-sm btn-danger" onclick="deleteSelected()">DELETE SELECTED</button>
+    <button class="btn btn-sm" onclick="exportCovers()">EXPORT SELECTED</button>
+    <button class="btn btn-sm btn-secondary" onclick="toggleBatchMode()">EXIT BATCH</button>
+  `;
+  
+  document.body.appendChild(toolbar);
+}
+
+function removeBatchToolbar() {
+  const toolbar = document.getElementById('batchToolbar');
+  if (toolbar) {
+    toolbar.remove();
+  }
+}
+
+function createBatchBadge() {
+  if (!batchMode) return;
+  
+  // Remove existing badge if present
+  removeBatchBadge();
+  
+  const badge = document.createElement('div');
+  badge.id = 'batchBadge';
+  badge.className = 'batch-badge';
+  badge.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 999;
+    animation: pulse 2s infinite;
+  `;
+  
+  badge.textContent = 'BATCH MODE ACTIVE';
+  
+  document.body.appendChild(badge);
+}
+
+function removeBatchBadge() {
+  const badge = document.getElementById('batchBadge');
+  if (badge) {
+    badge.remove();
   }
 }
 
@@ -371,12 +456,24 @@ function toggleCoverSelection(coverId) {
   }
   
   const coverEl = document.querySelector(`[data-id="${coverId}"]`);
-  coverEl.classList.toggle('selected', selectedCovers.has(coverId));
+  if (coverEl) {
+    coverEl.classList.toggle('selected', selectedCovers.has(coverId));
+    
+    // Update checkbox if present
+    const checkbox = coverEl.querySelector('.cover-checkbox');
+    if (checkbox) {
+      checkbox.checked = selectedCovers.has(coverId);
+    }
+  }
   
-  // Update button states
+  // Update batch count and button states
+  updateBatchCount();
+  
   const hasSelection = selectedCovers.size > 0;
-  document.getElementById('exportBtn').disabled = !hasSelection;
-  document.getElementById('deleteBtn').disabled = !hasSelection;
+  const exportBtn = document.getElementById('exportBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  if (exportBtn) exportBtn.disabled = !hasSelection;
+  if (deleteBtn) deleteBtn.disabled = !hasSelection;
 }
 
 // Save changes with visual feedback
@@ -789,6 +886,56 @@ async function uploadAndCreateCover(file) {
   }
 }
 
+// Modal image upload functionality for drag & drop in edit modal
+async function handleModalImageUpload(file) {
+  const dropText = document.getElementById('modalDropzoneText');
+  dropText.textContent = 'Uploading...';
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', currentFolder || '');
+    const res = await fetch('/upload-image', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (res.ok && data.url) {
+      // Add to assets immediately
+      if (!assets.images) assets.images = [];
+      assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
+      // Update the first image input field if present
+      const input = document.querySelector("#editCoverForm input[type='text'][name*='Image']");
+      if (input) {
+        input.value = data.url;
+        input.dispatchEvent(new Event('input'));
+      }
+      showToast('IMAGE UPLOADED');
+    } else {
+      showToast('UPLOAD FAILED: ' + (data.error || 'Unknown error'), 5000);
+    }
+  } catch (err) {
+    showToast('UPLOAD FAILED: ' + err.message, 5000);
+  } finally {
+    dropText.textContent = 'Drag & drop or click to upload';
+  }
+}
+
+function setupModalDropzone(container) {
+  // Setup drag & drop for modal
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    container.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  container.addEventListener('drop', (e) => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleModalImageUpload(files[0]);
+    }
+  }, false);
+  
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
+  }
+}
+
 // Search functionality
 function setupEventListeners() {
   // Cover search
@@ -804,57 +951,421 @@ function setupEventListeners() {
 }
 
 // Keyboard shortcuts
-function setupKeyboardShortcuts() {
-  document.addEventListener('keydown', (e) => {
-    // Cmd/Ctrl + F to focus search
-    if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
-      e.preventDefault();
-      document.getElementById('coverSearch').focus();
-    }
+// Loading states
+// Enhanced loading states with skeleton screens
+function showLoading(type = 'default') {
+  const loadingEl = document.getElementById('loading');
+  if (loadingEl) {
+    loadingEl.style.display = 'block';
+  }
+  
+  // Add skeleton screens for specific content types
+  if (type === 'covers') {
+    showCoversSkeleton();
+  } else if (type === 'assets') {
+    showAssetsSkeleton();
+  }
+}
+
+function hideLoading() {
+  const loadingEl = document.getElementById('loading');
+  if (loadingEl) {
+    loadingEl.style.display = 'none';
+  }
+  
+  // Remove skeleton screens
+  hideSkeleton();
+}
+
+function showCoversSkeleton() {
+  const container = document.getElementById('coversContainer');
+  if (!container) return;
+  
+  container.innerHTML = Array(6).fill(0).map(() => `
+    <div class="cover-skeleton">
+      <div class="skeleton-image"></div>
+      <div class="skeleton-text"></div>
+      <div class="skeleton-text short"></div>
+    </div>
+  `).join('');
+  
+  container.classList.add('skeleton-mode');
+}
+
+function showAssetsSkeleton() {
+  const container = document.getElementById('assetGrid');
+  if (!container) return;
+  
+  container.innerHTML = Array(12).fill(0).map(() => `
+    <div class="asset-skeleton">
+      <div class="skeleton-image"></div>
+      <div class="skeleton-text short"></div>
+    </div>
+  `).join('');
+  
+  container.classList.add('skeleton-mode');
+}
+
+function hideSkeleton() {
+  const containers = document.querySelectorAll('.skeleton-mode');
+  containers.forEach(container => {
+    container.classList.remove('skeleton-mode');
+  });
+}
+
+// Progressive loading indicator
+function showProgressIndicator(message = 'Loading...', progress = 0) {
+  let indicator = document.getElementById('progressIndicator');
+  
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'progressIndicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg);
+      border: 1px solid var(--ink);
+      padding: var(--space-lg);
+      border-radius: 8px;
+      z-index: 9999;
+      text-align: center;
+      min-width: 200px;
+    `;
     
-    // Cmd/Ctrl + B for batch mode
-    if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-      e.preventDefault();
-      toggleBatchMode();
-    }
+    indicator.innerHTML = `
+      <div class="progress-message" style="margin-bottom: var(--space-md);"></div>
+      <div class="progress-bar" style="background: #eee; height: 4px; border-radius: 2px; overflow: hidden;">
+        <div class="progress-fill" style="background: var(--ink); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+      </div>
+      <div class="progress-percent" style="margin-top: var(--space-sm); font-size: 12px; color: #666;"></div>
+    `;
     
-    // Multi-select asset shortcuts
-    if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
-      e.preventDefault();
-      if (assetMultiSelectMode) {
-        selectAllAssets();
+    document.body.appendChild(indicator);
+  }
+  
+  indicator.querySelector('.progress-message').textContent = message;
+  indicator.querySelector('.progress-fill').style.width = progress + '%';
+  indicator.querySelector('.progress-percent').textContent = Math.round(progress) + '%';
+  indicator.style.display = 'block';
+}
+
+function hideProgressIndicator() {
+  const indicator = document.getElementById('progressIndicator');
+  if (indicator) {
+    indicator.style.display = 'none';
+  }
+}
+
+// Confirmation dialog utility
+function showConfirmDialog(message, onConfirm, onCancel = null) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+      background: var(--bg);
+      border: 1px solid var(--ink);
+      padding: var(--space-xl);
+      border-radius: 8px;
+      max-width: 400px;
+      text-align: center;
+    `;
+    
+    dialog.innerHTML = `
+      <div style="margin-bottom: var(--space-lg); font-weight: bold;">${message}</div>
+      <div style="display: flex; gap: var(--space-md); justify-content: center;">
+        <button class="btn btn-secondary" id="cancelBtn">CANCEL</button>
+        <button class="btn btn-danger" id="confirmBtn">CONFIRM</button>
+      </div>
+    `;
+    
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+    
+    // Focus management
+    dialog.querySelector('#confirmBtn').focus();
+    
+    // Event handlers
+    const cleanup = (result) => {
+      document.body.removeChild(overlay);
+      resolve(result);
+    };
+    
+    dialog.querySelector('#confirmBtn').onclick = () => {
+      cleanup(true);
+      if (onConfirm) onConfirm();
+    };
+    
+    dialog.querySelector('#cancelBtn').onclick = () => {
+      cleanup(false);
+      if (onCancel) onCancel();
+    };
+    
+    // ESC to cancel
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') {
+        document.removeEventListener('keydown', escHandler);
+        cleanup(false);
+        if (onCancel) onCancel();
+      }
+    });
+    
+    // Click outside to cancel
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        cleanup(false);
+        if (onCancel) onCancel();
+      }
+    });
+  });
+}
+
+// Enhanced modal functions with accessibility
+function openModal() {
+  const modal = document.getElementById('coverModal');
+  if (!modal) return;
+  
+  modal.classList.add('active');
+  
+  // Set ARIA attributes
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('role', 'dialog');
+  
+  // Focus management - focus first focusable element
+  const firstFocusable = modal.querySelector('input, button, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (firstFocusable) {
+    firstFocusable.focus();
+  }
+  
+  // Trap focus within modal
+  setupFocusTrap(modal);
+  
+  // Prevent body scroll
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  const modal = document.getElementById('coverModal');
+  if (!modal) return;
+  
+  modal.classList.remove('active');
+  
+  // Remove ARIA attributes
+  modal.removeAttribute('aria-modal');
+  modal.removeAttribute('role');
+  
+  // Restore body scroll
+  document.body.style.overflow = '';
+  
+  // Return focus to trigger element (usually a button)
+  const lastActiveElement = document.querySelector('.btn:focus, button:focus');
+  if (lastActiveElement) {
+    lastActiveElement.focus();
+  }
+}
+
+function setupFocusTrap(modal) {
+  const focusableElements = modal.querySelectorAll(
+    'input, button, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  
+  if (focusableElements.length === 0) return;
+  
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+  
+  // Handle Tab and Shift+Tab
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable.focus();
+        }
       }
     }
     
-    // Escape to deselect all assets
+    // ESC to close
     if (e.key === 'Escape') {
-      if (selectedAssets.size > 0) {
-        e.preventDefault();
-        deselectAllAssets();
-      }
-    }
-    
-    // Cmd/Ctrl + M for multi-select mode toggle
-    if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
       e.preventDefault();
-      toggleMultiSelectMode();
-    }
-    
-    // Delete key to delete selected assets
-    if (e.key === 'Delete' && selectedAssets.size > 0) {
-      e.preventDefault();
-      deleteSelectedAssets();
+      closeModal();
     }
   });
 }
 
-// Loading states
-function showLoading() {
-  document.getElementById('loading').style.display = 'block';
+// Expose modal functions globally
+window.openModal = openModal;
+window.closeModal = closeModal;
+
+// Infinite scroll implementation
+let isLoadingMore = false;
+let hasMoreAssets = true;
+
+function setupInfiniteScroll() {
+  const assetGrid = document.getElementById('assetGrid');
+  if (!assetGrid) return;
+  
+  const observer = new IntersectionObserver((entries) => {
+    const lastEntry = entries[0];
+    if (lastEntry.isIntersecting && !isLoadingMore && hasMoreAssets) {
+      loadMoreAssets();
+    }
+  }, {
+    threshold: 0.1,
+    rootMargin: '100px'
+  });
+  
+  // Create sentinel element
+  const sentinel = document.createElement('div');
+  sentinel.id = 'loadMoreSentinel';
+  sentinel.style.height = '10px';
+  assetGrid.parentNode.appendChild(sentinel);
+  observer.observe(sentinel);
 }
 
-function hideLoading() {
-  document.getElementById('loading').style.display = 'none';
+async function loadMoreAssets() {
+  if (isLoadingMore || !hasMoreAssets) return;
+  
+  isLoadingMore = true;
+  showProgressIndicator('Loading more assets...', 50);
+  
+  try {
+    // Simulate loading more assets (in real implementation, this would fetch from server)
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // Increment page and load more
+    currentPage++;
+    const newAssets = await fetchAssetsPage(currentPage);
+    
+    if (newAssets.length === 0) {
+      hasMoreAssets = false;
+      showToast('No more assets to load');
+    } else {
+      // Append new assets to the current view
+      appendAssetsToGrid(newAssets);
+      showToast(`Loaded ${newAssets.length} more assets`);
+    }
+  } catch (error) {
+    showToast('Failed to load more assets', 5000);
+    console.error('Load more error:', error);
+  } finally {
+    isLoadingMore = false;
+    hideProgressIndicator();
+  }
+}
+
+function appendAssetsToGrid(newAssets) {
+  const assetGrid = document.getElementById('assetGrid');
+  if (!assetGrid) return;
+  
+  newAssets.forEach(asset => {
+    const assetElement = createAssetElement(asset);
+    assetGrid.appendChild(assetElement);
+    
+    // Lazy load images
+    lazyLoadImage(assetElement.querySelector('img'));
+  });
+}
+
+// Lazy loading implementation
+function setupLazyLoading() {
+  const imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const img = entry.target;
+        lazyLoadImage(img);
+        imageObserver.unobserve(img);
+      }
+    });
+  }, {
+    threshold: 0.1,
+    rootMargin: '50px'
+  });
+  
+  // Observe all images with data-src attribute
+  document.querySelectorAll('img[data-src]').forEach(img => {
+    imageObserver.observe(img);
+  });
+}
+
+function lazyLoadImage(img) {
+  if (!img || !img.dataset.src) return;
+  
+  // Create a placeholder while loading
+  const placeholder = img.cloneNode();
+  placeholder.style.filter = 'blur(5px)';
+  
+  const newImg = new Image();
+  newImg.onload = () => {
+    img.src = newImg.src;
+    img.classList.add('loaded');
+    img.style.filter = 'none';
+  };
+  
+  newImg.onerror = () => {
+    img.src = '/placeholder.jpg';
+    img.classList.add('error');
+  };
+  
+  newImg.src = img.dataset.src;
+}
+
+// Enhanced image loading for covers
+function createCoverElementWithLazyLoading(cover, index) {
+  const div = document.createElement('div');
+  div.className = 'cover-item';
+  div.dataset.id = cover.id;
+  div.dataset.coverId = cover.id;
+  
+  const isSelected = selectedCovers.has(cover.id);
+  const rotation = (index % 3 === 0) ? -0.5 : (index % 3 === 1) ? 0.5 : 0;
+  
+  div.innerHTML = `
+    ${batchMode ? `<input type="checkbox" class="cover-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleCoverSelection('${cover.id}')">` : ''}
+    <img data-src="${cover.frontImage || '/placeholder.jpg'}" 
+         alt="${cover.albumTitle || 'Untitled'}" 
+         class="cover-image lazy"
+         loading="lazy"
+         src="/placeholder.jpg">
+    <div class="cover-meta">
+      <div class="cover-title">${cover.albumTitle || 'UNTITLED'}</div>
+      <div class="cover-artist">${cover.artistDetails?.name || cover.coverLabel || 'UNKNOWN ARTIST'}</div>
+    </div>
+  `;
+  
+  div.style.transform = `rotate(${rotation}deg)`;
+  div.style.opacity = '0';
+  div.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+  
+  div.addEventListener('click', () => handleCoverClick(cover.id));
+  
+  // Lazy load the image
+  setTimeout(() => {
+    lazyLoadImage(div.querySelector('img'));
+  }, index * 50);
+  
+  return div;
 }
 
 // Toast notifications with click to dismiss
@@ -976,19 +1487,32 @@ async function deleteSelected() {
   const count = selectedCovers.size;
   if (count === 0) return;
   
-  if (!confirm(`DELETE ${count} SELECTED COVERS?`)) return;
+  const confirmed = await showConfirmDialog(
+    `Are you sure you want to DELETE ${count} selected cover${count > 1 ? 's' : ''}? This action cannot be undone.`
+  );
   
-  covers = covers.filter(c => !selectedCovers.has(c.id));
+  if (!confirmed) return;
   
-  // Re-index
-  covers.forEach((cover, i) => cover.index = i);
+  showProgressIndicator('Deleting covers...', 0);
   
-  hasChanges = true;
-  updateSaveButton();
-  toggleBatchMode();
-  renderCovers();
-  
-  showToast(`DELETED ${count} COVERS`);
+  try {
+    covers = covers.filter(c => !selectedCovers.has(c.id));
+    
+    // Re-index
+    covers.forEach((cover, i) => cover.index = i);
+    
+    hasChanges = true;
+    updateSaveButton();
+    toggleBatchMode();
+    renderCovers();
+    
+    showToast(`DELETED ${count} COVER${count > 1 ? 'S' : ''}`);
+  } catch (error) {
+    showToast('FAILED TO DELETE COVERS', 5000);
+    console.error('Delete error:', error);
+  } finally {
+    hideProgressIndicator();
+  }
 }
 
 // Asset management functions
@@ -2016,4 +2540,565 @@ async function moveSelectedAssetsToFolder(targetFolder) {
   } finally {
     hideLoading();
   }
+}
+
+// Enhanced search and filtering functions
+function getFilteredAndSortedCovers() {
+  let filtered = covers.filter(cover => {
+    // Search filter
+    if (searchTerm) {
+      const searchFields = [
+        cover.albumTitle || '',
+        cover.coverLabel || '',
+        cover.artistDetails?.name || '',
+        ...(Array.isArray(cover.category) ? cover.category : [cover.category || ''])
+      ].join(' ').toLowerCase();
+      
+      if (!searchFields.includes(searchTerm)) {
+        return false;
+      }
+    }
+    
+    // Category filter
+    if (categoryFilter) {
+      const categories = Array.isArray(cover.category) ? cover.category : [cover.category || ''];
+      if (!categories.includes(categoryFilter)) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+  
+  // Sort
+  filtered.sort((a, b) => {
+    switch (sortOrder) {
+      case 'title':
+        return (a.albumTitle || '').localeCompare(b.albumTitle || '');
+      case 'title-desc':
+        return (b.albumTitle || '').localeCompare(a.albumTitle || '');
+      case 'date':
+        return new Date(b.id) - new Date(a.id); // Newer first (higher ID)
+      case 'date-desc':
+        return new Date(a.id) - new Date(b.id); // Older first (lower ID)
+      default: // 'index'
+        return (a.index || 0) - (b.index || 0);
+    }
+  });
+  
+  return filtered;
+}
+
+function getRecentCovers() {
+  // Get the 6-8 most recently edited covers (based on ID as timestamp)
+  return [...covers]
+    .sort((a, b) => new Date(b.id) - new Date(a.id))
+    .slice(0, 8);
+}
+
+function renderRecentCovers() {
+  const container = document.getElementById('recentCoversContainer');
+  if (!container) return;
+  
+  const recent = getRecentCovers();
+  
+  container.innerHTML = recent.map(cover => createCompactCoverElement(cover)).join('');
+}
+
+function createCompactCoverElement(cover) {
+  return `
+    <div class="cover-item-compact" data-id="${cover.id}" onclick="editCover(${JSON.stringify(cover).replace(/"/g, '&quot;')})">
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy">
+      <div class="cover-meta-compact">
+        <div>${(cover.albumTitle || 'UNTITLED').slice(0, 20)}</div>
+      </div>
+    </div>
+  `;
+}
+
+// View mode functions
+function setViewMode(mode) {
+  currentViewMode = mode;
+  
+  // Update view toggle buttons
+  document.querySelectorAll('.view-toggle').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+  
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  const filtered = getFilteredAndSortedCovers();
+  
+  // Update pagination
+  updatePagination(filtered.length);
+  
+  // Get current page items
+  const start = (currentCoverPage - 1) * coversPerPage;
+  const end = start + coversPerPage;
+  const pageCovers = filtered.slice(start, end);
+  
+  const container = document.getElementById('coversContainer');
+  
+  switch (currentViewMode) {
+    case 'list':
+      renderListView(pageCovers, container);
+      break;
+    case 'coverflow':
+      renderCoverflowView(pageCovers, container);
+      break;
+    default: // 'grid'
+      renderGridView(pageCovers, container);
+      break;
+  }
+}
+
+function renderGridView(pageCovers, container) {
+  container.className = 'covers-grid';
+  container.innerHTML = pageCovers.map((cover, index) => createCoverElement(cover, index)).join('');
+}
+
+function renderListView(pageCovers, container) {
+  container.className = 'covers-list';
+  container.innerHTML = pageCovers.map(cover => createListCoverElement(cover)).join('');
+}
+
+function renderCoverflowView(pageCovers, container) {
+  container.className = 'covers-coverflow';
+  container.innerHTML = pageCovers.map(cover => createCoverflowCoverElement(cover)).join('');
+  
+  // Setup coverflow navigation
+  setupCoverflowNavigation();
+}
+
+function createListCoverElement(cover) {
+  const isSelected = selectedCovers.has(cover.id);
+  const rotation = 0;
+  
+  return `
+    <div class="cover-item-list ${isSelected ? 'selected' : ''}" 
+         data-id="${cover.id}" 
+         data-cover-id="${cover.id}"
+         onclick="handleCoverClick('${cover.id}')"
+         style="transform: rotate(${rotation}deg)">
+      ${batchMode ? `<input type="checkbox" class="cover-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleCoverSelection('${cover.id}')">` : ''}
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy">
+      <div class="cover-meta-list">
+        <div class="cover-title">${cover.albumTitle || 'UNTITLED'}</div>
+        <div class="cover-artist">${cover.artistDetails?.name || cover.coverLabel || 'UNKNOWN ARTIST'}</div>
+        <div class="cover-category">${Array.isArray(cover.category) ? cover.category.join(', ') : (cover.category || 'No category')}</div>
+      </div>
+    </div>
+  `;
+}
+
+function createCoverflowCoverElement(cover) {
+  const isSelected = selectedCovers.has(cover.id);
+  
+  return `
+    <div class="cover-item-coverflow ${isSelected ? 'selected' : ''}" 
+         data-id="${cover.id}" 
+         data-cover-id="${cover.id}"
+         onclick="handleCoverClick('${cover.id}')">
+      ${batchMode ? `<input type="checkbox" class="cover-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleCoverSelection('${cover.id}')">` : ''}
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy">
+      <div class="cover-meta-coverflow">
+        <div>${cover.albumTitle || 'UNTITLED'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function setupCoverflowNavigation() {
+  const container = document.getElementById('coversContainer');
+  const items = container.querySelectorAll('.cover-item-coverflow');
+  let focusedIndex = 0;
+  
+  function updateFocus(index) {
+    items.forEach((item, i) => {
+      item.classList.toggle('focused', i === index);
+    });
+    
+    // Scroll focused item into view
+    if (items[index]) {
+      items[index].scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }
+  
+  container.addEventListener('click', (e) => {
+    const item = e.target.closest('.cover-item-coverflow');
+    if (item) {
+      const index = Array.from(items).indexOf(item);
+      focusedIndex = index;
+      updateFocus(index);
+    }
+  });
+  
+  // Initialize with first item focused
+  if (items.length > 0) {
+    updateFocus(0);
+  }
+}
+
+function handleCoverClick(coverId) {
+  if (batchMode) {
+    toggleCoverSelection(coverId);
+  } else {
+    const cover = covers.find(c => c.id === coverId);
+    if (cover) {
+      editCover(cover);
+    }
+  }
+}
+
+function updatePagination(totalItems) {
+  const totalPages = Math.ceil(totalItems / coversPerPage);
+  const controls = document.getElementById('paginationControls');
+  const pageInfo = document.getElementById('pageInfo');
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  
+  if (!controls) return;
+  
+  if (totalPages <= 1) {
+    controls.style.display = 'none';
+    return;
+  }
+  
+  controls.style.display = 'flex';
+  if (pageInfo) pageInfo.textContent = `${currentCoverPage} / ${totalPages}`;
+  if (prevBtn) prevBtn.disabled = currentCoverPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentCoverPage >= totalPages;
+}
+
+function changePage(direction) {
+  const filtered = getFilteredAndSortedCovers();
+  const totalPages = Math.ceil(filtered.length / coversPerPage);
+  
+  currentCoverPage = Math.max(1, Math.min(totalPages, currentCoverPage + direction));
+  renderCurrentView();
+}
+
+// Enhanced search functionality
+function setupSearchAndFilters() {
+  // Cover search
+  const searchInput = document.getElementById('coverSearch');
+  if (searchInput) {
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchTerm = e.target.value.toLowerCase();
+        currentCoverPage = 1; // Reset to first page
+        renderCurrentView();
+      }, 300);
+    });
+  }
+  
+  // Category filter
+  const categorySelect = document.getElementById('categoryFilter');
+  if (categorySelect) {
+    categorySelect.addEventListener('change', (e) => {
+      categoryFilter = e.target.value;
+      currentCoverPage = 1; // Reset to first page
+      renderCurrentView();
+    });
+  }
+  
+  // Sort order
+  const sortSelect = document.getElementById('sortOrder');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      sortOrder = e.target.value;
+      renderCurrentView();
+    });
+  }
+}
+
+// View mode toggle setup
+function setupViewModeToggles() {
+  document.querySelectorAll('.view-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setViewMode(btn.dataset.view);
+    });
+  });
+}
+
+// Enhanced keyboard shortcuts
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // Cmd/Ctrl + F to focus search
+    if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+      e.preventDefault();
+      const searchInput = document.getElementById('coverSearch');
+      if (searchInput) searchInput.focus();
+    }
+    
+    // Cmd/Ctrl + B for batch mode
+    if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+      e.preventDefault();
+      toggleBatchMode();
+    }
+    
+    // Multi-select asset shortcuts
+    if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+      e.preventDefault();
+      if (assetMultiSelectMode) {
+        selectAllAssets();
+      } else if (batchMode) {
+        selectAllCovers();
+      }
+    }
+    
+    // Escape to deselect all assets or exit batch mode
+    if (e.key === 'Escape') {
+      if (selectedAssets.size > 0) {
+        e.preventDefault();
+        deselectAllAssets();
+      } else if (batchMode) {
+        e.preventDefault();
+        toggleBatchMode();
+      }
+    }
+    
+    // Cmd/Ctrl + M for multi-select mode toggle
+    if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
+      e.preventDefault();
+      toggleMultiSelectMode();
+    }
+    
+    // Pagination shortcuts
+    if (e.key === 'ArrowLeft' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      changePage(-1);
+    }
+    
+    if (e.key === 'ArrowRight' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      changePage(1);
+    }
+    
+    // Delete key to delete selected assets
+    if (e.key === 'Delete' && selectedAssets.size > 0) {
+      e.preventDefault();
+      deleteSelectedAssets();
+    }
+  });
+}
+
+function selectAllCovers() {
+  const filtered = getFilteredAndSortedCovers();
+  filtered.forEach(cover => selectedCovers.add(cover.id));
+  renderCurrentView();
+  updateBatchCount();
+}
+
+function clearSelection() {
+  selectedCovers.clear();
+  renderCurrentView();
+  updateBatchCount();
+}
+
+// Enhanced batch operations
+function updateBatchCount() {
+  const count = selectedCovers.size;
+  const batchCount = document.querySelector('.batch-count');
+  if (batchCount) {
+    batchCount.textContent = `${count} selected`;
+  }
+  
+  // Update batch toolbar visibility
+  const batchToolbar = document.querySelector('.batch-toolbar');
+  if (batchToolbar) {
+    batchToolbar.style.display = count > 0 ? 'flex' : 'none';
+  }
+}
+
+// Expose global functions for compatibility
+window.clearSelection = clearSelection;
+window.changePage = changePage;
+window.setViewMode = setViewMode;
+window.handleCoverClick = handleCoverClick;
+
+// Onboarding and help system
+function showOnboardingTips() {
+  const hasSeenTips = localStorage.getItem('amf-admin-tips-seen');
+  if (hasSeenTips) return;
+  
+  setTimeout(() => {
+    showHelpTip('batch-mode', 'Try using batch mode to select and manage multiple covers at once! Press Ctrl+B or click the BATCH MODE button.', 3000);
+    
+    setTimeout(() => {
+      showHelpTip('search', 'Use Ctrl+F to quickly search through your covers. You can search by title, artist, or category.', 3000);
+      
+      setTimeout(() => {
+        showHelpTip('keyboard', 'Keyboard shortcuts: Ctrl+F (search), Ctrl+B (batch), Ctrl+M (multi-select), ESC (exit modes)', 4000);
+        localStorage.setItem('amf-admin-tips-seen', 'true');
+      }, 4000);
+    }, 3500);
+  }, 2000);
+}
+
+function showHelpTip(anchor, message, duration = 3000) {
+  const tip = document.createElement('div');
+  tip.className = 'help-tip';
+  tip.style.cssText = `
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: #333;
+    color: white;
+    padding: var(--space-md);
+    border-radius: 8px;
+    max-width: 300px;
+    z-index: 9999;
+    font-size: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    animation: slideInRight 0.3s ease-out;
+  `;
+  
+  tip.innerHTML = `
+    <div style="margin-bottom: 8px;">${message}</div>
+    <button onclick="this.parentNode.remove()" style="background: none; border: 1px solid white; color: white; padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 12px;">GOT IT</button>
+  `;
+  
+  document.body.appendChild(tip);
+  
+  setTimeout(() => {
+    if (tip.parentNode) {
+      tip.style.animation = 'slideOutRight 0.3s ease-in';
+      setTimeout(() => tip.remove(), 300);
+    }
+  }, duration);
+}
+
+// Help button and overlay
+function createHelpButton() {
+  const helpBtn = document.createElement('button');
+  helpBtn.innerHTML = '?';
+  helpBtn.className = 'help-button';
+  helpBtn.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--bg);
+    border: none;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 999;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  `;
+  
+  helpBtn.onclick = showHelpOverlay;
+  document.body.appendChild(helpBtn);
+}
+
+function showHelpOverlay() {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  `;
+  
+  const helpContent = document.createElement('div');
+  helpContent.style.cssText = `
+    background: var(--bg);
+    border: 1px solid var(--ink);
+    padding: var(--space-xl);
+    border-radius: 8px;
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+  `;
+  
+  helpContent.innerHTML = `
+    <h2 style="margin-top: 0;">Admin Dashboard Help</h2>
+    
+    <h3>Keyboard Shortcuts</h3>
+    <ul>
+      <li><kbd>Ctrl/Cmd + F</kbd> - Focus search box</li>
+      <li><kbd>Ctrl/Cmd + B</kbd> - Toggle batch mode</li>
+      <li><kbd>Ctrl/Cmd + M</kbd> - Toggle multi-select for assets</li>
+      <li><kbd>Ctrl/Cmd + A</kbd> - Select all (covers or assets)</li>
+      <li><kbd>Escape</kbd> - Exit batch mode or deselect all</li>
+      <li><kbd>Ctrl/Cmd + ←/→</kbd> - Navigate pages</li>
+      <li><kbd>Delete</kbd> - Delete selected assets</li>
+    </ul>
+    
+    <h3>Cover Management</h3>
+    <ul>
+      <li>Click any cover to edit its details</li>
+      <li>Use batch mode to select multiple covers for bulk operations</li>
+      <li>Drag and drop to reorder covers</li>
+      <li>Use different view modes: grid, list, or coverflow</li>
+    </ul>
+    
+    <h3>Asset Management</h3>
+    <ul>
+      <li>Drag and drop files to upload</li>
+      <li>Use folders to organize your assets</li>
+      <li>Multi-select mode for bulk operations</li>
+      <li>Copy asset URLs for use in covers</li>
+    </ul>
+    
+    <h3>Tips</h3>
+    <ul>
+      <li>Images are lazy-loaded for better performance</li>
+      <li>Use the search and filter options to find content quickly</li>
+      <li>Regular saves are recommended to prevent data loss</li>
+      <li>The system auto-saves when you make changes</li>
+    </ul>
+    
+    <div style="text-align: center; margin-top: var(--space-lg);">
+      <button class="btn" onclick="this.closest('.fixed').remove()">CLOSE</button>
+    </div>
+  `;
+  
+  overlay.appendChild(helpContent);
+  overlay.className = 'fixed';
+  document.body.appendChild(overlay);
+  
+  // Close on background click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      overlay.remove();
+    }
+  });
+  
+  // Close on ESC
+  document.addEventListener('keydown', function escHandler(e) {
+    if (e.key === 'Escape') {
+      document.removeEventListener('keydown', escHandler);
+      overlay.remove();
+    }
+  });
 } 
