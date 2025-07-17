@@ -110,6 +110,10 @@ const requireAuth = (requiredRole = 'viewer') => {
       if (req.xhr || req.headers.accept?.includes('application/json')) {
         return res.status(401).json({ error: 'Authentication required' });
       }
+      // Redirect to appropriate login page based on context
+      if (isAdminSubdomain(req) || req.path.startsWith('/admin/')) {
+        return res.redirect('/admin/login.html');
+      }
       return res.redirect('/login.html');
     }
     const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
@@ -263,7 +267,7 @@ app.use((req, res, next) => {
         if (isAuthenticated(req)) {
           return res.sendFile(path.join(ADMIN_DIR, 'index.html'));
         } else {
-          return res.redirect('/login.html');
+          return res.redirect('/admin/login.html');
         }
       }
       
@@ -289,7 +293,7 @@ if (process.env.NODE_ENV === 'development') {
       res.sendFile(filePath);
     } else {
       console.log('Not authenticated, redirecting to login');
-      res.redirect('/login.html');
+      res.redirect('/admin/login.html');
     }
   });
   

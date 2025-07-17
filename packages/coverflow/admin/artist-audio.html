@@ -432,7 +432,7 @@
             try {
                 const res = await fetch('/api/me');
                 if (!res.ok) {
-                    window.location.href = window.location.hostname.startsWith('admin.') ? '/' : '/admin/login.html';
+                    window.location.href = '/login.html';
                     return;
                 }
                 const data = await res.json();
@@ -440,7 +440,7 @@
                 document.getElementById('username').textContent = currentUser.username;
                 document.getElementById('userRole').textContent = currentUser.role.toUpperCase();
             } catch (err) {
-                window.location.href = window.location.hostname.startsWith('admin.') ? '/' : '/admin/login.html';
+                window.location.href = '/login.html';
             }
         }
 
@@ -448,7 +448,7 @@
         async function logout() {
             try {
                 await fetch('/api/logout', { method: 'POST' });
-                window.location.href = window.location.hostname.startsWith('admin.') ? '/' : '/admin/login.html';
+                window.location.href = '/login.html';
             } catch (err) {
                 showToast('LOGOUT FAILED', 'error');
             }

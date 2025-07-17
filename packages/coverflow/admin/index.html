@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
 // Logout function
 function logout() {
   fetch('/api/logout', { method: 'POST' })
-    .then(() => window.location.href = '/admin/login.html');
+    .then(() => window.location.href = '/login.html');
 }
 
 // Toast notification
