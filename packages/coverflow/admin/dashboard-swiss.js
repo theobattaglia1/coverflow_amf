@@ -51,6 +51,16 @@ let lastSelectedAssetIndex = -1;
 let draggedAssets = new Set();
 let isDraggingAssets = false;
 
+// Enhanced state for new features from dashboard.js
+let currentViewMode = 'grid';
+let showFullView = false;
+let currentCoverPage = 1;
+let coversPerPage = 20;
+let searchTerm = '';
+let categoryFilter = '';
+let sortOrder = 'index';
+let recentCovers = [];
+
 // Utility function to safely parse JSON responses
 async function safeJsonParse(response) {
   const text = await response.text();
@@ -161,8 +171,11 @@ async function init() {
   setupDragAndDrop();
   setupKeyboardShortcuts();
   setupMediaLibraryEventListeners();
+  setupSearchAndFilters();
+  setupViewModeToggles();
   updateCurrentFolderIndicator();
   renderRecentAssets();
+  renderRecentCovers();
 }
 
 // Load covers with smooth animation
@@ -183,53 +196,13 @@ async function loadCovers() {
 
 // Render covers with editorial layout
 function renderCovers(searchTerm = '') {
-  const container = document.getElementById('coversContainer');
-  container.innerHTML = '';
-  
-  // Filter covers based on search
-  const filteredCovers = covers.filter(cover => {
-    if (!searchTerm) return true;
-    const search = searchTerm.toLowerCase();
-    return (
-      cover.albumTitle?.toLowerCase().includes(search) ||
-      cover.coverLabel?.toLowerCase().includes(search) ||
-      cover.category?.some(cat => cat.toLowerCase().includes(search))
-    );
-  });
-  
-  // Create cover elements with staggered animation
-  filteredCovers.forEach((cover, index) => {
-    const coverEl = createCoverElement(cover, index);
-    container.appendChild(coverEl);
-    
-    // Staggered fade-in animation
-    setTimeout(() => {
-      coverEl.style.opacity = '1';
-      coverEl.style.transform = coverEl.style.transform.replace('translateY(20px)', 'translateY(0)');
-    }, index * 50);
-  });
-  
-  // Initialize Sortable with smooth animations
-  if (!searchTerm) {
-    new Sortable(container, {
-      animation: 200,
-      ghostClass: 'sortable-ghost',
-      chosenClass: 'sortable-chosen',
-      dragClass: 'sortable-drag',
-      onEnd: (evt) => {
-        // Update cover order
-        const newCovers = [...covers];
-        const [movedCover] = newCovers.splice(evt.oldIndex, 1);
-        newCovers.splice(evt.newIndex, 0, movedCover);
-        covers = newCovers;
-        
-        // Update indices
-        covers.forEach((cover, i) => cover.index = i);
-        hasChanges = true;
-        updateSaveButton();
-      }
-    });
+  // Update search term if provided
+  if (searchTerm !== undefined) {
+    this.searchTerm = searchTerm.toLowerCase();
   }
+  
+  // Use the new enhanced rendering system
+  renderCurrentView();
 }
 
 // Create cover element with professional styling
@@ -345,6 +318,11 @@ function editCover(cover) {
     closeModal();
     showToast('COVER UPDATED');
   };
+  
+  // Add modal dropzone functionality
+  const modalBody = document.getElementById('modalBody');
+  setupModalDropzone(modalBody);
+  
   openModal();
 }
 
@@ -786,6 +764,56 @@ async function uploadAndCreateCover(file) {
     console.error(err);
   } finally {
     hideLoading();
+  }
+}
+
+// Modal image upload functionality for drag & drop in edit modal
+async function handleModalImageUpload(file) {
+  const dropText = document.getElementById('modalDropzoneText');
+  dropText.textContent = 'Uploading...';
+  try {
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('folder', currentFolder || '');
+    const res = await fetch('/upload-image', { method: 'POST', body: formData });
+    const data = await res.json();
+    if (res.ok && data.url) {
+      // Add to assets immediately
+      if (!assets.images) assets.images = [];
+      assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
+      // Update the first image input field if present
+      const input = document.querySelector("#editCoverForm input[type='text'][name*='Image']");
+      if (input) {
+        input.value = data.url;
+        input.dispatchEvent(new Event('input'));
+      }
+      showToast('IMAGE UPLOADED');
+    } else {
+      showToast('UPLOAD FAILED: ' + (data.error || 'Unknown error'), 5000);
+    }
+  } catch (err) {
+    showToast('UPLOAD FAILED: ' + err.message, 5000);
+  } finally {
+    dropText.textContent = 'Drag & drop or click to upload';
+  }
+}
+
+function setupModalDropzone(container) {
+  // Setup drag & drop for modal
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    container.addEventListener(eventName, preventDefaults, false);
+  });
+  
+  container.addEventListener('drop', (e) => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleModalImageUpload(files[0]);
+    }
+  }, false);
+  
+  function preventDefaults(e) {
+    e.preventDefault();
+    e.stopPropagation();
   }
 }
 
@@ -2016,4 +2044,391 @@ async function moveSelectedAssetsToFolder(targetFolder) {
   } finally {
     hideLoading();
   }
-} 
+}
+
+// Enhanced search and filtering functions
+function getFilteredAndSortedCovers() {
+  let filtered = covers.filter(cover => {
+    // Search filter
+    if (searchTerm) {
+      const searchFields = [
+        cover.albumTitle || '',
+        cover.coverLabel || '',
+        cover.artistDetails?.name || '',
+        ...(Array.isArray(cover.category) ? cover.category : [cover.category || ''])
+      ].join(' ').toLowerCase();
+      
+      if (!searchFields.includes(searchTerm)) {
+        return false;
+      }
+    }
+    
+    // Category filter
+    if (categoryFilter) {
+      const categories = Array.isArray(cover.category) ? cover.category : [cover.category || ''];
+      if (!categories.includes(categoryFilter)) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+  
+  // Sort
+  filtered.sort((a, b) => {
+    switch (sortOrder) {
+      case 'title':
+        return (a.albumTitle || '').localeCompare(b.albumTitle || '');
+      case 'title-desc':
+        return (b.albumTitle || '').localeCompare(a.albumTitle || '');
+      case 'date':
+        return new Date(b.id) - new Date(a.id); // Newer first (higher ID)
+      case 'date-desc':
+        return new Date(a.id) - new Date(b.id); // Older first (lower ID)
+      default: // 'index'
+        return (a.index || 0) - (b.index || 0);
+    }
+  });
+  
+  return filtered;
+}
+
+function getRecentCovers() {
+  // Get the 6-8 most recently edited covers (based on ID as timestamp)
+  return [...covers]
+    .sort((a, b) => new Date(b.id) - new Date(a.id))
+    .slice(0, 8);
+}
+
+function renderRecentCovers() {
+  const container = document.getElementById('recentCoversContainer');
+  if (!container) return;
+  
+  const recent = getRecentCovers();
+  
+  container.innerHTML = recent.map(cover => createCompactCoverElement(cover)).join('');
+}
+
+function createCompactCoverElement(cover) {
+  return `
+    <div class="cover-item-compact" data-id="${cover.id}" onclick="editCover(${JSON.stringify(cover).replace(/"/g, '&quot;')})">
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy">
+      <div class="cover-meta-compact">
+        <div>${(cover.albumTitle || 'UNTITLED').slice(0, 20)}</div>
+      </div>
+    </div>
+  `;
+}
+
+// View mode functions
+function setViewMode(mode) {
+  currentViewMode = mode;
+  
+  // Update view toggle buttons
+  document.querySelectorAll('.view-toggle').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+  
+  renderCurrentView();
+}
+
+function renderCurrentView() {
+  const filtered = getFilteredAndSortedCovers();
+  
+  // Update pagination
+  updatePagination(filtered.length);
+  
+  // Get current page items
+  const start = (currentCoverPage - 1) * coversPerPage;
+  const end = start + coversPerPage;
+  const pageCovers = filtered.slice(start, end);
+  
+  const container = document.getElementById('coversContainer');
+  
+  switch (currentViewMode) {
+    case 'list':
+      renderListView(pageCovers, container);
+      break;
+    case 'coverflow':
+      renderCoverflowView(pageCovers, container);
+      break;
+    default: // 'grid'
+      renderGridView(pageCovers, container);
+      break;
+  }
+}
+
+function renderGridView(pageCovers, container) {
+  container.className = 'covers-grid';
+  container.innerHTML = pageCovers.map((cover, index) => createCoverElement(cover, index)).join('');
+}
+
+function renderListView(pageCovers, container) {
+  container.className = 'covers-list';
+  container.innerHTML = pageCovers.map(cover => createListCoverElement(cover)).join('');
+}
+
+function renderCoverflowView(pageCovers, container) {
+  container.className = 'covers-coverflow';
+  container.innerHTML = pageCovers.map(cover => createCoverflowCoverElement(cover)).join('');
+  
+  // Setup coverflow navigation
+  setupCoverflowNavigation();
+}
+
+function createListCoverElement(cover) {
+  const isSelected = selectedCovers.has(cover.id);
+  const rotation = 0;
+  
+  return `
+    <div class="cover-item-list ${isSelected ? 'selected' : ''}" 
+         data-id="${cover.id}" 
+         data-cover-id="${cover.id}"
+         onclick="handleCoverClick('${cover.id}')"
+         style="transform: rotate(${rotation}deg)">
+      ${batchMode ? `<input type="checkbox" class="cover-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleCoverSelection('${cover.id}')">` : ''}
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy">
+      <div class="cover-meta-list">
+        <div class="cover-title">${cover.albumTitle || 'UNTITLED'}</div>
+        <div class="cover-artist">${cover.artistDetails?.name || cover.coverLabel || 'UNKNOWN ARTIST'}</div>
+        <div class="cover-category">${Array.isArray(cover.category) ? cover.category.join(', ') : (cover.category || 'No category')}</div>
+      </div>
+    </div>
+  `;
+}
+
+function createCoverflowCoverElement(cover) {
+  const isSelected = selectedCovers.has(cover.id);
+  
+  return `
+    <div class="cover-item-coverflow ${isSelected ? 'selected' : ''}" 
+         data-id="${cover.id}" 
+         data-cover-id="${cover.id}"
+         onclick="handleCoverClick('${cover.id}')">
+      ${batchMode ? `<input type="checkbox" class="cover-checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleCoverSelection('${cover.id}')">` : ''}
+      <img src="${cover.frontImage || '/placeholder.jpg'}" 
+           alt="${cover.albumTitle || 'Untitled'}" 
+           class="cover-image"
+           loading="lazy">
+      <div class="cover-meta-coverflow">
+        <div>${cover.albumTitle || 'UNTITLED'}</div>
+      </div>
+    </div>
+  `;
+}
+
+function setupCoverflowNavigation() {
+  const container = document.getElementById('coversContainer');
+  const items = container.querySelectorAll('.cover-item-coverflow');
+  let focusedIndex = 0;
+  
+  function updateFocus(index) {
+    items.forEach((item, i) => {
+      item.classList.toggle('focused', i === index);
+    });
+    
+    // Scroll focused item into view
+    if (items[index]) {
+      items[index].scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'nearest',
+        inline: 'center'
+      });
+    }
+  }
+  
+  container.addEventListener('click', (e) => {
+    const item = e.target.closest('.cover-item-coverflow');
+    if (item) {
+      const index = Array.from(items).indexOf(item);
+      focusedIndex = index;
+      updateFocus(index);
+    }
+  });
+  
+  // Initialize with first item focused
+  if (items.length > 0) {
+    updateFocus(0);
+  }
+}
+
+function handleCoverClick(coverId) {
+  if (batchMode) {
+    toggleCoverSelection(coverId);
+  } else {
+    const cover = covers.find(c => c.id === coverId);
+    if (cover) {
+      editCover(cover);
+    }
+  }
+}
+
+function updatePagination(totalItems) {
+  const totalPages = Math.ceil(totalItems / coversPerPage);
+  const controls = document.getElementById('paginationControls');
+  const pageInfo = document.getElementById('pageInfo');
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  
+  if (!controls) return;
+  
+  if (totalPages <= 1) {
+    controls.style.display = 'none';
+    return;
+  }
+  
+  controls.style.display = 'flex';
+  if (pageInfo) pageInfo.textContent = `${currentCoverPage} / ${totalPages}`;
+  if (prevBtn) prevBtn.disabled = currentCoverPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentCoverPage >= totalPages;
+}
+
+function changePage(direction) {
+  const filtered = getFilteredAndSortedCovers();
+  const totalPages = Math.ceil(filtered.length / coversPerPage);
+  
+  currentCoverPage = Math.max(1, Math.min(totalPages, currentCoverPage + direction));
+  renderCurrentView();
+}
+
+// Enhanced search functionality
+function setupSearchAndFilters() {
+  // Cover search
+  const searchInput = document.getElementById('coverSearch');
+  if (searchInput) {
+    let searchTimeout;
+    
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchTerm = e.target.value.toLowerCase();
+        currentCoverPage = 1; // Reset to first page
+        renderCurrentView();
+      }, 300);
+    });
+  }
+  
+  // Category filter
+  const categorySelect = document.getElementById('categoryFilter');
+  if (categorySelect) {
+    categorySelect.addEventListener('change', (e) => {
+      categoryFilter = e.target.value;
+      currentCoverPage = 1; // Reset to first page
+      renderCurrentView();
+    });
+  }
+  
+  // Sort order
+  const sortSelect = document.getElementById('sortOrder');
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      sortOrder = e.target.value;
+      renderCurrentView();
+    });
+  }
+}
+
+// View mode toggle setup
+function setupViewModeToggles() {
+  document.querySelectorAll('.view-toggle').forEach(btn => {
+    btn.addEventListener('click', () => {
+      setViewMode(btn.dataset.view);
+    });
+  });
+}
+
+// Enhanced keyboard shortcuts
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', (e) => {
+    // Cmd/Ctrl + F to focus search
+    if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
+      e.preventDefault();
+      const searchInput = document.getElementById('coverSearch');
+      if (searchInput) searchInput.focus();
+    }
+    
+    // Cmd/Ctrl + B for batch mode
+    if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
+      e.preventDefault();
+      toggleBatchMode();
+    }
+    
+    // Multi-select asset shortcuts
+    if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+      e.preventDefault();
+      if (assetMultiSelectMode) {
+        selectAllAssets();
+      } else if (batchMode) {
+        selectAllCovers();
+      }
+    }
+    
+    // Escape to deselect all assets or exit batch mode
+    if (e.key === 'Escape') {
+      if (selectedAssets.size > 0) {
+        e.preventDefault();
+        deselectAllAssets();
+      } else if (batchMode) {
+        e.preventDefault();
+        toggleBatchMode();
+      }
+    }
+    
+    // Cmd/Ctrl + M for multi-select mode toggle
+    if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
+      e.preventDefault();
+      toggleMultiSelectMode();
+    }
+    
+    // Pagination shortcuts
+    if (e.key === 'ArrowLeft' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      changePage(-1);
+    }
+    
+    if (e.key === 'ArrowRight' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      changePage(1);
+    }
+  });
+}
+
+function selectAllCovers() {
+  const filtered = getFilteredAndSortedCovers();
+  filtered.forEach(cover => selectedCovers.add(cover.id));
+  renderCurrentView();
+  updateBatchCount();
+}
+
+function clearSelection() {
+  selectedCovers.clear();
+  renderCurrentView();
+  updateBatchCount();
+}
+
+// Enhanced batch operations
+function updateBatchCount() {
+  const count = selectedCovers.size;
+  const batchCount = document.querySelector('.batch-count');
+  if (batchCount) {
+    batchCount.textContent = `${count} selected`;
+  }
+  
+  // Update batch toolbar visibility
+  const batchToolbar = document.querySelector('.batch-toolbar');
+  if (batchToolbar) {
+    batchToolbar.style.display = count > 0 ? 'flex' : 'none';
+  }
+}
+
+// Expose global functions for compatibility
+window.clearSelection = clearSelection;
+window.changePage = changePage;
+window.setViewMode = setViewMode;
+window.handleCoverClick = handleCoverClick; 
