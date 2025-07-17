@@ -960,7 +960,7 @@ async function handleAssetUpload(files) {
     }
     if (uploadedAny) {
       await loadAssets();
-      renderAssets();
+      // renderAssets() is called within loadAssets()
     }
   } catch (err) {
     showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 5000);
@@ -1737,6 +1737,7 @@ async function createNewFolder() {
     
     showToast('Folder created successfully');
     await loadAssets();
+    // Note: renderAssets() is called within loadAssets() to avoid redundant DOM updates
   } catch (err) {
     showToast(err.message || 'Failed to create folder', 5000);
   } finally {
@@ -1764,6 +1765,7 @@ async function renameFolder(path) {
     
     showToast('Folder renamed successfully');
     await loadAssets();
+    // Note: renderAssets() is called within loadAssets() to avoid redundant DOM updates
   } catch (err) {
     showToast(err.message || 'Failed to rename folder', 5000);
   } finally {
@@ -1792,6 +1794,7 @@ async function deleteFolder(path) {
       navigateToFolder('');
     }
     await loadAssets();
+    // Note: renderAssets() is called within loadAssets() to avoid redundant DOM updates
   } catch (err) {
     showToast(err.message || 'Failed to delete folder', 5000);
   } finally {
