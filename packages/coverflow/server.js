@@ -330,7 +330,6 @@ app.use('/data', (req, res, next) => {
 
 // Multer setup for file uploads
 const assetUpload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 100 * 1024 * 1024 } });
-const loginLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true });
 
 // --- API Endpoints ---
 
@@ -347,16 +346,20 @@ app.get('/api/health', (req, res) => {
 });
 
 // Authentication
-app.post('/api/login', loginLimiter, async (req, res) => {
+app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
-    const users = await loadUsers();
-    const user = users.find(u => u.username === username);
-    if (!user || !(await bcrypt.compare(password, user.hash))) {
+
+    // Only allow login for the 'admin' user from env variable
+    if (
+      username === 'admin' &&
+      password === process.env.ADMIN_PASSWORD
+    ) {
+      req.session.user = { username: 'admin', role: 'admin' };
+      return res.json({ success: true, role: 'admin' });
+    } else {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
-    req.session.user = { username: user.username, role: user.role };
-    res.json({ success: true, role: user.role });
   } catch (err) {
     console.error('Login error:', err);
     res.status(500).json({ error: 'Login failed' });
