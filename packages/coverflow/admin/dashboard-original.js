@@ -180,7 +180,7 @@ function isAdminSubdomain() {
 
 // Helper to get the correct login URL
 function getLoginUrl() {
-  return isAdminSubdomain() ? '/' : '/admin/login.html';
+  return isAdminSubdomain() ? '/' : '/login.html';
 }
 
 // Toast notifications with configurable duration

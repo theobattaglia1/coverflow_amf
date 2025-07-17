@@ -289,7 +289,7 @@ if (process.env.NODE_ENV === 'development') {
       res.sendFile(filePath);
     } else {
       console.log('Not authenticated, redirecting to login');
-      res.redirect('/admin/login.html');
+      res.redirect('/login.html');
     }
   });
   

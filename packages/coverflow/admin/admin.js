@@ -53,7 +53,7 @@ async function checkAuth() {
       if (isAdminSubdomain()) {
         window.location.href = '/';
       } else {
-        window.location.href = '/admin/login.html';
+        window.location.href = '/login.html';
       }
       return;
     }
@@ -79,7 +79,7 @@ async function checkAuth() {
     if (isAdminSubdomain()) {
       window.location.href = '/';
     } else {
-      window.location.href = '/admin/login.html';
+      window.location.href = '/login.html';
     }
   }
 }
