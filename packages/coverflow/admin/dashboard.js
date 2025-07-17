@@ -1716,6 +1716,103 @@ function updateBatchInfo() {
   }
 }
 
+// Folder management functions
+async function createNewFolder() {
+  const name = prompt('Enter folder name:');
+  if (!name) return;
+  
+  showLoading();
+  try {
+    const res = await fetch('/api/folder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: currentFolder, name })
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error);
+    }
+    
+    showToast('Folder created successfully');
+    await loadAssets();
+  } catch (err) {
+    showToast(err.message || 'Failed to create folder', 5000);
+  } finally {
+    hideLoading();
+  }
+}
+
+async function renameFolder(path) {
+  const oldName = path.split('/').pop();
+  const newName = prompt('Enter new name:', oldName);
+  if (!newName || newName === oldName) return;
+  
+  showLoading();
+  try {
+    const res = await fetch('/api/folder/rename', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path, newName })
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error);
+    }
+    
+    showToast('Folder renamed successfully');
+    await loadAssets();
+  } catch (err) {
+    showToast(err.message || 'Failed to rename folder', 5000);
+  } finally {
+    hideLoading();
+  }
+}
+
+async function deleteFolder(path) {
+  if (!confirm(`Delete folder "${path.split('/').pop()}" and all its contents?`)) return;
+  
+  showLoading();
+  try {
+    const res = await fetch('/api/folder', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path })
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error);
+    }
+    
+    showToast('Folder deleted successfully');
+    if (currentFolder.startsWith(path)) {
+      navigateToFolder('');
+    }
+    await loadAssets();
+  } catch (err) {
+    showToast(err.message || 'Failed to delete folder', 5000);
+  } finally {
+    hideLoading();
+  }
+}
+
+function navigateToFolder(folder) {
+  currentFolder = folder;
+  
+  // Update active folder in UI
+  document.querySelectorAll('.folder-item').forEach(item => {
+    item.classList.toggle('active', 
+      (folder === '' && item.textContent.includes('ROOT')) ||
+      item.textContent.includes(folder.toUpperCase())
+    );
+  });
+  
+  renderFolders();
+  renderAssets();
+}
+
 // Make functions available globally
 window.toggleFullCoversView = toggleFullCoversView;
 window.setViewMode = setViewMode;
@@ -1723,4 +1820,13 @@ window.handleCoverClick = handleCoverClick;
 window.changePage = changePage;
 window.toggleCoverSelection = toggleCoverSelection;
 window.selectAllCovers = selectAllCovers;
-window.clearSelection = clearSelection; 
+window.clearSelection = clearSelection;
+
+// Make folder management functions globally available
+window.createNewFolder = createNewFolder;
+window.renameFolder = renameFolder;
+window.deleteFolder = deleteFolder;
+window.navigateToFolder = navigateToFolder;
+
+// Export aliases for consistency with HTML
+window.exportSelected = exportCovers; 

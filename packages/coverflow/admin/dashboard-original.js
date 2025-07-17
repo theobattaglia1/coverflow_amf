@@ -1334,4 +1334,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.cancelBatchMode = cancelBatchMode;
   window.deleteSelectedCovers = deleteSelectedCovers;
   window.exportSelectedCovers = exportSelectedCovers;
+  
+  // Make folder management functions globally available
+  window.createNewFolder = createNewFolder;
+  window.renameFolder = renameFolder;
+  window.deleteFolder = deleteFolder;
+  window.navigateToFolder = navigateToFolder;
 });
