@@ -313,21 +313,6 @@ async function handleModalImageUpload(file) {
   }
 }
 
-// Batch mode functionality
-function toggleBatchMode() {
-  batchMode = !batchMode;
-  selectedCovers.clear();
-  
-  document.body.classList.toggle('batch-active', batchMode);
-  document.getElementById('batchModeBtn').textContent = batchMode ? 'EXIT BATCH' : 'BATCH MODE';
-  document.getElementById('exportBtn').style.display = batchMode ? 'block' : 'none';
-  document.getElementById('deleteBtn').style.display = batchMode ? 'block' : 'none';
-  
-  if (!batchMode) {
-    renderCovers();
-  }
-}
-
 function toggleCoverSelection(coverId) {
   if (selectedCovers.has(coverId)) {
     selectedCovers.delete(coverId);
