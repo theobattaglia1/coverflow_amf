@@ -313,21 +313,6 @@ async function handleModalImageUpload(file) {
   }
 }
 
-// Batch mode functionality
-function toggleBatchMode() {
-  batchMode = !batchMode;
-  selectedCovers.clear();
-  
-  document.body.classList.toggle('batch-active', batchMode);
-  document.getElementById('batchModeBtn').textContent = batchMode ? 'EXIT BATCH' : 'BATCH MODE';
-  document.getElementById('exportBtn').style.display = batchMode ? 'block' : 'none';
-  document.getElementById('deleteBtn').style.display = batchMode ? 'block' : 'none';
-  
-  if (!batchMode) {
-    renderCovers();
-  }
-}
-
 function toggleCoverSelection(coverId) {
   if (selectedCovers.has(coverId)) {
     selectedCovers.delete(coverId);
@@ -1716,6 +1701,55 @@ function updateBatchInfo() {
   }
 }
 
+// Create new folder (added for compatibility with index.html)
+async function createNewFolder() {
+  const name = prompt('Enter folder name:');
+  if (!name) return;
+  
+  // Input validation
+  const trimmedName = name.trim();
+  if (!trimmedName) {
+    showToast('Folder name cannot be empty');
+    return;
+  }
+  
+  // Check for invalid characters
+  if (/[<>:"/\\|?*]/.test(trimmedName)) {
+    showToast('Folder name contains invalid characters');
+    return;
+  }
+  
+  // Check length
+  if (trimmedName.length > 100) {
+    showToast('Folder name too long (max 100 characters)');
+    return;
+  }
+  
+  showLoading();
+  try {
+    const res = await fetch('/api/folder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ path: currentFolder, name: trimmedName })
+    });
+    
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.error);
+    }
+    
+    showToast('Folder created successfully');
+    // Reload assets if available
+    if (typeof loadAssets === 'function') {
+      await loadAssets();
+    }
+  } catch (err) {
+    showToast(err.message || 'Failed to create folder');
+  } finally {
+    hideLoading();
+  }
+}
+
 // Make functions available globally
 window.toggleFullCoversView = toggleFullCoversView;
 window.setViewMode = setViewMode;
@@ -1723,4 +1757,5 @@ window.handleCoverClick = handleCoverClick;
 window.changePage = changePage;
 window.toggleCoverSelection = toggleCoverSelection;
 window.selectAllCovers = selectAllCovers;
-window.clearSelection = clearSelection; 
+window.clearSelection = clearSelection;
+window.createNewFolder = createNewFolder; 

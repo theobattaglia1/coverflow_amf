@@ -428,6 +428,27 @@ app.delete('/api/users/:username', requireAuth('admin'), async (req, res) => {
 app.post('/api/folder', requireAuth('editor'), async (req, res) => {
     try {
         const { path: folderPath, name } = req.body;
+        
+        // Input validation
+        if (!name || typeof name !== 'string') {
+            return res.status(400).json({ error: 'Folder name is required and must be a string' });
+        }
+        
+        const trimmedName = name.trim();
+        if (!trimmedName) {
+            return res.status(400).json({ error: 'Folder name cannot be empty' });
+        }
+        
+        // Check for invalid characters
+        if (/[<>:"/\\|?*]/.test(trimmedName)) {
+            return res.status(400).json({ error: 'Folder name contains invalid characters' });
+        }
+        
+        // Check length
+        if (trimmedName.length > 100) {
+            return res.status(400).json({ error: 'Folder name too long (max 100 characters)' });
+        }
+        
         const assetsPath = path.join(DATA_DIR, 'assets.json');
         const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
         const pathParts = folderPath ? folderPath.split('/').filter(Boolean) : [];
@@ -435,16 +456,18 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
         for (const part of pathParts) {
             if (!current.folders) current.folders = [];
             current = current.folders.find(f => f.name === part);
-            if (!current) return res.status(404).send('Parent folder not found');
+            if (!current) return res.status(404).json({ error: 'Parent folder not found' });
         }
         if (!current.children) current.children = [];
-        if (current.children.some(c => c.name === name)) {
+        if (current.children.some(c => c.name === trimmedName)) {
             return res.status(400).json({ error: 'Folder already exists' });
         }
-        current.children.push({ type: 'folder', name, children: [], folders: [] });
+        current.children.push({ type: 'folder', name: trimmedName, children: [], folders: [] });
         await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+        console.log(`✅ Folder created: ${trimmedName} at path: ${folderPath || 'root'}`);
         res.json({ success: true });
     } catch (err) {
+        console.error('❌ Error creating folder:', err);
         res.status(500).json({ error: 'Failed to create folder' });
     }
 });
@@ -452,6 +475,12 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
 app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
     try {
         const { path: folderPath } = req.body;
+        
+        // Input validation
+        if (!folderPath || typeof folderPath !== 'string') {
+            return res.status(400).json({ error: 'Folder path is required' });
+        }
+        
         const assetsPath = path.join(DATA_DIR, 'assets.json');
         const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
         const pathParts = folderPath.split('/').filter(Boolean);
@@ -463,10 +492,19 @@ app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
             if (!parent) return res.status(404).json({ error: 'Parent folder not found' });
         }
         if (!parent.children) return res.status(404).json({ error: 'Folder not found' });
+        
+        const initialLength = parent.children.length;
         parent.children = parent.children.filter(c => !(c.type === 'folder' && c.name === folderName));
+        
+        if (parent.children.length === initialLength) {
+            return res.status(404).json({ error: 'Folder not found' });
+        }
+        
         await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+        console.log(`✅ Folder deleted: ${folderName} from path: ${pathParts.join('/') || 'root'}`);
         res.json({ success: true });
     } catch (err) {
+        console.error('❌ Error deleting folder:', err);
         res.status(500).json({ error: 'Failed to delete folder' });
     }
 });
@@ -474,6 +512,31 @@ app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
 app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
     try {
         const { path: folderPath, newName } = req.body;
+        
+        // Input validation
+        if (!folderPath || typeof folderPath !== 'string') {
+            return res.status(400).json({ error: 'Folder path is required' });
+        }
+        
+        if (!newName || typeof newName !== 'string') {
+            return res.status(400).json({ error: 'New folder name is required and must be a string' });
+        }
+        
+        const trimmedNewName = newName.trim();
+        if (!trimmedNewName) {
+            return res.status(400).json({ error: 'New folder name cannot be empty' });
+        }
+        
+        // Check for invalid characters
+        if (/[<>:"/\\|?*]/.test(trimmedNewName)) {
+            return res.status(400).json({ error: 'New folder name contains invalid characters' });
+        }
+        
+        // Check length
+        if (trimmedNewName.length > 100) {
+            return res.status(400).json({ error: 'New folder name too long (max 100 characters)' });
+        }
+        
         const assetsPath = path.join(DATA_DIR, 'assets.json');
         const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
         const pathParts = folderPath.split('/').filter(Boolean);
@@ -485,12 +548,20 @@ app.put('/api/folder/rename', requireAuth('editor'), async (req, res) => {
             if (!parent) return res.status(404).json({ error: 'Parent folder not found' });
         }
         if (!parent.children) return res.status(404).json({ error: 'Folder not found' });
+        
+        // Check if new name already exists
+        if (parent.children.some(c => c.type === 'folder' && c.name === trimmedNewName)) {
+            return res.status(400).json({ error: 'A folder with this name already exists' });
+        }
+        
         const folder = parent.children.find(c => c.type === 'folder' && c.name === oldName);
         if (!folder) return res.status(404).json({ error: 'Folder not found' });
-        folder.name = newName;
+        folder.name = trimmedNewName;
         await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+        console.log(`✅ Folder renamed: ${oldName} -> ${trimmedNewName} at path: ${pathParts.join('/') || 'root'}`);
         res.json({ success: true });
     } catch (err) {
+        console.error('❌ Error renaming folder:', err);
         res.status(500).json({ error: 'Failed to rename folder' });
     }
 });
