@@ -180,7 +180,7 @@ async function init() {
 
 // Load covers with smooth animation
 async function loadCovers() {
-  showLoading();
+  showLoading('covers');
   
   try {
     const res = await fetch('/data/covers.json');
@@ -320,8 +320,8 @@ function editCover(cover) {
   };
   
   // Add modal dropzone functionality
-  const modalBody = document.getElementById('modalBody');
-  setupModalDropzone(modalBody);
+  const modalBodyElement = document.getElementById('modalBody');
+  setupModalDropzone(modalBodyElement);
   
   openModal();
 }
@@ -332,12 +332,113 @@ function toggleBatchMode() {
   selectedCovers.clear();
   
   document.body.classList.toggle('batch-active', batchMode);
-  document.getElementById('batchModeBtn').textContent = batchMode ? 'EXIT BATCH' : 'BATCH MODE';
-  document.getElementById('exportBtn').style.display = batchMode ? 'block' : 'none';
-  document.getElementById('deleteBtn').style.display = batchMode ? 'block' : 'none';
+  
+  // Update batch mode button
+  const batchBtn = document.getElementById('batchModeBtn');
+  if (batchBtn) {
+    batchBtn.textContent = batchMode ? 'EXIT BATCH' : 'BATCH MODE';
+    batchBtn.classList.toggle('btn-danger', batchMode);
+  }
+  
+  // Create or update batch toolbar
+  createBatchToolbar();
+  
+  // Show/hide batch operations
+  const exportBtn = document.getElementById('exportBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  if (exportBtn) exportBtn.style.display = batchMode ? 'block' : 'none';
+  if (deleteBtn) deleteBtn.style.display = batchMode ? 'block' : 'none';
+  
+  // Add batch mode badge to header
+  createBatchBadge();
   
   if (!batchMode) {
     renderCovers();
+    removeBatchToolbar();
+    removeBatchBadge();
+  } else {
+    // Re-render to show checkboxes
+    renderCurrentView();
+  }
+}
+
+function createBatchToolbar() {
+  if (!batchMode) return;
+  
+  // Remove existing toolbar if present
+  removeBatchToolbar();
+  
+  const toolbar = document.createElement('div');
+  toolbar.id = 'batchToolbar';
+  toolbar.className = 'batch-toolbar';
+  toolbar.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ink);
+    color: var(--bg);
+    padding: var(--space-md) var(--space-lg);
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    animation: slideUp 0.3s ease-out;
+  `;
+  
+  toolbar.innerHTML = `
+    <span class="batch-count">0 selected</span>
+    <button class="btn btn-sm" onclick="selectAllCovers()">SELECT ALL</button>
+    <button class="btn btn-sm" onclick="clearSelection()">CLEAR</button>
+    <button class="btn btn-sm btn-danger" onclick="deleteSelected()">DELETE SELECTED</button>
+    <button class="btn btn-sm" onclick="exportCovers()">EXPORT SELECTED</button>
+    <button class="btn btn-sm btn-secondary" onclick="toggleBatchMode()">EXIT BATCH</button>
+  `;
+  
+  document.body.appendChild(toolbar);
+}
+
+function removeBatchToolbar() {
+  const toolbar = document.getElementById('batchToolbar');
+  if (toolbar) {
+    toolbar.remove();
+  }
+}
+
+function createBatchBadge() {
+  if (!batchMode) return;
+  
+  // Remove existing badge if present
+  removeBatchBadge();
+  
+  const badge = document.createElement('div');
+  badge.id = 'batchBadge';
+  badge.className = 'batch-badge';
+  badge.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #ff4444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    z-index: 999;
+    animation: pulse 2s infinite;
+  `;
+  
+  badge.textContent = 'BATCH MODE ACTIVE';
+  
+  document.body.appendChild(badge);
+}
+
+function removeBatchBadge() {
+  const badge = document.getElementById('batchBadge');
+  if (badge) {
+    badge.remove();
   }
 }
 
@@ -349,12 +450,24 @@ function toggleCoverSelection(coverId) {
   }
   
   const coverEl = document.querySelector(`[data-id="${coverId}"]`);
-  coverEl.classList.toggle('selected', selectedCovers.has(coverId));
+  if (coverEl) {
+    coverEl.classList.toggle('selected', selectedCovers.has(coverId));
+    
+    // Update checkbox if present
+    const checkbox = coverEl.querySelector('.cover-checkbox');
+    if (checkbox) {
+      checkbox.checked = selectedCovers.has(coverId);
+    }
+  }
   
-  // Update button states
+  // Update batch count and button states
+  updateBatchCount();
+  
   const hasSelection = selectedCovers.size > 0;
-  document.getElementById('exportBtn').disabled = !hasSelection;
-  document.getElementById('deleteBtn').disabled = !hasSelection;
+  const exportBtn = document.getElementById('exportBtn');
+  const deleteBtn = document.getElementById('deleteBtn');
+  if (exportBtn) exportBtn.disabled = !hasSelection;
+  if (deleteBtn) deleteBtn.disabled = !hasSelection;
 }
 
 // Save changes with visual feedback
@@ -832,58 +945,272 @@ function setupEventListeners() {
 }
 
 // Keyboard shortcuts
-function setupKeyboardShortcuts() {
-  document.addEventListener('keydown', (e) => {
-    // Cmd/Ctrl + F to focus search
-    if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
-      e.preventDefault();
-      document.getElementById('coverSearch').focus();
-    }
+// Loading states
+// Enhanced loading states with skeleton screens
+function showLoading(type = 'default') {
+  const loadingEl = document.getElementById('loading');
+  if (loadingEl) {
+    loadingEl.style.display = 'block';
+  }
+  
+  // Add skeleton screens for specific content types
+  if (type === 'covers') {
+    showCoversSkeleton();
+  } else if (type === 'assets') {
+    showAssetsSkeleton();
+  }
+}
+
+function hideLoading() {
+  const loadingEl = document.getElementById('loading');
+  if (loadingEl) {
+    loadingEl.style.display = 'none';
+  }
+  
+  // Remove skeleton screens
+  hideSkeleton();
+}
+
+function showCoversSkeleton() {
+  const container = document.getElementById('coversContainer');
+  if (!container) return;
+  
+  container.innerHTML = Array(6).fill(0).map(() => `
+    <div class="cover-skeleton">
+      <div class="skeleton-image"></div>
+      <div class="skeleton-text"></div>
+      <div class="skeleton-text short"></div>
+    </div>
+  `).join('');
+  
+  container.classList.add('skeleton-mode');
+}
+
+function showAssetsSkeleton() {
+  const container = document.getElementById('assetGrid');
+  if (!container) return;
+  
+  container.innerHTML = Array(12).fill(0).map(() => `
+    <div class="asset-skeleton">
+      <div class="skeleton-image"></div>
+      <div class="skeleton-text short"></div>
+    </div>
+  `).join('');
+  
+  container.classList.add('skeleton-mode');
+}
+
+function hideSkeleton() {
+  const containers = document.querySelectorAll('.skeleton-mode');
+  containers.forEach(container => {
+    container.classList.remove('skeleton-mode');
+  });
+}
+
+// Progressive loading indicator
+function showProgressIndicator(message = 'Loading...', progress = 0) {
+  let indicator = document.getElementById('progressIndicator');
+  
+  if (!indicator) {
+    indicator = document.createElement('div');
+    indicator.id = 'progressIndicator';
+    indicator.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg);
+      border: 1px solid var(--ink);
+      padding: var(--space-lg);
+      border-radius: 8px;
+      z-index: 9999;
+      text-align: center;
+      min-width: 200px;
+    `;
     
-    // Cmd/Ctrl + B for batch mode
-    if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-      e.preventDefault();
-      toggleBatchMode();
-    }
+    indicator.innerHTML = `
+      <div class="progress-message" style="margin-bottom: var(--space-md);"></div>
+      <div class="progress-bar" style="background: #eee; height: 4px; border-radius: 2px; overflow: hidden;">
+        <div class="progress-fill" style="background: var(--ink); height: 100%; width: 0%; transition: width 0.3s ease;"></div>
+      </div>
+      <div class="progress-percent" style="margin-top: var(--space-sm); font-size: 12px; color: #666;"></div>
+    `;
     
-    // Multi-select asset shortcuts
-    if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
-      e.preventDefault();
-      if (assetMultiSelectMode) {
-        selectAllAssets();
+    document.body.appendChild(indicator);
+  }
+  
+  indicator.querySelector('.progress-message').textContent = message;
+  indicator.querySelector('.progress-fill').style.width = progress + '%';
+  indicator.querySelector('.progress-percent').textContent = Math.round(progress) + '%';
+  indicator.style.display = 'block';
+}
+
+function hideProgressIndicator() {
+  const indicator = document.getElementById('progressIndicator');
+  if (indicator) {
+    indicator.style.display = 'none';
+  }
+}
+
+// Confirmation dialog utility
+function showConfirmDialog(message, onConfirm, onCancel = null) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    
+    const dialog = document.createElement('div');
+    dialog.style.cssText = `
+      background: var(--bg);
+      border: 1px solid var(--ink);
+      padding: var(--space-xl);
+      border-radius: 8px;
+      max-width: 400px;
+      text-align: center;
+    `;
+    
+    dialog.innerHTML = `
+      <div style="margin-bottom: var(--space-lg); font-weight: bold;">${message}</div>
+      <div style="display: flex; gap: var(--space-md); justify-content: center;">
+        <button class="btn btn-secondary" id="cancelBtn">CANCEL</button>
+        <button class="btn btn-danger" id="confirmBtn">CONFIRM</button>
+      </div>
+    `;
+    
+    overlay.appendChild(dialog);
+    document.body.appendChild(overlay);
+    
+    // Focus management
+    dialog.querySelector('#confirmBtn').focus();
+    
+    // Event handlers
+    const cleanup = (result) => {
+      document.body.removeChild(overlay);
+      resolve(result);
+    };
+    
+    dialog.querySelector('#confirmBtn').onclick = () => {
+      cleanup(true);
+      if (onConfirm) onConfirm();
+    };
+    
+    dialog.querySelector('#cancelBtn').onclick = () => {
+      cleanup(false);
+      if (onCancel) onCancel();
+    };
+    
+    // ESC to cancel
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') {
+        document.removeEventListener('keydown', escHandler);
+        cleanup(false);
+        if (onCancel) onCancel();
+      }
+    });
+    
+    // Click outside to cancel
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        cleanup(false);
+        if (onCancel) onCancel();
+      }
+    });
+  });
+}
+
+// Enhanced modal functions with accessibility
+function openModal() {
+  const modal = document.getElementById('coverModal');
+  if (!modal) return;
+  
+  modal.classList.add('active');
+  
+  // Set ARIA attributes
+  modal.setAttribute('aria-modal', 'true');
+  modal.setAttribute('role', 'dialog');
+  
+  // Focus management - focus first focusable element
+  const firstFocusable = modal.querySelector('input, button, select, textarea, [tabindex]:not([tabindex="-1"])');
+  if (firstFocusable) {
+    firstFocusable.focus();
+  }
+  
+  // Trap focus within modal
+  setupFocusTrap(modal);
+  
+  // Prevent body scroll
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  const modal = document.getElementById('coverModal');
+  if (!modal) return;
+  
+  modal.classList.remove('active');
+  
+  // Remove ARIA attributes
+  modal.removeAttribute('aria-modal');
+  modal.removeAttribute('role');
+  
+  // Restore body scroll
+  document.body.style.overflow = '';
+  
+  // Return focus to trigger element (usually a button)
+  const lastActiveElement = document.querySelector('.btn:focus, button:focus');
+  if (lastActiveElement) {
+    lastActiveElement.focus();
+  }
+}
+
+function setupFocusTrap(modal) {
+  const focusableElements = modal.querySelectorAll(
+    'input, button, select, textarea, [tabindex]:not([tabindex="-1"])'
+  );
+  
+  if (focusableElements.length === 0) return;
+  
+  const firstFocusable = focusableElements[0];
+  const lastFocusable = focusableElements[focusableElements.length - 1];
+  
+  // Handle Tab and Shift+Tab
+  modal.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      if (e.shiftKey) {
+        // Shift + Tab
+        if (document.activeElement === firstFocusable) {
+          e.preventDefault();
+          lastFocusable.focus();
+        }
+      } else {
+        // Tab
+        if (document.activeElement === lastFocusable) {
+          e.preventDefault();
+          firstFocusable.focus();
+        }
       }
     }
     
-    // Escape to deselect all assets
+    // ESC to close
     if (e.key === 'Escape') {
-      if (selectedAssets.size > 0) {
-        e.preventDefault();
-        deselectAllAssets();
-      }
-    }
-    
-    // Cmd/Ctrl + M for multi-select mode toggle
-    if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
       e.preventDefault();
-      toggleMultiSelectMode();
-    }
-    
-    // Delete key to delete selected assets
-    if (e.key === 'Delete' && selectedAssets.size > 0) {
-      e.preventDefault();
-      deleteSelectedAssets();
+      closeModal();
     }
   });
 }
 
-// Loading states
-function showLoading() {
-  document.getElementById('loading').style.display = 'block';
-}
-
-function hideLoading() {
-  document.getElementById('loading').style.display = 'none';
-}
+// Expose modal functions globally
+window.openModal = openModal;
+window.closeModal = closeModal;
 
 // Toast notifications with click to dismiss
 function showToast(message, duration = 3000) {
@@ -1004,19 +1331,32 @@ async function deleteSelected() {
   const count = selectedCovers.size;
   if (count === 0) return;
   
-  if (!confirm(`DELETE ${count} SELECTED COVERS?`)) return;
+  const confirmed = await showConfirmDialog(
+    `Are you sure you want to DELETE ${count} selected cover${count > 1 ? 's' : ''}? This action cannot be undone.`
+  );
   
-  covers = covers.filter(c => !selectedCovers.has(c.id));
+  if (!confirmed) return;
   
-  // Re-index
-  covers.forEach((cover, i) => cover.index = i);
+  showProgressIndicator('Deleting covers...', 0);
   
-  hasChanges = true;
-  updateSaveButton();
-  toggleBatchMode();
-  renderCovers();
-  
-  showToast(`DELETED ${count} COVERS`);
+  try {
+    covers = covers.filter(c => !selectedCovers.has(c.id));
+    
+    // Re-index
+    covers.forEach((cover, i) => cover.index = i);
+    
+    hasChanges = true;
+    updateSaveButton();
+    toggleBatchMode();
+    renderCovers();
+    
+    showToast(`DELETED ${count} COVER${count > 1 ? 'S' : ''}`);
+  } catch (error) {
+    showToast('FAILED TO DELETE COVERS', 5000);
+    console.error('Delete error:', error);
+  } finally {
+    hideProgressIndicator();
+  }
 }
 
 // Asset management functions
@@ -2395,6 +2735,12 @@ function setupKeyboardShortcuts() {
     if (e.key === 'ArrowRight' && (e.metaKey || e.ctrlKey)) {
       e.preventDefault();
       changePage(1);
+    }
+    
+    // Delete key to delete selected assets
+    if (e.key === 'Delete' && selectedAssets.size > 0) {
+      e.preventDefault();
+      deleteSelectedAssets();
     }
   });
 }
