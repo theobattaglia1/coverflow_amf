@@ -1301,6 +1301,18 @@ function filterCovers(query) {
   noResults.style.display = visibleCount === 0 && query ? 'block' : 'none';
 }
 
+// Theme toggle function
+function toggleTheme() {
+  const body = document.body;
+  if (body.classList.contains('dark-theme')) {
+    body.classList.remove('dark-theme');
+    localStorage.setItem('theme', 'light');
+  } else {
+    body.classList.add('dark-theme');
+    localStorage.setItem('theme', 'dark');
+  }
+}
+
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', async () => {
   await checkAuth();
@@ -1334,4 +1346,16 @@ document.addEventListener('DOMContentLoaded', async () => {
   window.cancelBatchMode = cancelBatchMode;
   window.deleteSelectedCovers = deleteSelectedCovers;
   window.exportSelectedCovers = exportSelectedCovers;
+  
+  // Make folder management functions globally available
+  window.createNewFolder = createNewFolder;
+  window.renameFolder = renameFolder;
+  window.deleteFolder = deleteFolder;
+  window.navigateToFolder = navigateToFolder;
+  
+  // Make admin functions globally available
+  window.testGitHub = testGitHub;
+  window.forceBackupToGitHub = forceBackupToGitHub;
+  window.showUsersSection = showUsersSection;
+  window.toggleTheme = toggleTheme;
 });
