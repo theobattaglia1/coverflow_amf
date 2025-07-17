@@ -51,6 +51,12 @@ let lastSelectedAssetIndex = -1;
 let draggedAssets = new Set();
 let isDraggingAssets = false;
 
+// Audio state management
+let audioFiles = [];
+let selectedAudioFiles = new Set();
+let currentAudioFolder = '';
+let audioFolders = [];
+
 // Enhanced state for new features from dashboard.js
 let currentViewMode = 'grid';
 let showFullView = false;
@@ -167,6 +173,7 @@ async function init() {
   
   await loadCovers();
   await loadAssets();
+  await loadAudioFiles(); // Load audio files
   setupEventListeners();
   setupDragAndDrop();
   setupKeyboardShortcuts();
@@ -2370,6 +2377,54 @@ function deselectAllAssets() {
   showToast('ALL ASSETS DESELECTED');
 }
 
+// Batch operation functions for the toolbar
+function moveSelectedAssets() {
+  if (selectedAssets.size === 0) {
+    showToast('NO ASSETS SELECTED');
+    return;
+  }
+  
+  // Create a simple folder picker modal
+  const folderNames = [];
+  const addFolderNames = (children, prefix = '') => {
+    children.forEach(child => {
+      if (child.type === 'folder') {
+        folderNames.push(prefix + child.name);
+        if (child.children) {
+          addFolderNames(child.children, prefix + child.name + '/');
+        }
+      }
+    });
+  };
+  
+  if (assets.children) {
+    addFolderNames(assets.children);
+  }
+  
+  const folderChoice = prompt('Move to folder:\n- ROOT (leave empty)\n- ' + folderNames.join('\n- '), '');
+  if (folderChoice === null) return; // User cancelled
+  
+  const targetFolder = folderChoice.trim() === '' ? '' : folderChoice.trim();
+  moveSelectedAssetsToFolder(targetFolder);
+}
+
+function downloadSelectedAssets() {
+  if (selectedAssets.size === 0) {
+    showToast('NO ASSETS SELECTED');
+    return;
+  }
+  
+  // For now, show a message about download functionality
+  // This would need backend implementation to create a zip file
+  showToast(`DOWNLOAD OF ${selectedAssets.size} ASSETS NOT YET IMPLEMENTED`);
+  
+  // TODO: Implement actual download functionality
+  // Could be:
+  // 1. Create a zip file on the server with selected assets
+  // 2. Return a download link
+  // 3. Trigger download in browser
+}
+
 function toggleMultiSelectMode() {
   assetMultiSelectMode = !assetMultiSelectMode;
   document.body.classList.toggle('asset-multi-select-mode', assetMultiSelectMode);
@@ -2401,10 +2456,24 @@ function toggleMultiSelectMode() {
 
 function updateAssetSelectionCounter() {
   const counter = document.getElementById('assetSelectionCounter');
+  const batchToolbar = document.getElementById('assetBatchToolbar');
+  const selectedCountSpan = document.getElementById('assetSelectedCount');
+  
+  const count = selectedAssets.size;
+  
   if (counter) {
-    const count = selectedAssets.size;
     counter.textContent = count > 0 ? `${count} SELECTED` : '';
     counter.style.display = count > 0 ? 'block' : 'none';
+  }
+  
+  // Show/hide batch toolbar
+  if (batchToolbar) {
+    batchToolbar.style.display = count > 0 ? 'flex' : 'none';
+  }
+  
+  // Update selected count in batch toolbar
+  if (selectedCountSpan) {
+    selectedCountSpan.textContent = count;
   }
 }
 
@@ -3101,4 +3170,195 @@ function showHelpOverlay() {
       overlay.remove();
     }
   });
+}
+
+// ===== AUDIO MANAGEMENT FUNCTIONS =====
+
+// Audio file management
+function loadAudioFiles() {
+  // For now, load audio files from the assets.json
+  // In the future, this could be a separate endpoint
+  fetch('/data/assets.json')
+    .then(res => res.json())
+    .then(data => {
+      // Filter for audio files
+      audioFiles = (data.images || []).filter(asset => 
+        asset.url && (
+          asset.url.includes('.mp3') || 
+          asset.url.includes('.wav') || 
+          asset.url.includes('.m4a') || 
+          asset.url.includes('.ogg') ||
+          asset.url.includes('.aac')
+        )
+      );
+      renderAudioFiles();
+    })
+    .catch(err => {
+      console.error('Failed to load audio files:', err);
+      showToast('FAILED TO LOAD AUDIO FILES', 'error');
+    });
+}
+
+function renderAudioFiles() {
+  const container = document.getElementById('audioContainer');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  audioFiles.forEach((audio, index) => {
+    const audioDiv = document.createElement('div');
+    audioDiv.className = `audio-item ${selectedAudioFiles.has(audio.url) ? 'selected' : ''}`;
+    audioDiv.dataset.audioId = audio.url;
+    
+    audioDiv.innerHTML = `
+      <div class="audio-item-content">
+        <input type="checkbox" class="audio-checkbox" ${selectedAudioFiles.has(audio.url) ? 'checked' : ''} 
+               onchange="toggleAudioSelection('${audio.url}')">
+        <div class="audio-player">
+          <audio controls style="width: 100%;">
+            <source src="${audio.url}" type="audio/mpeg">
+            Your browser does not support the audio element.
+          </audio>
+        </div>
+        <div class="audio-info">
+          <input type="text" class="audio-filename" value="${audio.filename || 'audio-file'}" 
+                 onchange="updateAudioMetadata('${audio.url}', 'filename', this.value)">
+          <div class="audio-url" onclick="copyAudioUrl('${audio.url}')" title="Click to copy URL">
+            ${audio.url}
+          </div>
+          <button class="btn btn-danger btn-sm" onclick="deleteAudioFile('${audio.url}')">DELETE</button>
+        </div>
+      </div>
+    `;
+    
+    container.appendChild(audioDiv);
+  });
+  
+  updateAudioSelectionCounter();
+}
+
+function toggleAudioSelection(audioUrl) {
+  if (selectedAudioFiles.has(audioUrl)) {
+    selectedAudioFiles.delete(audioUrl);
+  } else {
+    selectedAudioFiles.add(audioUrl);
+  }
+  renderAudioFiles();
+}
+
+function updateAudioSelectionCounter() {
+  const batchToolbar = document.getElementById('audioBatchToolbar');
+  const selectedCountSpan = document.getElementById('audioSelectedCount');
+  
+  const count = selectedAudioFiles.size;
+  
+  // Show/hide batch toolbar
+  if (batchToolbar) {
+    batchToolbar.style.display = count > 0 ? 'flex' : 'none';
+  }
+  
+  // Update selected count in batch toolbar
+  if (selectedCountSpan) {
+    selectedCountSpan.textContent = count;
+  }
+}
+
+function copyAudioUrl(url) {
+  navigator.clipboard.writeText(url);
+  showToast('AUDIO URL COPIED TO CLIPBOARD');
+}
+
+function deleteAudioFile(url) {
+  if (!confirm('DELETE THIS AUDIO FILE?')) return;
+  
+  // Call the same delete endpoint as for other assets
+  fetch('/api/assets/bulk-delete', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ assetUrls: [url] })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      audioFiles = audioFiles.filter(audio => audio.url !== url);
+      selectedAudioFiles.delete(url);
+      renderAudioFiles();
+      showToast('AUDIO FILE DELETED');
+    } else {
+      showToast('FAILED TO DELETE AUDIO FILE', 'error');
+    }
+  })
+  .catch(err => {
+    console.error('Delete failed:', err);
+    showToast('DELETE FAILED', 'error');
+  });
+}
+
+function updateAudioMetadata(url, field, value) {
+  // Update the metadata for the audio file
+  const audio = audioFiles.find(a => a.url === url);
+  if (audio) {
+    audio[field] = value;
+    // You could add a save endpoint here to persist metadata changes
+    showToast('AUDIO METADATA UPDATED');
+  }
+}
+
+// Audio batch operations
+function moveSelectedAudio() {
+  if (selectedAudioFiles.size === 0) {
+    showToast('NO AUDIO FILES SELECTED');
+    return;
+  }
+  showToast('AUDIO MOVE FUNCTIONALITY NOT YET IMPLEMENTED');
+}
+
+function downloadSelectedAudio() {
+  if (selectedAudioFiles.size === 0) {
+    showToast('NO AUDIO FILES SELECTED');
+    return;
+  }
+  showToast(`DOWNLOAD OF ${selectedAudioFiles.size} AUDIO FILES NOT YET IMPLEMENTED`);
+}
+
+function deleteSelectedAudio() {
+  if (selectedAudioFiles.size === 0) return;
+  
+  const count = selectedAudioFiles.size;
+  if (!confirm(`DELETE ${count} SELECTED AUDIO FILE${count > 1 ? 'S' : ''}?`)) return;
+  
+  showLoading();
+  
+  fetch('/api/assets/bulk-delete', {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ assetUrls: Array.from(selectedAudioFiles) })
+  })
+  .then(res => res.json())
+  .then(data => {
+    if (data.success) {
+      audioFiles = audioFiles.filter(audio => !selectedAudioFiles.has(audio.url));
+      selectedAudioFiles.clear();
+      renderAudioFiles();
+      showToast(`${count} AUDIO FILE${count > 1 ? 'S' : ''} DELETED`);
+    } else {
+      showToast('FAILED TO DELETE AUDIO FILES', 'error');
+    }
+    hideLoading();
+  })
+  .catch(err => {
+    console.error('Bulk delete failed:', err);
+    showToast('DELETE FAILED', 'error');
+    hideLoading();
+  });
+}
+
+function deselectAllAudio() {
+  selectedAudioFiles.clear();
+  renderAudioFiles();
+  showToast('ALL AUDIO FILES DESELECTED');
+}
+
+function createNewAudioFolder() {
+  showToast('AUDIO FOLDER CREATION NOT YET IMPLEMENTED');
 } 

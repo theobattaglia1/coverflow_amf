@@ -1361,6 +1361,123 @@ a:hover {
   gap: var(--space-sm);
 }
 
+/* Batch Toolbar for Assets and Audio */
+.batch-toolbar {
+  position: fixed;
+  bottom: var(--space-lg);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--ink);
+  color: var(--paper);
+  padding: var(--space-md) var(--space-lg);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  min-width: 400px;
+  backdrop-filter: blur(10px);
+}
+
+.batch-toolbar .batch-info {
+  color: var(--paper);
+  font-weight: 600;
+}
+
+.batch-toolbar .batch-actions .btn {
+  background: var(--paper);
+  color: var(--ink);
+  border: none;
+}
+
+.batch-toolbar .batch-actions .btn:hover {
+  background: var(--grey-100);
+}
+
+.batch-toolbar .batch-actions .btn-danger {
+  background: #ff4444;
+  color: var(--paper);
+}
+
+.batch-toolbar .batch-actions .btn-danger:hover {
+  background: #ff6666;
+}
+
+/* Audio Management Styles */
+.audio-browser {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--space-xl);
+  margin-bottom: var(--space-xl);
+}
+
+.audio-content {
+  padding: var(--space-lg);
+}
+
+.audio-grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.audio-item {
+  border: 1px solid var(--grey-300);
+  padding: var(--space-lg);
+  background: var(--paper);
+  transition: all var(--transition);
+}
+
+.audio-item.selected {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.audio-item-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: var(--space-md);
+  align-items: start;
+}
+
+.audio-checkbox {
+  margin-top: var(--space-sm);
+}
+
+.audio-player {
+  min-width: 0;
+}
+
+.audio-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  min-width: 200px;
+}
+
+.audio-filename {
+  padding: var(--space-sm);
+  border: 1px solid var(--grey-300);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+}
+
+.audio-url {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--grey-500);
+  cursor: pointer;
+  word-break: break-all;
+  padding: var(--space-sm);
+  background: var(--grey-50);
+  border: 1px solid var(--grey-100);
+}
+
+.audio-url:hover {
+  background: var(--grey-100);
+  color: var(--accent);
+}
+
 /* View Modes */
 .covers-main-container {
   margin-bottom: var(--space-xl);
