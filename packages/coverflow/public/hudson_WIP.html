@@ -256,13 +256,13 @@
         
         .hero-image{
             position:absolute;
-            right:-10%;
-            top:50%;
-            transform:translateY(-50%) rotate(-2deg);
-            width:45vw;
-            height:70vh;
-            object-fit:cover;
-            z-index:1;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(-2deg);
+            width: clamp(400px, 45vw, 650px); /* DYNAMIC & CONSTRAINED SIZE */
+            height: 70vh;
+            object-fit: cover;
+            z-index: 1;
         }
         
         /* ———————————— 7. Story Section */
