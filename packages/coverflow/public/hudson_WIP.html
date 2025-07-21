@@ -942,16 +942,18 @@
 
             .hero {
                 align-items: flex-start;
-                padding-top: 140px; /* Push content below nav */
-                padding-bottom: 50vh; /* Ensure space above bottom image */
+                padding-top: 150px; /* Increased padding to clear nav */
+                padding-bottom: 45vh; /* Ensure space above bottom image */
+                box-sizing: border-box;
             }
             .hero-image{
                 width:100%;
-                height:45vh;
+                height: 40vh; /* Adjusted height */
                 right:0;
                 top:auto;
                 bottom:0;
                 transform:none;
+                object-position: center 25%; /* Focus on upper part of image */
             }
             .hero h1.display {
                 font-size: var(--step-5);
@@ -1166,11 +1168,11 @@
                 </ul>
             </div>
             <div class="ep-card">
-                <h4 class="editable-text">Pt 2 — Summer '26</h4>
+                <h4 class="editable-text">Pt 2 — Fall/Winter '26</h4>
                 <p class="editable-text">A restless-road phase exploring the space between who you were and who you're becoming. 3-4 new songs.</p>
             </div>
             <div class="ep-card">
-                <h4 class="editable-text">Pt 3 — Fall '26</h4>
+                <h4 class="editable-text">Pt 3 — Spring/Summer '27</h4>
                 <p class="editable-text">The return-home reckoning. A confrontation with the ghosts you left behind. 3-4 new songs.</p>
             </div>
         </div>
