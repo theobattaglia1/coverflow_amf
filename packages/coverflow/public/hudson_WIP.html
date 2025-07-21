@@ -261,8 +261,14 @@
             transform: translateY(-50%) rotate(-2deg);
             width: clamp(400px, 45vw, 650px); /* DYNAMIC & CONSTRAINED SIZE */
             height: 70vh;
-            object-fit: cover;
             z-index: 1;
+        }
+        
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
         }
         
         /* ———————————— 7. Story Section */
@@ -943,17 +949,25 @@
             .hero {
                 align-items: flex-start;
                 padding-top: 150px; /* Increased padding to clear nav */
-                padding-bottom: 45vh; /* Ensure space above bottom image */
+                padding-bottom: 0; /* Remove bottom padding since image is now relative */
                 box-sizing: border-box;
+                min-height: 100vh; /* Ensure full viewport height */
             }
             .hero-image{
-                width:100%;
-                height: 40vh; /* Adjusted height */
-                right:0;
-                top:auto;
-                bottom:0;
-                transform:none;
-                object-position: center 25%; /* Focus on upper part of image */
+                width: 100%;
+                height: 60vh; /* Increased height for better mobile experience */
+                right: 0;
+                top: auto;
+                bottom: 0;
+                transform: none;
+                position: relative; /* Change to relative for better mobile layout */
+            }
+            
+            .hero-image img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                object-position: center 20%; /* Focus on upper part of image */
             }
             .hero h1.display {
                 font-size: var(--step-5);
@@ -994,6 +1008,28 @@
             }
             .text-toolbar label {
                 display: none; /* Save space on mobile */
+            }
+        }
+        
+        /* Additional mobile optimizations for very small screens */
+        @media (max-width: 480px) {
+            .hero-image {
+                height: 50vh; /* Slightly smaller on very small screens */
+            }
+            
+            .hero-image img {
+                object-position: center 15%; /* Adjust focus point for smaller screens */
+            }
+        }
+        
+        /* Landscape mobile optimization */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .hero-image {
+                height: 80vh; /* Taller in landscape mode */
+            }
+            
+            .hero {
+                padding-top: 100px; /* Less top padding in landscape */
             }
         }
     </style>
