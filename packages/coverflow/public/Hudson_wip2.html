@@ -1236,6 +1236,50 @@
         </div>
     </nav>
 
+    <!-- Mobile Navigation Overlay -->
+    <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
+    <!-- Mobile Navigation Panel -->
+    <div class="nav-panel" id="navPanel" role="navigation" aria-label="Mobile navigation">
+        <div class="nav-panel-header">
+            <div class="nav-logo" style="width: 120px;">
+                <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303.29 194.06">
+                  <defs>
+                    <style>
+                      .cls-1, .cls-2 {
+                        stroke: #231f20;
+                        stroke-width: 2px;
+                        fill: none;
+                      }
+                      .cls-2 {
+                        opacity: .24;
+                      }
+                      .cls-3 {
+                        fill: #c2b59b;
+                      }
+                    </style>
+                  </defs>
+                  <path class="cls-3" d="M108.01,128.84c-.29.31-.47.59-.87.4.39-.14.43-1.14,1.16-.43.15.14.35.33.29.6-.01.05-.14.12-.2.11-.37-.03-.23-.4-.38-.68Z"/>
+                </svg>
+            </div>
+            <button class="nav-panel-close" id="navPanelClose" aria-label="Close navigation">
+                &times;
+            </button>
+        </div>
+        <div class="nav-panel-links">
+            <a href="#overview" class="nav-panel-link">Overview</a>
+            <a href="#rollout" class="nav-panel-link">Rollout</a>
+            <a href="#positioning" class="nav-panel-link">Positioning</a>
+            <a href="#opportunity" class="nav-panel-link">Opportunity</a>
+            <a href="#brand" class="nav-panel-link">Brand</a>
+            <a href="#music" class="nav-panel-link">Music</a>
+            <a href="#visual" class="nav-panel-link">Visual</a>
+            <a href="#promo" class="nav-panel-link">Promo</a>
+            <a href="#live" class="nav-panel-link">Live & Merch</a>
+            <a href="#recap" class="nav-panel-link">Recap</a>
+        </div>
+    </div>
+
     <div class="chapter-intro full-screen" id="fullScreenIntro">
         <div class="chapter-number">01</div>
         <div class="chapter-text-block">
@@ -2531,6 +2575,97 @@
 
             // Start the first animation after the initial page intro (2.5s)
             setTimeout(scheduleNextAnimation, 2500);
+
+            // ———————————— Mobile Navigation Functionality ————————————
+            const navToggle = document.getElementById('navToggle');
+            const navOverlay = document.getElementById('navOverlay');
+            const navPanel = document.getElementById('navPanel');
+            const navPanelClose = document.getElementById('navPanelClose');
+            const navPanelLinks = document.querySelectorAll('.nav-panel-link');
+
+            // Store original body overflow for body scroll lock
+            let originalBodyOverflow = '';
+
+            function openMobileNav() {
+                // Add active classes
+                navToggle.classList.add('active');
+                navOverlay.classList.add('active');
+                navPanel.classList.add('active');
+                
+                // Update ARIA attributes
+                navToggle.setAttribute('aria-expanded', 'true');
+                navOverlay.setAttribute('aria-hidden', 'false');
+                
+                // Lock body scroll
+                originalBodyOverflow = document.body.style.overflow;
+                document.body.style.overflow = 'hidden';
+                
+                // Focus management for accessibility
+                navPanelClose.focus();
+            }
+
+            function closeMobileNav() {
+                // Remove active classes
+                navToggle.classList.remove('active');
+                navOverlay.classList.remove('active');
+                navPanel.classList.remove('active');
+                
+                // Update ARIA attributes
+                navToggle.setAttribute('aria-expanded', 'false');
+                navOverlay.setAttribute('aria-hidden', 'true');
+                
+                // Restore body scroll
+                document.body.style.overflow = originalBodyOverflow;
+                
+                // Return focus to toggle button for accessibility
+                navToggle.focus();
+            }
+
+            // Toggle button click handler
+            navToggle.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (navPanel.classList.contains('active')) {
+                    closeMobileNav();
+                } else {
+                    openMobileNav();
+                }
+            });
+
+            // Close button click handler
+            navPanelClose.addEventListener('click', (e) => {
+                e.preventDefault();
+                closeMobileNav();
+            });
+
+            // Overlay click handler - close nav when clicking overlay
+            navOverlay.addEventListener('click', (e) => {
+                if (e.target === navOverlay) {
+                    closeMobileNav();
+                }
+            });
+
+            // Navigation link click handler - close nav when clicking links
+            navPanelLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    closeMobileNav();
+                });
+            });
+
+            // Keyboard support - close on Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && navPanel.classList.contains('active')) {
+                    closeMobileNav();
+                }
+            });
+
+            // Handle window resize - close mobile nav on desktop breakpoint
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768 && navPanel.classList.contains('active')) {
+                    closeMobileNav();
+                }
+            });
         });
     </script>
 </body>
