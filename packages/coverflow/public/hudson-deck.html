@@ -3,44 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>Hudson Ingram — September 2025 Rollout</title>
     <meta name="description" content="Hudson Ingram – Strategic positioning and creative blueprint for Interscope Records × Aaron Dessner"/>
     
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
+/* ———————————— LOGO RELIABILITY STYLES ———————————— */
+/* Ensure SVG logo always displays correctly with proper fallbacks */
+.nav-logo svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 300px;
+    visibility: visible !important;
+    opacity: 1 !important;
+    background: transparent;
+    fill: var(--ink) !important;
+    z-index: 10;
+}
+
+/* Reset any problematic animation states */
+.nav-logo svg path {
+    /* Ensure paths are visible by default */
+    opacity: 1;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+}
         /* ———————————— 0. Reset & Core */
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
         
         /* ———————————— 1. Design System Variables */
         :root{
             /* Core Palette */
-            --bg:#FFFFFF;
-            --ink:#000000;
-            --accent:#0000FF; /* Classic blue */
-            /* Fluid Type Scale - Tighter, now more compact */
-            --step--2: clamp(.625rem,.7vw,.75rem);
-            --step--1: clamp(.75rem,.85vw,.875rem);
-            --step-0:  clamp(.875rem,1vw,1rem);
-            --step-1:  clamp(.9rem,1vw,1.1rem);
-            --step-2:  clamp(1.1rem,1.2vw,1.3rem);
-            --step-3:  clamp(1.5rem,1.8vw,2rem);
-            --step-4:  clamp(2rem,2.5vw,2.5rem);
-            --step-5:  clamp(2.5rem,4vw,4rem);
-            --step-6:  clamp(3rem,6vw,6rem);
+            --bg: #F7F6F3;
+            --ink: #111111;
+            --accent-1: #0057FF;   /* electric blue */
+            --accent-2: #E51937;   /* cinema red */
+            --accent-3: #F5C44E;   /* Kodak yellow */
+            /* Fluid Type Scale */
+            --step--2: clamp(0.64rem, 0.7vw, 0.8rem);
+            --step--1: clamp(0.8rem, 0.9vw, 1rem);
+            --step-0:  clamp(1rem, 1vw, 1.25rem);
+            --step-1:  clamp(1.25rem, 1.2vw, 1.56rem);
+            --step-2:  clamp(1.56rem, 1.5vw, 1.95rem);
+            --step-3:  clamp(1.95rem, 2vw, 2.44rem);
+            --step-4:  clamp(2.44rem, 2.5vw, 3.05rem);
+            --step-5:  clamp(3.05rem, 4vw, 3.82rem);
+            --step-6:  clamp(3.82rem, 6vw, 4.77rem);
             /* Grid & Spacing */
-            --gutter:1.2rem;
-            --max-width:1280px;
+            --gutter:1.5rem;
+            --max-width:1200px; /* Constrained width */
             --section-space:5.5rem;
+            --nav-height: 96px; /* Adjust to match actual nav height */
+        }
+        [data-theme="dark"] {
+            --bg: #0E0E0E;
+            --ink: #EEEEEE;
+            --accent-1: #0057FF;
+            --accent-2: #E51937;
+            --accent-3: #F5C44E;
         }
         
         /* ———————————— 2. Base Typography */
         html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased;}
         body{
-            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-family:"Helvetica Neue", Helvetica, Arial, sans-serif; /* System Font Stack */
             font-weight:400;
             font-size:var(--step-0);
-            line-height:1.4;
-            color:var(--ink);
-            background:var(--bg);
+            line-height:1.6;
+            color: var(--ink);
+            background: var(--bg);
             letter-spacing:-.01em;
         }
         
@@ -52,16 +88,16 @@
             position:relative;
         }
         
-        h1{font-size:var(--step-6);letter-spacing:-.06em;}
-        h2{font-size:var(--step-5);letter-spacing:-.05em;}
-        h3{font-size:var(--step-4);letter-spacing:-.04em;}
-        h4{font-size:var(--step-3);letter-spacing:-.03em;}
-        h5{font-size:var(--step-2);letter-spacing:-.02em;}
+        h1{font-size:var(--step-6);letter-spacing:-.06em;line-height:1.05;}
+        h2{font-size:var(--step-5);letter-spacing:-.05em;line-height:1.08;}
+        h3{font-size:var(--step-4);letter-spacing:-.04em;line-height:1.12;}
+        h4{font-size:var(--step-3);letter-spacing:-.03em;line-height:1.15;}
+        h5{font-size:var(--step-2);letter-spacing:-.02em;line-height:1.18;}
         
         .display{
-            font-size:clamp(2.5rem,8vw,7rem); /* Reduce by ~50% */
+            font-size:clamp(3.5rem,10vw,7rem);
             font-weight:900;
-            line-height:.9;
+            line-height:0.95;
             letter-spacing:-.08em;
             text-transform:uppercase;
         }
@@ -69,6 +105,14 @@
         p{
             margin-bottom:1rem;
             max-width:65ch;
+        }
+
+        ul {
+            list-style-position: inside;
+            padding-left: 0;
+        }
+        li {
+             margin-bottom: 0.5rem;
         }
         
         .lead{
@@ -79,7 +123,7 @@
         }
         
         a{
-            color:var(--ink);
+            color: var(--ink);
             text-decoration:none;
         }
         
@@ -98,7 +142,7 @@
             position:absolute;
             top:1px;
             left:1px;
-            color:var(--accent);
+            color:var(--accent-1);
             opacity:.1;
             z-index:-1;
         }
@@ -111,46 +155,36 @@
         }
         
         .grid{
-            display:grid;
-            grid-template-columns:repeat(12,1fr);
-            gap:var(--gutter);
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: var(--gutter);
         }
         
-        .col-12{grid-column:span 12;}
-        .col-10{grid-column:span 10;}
-        .col-8{grid-column:span 8;}
-        .col-7{grid-column:span 7;}
-        .col-6{grid-column:span 6;}
-        .col-5{grid-column:span 5;}
-        .col-4{grid-column:span 4;}
-        .col-3{grid-column:span 3;}
-        .col-2{grid-column:span 2;}
+        .col-12 { grid-column: span 12; }
+        .col-10 { grid-column: span 10; }
+        .col-8  { grid-column: span 8; }
+        .col-7  { grid-column: span 7; }
+        .col-6  { grid-column: span 6; }
+        .col-5  { grid-column: span 5; }
+        .col-4  { grid-column: span 4; }
+        .col-3  { grid-column: span 3; }
+        .col-2  { grid-column: span 2; }
+        .col-1  { grid-column: span 1; }
         
         /* Column offsets */
-        .offset-1{grid-column-start:2;}
-        .offset-2{grid-column-start:3;}
-        .offset-3{grid-column-start:4;}
-        
-        @media(max-width:768px){
-            .grid{grid-template-columns:repeat(4,1fr);}
-            [class*="col-"]{grid-column:span 4;}
-            [class*="offset-"]{grid-column-start:1;}
-        }
+        .offset-1 { grid-column-start: 2; }
+        .offset-2 { grid-column-start: 3; }
+        .offset-3 { grid-column-start: 4; }
         
         /* ———————————— 4. Section Architecture */
         section{
             padding-block:var(--section-space);
             position:relative;
+            overflow: hidden;
         }
         
         section:first-child{
-            padding-top:0;
-        }
-        
-        /* CHAOS: Selective disruption */
-        .break-grid{
-            margin-left:calc(var(--gutter) * -2);
-            margin-right:calc(var(--gutter) * -4);
+            padding-top: var(--nav-height) !important;
         }
         
         /* ———————————— 5. Navigation */
@@ -160,27 +194,92 @@
             left:0;
             right:0;
             z-index:1000;
-            padding:1.5rem 0;
-            background:rgba(255,255,255,.95);
-            backdrop-filter:blur(10px);
+            padding:1rem 0;
+            background:rgba(255,255,255,0.85); /* Increased opacity for better readability */
+            backdrop-filter:blur(12px);
+            -webkit-backdrop-filter:blur(12px);
+            border-bottom: 1px solid rgba(24,26,27,0.10);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            width: 100%;
+            overflow: visible;
         }
         
         .nav-inner{
-            display:flex;
-            align-items:center;
-            justify-content:space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1.2rem;
+            position: relative;
+            overflow: visible;
         }
         
         .nav-logo{
-            font-size:1.5rem;
-            font-weight:900;
-            letter-spacing:-.05em;
+            max-width: 220px;
+            width: 100%;
+            min-width: 0;
+            height: auto;
+            flex-shrink: 0;
+            z-index: 1101 !important;
+            position: relative;
+            overflow: visible;
+            display: block;
         }
+        .nav-logo svg {
+            width: 100%;
+            height: auto;
+            display: block;
+            overflow: visible;
+        }
+
+        /* NEW: SVG Logo Animation */
+        @keyframes draw-in {
+            to { stroke-dashoffset: 0; }
+        }
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Initial state (hidden) */
+        .nav-logo svg .cls-1,
+        .nav-logo svg .cls-2 {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+        }
+        .nav-logo svg .cls-3 {
+            opacity: 0;
+        }
+
+        /* Animation definitions when .animate-logo is present */
+        .animate-logo .cls-1 {
+            animation: draw-in 7s ease-out forwards;
+        }
+        .animate-logo .cls-2 {
+            animation: draw-in 7s 1.2s ease-out forwards;
+        }
+        .animate-logo .cls-3 {
+            animation: fade-in 2s 2.2s ease-out forwards;
+        }
+
+        .nav-logo svg .cls-1,
+        .nav-logo svg .cls-2,
+        .nav-logo svg .cls-3 {
+             transition: transform 0.4s cubic-bezier(0.25, 0.1, 0.25, 1.0), fill 0.4s ease;
+        }
+
+        .nav-logo:hover .cls-1 { transform: translateX(2px) translateY(-1px); }
+        .nav-logo:hover .cls-2 { transform: translateX(-2px) translateY(1px); }
+        .nav-logo:hover .cls-3 { transform: scale(1.3); fill: var(--accent-1); }
         
         .nav-links{
             display:flex;
-            gap:3rem;
+            gap:1.5rem;
             list-style:none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-left: auto;
         }
         
         .nav-link{
@@ -189,162 +288,189 @@
             letter-spacing:-.02em;
             opacity:.5;
             transition:opacity .2s;
+            flex-shrink: 0;
+            white-space: nowrap;
         }
         
         .nav-link:hover,
         .nav-link.active{
             opacity:1;
             text-decoration:none;
+            color: var(--accent-1);
+        }
+
+        /* ———————————— RESPONSIVE NAVIGATION ———————————— */
+        /* Hamburger menu button - hidden by default */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+
+        .nav-toggle span {
+            width: 100%;
+            height: 2px;
+            background: var(--ink);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        /* Hamburger animation states */
+        .nav-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .nav-toggle.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .nav-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Responsive breakpoints */
+        @media (max-width: 1024px) {
+            .nav-inner {
+                max-width: 98vw;
+                padding: 0 0.5rem;
+            }
+            .nav-links {
+                gap: 1rem;
+            }
+            .nav-link {
+                font-size: var(--step--2);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-inner {
+                max-width: 100vw;
+                padding: 0 0.2rem;
+            }
+            .nav-toggle {
+                display: flex;
+            }
+            .nav-links {
+                position: fixed;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem var(--gutter);
+                gap: 1.5rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                border-top: 1px solid rgba(0,0,0,0.1);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .nav-link {
+                font-size: var(--step-0);
+                opacity: 0.7;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+            }
+
+            .nav-link:last-child {
+                border-bottom: none;
+            }
+
+            .nav-logo {
+                max-width: 160px;
+                width: 100%;
+                margin-right: 1rem;
+            }
         }
         
         /* ———————————— 6. Hero */
         .hero{
-            height:100vh;
-            display:flex;
-            align-items:center;
-            position:relative;
-            overflow:hidden;
+            position: relative;
+            min-height: 80vh;
+            margin-bottom: 6rem;
+            display: flex;
+            align-items: center;
+            overflow: visible;
         }
-        
-        .hero-content{
-            position:relative;
-            z-index:2;
+        .hero-inner {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            width: 100%;
+            position: relative;
         }
-        
-        .hero-title{
-            margin-bottom:2rem;
+        .hero-content {
+            z-index: 2;
+            position: relative;
+            padding-left: 2rem;
+            background: transparent;
         }
-        
-        /* CHAOS: Off-kilter hero image */
-        .hero-image{
-            position:absolute;
-            right:-10%;
-            top:50%;
-            transform:translateY(-50%) rotate(-2deg);
-            width:45vw;
-            height:70vh;
-            object-fit:cover;
-            z-index:1;
+        .hero-image {
+            width: 60vw;
+            max-width: 700px;
+            max-height: 80vh;
+            margin-right: -8vw;
+            margin-top: -32px;
+            margin-left: -40px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.10);
+            border-radius: 1.5rem 0 0 1.5rem;
+            overflow: hidden;
+            background: #fff;
+            display: flex;
+            align-items: flex-start;
+            justify-content: flex-end;
+            z-index: 1;
+            position: relative;
         }
-        
-        @media(max-width:768px){
-            .hero-image{
-                width:100%;
-                height:50vh;
-                right:0;
-                top:auto;
-                bottom:0;
-                transform:none;
+        .hero-image img {
+             width: 100%;
+             height: auto;
+             object-fit: cover;
+             display: block;
+             border-radius: 0 0 0 0;
+        }
+        @media (max-width: 900px) {
+            .hero-inner {
+                grid-template-columns: 1fr;
+            }
+            .hero-image {
+                margin: 2rem auto 0 auto;
+                width: 95vw;
+                max-width: 100%;
+                margin-right: 0;
+            }
+            .hero-content {
+                padding-left: 0;
             }
         }
         
         /* ———————————— 7. Story Section */
-        .section-marker{
-            font-size:var(--step--2);
-            font-weight:700;
-            letter-spacing:-.02em;
-            margin-bottom:2rem;
-            opacity:.2;
-        }
-        
-        /* Large off-kilter image */
-        .large-image{
-            position:relative;
-            margin-block:6rem;
-            margin-left:-10vw;
-            width:60vw;
-            height:70vh;
-            overflow:hidden;
-            transform:rotate(1deg);
-        }
-        
-        .large-image img{
-            width:100%;
-            height:100%;
-            object-fit:cover;
-        }
-        
-        /* Small accent image */
-        .accent-image{
-            position:absolute;
-            width:25vw;
-            height:35vh;
-            overflow:hidden;
-            z-index:-1;
-        }
-        
-        .accent-image img{
-            width:100%;
-            height:100%;
-            object-fit:cover;
-        }
-        
-        .accent-image.top-right{
-            top:-5rem;
-            right:-5rem;
-            transform:rotate(-3deg);
-        }
-        
-        .accent-image.bottom-left{
-            bottom:-3rem;
-            left:-8rem;
-            transform:rotate(2deg);
-        }
-        
-        /* Pull quote */
         .quote{
             font-size:var(--step-3);
             font-weight:300;
             line-height:1.2;
             letter-spacing:-.03em;
-            margin-block:6rem;
+            margin-block:3rem;
             padding-left:2rem;
             border-left:4px solid var(--ink);
-        }
-        
-        /* ———————————— 8. Vision Section */
-        .vision-grid{
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:4rem;
-            margin-top:6rem;
-        }
-        
-        .vision-item{
-            position:relative;
-        }
-        
-        .vision-item h5{
-            margin-bottom:1rem;
-        }
-        
-        /* CHAOS: Second item offset */
-        .vision-item:nth-child(2){
-            margin-top:4rem;
-        }
-        
-        /* Vision item images */
-        .vision-item-image{
-            width:100%;
-            height:200px;
-            margin-bottom:1.5rem;
-            overflow:hidden;
-            transform:rotate(-1deg);
-        }
-        
-        .vision-item-image img{
-            width:100%;
-            height:100%;
-            object-fit:cover;
-        }
-        
-        @media(max-width:768px){
-            .vision-grid{
-                grid-template-columns:1fr;
-            }
-            .vision-item:nth-child(2){
-                margin-top:0;
-            }
         }
         
         /* ———————————— 9. Creative Section */
@@ -352,7 +478,7 @@
             display:grid;
             grid-template-columns:repeat(12,1fr);
             gap:var(--gutter);
-            align-items:start;
+            align-items:center;
             margin-block:6rem;
         }
         
@@ -364,7 +490,6 @@
             grid-column:span 7;
             position:relative;
             height:500px;
-            transform:rotate(-1deg) translateX(4rem);
         }
         
         .creative-image img{
@@ -373,148 +498,9 @@
             object-fit:cover;
         }
         
-        /* Alternating layout */
-        .creative-layout:nth-child(even) .creative-text{
-            grid-column:8/13;
-            order:2;
-        }
-        
-        .creative-layout:nth-child(even) .creative-image{
-            grid-column:1/7;
-            order:1;
-            transform:rotate(1deg) translateX(-4rem);
-        }
-        
-        /* Full-width image break */
-        .image-break{
-            margin-block:8rem;
-            height:50vh;
-            position:relative;
-            overflow:hidden;
-        }
-        
-        .image-break img{
-            width:100%;
-            height:100%;
-            object-fit:cover;
-        }
-        
-        /* Image grid */
-        .image-grid{
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:2rem;
-            margin-block:4rem;
-        }
-        
-        .image-grid-item{
-            height:300px;
-            overflow:hidden;
-            transform:rotate(-1deg);
-        }
-        
-        .image-grid-item:nth-child(even){
-            transform:rotate(1deg);
-            margin-top:2rem;
-        }
-        
-        .image-grid-item img{
-            width:100%;
-            height:100%;
-            object-fit:cover;
-        }
-        
-        @media(max-width:768px){
-            .creative-text,
-            .creative-image,
-            .creative-layout:nth-child(even) .creative-text,
-            .creative-layout:nth-child(even) .creative-image{
-                grid-column:span 12;
-                transform:none;
-            }
-            
-            .image-grid{
-                grid-template-columns:1fr;
-            }
-        }
-        
         /* ———————————— 10. Music Section */
         .music-bg{
             background:#FAFAFA;
-            margin-inline:calc(var(--gutter) * -2);
-            padding-inline:calc(var(--gutter) * 2);
-        }
-        
-        /* ———————————— 11. Timeline */
-        .timeline{
-            position:relative;
-            padding-top:4rem;
-        }
-        
-        .timeline-line{
-            position:absolute;
-            top:0;
-            left:0;
-            right:0;
-            height:1px;
-            background:var(--ink);
-            opacity:.1;
-        }
-        
-        .timeline-items{
-            display:grid;
-            grid-template-columns:repeat(4,1fr);
-            gap:3rem;
-            position:relative;
-        }
-        
-        .timeline-item{
-            padding-top:2rem;
-        }
-        
-        .timeline-marker{
-            position:absolute;
-            top:-6px;
-            left:0;
-            width:12px;
-            height:12px;
-            background:var(--ink);
-            border-radius:50%;
-        }
-        
-        @media(max-width:768px){
-            .timeline-items{
-                grid-template-columns:1fr;
-            }
-        }
-        
-        /* ———————————— 12. KPI Section */
-        .kpi-section{
-            background:var(--ink);
-            color:var(--bg);
-            margin-inline:calc(var(--gutter) * -2);
-            padding:8rem var(--gutter);
-        }
-        
-        .kpi-grid{
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:4rem;
-        }
-        
-        .kpi-number{
-            font-size:var(--step-6);
-            font-weight:900;
-            letter-spacing:-.06em;
-            line-height:1;
-            margin-bottom:.5rem;
-        }
-        
-        .kpi-label{
-            font-size:var(--step--1);
-            font-weight:400;
-            letter-spacing:-.01em;
-            opacity:.7;
         }
         
         /* ———————————— 13. Footer */
@@ -556,89 +542,260 @@
         }
         
         /* ———————————— 14. Utilities */
-        .spacer-xs{height:1rem;}
-        .spacer-sm{height:2rem;}
         .spacer-md{height:3rem;}
         .spacer-lg{height:4rem;}
-        .spacer-xl{height:6rem;}
         
-        .text-center{text-align:center;}
-        .opacity-50{opacity:.5;}
-        .opacity-20{opacity:.2;}
-        
-        /* ———————————— 15. New Section Styles */
-        .words-display{
-            font-size:var(--step-3);
-            font-weight:300;
-            letter-spacing:-.03em;
-            text-align:center;
-            margin-block:4rem;
+        /* ———————————— NEW: Section Header Styles ———————————— */
+        .section-heading {
+            margin-bottom: 3rem;
+            border-left: 4px solid var(--accent-1);
+            padding-left: 1.5rem;
         }
-        
-        .words-display span{
-            display:inline-block;
-            margin:0 1rem;
+        .marquee-header {
+            font-size: var(--step--1);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            opacity: 0.5;
+            margin-bottom: 0.5rem;
         }
-        
+        .stylized-subheader {
+            font-size: var(--step-5);
+            font-weight: 700;
+            letter-spacing: -0.05em;
+            line-height: 1;
+        }
+
+        .ep-timeline{
+            display: flex;
+            gap: 2.5rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 2.5rem 0;
+            margin-left: var(--gutter);
+            margin-right: var(--gutter);
+        }
+        .ep-card {
+            min-width: 280px;
+            width: 75vw;
+            max-width: 320px;
+            background: rgba(0,0,0,0.03);
+            padding: 1.7rem 1.5rem 1.5rem 1.5rem;
+            scroll-snap-align: start;
+            flex-shrink: 0;
+            border-radius: 1.1rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            border-left: 4px solid var(--accent-1);
+            position: relative;
+        }
+        .ep-card:nth-child(2) { margin-top: 2.5rem; }
+        .ep-card:nth-child(3) { margin-top: 1.2rem; }
+        .ep-card:nth-child(1) { margin-top: 0.5rem; }
+
+        /* --- Editorial Filmstrip --- */
+        .image-timeline-scroll {
+            display: flex;
+            gap: 1.2rem;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 1.2rem;
+            align-items: flex-end;
+            position: relative;
+        }
+        .image-timeline-scroll .timeline-image {
+            min-width: 120px;
+            max-width: 220px;
+            flex: 0 0 auto;
+            transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), z-index 0.28s, box-shadow 0.28s cubic-bezier(0.4,0,0.2,1);
+            will-change: transform;
+            z-index: 1;
+            overflow: visible;
+            background: transparent;
+        }
+        .image-timeline-scroll .timeline-image img {
+            width: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 0.7rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            transition: box-shadow 0.28s cubic-bezier(0.4,0,0.2,1), filter 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+        /* Vary image heights and stagger for rhythm */
+        .image-timeline-scroll .timeline-image:nth-child(1) { height: 170px; transform: translateY(0px); }
+        .image-timeline-scroll .timeline-image:nth-child(2) { height: 140px; transform: translateY(18px); }
+        .image-timeline-scroll .timeline-image:nth-child(3) { height: 200px; transform: translateY(-10px); }
+        .image-timeline-scroll .timeline-image:nth-child(4) { height: 160px; transform: translateY(12px); }
+        .image-timeline-scroll .timeline-image:nth-child(5) { height: 180px; transform: translateY(-8px); }
+        .image-timeline-scroll .timeline-image:nth-child(6) { height: 150px; transform: translateY(16px); }
+        .image-timeline-scroll .timeline-image:nth-child(7) { height: 190px; transform: translateY(-6px); }
+        .image-timeline-scroll .timeline-image:nth-child(8) { height: 170px; transform: translateY(10px); }
+        .image-timeline-scroll .timeline-image:nth-child(9) { height: 160px; transform: translateY(-12px); }
+        .image-timeline-scroll .timeline-image:nth-child(10) { height: 180px; transform: translateY(8px); }
+        .image-timeline-scroll .timeline-image:nth-child(11) { height: 150px; transform: translateY(-14px); }
+        .image-timeline-scroll .timeline-image:hover,
+        .image-timeline-scroll .timeline-image:focus {
+            transform: scale(1.18) translateY(-18px);
+            z-index: 2;
+        }
+        .image-timeline-scroll .timeline-image:hover img,
+        .image-timeline-scroll .timeline-image:focus img {
+            box-shadow: 0 8px 32px rgba(0,87,255,0.13);
+            filter: contrast(1.12) saturate(1.08);
+        }
+        /* Allow overflow so images can float above */
+        .image-timeline-scroll { overflow: visible; }
+
+        .image-collage {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1rem;
+            margin-top: 3rem;
+        }
+        .collage-item {
+            overflow: hidden;
+        }
+        .collage-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .collage-item:hover img {
+            transform: scale(1.05);
+        }
+        .collage-item:nth-child(1) { grid-column: 1 / 4; grid-row: 1 / 3; height: 400px;}
+        .collage-item:nth-child(2) { grid-column: 4 / 6; grid-row: 1 / 2; height: 192px;}
+        .collage-item:nth-child(3) { grid-column: 4 / 6; grid-row: 2 / 3; height: 192px;}
+        .collage-item:nth-child(4) { grid-column: 1 / 3; grid-row: 3 / 4; height: 250px;}
+        .collage-item:nth-child(5) { grid-column: 3 / 6; grid-row: 3 / 4; height: 250px;}
+
+        .image-grid-2x2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .image-grid-2x2 img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .masonry-grid {
+            column-count: 3;
+            column-gap: 1.5rem;
+            margin-top: 3rem;
+        }
+        .masonry-item {
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            width: 100%;
+        }
+        .masonry-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
         /* ———————————— 16. Image Stack Styles */
         .image-stack{
             position:relative;
             width:100%;
             height:500px;
             cursor:pointer;
-            margin-block:4rem;
         }
-        
         .image-stack-item{
             position:absolute;
             width:80%;
             height:80%;
             overflow:hidden;
-            transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            transition:all 0.38s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow:0 4px 20px rgba(0,0,0,0.1);
         }
-        
         .image-stack-item img{
             width:100%;
             height:100%;
             object-fit:cover;
+            transition: box-shadow 0.32s cubic-bezier(0.4,0,0.2,1), filter 0.32s cubic-bezier(0.4,0,0.2,1);
         }
-        
-        .image-stack-item:nth-child(1){
-            top:0;
-            left:0;
-            z-index:3;
-        }
-        
-        .image-stack-item:nth-child(2){
-            top:20px;
-            left:20px;
-            z-index:2;
-            opacity:0.9;
-        }
-        
-        .image-stack-item:nth-child(3){
-            top:40px;
-            left:40px;
-            z-index:1;
-            opacity:0.8;
-        }
-        
-        /* Expanded state */
+        .image-stack-item:nth-child(1){ top:0; left:0; z-index:3; transform: rotate(-2deg); }
+        .image-stack-item:nth-child(2){ top:20px; left:20px; z-index:2; opacity:0.9; transform: rotate(1deg); }
+        .image-stack-item:nth-child(3){ top:40px; left:40px; z-index:1; opacity:0.8; transform: rotate(3deg); }
         .image-stack.expanded{
-            height:auto;
-            display:grid;
-            grid-template-columns:repeat(3,1fr);
-            gap:2rem;
+            height: 420px;
+            display: flex;
+            flex-direction: row;
+            gap: 0;
+            overflow-x: visible;
+            overflow-y: visible;
+            align-items: flex-end;
+            justify-content: flex-start;
+            position: relative;
         }
-        
         .image-stack.expanded .image-stack-item{
-            position:relative;
-            top:0!important;
-            left:0!important;
-            width:100%;
-            height:400px;
-            opacity:1!important;
+            position: absolute;
+            width: 320px;
+            height: 400px;
+            opacity: 1 !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            border-radius: 16px;
+        }
+        .image-stack.expanded .image-stack-item:nth-child(1) {
+            left: 0;
+            top: 30px;
+            z-index: 3;
+            transform: rotate(-8deg) scale(1.04) translateX(-30px) translateY(-10px);
+        }
+        .image-stack.expanded .image-stack-item:nth-child(2) {
+            left: 120px;
+            top: 0;
+            z-index: 4;
+            transform: rotate(5deg) scale(1.08) translateX(0px) translateY(0px);
+        }
+        .image-stack.expanded .image-stack-item:nth-child(3) {
+            left: 240px;
+            top: 50px;
+            z-index: 2;
+            transform: rotate(-4deg) scale(1.03) translateX(30px) translateY(18px);
+        }
+        .image-stack.expanded .image-stack-item img {
+            box-shadow: 0 8px 32px rgba(0,87,255,0.10);
+        }
+        .image-stack.expanded .stack-close {
+            display: block;
+            position: absolute;
+            top: -40px;
+            right: 0;
+            z-index: 10;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            padding: 0.2em 0.7em;
+            font-size: 1.2em;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        @media (max-width: 900px) {
+            .image-stack.expanded {
+                height: 180px;
+            }
+            .image-stack.expanded .image-stack-item {
+                width: 120px;
+                height: 140px;
+            }
+            .image-stack.expanded .image-stack-item:nth-child(1) {
+                    left: 0;
+                    top: 10px;
+                    transform: rotate(-8deg) scale(1.04) translateX(-10px) translateY(-4px);
+            }
+            .image-stack.expanded .image-stack-item:nth-child(2) {
+                    left: 50px;
+                    top: 0;
+                    transform: rotate(5deg) scale(1.08) translateX(0px) translateY(0px);
+            }
+            .image-stack.expanded .image-stack-item:nth-child(3) {
+                    left: 100px;
+                    top: 20px;
+                    transform: rotate(-4deg) scale(1.03) translateX(10px) translateY(8px);
+            }
         }
         
         .stack-close{
@@ -650,1238 +807,1180 @@
             display:none;
         }
         
-        .image-stack.expanded .stack-close{
-            display:block;
+        .image-stack.expanded .stack-close{ display:block; }
+
+        /* Full-screen chapter intro */
+        .chapter-intro.full-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: var(--bg); z-index: 2000; display: flex;
+            flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: var(--gutter);
+            transition: opacity 0.5s ease-in-out;
         }
-        
-        /* ———————————— 17. Print Styles */
-        @media print{
-            @page{margin:1in;}
-            body{background:#fff;color:#000;}
-            .nav{display:none;}
-            section{padding-block:3rem;}
-            .hero-image,.large-image{transform:none;}
-        }
-        /* ———————————— 18. Editorial Section Header Accent ———————————— */
-        .section-header-accent {
-            display: flex;
-            align-items: center;
-            gap: 1.5rem;
-            margin-bottom: 2.5rem;
-        }
-        .header-bar {
-            width: 8px;
-            height: 2.5rem;
-            background: var(--accent);
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-        h2.section-title {
+        .chapter-intro.full-screen .chapter-number { font-size: 8rem; }
+        .chapter-intro.full-screen .chapter-title { font-size: 3rem; }
+        .chapter-intro.full-screen .chapter-subtitle { font-size: 1.2rem; }
+
+        /* ———————————— NEW: Video Moment Styles ———————————— */
+        .video-moment {
+            height: 100vh;
             position: relative;
-            z-index: 1;
-            background: none;
-            padding-left: 0;
-            margin: 0;
-        }
-        h2.section-title[data-section]::before {
-            content: attr(data-section);
-            position: absolute;
-            left: -2.5rem;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 3.5rem;
-            color: var(--accent);
-            opacity: 0.08;
-            font-weight: 900;
-            pointer-events: none;
-            z-index: 0;
-        }
-        
-        /* ———————————— 19. Pie Chart Styles ———————————— */
-        .pie-chart {
-            position: relative;
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            margin: 2rem auto;
-        }
-        
-        .pie-segment {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            clip: rect(0px, 100px, 200px, 0px);
-        }
-        
-        .pie-segment:after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            background: var(--accent);
-            clip: rect(0px, 200px, 200px, 100px);
-            transform: rotate(90deg);
-        }
-        
-        .pie-chart-legend {
-            margin-top: 2rem;
-            font-size: var(--step--1);
-        }
-        
-        .pie-legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-        
-        .pie-color {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            margin-right: 0.5rem;
-            flex-shrink: 0;
-        }
-        
-        /* ———————————— 20. Enhanced Timeline Styles ———————————— */
-        .rollout-timeline {
-            position: relative;
-            padding: 3rem 0;
-        }
-        
-        .timeline-track {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(to right, var(--accent), var(--ink));
-            opacity: 0.2;
-        }
-        
-        .timeline-events {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 3rem;
-            position: relative;
-        }
-        
-        .timeline-event {
-            padding-top: 3rem;
-            position: relative;
-        }
-        
-        .timeline-event::before {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: 1rem;
-            width: 12px;
-            height: 12px;
-            background: var(--accent);
-            border-radius: 50%;
-            border: 3px solid var(--bg);
-            box-shadow: 0 0 0 1px var(--accent);
-        }
-        
-        .timeline-date {
-            font-size: var(--step--1);
-            font-weight: 700;
-            color: var(--accent);
-            margin-bottom: 0.5rem;
-        }
-        
-        .timeline-title {
-            font-size: var(--step-1);
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .timeline-description {
-            font-size: var(--step--1);
-            opacity: 0.7;
-        }
-        
-        /* ———————————— 21. Mini Style Guide Grid ———————————— */
-        .style-guide-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        
-        .style-element {
-            padding: 1.5rem;
-            border: 1px solid rgba(0,0,0,0.1);
-            border-radius: 4px;
-            text-align: center;
-        }
-        
-        .color-swatch {
-            width: 100%;
-            height: 80px;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-        }
-        
-        .color-primary { background: var(--accent); }
-        .color-secondary { background: var(--ink); }
-        .color-bg { background: var(--bg); border: 1px solid var(--ink); }
-        
-        .font-sample {
-            margin-bottom: 1rem;
-        }
-        
-        .font-display { font-size: var(--step-3); font-weight: 900; }
-        .font-heading { font-size: var(--step-1); font-weight: 700; }
-        .font-body { font-size: var(--step-0); font-weight: 400; }
-        
-        /* ———————————— 22. Merch Grid Styles ———————————— */
-        .merch-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 2rem;
-            margin: 3rem 0;
-        }
-        
-        .merch-item {
-            text-align: center;
-            position: relative;
-        }
-        
-        .merch-mockup {
-            width: 100%;
-            height: 300px;
-            background: #f5f5f5;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: var(--step--1);
-            color: #999;
             overflow: hidden;
+            padding: 0;
+            z-index: 0;
+            margin-top: 4rem !important;
+            padding-top: 0;
         }
-        
-        .merch-mockup img {
+        .video-background {
+            position: absolute;
+            top: 50%;
+            left: 50%;
             width: 100%;
             height: 100%;
             object-fit: cover;
+            transform: translate(-50%, -50%);
+            z-index: 1;
         }
-        
-        .merch-title {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-        }
-        
-        .merch-description {
-            font-size: var(--step--1);
-            opacity: 0.7;
-        }
-        
-        /* ———————————— 23. Brand Guardrails Styles ———————————— */
-        .guardrails-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin: 3rem 0;
-        }
-        
-        .do-dont {
-            padding: 2rem;
-            border-radius: 8px;
-        }
-        
-        .do {
-            background: rgba(34, 197, 94, 0.05);
-            border-left: 4px solid #22c55e;
-        }
-        
-        .dont {
-            background: rgba(239, 68, 68, 0.05);
-            border-left: 4px solid #ef4444;
-        }
-        
-        .do h5::before {
-            content: "✓ ";
-            color: #22c55e;
-            font-weight: 900;
-        }
-        
-        .dont h5::before {
-            content: "✗ ";
-            color: #ef4444;
-            font-weight: 900;
-        }
-        
-        /* ———————————— 24. Assets Download Hub Styles ———————————— */
-        .download-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin: 3rem 0;
-        }
-        
-        .download-item {
-            padding: 1.5rem;
-            border: 2px solid var(--ink);
-            border-radius: 4px;
+        .parallax-text-container {
+            position: relative;
+            z-index: 2;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
             text-align: center;
-            transition: all 0.2s;
+        }
+        .parallax-text {
+            font-size: var(--step-5);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        /* ———————————— MOBILE RESPONSIVE STYLES ———————————— */
+        @media(max-width:768px){
+            :root {
+                --section-space: 4.5rem;
+                --gutter: 1rem;
+            }
+            .grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: var(--gutter);
+            }
+            .col-12 { grid-column: span 6; }
+            .col-10 { grid-column: span 6; }
+            .col-8  { grid-column: span 6; }
+            .col-7  { grid-column: span 6; }
+            .col-6  { grid-column: span 6; }
+            .col-5  { grid-column: span 5; }
+            .col-4  { grid-column: span 4; }
+            .col-3  { grid-column: span 3; }
+            .col-2  { grid-column: span 2; }
+            .col-1  { grid-column: span 1; }
+            [class*="offset-"] { grid-column-start: 1; }
+            [class*="col-"] { margin-bottom: 2rem; }
+        }
+
+        @media(max-width:480px){
+            .grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: var(--gutter);
+            }
+            .col-12 { grid-column: span 4; }
+            .col-10 { grid-column: span 4; }
+            .col-8  { grid-column: span 4; }
+            .col-7  { grid-column: span 4; }
+            .col-6  { grid-column: span 4; }
+            .col-5  { grid-column: span 4; }
+            .col-4  { grid-column: span 4; }
+            .col-3  { grid-column: span 3; }
+            .col-2  { grid-column: span 2; }
+            .col-1  { grid-column: span 1; }
+            [class*="offset-"] { grid-column-start: 1; }
+        }
+
+        /* Add creative ghosts-collage styles */
+        .ghosts-collage {
+          display: grid;
+          grid-template-columns: repeat(6, 1fr);
+          gap: 1.2rem;
+          margin: 4rem 0 2rem 0;
+          position: relative;
+        }
+        .ghosts-collage-item {
+          position: relative;
+          z-index: 1;
+          border-radius: 10px;
+          overflow: hidden;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+          transition: transform 0.32s cubic-bezier(0.4,0,0.2,1), box-shadow 0.32s cubic-bezier(0.4,0,0.2,1);
+        }
+        .ghosts-collage-item img {
+          width: 100%;
+          height: 220px;
+          object-fit: cover;
+          display: block;
+          filter: grayscale(0.15) contrast(1.08);
+          transition: filter 0.32s cubic-bezier(0.4,0,0.2,1);
+        }
+        .ghosts-collage-item:nth-child(2) { grid-column: 2 / span 2; grid-row: 1; z-index: 2; transform: translateY(30px) scale(1.08) rotate(-2deg); }
+        .ghosts-collage-item:nth-child(3) { grid-column: 4 / span 2; grid-row: 1; z-index: 3; transform: translateY(-20px) scale(1.04) rotate(2deg); }
+        .ghosts-collage-item:nth-child(4) { grid-column: 1 / span 2; grid-row: 2; z-index: 2; transform: translateY(-10px) scale(0.98) rotate(-1deg); }
+        .ghosts-collage-item:nth-child(5) { grid-column: 3 / span 2; grid-row: 2; z-index: 1; transform: translateY(18px) scale(1.02) rotate(1deg); }
+        .ghosts-collage-item:nth-child(6) { grid-column: 5 / span 2; grid-row: 2; z-index: 2; transform: translateY(8px) scale(0.96) rotate(-2deg); }
+        .ghosts-collage-item:hover, .ghosts-collage-item:focus {
+          transform: scale(1.04) !important;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+          z-index: 10;
+        }
+        .ghosts-collage-item:hover img, .ghosts-collage-item:focus img {
+          filter: grayscale(0) contrast(1.12);
+        }
+        @media (max-width: 900px) {
+          .ghosts-collage {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+          }
+          .ghosts-collage-item img { height: 140px; }
+          .ghosts-collage-item { transform: none !important; }
+        }
+        @media (max-width: 600px) {
+          .ghosts-collage {
+            grid-template-columns: 1fr;
+            gap: 0.6rem;
+          }
+          .ghosts-collage-item img { height: 110px; }
+        }
+
+        /* --- Editorial Filmstrip for Expanded Image Stack --- */
+        .image-stack.expanded {
+          display: flex;
+          flex-direction: row;
+          gap: 2.5rem;
+          overflow-x: auto;
+          height: 340px;
+          padding: 1rem 0 1rem 0;
+          background: none;
+          box-shadow: none;
+          grid-template-columns: unset;
+        }
+        .image-stack.expanded .image-stack-item {
+          position: relative !important;
+          top: 0 !important;
+          left: 0 !important;
+          width: 320px;
+          min-width: 260px;
+          max-width: 90vw;
+          height: 320px;
+          opacity: 1 !important;
+          transform: none !important;
+          border-radius: 12px;
+          box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+          transition: box-shadow 0.28s cubic-bezier(0.4,0,0.2,1), transform 0.28s cubic-bezier(0.4,0,0.2,1);
+          margin-right: -1.2rem;
+          z-index: 1;
+        }
+        .image-stack.expanded .image-stack-item:hover {
+          box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+          transform: scale(1.04);
+          z-index: 2;
+        }
+        .image-stack.expanded .image-stack-item img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          border-radius: 12px;
+        }
+        .image-stack.expanded .stack-close {
+          display: block;
+          position: absolute;
+          top: -40px;
+          right: 0;
+          z-index: 10;
+          background: rgba(255,255,255,0.9);
+          border-radius: 50%;
+          padding: 0.2em 0.7em;
+          font-size: 1.2em;
+          border: 1px solid #eee;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        @media (max-width: 900px) {
+          .image-stack.expanded {
+            gap: 1rem;
+            height: 180px;
+          }
+          .image-stack.expanded .image-stack-item {
+            width: 140px;
+            min-width: 120px;
+            height: 140px;
+            margin-right: -0.5rem;
+          }
+        }
+
+        /* --- Responsive Editorial Grid for Brand Pillars --- */
+        .image-grid-2x2 {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          grid-auto-rows: minmax(140px, 1fr);
+          gap: 1.2rem;
+          margin-top: 2.5rem;
+        }
+        .image-grid-2x2 .editable-image-container {
+          border-radius: 10px;
+          overflow: hidden;
+          box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+          background: #fff;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .image-grid-2x2 img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          min-height: 140px;
+          max-height: 320px;
+          border-radius: 10px;
+          transition: transform 0.28s cubic-bezier(0.4,0,0.2,1), box-shadow 0.28s cubic-bezier(0.4,0,0.2,1);
+        }
+        .image-grid-2x2 .editable-image-container:hover img {
+          transform: scale(1.04);
+          box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+        }
+        @media (max-width: 900px) {
+          .image-grid-2x2 {
+            grid-template-columns: 1fr;
+            grid-auto-rows: minmax(100px, 1fr);
+            gap: 0.7rem;
+          }
+          .image-grid-2x2 img {
+            min-height: 100px;
+            max-height: 180px;
+          }
+        }
+        main {
+            padding-top: var(--nav-height);
+        }
+        .hero {
+            margin-bottom: 3rem;
+        }
+        .video-moment {
+            margin-top: 4rem;
+        }
+        .section-numeral {
+            display: block;
+            font-family: 'Inter', 'Space Grotesk', Arial, sans-serif;
+            font-weight: 900;
+            letter-spacing: -0.04em;
+            color: var(--accent-1);
+            font-size: clamp(2.5rem, 8vw, 8rem);
+            line-height: 1;
+            margin-bottom: 1.5rem;
+            margin-left: 0;
+            opacity: 0.85;
+        }
+        .interstitial-marker {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Inter', 'Space Grotesk', Arial, sans-serif;
+            font-weight: 900;
+            font-size: clamp(4rem, 15vw, 18rem);
+            color: var(--accent-1);
+            letter-spacing: -0.06em;
+            background: var(--bg);
+            padding: 2.5rem 0 2.5rem 0;
+            opacity: 0.12;
+            z-index: 1;
+            user-select: none;
+        }
+        /* --- Accessibility: Focus Ring --- */
+        a:focus-visible, button:focus-visible, .nav-toggle:focus-visible {
+            outline: 2.5px solid var(--accent-1);
+            outline-offset: 2px;
+            box-shadow: 0 0 0 2px rgba(0,87,255,0.12);
+            border-radius: 3px;
+        }
+        /* --- Film Grain Overlay --- */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none;
+            z-index: 10000;
+            opacity: 0.06;
+            mix-blend-mode: multiply;
+            background: url('data:image/svg+xml;utf8,<svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg"><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="4" stitchTiles="stitch"/></filter><rect width="120" height="120" fill="white"/><rect width="120" height="120" filter="url(%23grain)"/></svg>');
+            background-size: 320px 320px;
+        }
+        @media (max-width: 900px) {
+            body::before { background-size: 160px 160px; }
+        }
+        /* --- Full-Bleed Image Utility --- */
+        .full-bleed {
+            width: 100vw;
+            max-width: 100vw;
+            margin-left: 50%;
+            transform: translateX(-50%);
+            position: relative;
+            left: 50%;
+            right: 50%;
+            display: block;
+        }
+        .full-bleed img {
+            width: 100vw;
+            max-width: 100vw;
+            height: auto;
+            display: block;
+        }
+        /* --- Micro-Interactions & Final Polish --- */
+        /* Section heading fade-up */
+        .section-heading, .section-numeral {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.18s cubic-bezier(.16,1,.3,1), transform 0.18s cubic-bezier(.16,1,.3,1);
+        }
+        .section-heading.visible, .section-numeral.visible {
+            opacity: 1;
+            transform: none;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .section-heading, .section-numeral {
+                transition: none !important;
+                transform: none !important;
+            }
+        }
+        /* Nav-link accent underline */
+        .nav-link {
+            position: relative;
+            background-image: linear-gradient(var(--accent-1), var(--accent-1));
+            background-size: 0% 2px;
+            background-repeat: no-repeat;
+            background-position: 0 100%;
+            transition: background-size 0.28s cubic-bezier(.4,0,.2,1);
+        }
+        .nav-link:hover, .nav-link.active {
+            background-size: 100% 2px;
+        }
+        /* Button hover micro-motion */
+        .btn, .btn-primary {
+            transition: transform 0.22s cubic-bezier(.4,0,.2,1), box-shadow 0.22s cubic-bezier(.4,0,.2,1);
             cursor: pointer;
         }
-        
-        .download-item:hover {
-            background: var(--ink);
+        .btn:hover, .btn-primary:hover {
+            transform: scale(1.045);
+            box-shadow: 0 4px 18px rgba(0,87,255,0.10);
+        }
+        /* Image hover polish */
+        .editable-image-container img {
+            transition: transform 0.28s cubic-bezier(.4,0,.2,1), filter 0.28s cubic-bezier(.4,0,.2,1);
+        }
+        .editable-image-container img:hover, .editable-image-container img:focus {
+            transform: scale(1.04);
+            filter: contrast(1.08) saturate(1.04);
+        }
+        /* Pointer cursor for all clickable */
+        a, button, .nav-toggle, .timeline-image, .image-stack, .stack-close {
+            cursor: pointer;
+        }
+        /* Remove tap highlight on mobile */
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom selection color */
+        ::selection {
+            background: var(--accent-1);
             color: var(--bg);
         }
-        
-        .download-icon {
-            font-size: var(--step-2);
-            margin-bottom: 1rem;
+        /* --- Editorial Image Stack: Sound & Voice section --- */
+        #sound-voice .image-stack.expanded {
+            height: 420px;
+            display: flex;
+            flex-direction: row;
+            gap: 0;
+            overflow-x: visible;
+            overflow-y: visible;
+            align-items: flex-end;
+            justify-content: flex-start;
+            position: relative;
         }
-        
-        .download-title {
-            font-weight: 600;
+        #sound-voice .image-stack.expanded .image-stack-item {
+            position: absolute;
+            width: 320px;
+            height: 400px;
+            opacity: 1 !important;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+            border-radius: 16px;
+        }
+        #sound-voice .image-stack.expanded .image-stack-item:nth-child(1) {
+            left: 0;
+            top: 30px;
+            z-index: 3;
+            transform: rotate(-8deg) scale(1.04) translateX(-30px) translateY(-10px);
+        }
+        #sound-voice .image-stack.expanded .image-stack-item:nth-child(2) {
+            left: 120px;
+            top: 0;
+            z-index: 4;
+            transform: rotate(5deg) scale(1.08) translateX(0px) translateY(0px);
+        }
+        #sound-voice .image-stack.expanded .image-stack-item:nth-child(3) {
+            left: 240px;
+            top: 50px;
+            z-index: 2;
+            transform: rotate(-4deg) scale(1.03) translateX(30px) translateY(18px);
+        }
+        #sound-voice .image-stack.expanded .image-stack-item img {
+            box-shadow: 0 8px 32px rgba(0,87,255,0.10);
+        }
+        #sound-voice .image-stack.expanded .stack-close {
+            display: block;
+            position: absolute;
+            top: -40px;
+            right: 0;
+            z-index: 10;
+            background: rgba(255,255,255,0.9);
+            border-radius: 50%;
+            padding: 0.2em 0.7em;
+            font-size: 1.2em;
+            border: 1px solid #eee;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        @media (max-width: 900px) {
+            #sound-voice .image-stack.expanded {
+                height: 180px;
+            }
+            #sound-voice .image-stack.expanded .image-stack-item {
+                width: 120px;
+                height: 140px;
+            }
+            #sound-voice .image-stack.expanded .image-stack-item:nth-child(1) {
+                left: 0;
+                top: 10px;
+                transform: rotate(-8deg) scale(1.04) translateX(-10px) translateY(-4px);
+            }
+            #sound-voice .image-stack.expanded .image-stack-item:nth-child(2) {
+                left: 50px;
+                top: 0;
+                transform: rotate(5deg) scale(1.08) translateX(0px) translateY(0px);
+            }
+            #sound-voice .image-stack.expanded .image-stack-item:nth-child(3) {
+                left: 100px;
+                top: 20px;
+                transform: rotate(-4deg) scale(1.03) translateX(10px) translateY(8px);
+            }
+        }
+        /* --- Editorial Section Framing for 08, 09, 10 --- */
+        .editorial-section {
+            display: flex;
+            justify-content: flex-start;
+            align-items: stretch;
+            margin-top: 7rem;
+            margin-bottom: 7rem;
+        }
+        .editorial-section.left-align {
+            align-items: flex-start;
+        }
+        .editorial-accent {
+            width: 6px;
+            min-width: 6px;
+            background: var(--accent-1);
+            border-radius: 3px;
+            margin-right: 2.5rem;
+            margin-left: -2.5rem;
+            opacity: 0.18;
+        }
+        .editorial-card {
+            background: rgba(0,0,0,0.02);
+            border-radius: 1.2rem;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+            padding: 3.5rem 3.5rem 3rem 3.5rem;
+            flex: 1 1 0%;
+            position: relative;
+            text-align: left;
+        }
+        .editorial-card.centered {
+            text-align: center;
+        }
+        .editorial-section .section-numeral {
+            font-size: clamp(3.5rem, 10vw, 8rem);
+            margin-left: -2.2rem;
             margin-bottom: 0.5rem;
+            color: var(--accent-1);
+            opacity: 0.18;
+            line-height: 1;
         }
-        
-        .download-format {
+        .editorial-label {
+            font-family: 'Inter', Arial, sans-serif;
             font-size: var(--step--1);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--accent-1);
+            margin-bottom: 0.7rem;
             opacity: 0.7;
+            display: block;
+        }
+        .editorial-section .section-heading {
+            margin-bottom: 2.5rem;
+            border-left: none;
+            padding-left: 0;
+        }
+        .editorial-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 2.5rem;
+        }
+        .editorial-list li {
+            position: relative;
+            padding-left: 2.2rem;
+            margin-bottom: 1.2rem;
+            font-size: var(--step-1);
+        }
+        .editorial-list li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5em;
+            width: 1.1rem;
+            height: 1.1rem;
+            background: var(--accent-1);
+            border-radius: 50%;
+            opacity: 0.18;
+        }
+        .editorial-list li.negative::before {
+            background: var(--accent-2);
+            opacity: 0.22;
+        }
+        .editorial-quote {
+            font-size: var(--step-3);
+            font-weight: 700;
+            text-align: left;
+            margin: 3.5rem auto 2.5rem auto;
+            max-width: 60vw;
+            color: var(--ink);
+            border-left: 6px solid var(--accent-1);
+            padding-left: 2rem;
+            opacity: 0.85;
+        }
+        .editorial-row {
+            display: flex;
+            gap: 3.5rem;
+            justify-content: flex-start;
+            align-items: stretch;
+            margin-top: 0;
+            margin-bottom: 7rem;
+        }
+        .editorial-row .editorial-section {
+            margin: 0;
+            flex: 1 1 0%;
+        }
+        @media (max-width: 900px) {
+            .editorial-row {
+                flex-direction: column;
+                gap: 2rem;
+                margin-bottom: 4rem;
+            }
+        }
+        @media (max-width: 900px) {
+            .editorial-section {
+                flex-direction: column;
+                margin-top: 4rem;
+                margin-bottom: 4rem;
+            }
+            .editorial-accent {
+                margin-left: 0;
+                margin-bottom: 1.2rem;
+                margin-right: 1.2rem;
+            }
+            .editorial-card {
+                padding: 2rem 1.2rem 2rem 1.2rem;
+            }
+            .editorial-section .section-numeral {
+                font-size: clamp(2.2rem, 8vw, 4.5rem);
+                margin-left: 0;
+            }
+            .editorial-quote {
+                font-size: var(--step-2);
+                max-width: 95vw;
+                padding-left: 1rem;
+            }
+        }
+        /* --- Ensure SVG logo is always visible and above all --- */
+        .nav-logo {
+            z-index: 2001 !important;
+            position: relative !important;
+        }
+        .nav-logo svg {
+            z-index: 2002 !important;
+            position: relative !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
     </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="nav">
-        <div class="nav-inner container">
-            <div class="nav-logo">HUDSON INGRAM</div>
-            <ul class="nav-links">
-                <li><a href="#whitespace" class="nav-link active">White Space</a></li>
-                <li><a href="#identity" class="nav-link">Identity</a></li>
-                <li><a href="#brand-pillars" class="nav-link">Brand Pillars</a></li>
-                <li><a href="#audience" class="nav-link">Audience</a></li>
-                <li><a href="#sound" class="nav-link">Sound</a></li>
-                <li><a href="#visual" class="nav-link">Visual</a></li>
-                <li><a href="#rollout" class="nav-link">Rollout</a></li>
-                <li><a href="#live-rituals" class="nav-link">Live Rituals</a></li>
-                <li><a href="#social-playbook" class="nav-link">Social</a></li>
-                <li><a href="#merch" class="nav-link">Merch</a></li>
-                <li><a href="#guardrails" class="nav-link">Guardrails</a></li>
-                <li><a href="#assets" class="nav-link">Assets</a></li>
-                <li><a href="#vision" class="nav-link">Vision</a></li>
-            </ul>
+    <a href="#overview" class="skip-to-content">Skip to main content</a>
+    <header>
+        <nav class="nav" role="navigation" aria-label="Main Navigation">
+            <div class="nav-inner container">
+                <div class="nav-logo" tabindex="0" aria-label="Hudson Ingram Home">
+                    <svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 303.29 194.06">
+                      <defs>
+                        <style>
+                          .cls-1, .cls-2 {
+                            fill: #231f20;
+                          }
+                          .cls-3 {
+                            fill: #c2b59b;
+                          }
+                          .cls-2 {
+                            opacity: .24;
+                          }
+                        </style>
+                      </defs>
+                      <path class="cls-2" d="M248.88,65.89c-.12-.48-.22-.97-.34-1.46.09-.04.17-.07.26-.11.13.26.31.51.4.79"/>
+                      <path class="cls-1" d="M97.54,96.74c.39-.31.2-.69.19-1.09-.04-1.89,0-3.79.11-5.68.03-.62.22-1.4-.1-2.08-.24-.51.44-.91.22-1.49-.37-.98-.33-2.06-.27-3.05.11-1.7.63-3.37,2.08-4.49.61-.47,1.25-.84,2.15-.78.64.04,1.32-.28,2.02-.28.66,0,1.29-.06,1.96.07.58.11,1.22-.07,1.86-.07.9,0,1.77.28,2.65.26.9-.02,1.44.93,2.36.74.17-.04.29.17.3.36.02.23.18.39.35.48,1.53.79,1.9,2.37,2.48,3.77.25.61.79,1.28.69,1.83-.15.8.57,1.22.48,1.91-.01.11-.01.38.26.37.21-.01.36-.13.34-.33-.15-1.19.71-2.03,1.13-3,.69-1.6,2.02-2.81,3.35-3.89.63-.51,1.33-1.01,2.03-1.44.43-.26,1.04-.02,1.6-.31,1.05-.55,2.4-.44,3.39-.2,1.29.31,2.71.41,3.96,1.22.7.46,1.22,1.17,2.05,1.51.33.14.65.83.91,1.3.55.97,1.2,1.95,1.51,2.96.18.59.51.96.8,1.7.38-1.86,1.34-3.22,2.1-4.62.62-1.14,1.54-2.26,2.64-3.11.93-.71,2.08-.77,3.13-1.13,1.58-.54,3.23-.35,4.73.18.7.25,1.58.49,2.09,1.26.28.42,1.05.33,1.24.95.23.76.94.79,1.52,1.02.06-1.1.78-1.82,1.63-2.36.74-.47,1.55-.4,2.47-.33,2.25.19,3.38,1.63,4.21,3.34.66,1.35,1.18,2.75,1.87,4.1.32.63.5,1.51.84,2.24.09.19.09.65.54.53.37-.1.47-.39.48-.74.02-.47.09-.93.06-1.4-.05-.95-.03-1.88.01-2.83.02-.39.01-.94-.13-1.41-.11-.36-.26-.81.22-1.12.15-.1.31-.36.28-.51-.19-.86.2-1.29.89-1.78.91-.65,1.79-.97,2.88-.74.69.14,1.37.17,2.07.4.99.33,1.41,1.02,1.68,1.88.28.92.33,1.84.32,2.83-.03,1.76-.32,3.59-.03,5.28.32,1.83-.52,3.69.33,5.44-.56,1.08.08,2.24-.22,3.37-.18.66-.01,1.41-.03,2.13-.02,1.14-.14,2.29-.08,3.42.12,2.1-.12,4.2.15,6.31.11.86.02,1.82.04,2.72.02,1.1-.2,2.2-.04,3.29.18,1.23.12,2.45-.11,3.64-.1.51-.53,1.03-.93,1.52-.83,1-1.86,1.09-2.9,1.14-1.59.07-3.2-.25-4.13-1.66-.32-.49-.55-1.23-.75-1.87-.51-1.6-.76-3.26-1.4-4.84-.36-.9-.95-1.84-.83-2.92.05-.49-.55-.76-.42-1.3-.97.2-1.01,1.1-.98,1.58.1,1.4-.23,2.8.09,4.22.23,1.01-.14,2.11.06,3.16.2,1.11-.2,2.11-.61,3.09-.26.63-.65,1.14-1.33,1.47-1.23.59-2.56.47-3.84.62-.66.08-2.16-1.41-2.24-2.11-.02-.14,0-.36-.08-.41-.67-.43-.29-1.22-.72-1.78-.55.26-1.07.58-1.48,1.2-.72,1.07-1.74,1.87-2.99,2.26-.56.18-1.23.33-1.7.52-.73.3-1.28.17-1.95.1-1.45-.15-2.78-.58-3.96-1.44-.87-.63-1.48-1.5-2.19-2.28-.91-1-.88-2.35-1.74-3.34-.33-.37-.36-1.1-.83-1.54-.64.83-.81,1.86-1.22,2.79-.62,1.4-1.34,2.67-2.51,3.75-.98.91-2.17,1.22-3.25,1.83-.54.31-1.1.35-1.63.55-1.08.42-2.25.19-3.36-.04-1.25-.26-2.46-.69-3.7-.98-.54-.13-.93-.46-1.39-.7-1.43-.74-2.36-2-3.33-3.22-.29-.37-.63-.68-.75-1.19-.03-.14.04-.66-.56-.66-.68,0-.37.44-.49.68-.64,1.22-1.41,2.32-2.31,3.38-.9,1.05-2.06,1.23-3.25,1.53-.99.25-1.95-.03-2.92-.05-.63-.01-1.27.15-1.86.07-.63-.08-1.26-.22-1.91-.3-.53-.06-1.09-.04-1.6-.05-1.07-.02-1.98-.57-3.01-.65-.07-.68-.94-.75-1.06-1.43-.16-.94-.48-1.85-.59-2.79-.07-.62.15-1.26.17-1.9.07-1.54.21-3.08-.32-4.59-.14-.39.72-.68.21-1.24-.18-.03-.15.32-.46.36.15-.51.12-.96-.48-1.44.58,1.81.17,3.45-.03,5.06-.08.66-.21,1.44-.56,2.08-.31.55-.48,1.11-.59,1.75-.14.82-.62,1.61-1.23,2.28-.32.35-.71.65-.95,1.06-.83,1.39-2.29,1.7-3.64,2.24-1.06.42-2.12.54-3.24.51-.73-.02-1.4-.16-2.08-.42-1-.39-1.98-.77-2.82-1.5-.42-.36-.83-.68-1.13-1.17-.58-.97-1.12-1.93-1.35-3.08-.19-.93-.71-1.8-.97-2.73-.23-.85.05-1.81-.39-2.61-.25-.44.16-1.17-.73-1.4.22.38.09.63-.07.93-.36.67.19,1.34.07,2.04-.37,2.28-.13,4.6-.36,6.88-.2,2.02-1.55,2.85-3.78,3.03-1.11.09-1.89-.35-2.78-.74-.49-.22-.68-.64-.88-1.03-.62-1.26-.69-2.61-.62-3.98.04-.74.09-1.48-.18-2.22-.11-.31.07-.74.2-1.1.17-.48.24-.95.05-1.44-.12-.31-.19-.61.09-.89.05-.05.09-.18.07-.25-.34-1.13.09-2.32-.25-3.45-.04-.13-.08-.29-.06-.42.22-1.3.17-1.41-.98-1.71-.83-.22-.98.19-1.21,1-.28.99.08,1.93-.15,2.92-.24,1.02-.14,2.17-.11,3.25.06,1.79-.22,3.58,0,5.35.13,1.03-.02,1.97-.45,2.84-.3.62-.73,1.46-1.34,1.53-.54.06-1.1.22-1.66.23-.75,0-1.5-.05-2.22-.26-1.56-.45-2.16-1.92-2.26-3.34-.11-1.49-.13-2.98-.13-4.47,0-1.62.12-3.23.13-4.85.01-2.08-.06-4.16-.05-6.25,0-2.2.05-4.4.09-6.61.02-1.05-.07-2.11-.03-3.13.05-1.41.1-2.82.08-4.23-.02-1.68-.05-3.37-.07-5.05-.02-1.75-.34-3.65.83-5.26.51-.7,1.32-.89,2.05-1.18.85-.34,1.78-.14,2.65-.05.51.05,1.09.39,1.43.78.33.38,1.05.68.72,1.43.92.98-.04,2.23.45,3.32.1.22-.05.95-.15,1.44-.09.48-.2.99.19,1.49.25.32.12,1,.01,1.25-.5,1.16.03,2.29-.12,3.43-.13.97-.08,1.96-.16,2.93-.08,1.05.22,1.4,1.27,1.43.16,0,.34.09.48.17.45.27.75-.07.8-.37.15-.9.3-1.79.09-2.74-.13-.59.11-1.23.07-1.87-.08-1.13.28-2.24-.08-3.42-.18-.61.11-1.44.06-2.2-.07-1.32.04-2.66.02-3.99-.02-1.35,1.69-2.92,3.04-3.12.69-.1,1.39-.01,2.08-.19.51-.13.92.29,1.31.56.66.44,1.09,1.13,1.53,1.77.44.64.05,1.34-.12,2.01.26.25.48-.44.72-.01.21.38-.11.49-.31.69-.19.19-.19.44.05.6.16.1.19.42.46.33.33-.12.13-.35.13-.58-.03-1.09.01-2.2.37-3.22.23-.65.76-1.14,1.45-1.52,1.68-.95,3.35-.7,4.93,0,.59.27.92,1.14,1.33,1.76.63.97.43,2.05.3,3.11-.04.29-.27.53.11.85.29.24-.3.54-.2,1.01.25,1.12.19,2.31.15,3.43-.02.69-.17,1.55-.1,2.17.13,1.14-.18,2.32.13,3.35.4,1.33-.27,2.54-.02,3.82.32,1.67-.19,3.37-.01,5.09.06.59-.19,1.31-.1,1.94.12.87-.28,1.77.14,2.61.22.45-.18.82-.12,1.27.17,1.12.23,2.25.62,3.33.1.27,1.04.42,1.34.21.58-.4,1.11-2.29.81-3.21-.13-.41-.1-.73-.04-1.13.17-1.21.06-2.44,0-3.67-.05-1.15-.12-2.31-.14-3.45-.01-1.09-.13-2.23.12-3.32.18-.79-.18-1.53-.09-2.31.08-.65-.05-1.32-.03-1.98.02-1.1.1-2.18-.14-3.29-.13-.63-.04-1.37.04-2.02.19-1.53-.27-3.03-.05-4.54.14-1.01.28-2.03.39-3.03.2-1.86,1.65-2.14,2.85-2.62.44-.18,1.3-.27,2,.17.45.28,1.14.1,1.63.6.49.5.94.97,1.08,1.68.16.79.46,1.55.36,2.38-.03.22.14.37.27.53.2.26.24.43-.19.46-.32.02-.11.31-.08.37.24.46.2.83,0,1.34-.25.64.13,1.38.06,2.1-.09.94-.08,1.92-.04,2.84.04,1-.19,2.02,0,2.96.18.87.43,1.68.18,2.58-.06.24.15.43.45.37-.16.1-.28.24-.28.42-.03.91-.11,1.8-.35,2.69-.17.61.37,1.15.29,1.78-.43.5.1,1.03-.04,1.54-.36.94.03,1.92-.15,2.88.73-.34.99-.91.57-1.45-.44-.56-.43-.96.23-1.25-.19-.39-.45-.12-.65-.19.98-.86.99-1.02.02-1.52.25-.24.39-.54.58-.82.33-.5.19-1-.2-1.03-.72-.06-.11-.4-.21-.56.76-.3.38-.9.33-1.38-.04-.33-.02-.59.19-.87.23-.32.06-.42-.27-.27ZM77.18,106.55c.46-.51.39-1.16.48-1.77.02-.16,0-.38-.24-.37-.08,0-.25.13-.24.16.17.66-.08,1.32,0,1.98-.53,1.22-.4,3.16.25,3.65.11-.23.06-.49.15-.73.35-1.02-.05-1.97-.4-2.91ZM77.07,99.18c.17-.07.4-.29.33-.35-.54-.48-.22-.75.17-1.08.06-.05,0-.34-.09-.48-.11-.18-.17-.32.03-.44.21-.12.33-.32.22-.5-.14-.24-.38.3-.58,0,0-.36.48-.5.44-.82-.13-.94.26-1.83-.06-2.87-.3-.95.09-2.17.15-3.27.04-.77.06-1.48-.17-2.21-.09-.27-.33-.63-.11-.83.49-.44.19-.94.21-1.41-.56.65-1.03,1.32-.55,2.22.15.28.09.47-.03.72-.38.79-.36.84.2,1.54.08.1.09.22-.03.3-.52.34-.42.91-.3,1.31.26.88-.53,1.85.28,2.64-.51.39-.26.93-.27,1.42-.04,1.26-.06,2.51-.11,3.77,0,.27-.03.51.35.28-.47.89-.5,1.78.06,2.64.12.18.16.36.1.57-.06.2-.24.53.15.5.4-.03.11-.42.08-.55-.23-.96-.14-1.87.11-2.81.16-.61-.28-.38-.57-.3ZM146.06,109.07c.15,1.15.8,2.1,1.34,3.08.09.16.79.67,1.11-.22.19-.52.56-.96.71-1.57.14-.55.45-1.12.39-1.67-.21-2.21.08-4.41-.01-6.63-.05-1.16-.14-2.44.17-3.67.27-1.06-.09-2.21-.03-3.33.03-.52-.2-1.11-.24-1.68-.08-1.14-.24-2.28-.35-3.43-.03-.37-.44-.53-.42-.92.04-.58-.28-.66-.77-.54-.73.19-.96.84-1.33,1.37-.64.93-.82,2.01-.75,3.07.05.8-.54,1.56-.07,2.37.04.07-.16.29-.26.43-.19.28-.27.58-.03.85.14.16.12.29.08.47-.1.56-.24,1.13-.24,1.7,0,1,.08,2,.15,2.99.02.33.16.65.15.98-.04,1.62-.22,3.24.12,4.87.1.46.39.93.26,1.46ZM117.7,107.21c.19-.83.71-.36,1.1-.43,1.25-.25,2.48-.56,3.66.34.65.5,1.06,1.1,1.34,1.83.25.67.37,1.38.55,2.06.12.48-.29,1.19.42,1.47.69.27,1.06,1.24,2.06.88.22-.08.62-.04.91.17.31.22.61.09.95-.06,1.1-.48,1.17-1.53,1.46-2.47.11-.34-.57-.2-.3-.56.56-.76-.02-1.48-.07-2.21-.03-.45-.2-.69-.57-.95-1.29-.9-2.9-.93-4.26-1.7-.99-.56-2.18-.74-3.04-1.6-.46-.45-1.18-.68-1.56-1.12-.66-.76-1.18-1.67-1.66-2.59-.4-.78-.61-1.68-1.25-2.32.06.49-.62.98,0,1.41.02.01-.04.16-.09.22-.78.97-.15,2.09-.25,3.13-.03.38.23.93,0,1.37-.13.24-.06.44-.07.66-.01.83.17,1.6.67,2.49ZM125.26,93.41c-.04.76.52,1.47.92,1.75,1.11.77,2.46,1.16,3.75,1.65,1.02.39,1.93,1.09,2.96,1.41,1.37.43,2.11,1.56,3.07,2.43.24.22.41.25.66.22.29-.03.52-.18.47-.51-.05-.33.22-.72-.06-.98-.37-.34-.39-.31-.22-.66.08-.17.24-.29.22-.54-.15-1.36.19-2.7.16-4.06-.02-.86-.4-1.24-1.18-.91-1.33.56-2.66.32-3.98-.06-1.62-.47-2.01-1.91-2.21-3.25-.09-.62-.5-.8-.74-1.08-.24-.27-1.08-.4-1.36-.19-.8.6-1.86.96-2.12,2.17-.18.87-.27,1.73-.34,2.6ZM108.96,89.64c.13-.53-.24-1.01-.17-1.53.02-.15,0-.42-.21-.42-.66,0-1.34-.28-1.99.02-.21.1-.58.25-.49.53.22.68-.01,1.34-.02,2-.01.82-.06,1.68-.07,2.5,0,.7.37,1.6.08,2.14-.4.75.68,1.41-.09,2.02.13,1.71.08,3.43.14,5.14.03.82-.11,1.65.02,2.48.21,1.45-.31,2.91.05,4.38.11.45.23,1.11.05,1.42-.45.82.02,1.21.51,1.59.58.45,1.79.41,1.86-.03.1-.66.55-1.24.28-2.02-.19-.54-.12-1.29-.02-1.81.29-1.48-.17-2.94.14-4.43.11-.54.16-1.31-.06-2-.15-.48-.14-1.23-.02-1.57.51-1.39-.09-2.75.07-4.13.1-.94.19-2.01,0-3.05-.18-1.03-.27-2.15-.07-3.24ZM96.85,106.49c.36.45.09,1.04.69,1.17.07.01.25-.15.24-.2-.11-.41-.21-.83-.93-.97Z"/>
+                    </svg>
+                </div>
+                <button class="nav-toggle" aria-label="Open navigation" aria-controls="navLinks" aria-expanded="false" tabindex="0">
+                    <span></span><span></span><span></span>
+                </button>
+                <ul class="nav-links" id="navLinks">
+                    <li><a href="#overview" class="nav-link active" aria-current="page">Overview</a></li>
+                    <li><a href="#industry-context" class="nav-link">Industry Context</a></li>
+                    <li><a href="#core-identity" class="nav-link">Core Identity</a></li>
+                    <li><a href="#release-strategy" class="nav-link">Release Strategy</a></li>
+                    <li><a href="#audience" class="nav-link">Audience</a></li>
+                    <li><a href="#sound-voice" class="nav-link">Sound & Voice</a></li>
+                    <li><a href="#visual-language" class="nav-link">Visuals</a></li>
+                    <li><a href="#world-building" class="nav-link">World-Building</a></li>
+                    <li><a href="#brand-pillars" class="nav-link">Pillars</a></li>
+                    <li><a href="#guardrails" class="nav-link">Guardrails</a></li>
+                    <li><a href="#impact-signals" class="nav-link">Signals</a></li>
+                </ul>
+            </div>
         </div>
     </nav>
-    
-    <!-- Hero / Executive Summary -->
-    <section class="hero">
-        <div class="container">
+    </header>
+    <main id="overview">
+        <div class="hero-inner">
             <div class="hero-content">
-                <h1 class="display" data-misreg="SEPTEMBER 2025">SEPTEMBER<br>2025</h1>
-                <p class="lead">Hudson Ingram<br>Interscope Records × Aaron Dessner<br>Strategic Positioning & Creative Blueprint</p>
+                <h1 class="display editable-text" data-misreg="SEPTEMBER 2025">SEPTEMBER<br>2025</h1>
+                <p class="lead editable-text">Hudson Ingram<br>Interscope Records × Aaron Dessner<br>Strategic Positioning & Creative Blueprint</p>
                 <div class="spacer-md"></div>
-                <p class="opacity-50">This campaign transforms Hudson from emerging talent to essential voice<br>by balancing artistic credibility with mainstream accessibility.</p>
-                <div class="spacer-sm"></div>
-                <p><strong>Strategic North Star:</strong><br>
-                Balance cultural credibility with commercial firepower through<br>disciplined execution and leveraged serendipity.</p>
+                <p class="editable-text"><strong>Core Idea:</strong> The All-American golden boy who sings the things we never said.</p>
+                <p class="opacity-50 editable-text">This campaign transforms Hudson from emerging talent to essential voice by balancing artistic credibility with mainstream accessibility.</p>
+            </div>
+            <div class="hero-image">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson.jpeg" 
+                     alt="Hudson Ingram" 
+                     onerror="this.onerror=null;this.src='https://placehold.co/600x800/2A3B60/F8F4EF?text=Hudson';">
             </div>
         </div>
-        <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" 
-             alt="Hudson Ingram" 
-             class="hero-image"/>
+    </main>
+
+    <section class="video-moment" id="videoMoment">
+        <video class="video-background" autoplay loop muted playsinline>
+            <source src="https://storage.googleapis.com/allmyfriends-assets-2025/video/Hudson/Hudson%20Ingram%20Super-8%20(uncolored).mov" type="video/mp4">
+        </video>
+        <div class="parallax-text-container">
+            <h2 class="parallax-text editable-text" id="parallaxText">Pretty On First Glance,<br>Haunted On Second.</h2>
+        </div>
     </section>
     
-    <!-- 01. White Space Section -->
-    <!-- NEW: Insert the White Space section as specified -->
-    <section id="whitespace" style="position:relative;">
+    <section id="release-strategy" class="music-bg">
+        <div class="container" style="display: flex; flex-wrap: wrap; align-items: flex-start; gap: 2.5rem; position: relative;">
+            <div style="flex: 1 1 400px; min-width: 320px;">
+                <span class="section-numeral" aria-hidden="true">01</span>
+                <div class="section-heading">
+                    <div class="marquee-header editable-text">RELEASE STRATEGY</div>
+                    <h2 class="stylized-subheader editable-text">The Long Way Home — A Trilogy</h2>
+                </div>
+                <p class="lead editable-text">The debut narrative arc is an EP Trilogy, "THE LONG WAY HOME." Each EP sleeve shows Hudson's car in a new liminal backdrop, with a cliff-hanger lyric closing every release.</p>
+            </div>
+            <div style="flex: 0 1 420px; min-width: 260px; max-width: 480px; align-self: flex-start;">
+                <iframe id="disco-playlist-24176665" name="disco-playlist-24176665" allowfullscreen frameborder="0" class="disco-embed" src="https://allmyfriendsinc.disco.ac/e/p/24176665?download=true&s=BoacTTK9BxfMm1nv1cmKC4TqlHE%3AoGiro13p&artwork=true&color=%233282C2&theme=white" width="100%" height="395" style="border-radius: 24px; min-width: 220px; max-width: 480px; display: block;"></iframe>
+            </div>
+        </div>
+        <div class="ep-timeline">
+            <div class="ep-card">
+                <h4 class="editable-text">Pt 1 — Fall '25</h4>
+                <p class="editable-text" style="opacity: 0.7; margin-bottom: 1rem;">The departure.</p>
+                <ul style="list-style: none;" class="editable-text">
+                    <li><strong>Single:</strong> 8 Sep • 'Til October</li>
+                    <li><strong>Single:</strong> Oct • Real Life</li>
+                    <li><strong>Single:</strong> Nov • Abigail</li>
+                    <li><strong>Single:</strong> Jan '26 • Look How Lonely</li>
+                    <li style="margin-top: 1rem;"><strong>EP Drop Q1 '26</strong><br>+ Linger (focus)<br>+ Baby Just Be<br>+ Wouldn't That Be Nice</li>
+                </ul>
+            </div>
+            <div class="ep-card">
+                <h4 class="editable-text">Pt 2 — Fall/Winter '26</h4>
+                <p class="editable-text">A restless-road phase exploring the space between who you were and who you're becoming. 3-4 new songs.</p>
+            </div>
+            <div class="ep-card">
+                <h4 class="editable-text">Pt 3 — Spring/Summer '27</h4>
+                <p class="editable-text">The return-home reckoning. A confrontation with the ghosts you left behind. 3-4 new songs.</p>
+            </div>
+        </div>
+        <div class="image-timeline-scroll" aria-label="The Long Way Home filmstrip">
+            <div class="timeline-image"><img src="https://i.pinimg.com/1200x/41/ae/1d/41ae1d299fd4c8a7bfaf40e03fe69946.jpg" alt="Film still 1 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/1200x/4c/5e/3d/4c5e3dcc720077b714fff4138dbc523e.jpg" alt="Film still 2 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/1200x/a0/5b/cb/a05bcb60bc0e958c4b7d7c1d1eee34e9.jpg" alt="Film still 3 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/04/69/dc/0469dcc0ca349bfc588a709c4bf31e4e.jpg" alt="Film still 4 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/b3/01/83/b30183009daf493dcdb2757e8fc36574.jpg" alt="Film still 5 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/dd/de/18/ddde189521b5bb3ea3456ad21f0aa4c6.jpg" alt="Film still 6 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/c7/87/24/c787240586ff5e94aae2b5d12726227b.jpg" alt="Film still 7 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/7b/a2/43/7ba243d1fbf3fe279a071326d49320a9.jpg" alt="Film still 8 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/29/c4/3c/29c43c2543b27cd73f3fbd990799db53.jpg" alt="Film still 9 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/2d/90/56/2d9056408a6d0c395dbd8d4c2cb0aff7.jpg" alt="Film still 10 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image"><img src="https://i.pinimg.com/736x/bf/f2/8f/bff28fb42f2d8cbfa54b1a72d01d5933.jpg" alt="Film still 11 from The Long Way Home" loading="lazy"></div>
+        </div>
+    </section>
+
+    <section id="core-identity">
         <div class="container">
-            <p class="section-marker">01 — WHITE SPACE</p>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <div class="section-header-accent">
-                        <div class="header-bar"></div>
-                        <h2 class="section-title" data-section="01">SPACE TO<br>BREATHE</h2>
-                    </div>
-                    <div class="spacer-md"></div>
-                    <p class="lead">
-                        In a cluttered sonic landscape, Hudson represents intentional space—where silence carries as much weight as sound, and restraint creates more impact than saturation.
-                    </p>
-                </div>
+            <span class="section-numeral" aria-hidden="true">02</span>
+            <div class="section-heading">
+                <div class="marquee-header editable-text">CORE IDENTITY</div>
+                <h2 class="stylized-subheader editable-text">The Golden Child with Ghosts</h2>
             </div>
+             <p class="lead editable-text">Hudson is the varsity-jacket dream who absorbed every family fracture in silence. Now he alchemizes that backlog into widescreen, heart-punch pop. He still looks like the poster in your locker; he just sings the stuff you never dared to write there.</p>
             
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
+            <div class="grid" style="margin-top: 4rem;">
                 <div class="col-6">
-                    <h5>The Principle</h5>
-                    <p>Every element in Hudson's world is chosen deliberately. From production choices to visual composition, we embrace negative space as a creative tool rather than something to fill.</p>
+                    <h5 class="editable-text">The Lie (First Glance)</h5>
+                    <ul style="list-style-type: '✓ ';" class="editable-text">
+                        <li>Clean-cut, boy-next-door</li>
+                        <li>Confident athlete</li>
+                        <li>Son of a country star</li>
+                        <li>Easy heart-throb</li>
+                        <li>Cool and composed</li>
+                    </ul>
                 </div>
                 <div class="col-6">
-                    <h5>Application</h5>
-                    <p>• Music: Strategic pauses and instrumental breaks<br>
-                    • Visuals: Uncluttered compositions with breathing room<br>
-                    • Content: Quality over quantity in all communications<br>
-                    • Live shows: Moments of silence that amplify connection</p>
+                    <h5 class="editable-text">The Truth (Second Glance)</h5>
+                    <ul style="list-style-type: '☞ ';" class="editable-text">
+                        <li>Navigated nightly land-mines at home</li>
+                        <li>Inherited emotional suppression he's still unlearning</li>
+                        <li>Resents the legacy, fears repeating it</li>
+                        <li>Hyper-aware he's "performing likability"</li>
+                        <li>Pens lyrics that make grown men pull over and cry</li>
+                    </ul>
                 </div>
             </div>
-        </div>
-        
-        <div class="large-image break-grid">
-            <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" 
-                 alt="White space concept"/>
+            <!-- Ghosts Collage Editorial Spread -->
+            <div class="ghosts-collage">
+                <div class="ghosts-collage-item"><img src="https://i.pinimg.com/736x/71/68/63/716863ef4b830e34aae8c090e395871b.jpg" alt="Faded family photo, memory fragment"></div>
+                <div class="ghosts-collage-item"><img src="https://storage.googleapis.com/allmyfriends-assets-2025/24e70701454e11a980b2cb8bd252de84.jpg" alt="Empty room, sunlight through window"></div>
+                <div class="ghosts-collage-item"><img src="https://storage.googleapis.com/allmyfriends-assets-2025/4804fdb95b4c0656c39e30ac74a4b3d4.jpg" alt="Old car, suburban street"></div>
+                <div class="ghosts-collage-item"><img src="https://storage.googleapis.com/allmyfriends-assets-2025/7e0f7f424cbc0d40e1b3e1be871db4f2.jpg" alt="Boy looking out window, lost in thought"></div>
+                <div class="ghosts-collage-item"><img src="https://storage.googleapis.com/allmyfriends-assets-2025/IMG_4099.JPG" alt="Polaroid, childhood backyard"></div>
+                <div class="ghosts-collage-item"><img src="https://storage.googleapis.com/allmyfriends-assets-2025/IMG_4113.JPG" alt="T-shirt on bed, lyric detail"></div>
+            </div>
+            <!-- End Ghosts Collage -->
+             <blockquote class="quote editable-text">"He inherited the golden-boy myth—and every contradiction."</blockquote>
         </div>
     </section>
-    
-    <!-- Image Break -->
-    <div class="image-break">
-        <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Visual break"/>
+
+    <div class="image-break full-bleed">
+        <div class="editable-image-container">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/24e70701454e11a980b2cb8bd252de84.jpg" alt="Visual Interlude" onerror="this.onerror=null;this.src='https://placehold.co/1200x600/000/fff?text=Interlude';">
+        </div>
     </div>
-    
-    <!-- 02. Identity Section -->
-    <!-- NEW: Update Identity section (change marker, headline, quotes) -->
-    <section id="identity" style="position:relative;">
-        <div class="accent-image top-right">
-            <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Accent"/>
-        </div>
-        
+
+    <section id="industry-context" class="music-bg">
         <div class="container">
-            <p class="section-marker">02 — IDENTITY</p>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <div class="section-header-accent">
-                        <div class="header-bar"></div>
-                        <h2 class="section-title" data-section="02">THE AUTHENTIC<br>AMERICAN<br>VOICE</h2>
-                    </div>
-                    <div class="spacer-md"></div>
-                    <p class="lead">
-                        Hudson embodies the evolved American storyteller—where Texas authenticity meets contemporary sophistication, creating a voice that feels both familiar and revolutionary.
+            <span class="section-numeral" aria-hidden="true">03</span>
+            <div class="section-heading">
+                <div class="marquee-header editable-text">INDUSTRY CONTEXT</div>
+                <h2 class="stylized-subheader editable-text">The Fan-Driven Renaissance</h2>
+            </div>
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <p class="lead editable-text">
+                        Pop culture currently lacks a male artist who combines emotional maximalism with mass-market reach. While DJO, Steve Lacy, and Omar Apollo own stylish niches, **no one** occupies the Taylor-scale lane of raw, relatable storytelling. Hudson is that antidote—songs built to outlive TikTok cycles.
                     </p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-10 offset-1">
-                    <div class="quote">
-                        "I want to capture the feeling of driving through Texas at sunset, but with the production that makes your heart stop."
+                    <div class="spacer-lg"></div>
+                    <div class="grid" style="grid-template-columns: 1fr 1fr;">
+                        <div class="col-6">
+                            <h5 class="editable-text">Current Lane</h5>
+                            <ul class="editable-text">
+                                <li>DJO — retro alt cool</li>
+                                <li>Steve Lacy — genre-surf flair</li>
+                                <li>Omar Apollo — R&B-indie hybrid</li>
+                            </ul>
+                        </div>
+                        <div class="col-6">
+                            <h5 class="editable-text">Hudson's Lane</h5>
+                            <ul class="editable-text">
+                                <li>Emotionally maximal pop</li>
+                                <li>Americana authenticity</li>
+                                <li>Stadium-scale hooks</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-            
-            <div class="grid">
-                <div class="col-6">
-                    <h5>Core Identity</h5>
-                    <p>Hudson represents the missing archetype in contemporary music—the thoughtful provocateur who makes depth feel effortless and authenticity feel inevitable.</p>
-                </div>
-                <div class="col-6">
-                    <h5>Positioning</h5>
-                    <p>• 18-year-old Nashville-based artist from Texas<br>
-                    • Interscope Records × Aaron Dessner collaboration<br>
-                    • Bridge between indie credibility and mainstream appeal<br>
-                    • The modern heartthrob with emotional intelligence</p>
+                 <div class="creative-image">
+                    <div class="image-stack" onclick="toggleStack(this)">
+                        <span class="stack-close">× Close</span>
+                        <div class="image-stack-item editable-image-container">
+                            <img src="https://i.pinimg.com/736x/b6/f6/b7/b6f6b73465135a7e8480c251ac2cd18c.jpg" alt="Cultural context 1" onerror="this.onerror=null;this.src='https://placehold.co/600x400/ccc/000?text=Context';">
+                        </div>
+                        <div class="image-stack-item editable-image-container">
+                            <img src="https://i.pinimg.com/736x/21/53/11/215311902035d8125015a9a4b245e3df.jpg" alt="Cultural context 2" onerror="this.onerror=null;this.src='https://placehold.co/600x400/ccc/000?text=Context';">
+                        </div>
+                        <div class="image-stack-item editable-image-container">
+                            <img src="https://i.pinimg.com/1200x/72/94/92/729492116bde6ccba2f762d7229e92c6.jpg" alt="Cultural context 3" onerror="this.onerror=null;this.src='https://placehold.co/600x400/ccc/000?text=Context';">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-    
-    <!-- 03. Brand Pillars Section -->
-    <!-- NEW: Insert Brand Pillars after Identity section -->
-    <section id="brand-pillars" style="position:relative;">
+
+    <div class="interstitial-marker" aria-hidden="true">— 04 —</div>
+
+    <section id="brand-pillars">
         <div class="container">
-            <p class="section-marker">03 — BRAND PILLARS</p>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <div class="section-header-accent">
-                        <div class="header-bar"></div>
-                        <h2 class="section-title" data-section="03">FOUR CORE<br>PILLARS</h2>
-                    </div>
-                    <div class="spacer-md"></div>
-                    <p class="lead">
-                        Every decision, creative choice, and strategic move is filtered through these four foundational principles that define Hudson's artistic identity.
-                    </p>
-                </div>
+            <span class="section-numeral" aria-hidden="true">04</span>
+            <div class="section-heading">
+                <div class="marquee-header editable-text">BRAND PILLARS</div>
+                <h2 class="stylized-subheader editable-text">How We Know What Belongs</h2>
             </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="vision-grid">
-                <div class="vision-item">
-                    <h5>01. Crafted Vulnerability</h5>
-                    <p>Songs that feel like diary entries set to ambitious production. Emotional honesty delivered through sophisticated musical architecture.</p>
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <p class="lead editable-text">To be the 2020s male equivalent of Taylor Swift meets Springsteen: critically worshipped, culturally dominant, and emotionally indispensable.</p>
+                    <p class="editable-text">Think: If Harry Styles had Taylor Swift's emotional specificity, or if John Mayer had the cultural fluency and visual world-building of Troye Sivan. But less "pretty boy rockstar," more "suburban poet prince."</p>
+                    <div class="spacer-md"></div>
+                    <h5 class="editable-text">Thematic DNA</h5>
+                    <p class="editable-text">Silence as trauma · Masculinity as costume · Suburban safety as illusion · Children translating divorce debris · Grief for a parent still living · Romance as survival mechanism.</p>
+                    <p class="editable-text"><strong>Weapon:</strong> ruthless specificity without melodrama. <em>"You left a Post-it that said 'don't wait up' / Mom cried into the milk."</em></p>
                 </div>
-                <div class="vision-item">
-                    <h5>02. Geographic Authenticity</h5>
-                    <p>Texas roots informing universal themes. American landscapes and small-town wisdom translated for global audiences.</p>
-                </div>
-                <div class="vision-item">
-                    <h5>03. Generational Bridge</h5>
-                    <p>18-year-old perspective with timeless sensibility. Contemporary concerns expressed through enduring musical traditions.</p>
-                </div>
-                <div class="vision-item">
-                    <h5>04. Collaborative Elevation</h5>
-                    <p>Aaron Dessner production bringing indie prestige to pop accessibility. Creative partnerships that enhance rather than diminish authenticity.</p>
+                <div class="creative-image">
+                    <div class="image-grid-2x2">
+                        <div class="editable-image-container"><img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Digital--2.jpg" alt="Blueprint Image 1" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/000?text=Image';"></div>
+                        <div class="editable-image-container"><img src="https://i.pinimg.com/1200x/07/0f/1c/070f1cd06ad4bfd64b73962b9a023a45.jpg" alt="Blueprint Image 2" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/000?text=Image';"></div>
+                        <div class="editable-image-container"><img src="https://i.pinimg.com/474x/fd/8b/f1/fd8bf1bbe9db63508e05db778285237a.jpg" alt="Blueprint Image 3" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/000?text=Image';"></div>
+                        <div class="editable-image-container"><img src="https://i.pinimg.com/736x/f6/0c/27/f60c27bae74d9dc3aad1f24814cbd63a.jpg" alt="Blueprint Image 4" onerror="this.onerror=null;this.src='https://placehold.co/400x400/ccc/000?text=Image';"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-    
-    <!-- 04. Audience Section -->
-    <!-- NEW: Insert Audience section (and add pie CSS) -->
     <section id="audience" class="music-bg">
         <div class="container">
-            <p class="section-marker">04 — AUDIENCE</p>
-            
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="04">WHO CONNECTS<br>WITH HUDSON</h2>
+            <span class="section-numeral" aria-hidden="true">05</span>
+            <div class="section-heading">
+                <div class="marquee-header editable-text">AUDIENCE & FANBASE</div>
+                <h2 class="stylized-subheader editable-text">Who It's For — And Why They Stay</h2>
             </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-6">
-                    <h5>Primary Audience</h5>
-                    <p><strong>The Discerning Music Fan (18-28)</strong><br>
-                    College-educated, culturally curious, values artistic integrity over viral moments. Discovers music through indie playlists, music blogs, and friend recommendations.</p>
-                    
-                    <div class="spacer-md"></div>
-                    
-                    <h5>Secondary Audience</h5>
-                    <p><strong>Nostalgic Millennials (25-35)</strong><br>
-                    Appreciates thoughtful songwriting, has disposable income for vinyl and live shows. Seeks authentic connections in an increasingly digital world.</p>
-                </div>
-                <div class="col-6">
-                    <div class="pie-chart">
-                        <div class="pie-segment" style="clip: rect(0px, 100px, 200px, 0px); background: conic-gradient(var(--accent) 0deg 144deg, #e5e5e5 144deg 360deg);"></div>
-                    </div>
-                    
-                    <div class="pie-chart-legend">
-                        <div class="pie-legend-item">
-                            <div class="pie-color" style="background: var(--accent);"></div>
-                            <span>Primary Audience (40%)</span>
-                        </div>
-                        <div class="pie-legend-item">
-                            <div class="pie-color" style="background: var(--ink);"></div>
-                            <span>Secondary Audience (30%)</span>
-                        </div>
-                        <div class="pie-legend-item">
-                            <div class="pie-color" style="background: #999;"></div>
-                            <span>Crossover Potential (30%)</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-12">
-                    <h5>Psychographic Profile</h5>
-                    <p>Hudson's audience values substance over spectacle, craft over content, and connection over consumption. They're early adopters who become passionate advocates, turning discovery into evangelism.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- 05. Sound Section -->
-    <!-- NEW: Update Sound section (rename, headline, bullet points) -->
-    <section id="sound" class="music-bg">
-        <div class="container">
-            <p class="section-marker">05 — SONIC IDENTITY</p>
-            
-            <div class="grid">
-                <div class="col-10">
-                    <div class="section-header-accent">
-                        <div class="header-bar"></div>
-                        <h2 class="section-title" data-section="05">ARCHITECTURAL<br>INTIMACY</h2>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <p class="lead">
-                        Hudson's sound marries bedroom intimacy with orchestral ambition—where whispered confessions meet cathedral reverbs, all anchored by Aaron Dessner's sophisticated production sensibility.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
             <div class="grid">
                 <div class="col-4">
-                    <h5>Core Elements</h5>
-                    <p>• Acoustic guitar as foundation<br>
-                    • Layered strings and brass for emotional weight<br>
-                    • Organic drums with programmed precision<br>
-                    • Strategic use of silence and space<br>
-                    • Intimate vocals processed with warmth</p>
+                    <h5 class="editable-text">Mass Listener / "Playlister"</h5>
+                    <p class="editable-text">Hook-hungry, loves relatable bangers. Hook them in the first 3 seconds.</p>
                 </div>
                 <div class="col-4">
-                    <h5>Production Philosophy</h5>
-                    <p>• Lo-fi textures in hi-fi arrangements<br>
-                    • Digital tools serving analog warmth<br>
-                    • Complexity hidden beneath apparent simplicity<br>
-                    • Every element serving the emotional core<br>
-                    • Songs that work stripped down or fully produced</p>
+                    <h5 class="editable-text">Culture Scout / "Tastemaker"</h5>
+                    <p class="editable-text">Craves narrative depth. They're here for the story, the aesthetic, the lore.</p>
                 </div>
                 <div class="col-4">
-                    <h5>Reference Points</h5>
-                    <p>• The National's emotional architecture<br>
-                    • Taylor Swift's folklore sophistication<br>
-                    • Phoebe Bridgers' confessional clarity<br>
-                    • Bon Iver's textural innovation<br>
-                    • Big Thief's organic authenticity</p>
+                    <h5 class="editable-text">Nostalgia Chaser / "Gen-Zennial"</h5>
+                    <p class="editable-text">Adores grain, analog vibes, and '90s film stills. Reward them with texture and detail.</p>
                 </div>
             </div>
-        </div>
-    </section>
-    
-    <!-- 06. Visual Identity Section -->
-    <!-- NEW: In Visual Identity, add mini style guide grid after header -->
-    <section id="visual">
-        <div class="container">
-            <p class="section-marker">06 — VISUAL IDENTITY</p>
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="06">AMERICAN<br>VERNACULAR</h2>
-            </div>
-            
-            <!-- NEW: Mini style guide grid added after header -->
-            <div class="style-guide-grid">
-                <div class="style-element">
-                    <div class="color-swatch color-primary"></div>
-                    <h6>Primary Blue</h6>
-                    <p>#0000FF</p>
-                </div>
-                <div class="style-element">
-                    <div class="color-swatch color-secondary"></div>
-                    <h6>Ink Black</h6>
-                    <p>#000000</p>
-                </div>
-                <div class="style-element">
-                    <div class="color-swatch color-bg"></div>
-                    <h6>Clean White</h6>
-                    <p>#FFFFFF</p>
-                </div>
-                <div class="style-element">
-                    <div class="font-sample font-display">AaBb</div>
-                    <h6>Display</h6>
-                    <p>Helvetica Neue Bold</p>
-                </div>
-                <div class="style-element">
-                    <div class="font-sample font-heading">AaBb</div>
-                    <h6>Headings</h6>
-                    <p>Helvetica Neue Regular</p>
-                </div>
-                <div class="style-element">
-                    <div class="font-sample font-body">AaBb</div>
-                    <h6>Body Text</h6>
-                    <p>Helvetica Neue Light</p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="creative-layout">
-                <div class="creative-text">
-                    <h3>VISUAL<br>PHILOSOPHY</h3>
-                    <div class="spacer-sm"></div>
-                    <p class="lead">Hudson's visual language speaks in American vernacular—where documentary truth meets cinematic beauty, all anchored by timeless blue tonalities.</p>
-                    <div class="spacer-sm"></div>
-                    <p><strong>Core Approach:</strong><br>
-                    • Documentary realism elevated through composition<br>
-                    • Natural light as primary narrative tool<br>
-                    • Environments that tell stories without words<br>
-                    • Blue as emotional and visual anchor</p>
-                </div>
-                <div class="creative-image">
-                    <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Visual reference"/>
-                </div>
-            </div>
-            
-            <div class="creative-layout">
-                <div class="creative-text">
-                    <h3>PHOTOGRAPHY<br>DIRECTION</h3>
-                    <div class="spacer-sm"></div>
-                    <p>• Environmental portraits over studio constructions<br>
-                    • Movement and candid moments prioritized<br>
-                    • Texas landscapes meeting intimate interiors<br>
-                    • Film grain for texture, not nostalgia<br>
-                    • Every image advances the narrative</p>
-                </div>
-                <div class="creative-image">
-                    <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Photography direction"/>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Large image break -->
-    <div class="large-image break-grid" style="margin-left:auto;margin-right:-10vw;transform:rotate(-2deg);">
-        <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Hudson performance"/>
-    </div>
-    
-    <!-- 07. Rollout Timeline Section -->
-    <!-- NEW: Insert Rollout Timeline after visual section (add timeline CSS) -->
-    <section id="rollout">
-        <div class="container">
-            <p class="section-marker">07 — ROLLOUT TIMELINE</p>
-            
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="07">SEPTEMBER 2025<br>ROADMAP</h2>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="rollout-timeline">
-                <div class="timeline-track"></div>
-                <div class="timeline-events">
-                    <div class="timeline-event">
-                        <div class="timeline-date">July 15</div>
-                        <div class="timeline-title">Teaser Campaign</div>
-                        <div class="timeline-description">Instagram cryptic visuals, Spotify Canvas mystery, industry whispers begin</div>
-                    </div>
-                    <div class="timeline-event">
-                        <div class="timeline-date">August 1</div>
-                        <div class="timeline-title">Artist Reveal</div>
-                        <div class="timeline-description">Mahogany Session premiere, editorial interviews, Aaron Dessner co-sign</div>
-                    </div>
-                    <div class="timeline-event">
-                        <div class="timeline-date">August 20</div>
-                        <div class="timeline-title">Single Pre-Release</div>
-                        <div class="timeline-description">Radio sends, playlist pitching, influencer previews</div>
-                    </div>
-                    <div class="timeline-event">
-                        <div class="timeline-date">September 6</div>
-                        <div class="timeline-title">Official Release</div>
-                        <div class="timeline-description">Full single, music video, press blitz, live debut</div>
-                    </div>
-                    <div class="timeline-event">
-                        <div class="timeline-date">September 20</div>
-                        <div class="timeline-title">Momentum Build</div>
-                        <div class="timeline-description">Acoustic versions, remix potential, tour announcements</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- 08. Live Rituals Section -->
-    <!-- NEW: Update Live Rituals section (header, content, new grid) -->
-    <section id="live-rituals" class="music-bg" style="position:relative;">
-        <div class="accent-image bottom-left">
-            <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Accent"/>
-        </div>
-        
-        <div class="container">
-            <p class="section-marker">08 — LIVE RITUALS</p>
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="08">SACRED SPACE<br>CREATION</h2>
-            </div>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <p class="lead">
-                        Hudson's live performances transform any venue into an intimate conversation, scaling emotional connection rather than just production value.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="vision-grid">
-                <div class="vision-item">
-                    <div class="vision-item-image">
-                        <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Intimate venues"/>
-                    </div>
-                    <h5>Phase 1: Listening Rooms</h5>
-                    <p>• 100-300 capacity venues<br>
-                    • Storytelling between songs<br>
-                    • Acoustic arrangements prioritized<br>
-                    • Direct audience connection</p>
-                </div>
-                <div class="vision-item">
-                    <div class="vision-item-image">
-                        <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Theater shows"/>
-                    </div>
-                    <h5>Phase 2: Theater Circuit</h5>
-                    <p>• 800-2000 capacity venues<br>
-                    • Full band arrangements<br>
-                    • Cinematic lighting design<br>
-                    • Maintain intimate moments</p>
-                </div>
-                <div class="vision-item">
-                    <div class="vision-item-image">
-                        <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Festival stages"/>
-                    </div>
-                    <h5>Phase 3: Festival Elevation</h5>
-                    <p>• Strategic festival placements<br>
-                    • Sunset slot positioning<br>
-                    • Stripped moments in big spaces<br>
-                    • Career-defining performances</p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-6">
-                    <h5>Performance Philosophy</h5>
-                    <p>• Every show should feel like being invited into Hudson's living room<br>
-                    • Setlist as emotional journey, not just hit parade<br>
-                    • Technology serves intimacy, not spectacle<br>
-                    • Audiences leave feeling connected, not just entertained</p>
-                </div>
-                <div class="col-6">
-                    <h5>Production Principles</h5>
-                    <p>• Warm lighting that flatters both artist and audience<br>
-                    • Sound design prioritizing vocal clarity<br>
-                    • Minimal but impactful visual elements<br>
-                    • Sustainability considerations in all production choices</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- 09. Social Playbook Section -->
-    <!-- NEW: Update Social Playbook section (rename, content, image placeholders) -->
-    <section id="social-playbook">
-        <div class="container">
-            <p class="section-marker">09 — SOCIAL PLAYBOOK</p>
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="09">DIGITAL<br>AUTHENTICITY</h2>
-            </div>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <p class="lead">
-                        Hudson's social presence feels like discovering a friend's private journal—intentionally curated yet genuinely authentic, building mystery while maintaining warmth.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="creative-layout">
-                <div class="creative-text">
-                    <h5>Content Strategy</h5>
-                    <p><strong>80/20 Rule:</strong> 80% artistic process, 20% personal moments</p>
-                    <div class="spacer-sm"></div>
-                    <p><strong>Core Content Types:</strong><br>
-                    • Behind-the-scenes studio moments<br>
-                    • Texas/Nashville environmental storytelling<br>
-                    • Collaborative process with other artists<br>
-                    • Thoughtful music recommendations<br>
-                    • Selective personal glimpses</p>
-                </div>
-                <div class="creative-image">
-                    <div class="merch-mockup">
-                        <span>Social Content Example</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="creative-layout">
-                <div class="creative-text">
-                    <h5>Platform Approach</h5>
-                    <p><strong>Instagram:</strong> Visual storytelling hub<br>
-                    <strong>TikTok:</strong> Process documentation<br>
-                    <strong>Twitter:</strong> Thoughtful engagement<br>
-                    <strong>YouTube:</strong> Long-form artistic content</p>
-                    <div class="spacer-sm"></div>
-                    <p><strong>Golden Rule:</strong> If it requires explanation to feel authentic, it's wrong for Hudson.</p>
-                </div>
-                <div class="creative-image">
-                    <div class="merch-mockup">
-                        <span>Platform Strategy Visual</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-8 offset-2">
-                    <p class="text-center"><strong>Anti-Strategy:</strong> No trend-chasing, no forced virality, no lifestyle flexing. Every post should age well and deepen the narrative.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- Full-width image break -->
-    <div class="image-break">
-        <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Hudson portrait break"/>
-    </div>
-    
-    <!-- 10. Merch & Physicals Section -->
-    <!-- NEW: Insert Merch & Physicals section with mockups and list -->
-    <section id="merch" class="music-bg">
-        <div class="container">
-            <p class="section-marker">10 — MERCH & PHYSICALS</p>
-            
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="10">OBJECTS OF<br>AFFECTION</h2>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <p class="lead">
-                        Hudson's physical merchandise serves as art objects first, commercial products second. Every item should feel like something fans would treasure, not just purchase.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="merch-grid">
-                <div class="merch-item">
-                    <div class="merch-mockup">
-                        <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Vinyl record"/>
-                    </div>
-                    <div class="merch-title">Limited Edition Vinyl</div>
-                    <div class="merch-description">Hand-numbered, blue marble pressing, letterpress sleeve</div>
-                </div>
-                <div class="merch-item">
-                    <div class="merch-mockup">
-                        <span>Lyric Journal Mockup</span>
-                    </div>
-                    <div class="merch-title">Lyric Journal</div>
-                    <div class="merch-description">Handwritten lyrics, blank pages for fan creativity</div>
-                </div>
-                <div class="merch-item">
-                    <div class="merch-mockup">
-                        <span>Film Camera Mockup</span>
-                    </div>
-                    <div class="merch-title">Disposable Camera Set</div>
-                    <div class="merch-description">Pre-loaded with Hudson's Texas landscapes</div>
-                </div>
-                <div class="merch-item">
-                    <div class="merch-mockup">
-                        <span>Denim Jacket Mockup</span>
-                    </div>
-                    <div class="merch-title">Vintage Denim Jacket</div>
-                    <div class="merch-description">Embroidered with song coordinates</div>
-                </div>
-                <div class="merch-item">
-                    <div class="merch-mockup">
-                        <span>Polaroid Set Mockup</span>
-                    </div>
-                    <div class="merch-title">Polaroid Print Set</div>
-                    <div class="merch-description">Behind-the-scenes studio moments</div>
-                </div>
-                <div class="merch-item">
-                    <div class="merch-mockup">
-                        <span>Candle Mockup</span>
-                    </div>
-                    <div class="merch-title">Studio Scent Candle</div>
-                    <div class="merch-description">"Texas Pine & Nashville Rain" fragrance</div>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-6">
-                    <h5>Design Philosophy</h5>
-                    <p>• Timeless over trendy<br>
-                    • Craftsmanship over mass production<br>
-                    • Functional beauty<br>
-                    • Sustainable materials when possible<br>
-                    • Collaborative artist partnerships</p>
-                </div>
-                <div class="col-6">
-                    <h5>Distribution Strategy</h5>
-                    <p>• Limited runs to maintain exclusivity<br>
-                    • Pre-orders for demand testing<br>
-                    • Independent record store partnerships<br>
-                    • Pop-up experiences in key markets<br>
-                    • Direct-to-fan online platform</p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- 11. Brand Guardrails Section -->
-    <!-- NEW: Insert Brand Guardrails section before footer -->
-    <section id="guardrails">
-        <div class="container">
-            <p class="section-marker">11 — BRAND GUARDRAILS</p>
-            
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="11">WHAT WE<br>PROTECT</h2>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="guardrails-grid">
-                <div class="do-dont do">
-                    <h5>Always Do</h5>
-                    <p>• Prioritize artistic integrity in all decisions<br>
-                    • Maintain mystery while being accessible<br>
-                    • Collaborate with credible, like-minded artists<br>
-                    • Let the music lead the narrative<br>
-                    • Respect the audience's intelligence<br>
-                    • Stay true to Texas and Nashville roots<br>
-                    • Build sustainable, long-term strategies</p>
-                </div>
-                <div class="do-dont dont">
-                    <h5>Never Do</h5>
-                    <p>• Chase viral moments at expense of authenticity<br>
-                    • Over-expose or over-document personal life<br>
-                    • Partner with brands that conflict with values<br>
-                    • Rush releases to meet industry timelines<br>
-                    • Compromise artistic vision for commercial gain<br>
-                    • Engage in manufactured controversies<br>
-                    • Lose sight of the emotional core</p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-8 offset-2">
-                    <div class="quote">
-                        "Every decision should pass the 10-year test: Will this feel authentic and valuable to Hudson's story a decade from now?"
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- 12. Assets / Download Hub Section -->
-    <!-- NEW: Insert Assets / Download Hub section before footer -->
-    <section id="assets" class="music-bg">
-        <div class="container">
-            <p class="section-marker">12 — ASSETS / DOWNLOAD HUB</p>
-            
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="12">BRAND TOOLKIT<br>ACCESS</h2>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <p class="lead">
-                        Essential brand assets for partners, press, and collaborators. All materials maintain Hudson's visual and strategic integrity.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="download-grid">
-                <div class="download-item">
-                    <div class="download-icon">📸</div>
-                    <div class="download-title">Press Photos</div>
-                    <div class="download-format">High-res JPEG & RAW</div>
-                </div>
-                <div class="download-item">
-                    <div class="download-icon">🎨</div>
-                    <div class="download-title">Logo & Wordmarks</div>
-                    <div class="download-format">AI, EPS, PNG</div>
-                </div>
-                <div class="download-item">
-                    <div class="download-icon">🎵</div>
-                    <div class="download-title">Music Assets</div>
-                    <div class="download-format">WAV, MP3, Stems</div>
-                </div>
-                <div class="download-item">
-                    <div class="download-icon">📋</div>
-                    <div class="download-title">Biography & Facts</div>
-                    <div class="download-format">Short & Long Form</div>
-                </div>
-                <div class="download-item">
-                    <div class="download-icon">🎬</div>
-                    <div class="download-title">Video Content</div>
-                    <div class="download-format">MP4, ProRes</div>
-                </div>
-                <div class="download-item">
-                    <div class="download-icon">📐</div>
-                    <div class="download-title">Brand Guidelines</div>
-                    <div class="download-format">PDF Manual</div>
-                </div>
-                <div class="download-item">
-                    <div class="download-icon">📱</div>
-                    <div class="download-title">Social Templates</div>
-                    <div class="download-format">PSD, Figma</div>
-                </div>
-                <div class="download-item">
-                    <div class="download-icon">🎪</div>
-                    <div class="download-title">Live Show Materials</div>
-                    <div class="download-format">Stage Plots, Riders</div>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-12">
-                    <p class="text-center opacity-50">
-                        <strong>Access Request:</strong> Contact team@hudsoningram.com for download credentials
-                    </p>
-                </div>
-            </div>
-        </div>
-    </section>
-    
-    <!-- 13. Vision Section -->
-    <!-- Keep existing vision section as final section -->
-    <section id="vision">
-        <div class="container">
-            <p class="section-marker">13 — LONG-TERM VISION</p>
-            <div class="section-header-accent">
-                <div class="header-bar"></div>
-                <h2 class="section-title" data-section="13">THE DECADE<br>AHEAD</h2>
-            </div>
-            
             <div class="spacer-md"></div>
-            
-            <div class="grid">
-                <div class="col-8">
-                    <p class="lead">
-                        We're architecting a career built to span decades—where artistic growth and commercial success amplify rather than compromise each other.
-                    </p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="timeline">
-                <div class="timeline-line"></div>
-                <div class="timeline-items">
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Year 1: Foundation</h5>
-                        <div class="spacer-sm"></div>
-                        <p>• Establish Hudson as essential new voice<br>
-                        • Build sustainable touring practice<br>
-                        • Create collaborative network<br>
-                        • Develop distinctive visual language<br>
-                        • Cultivate artist community respect</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Year 2-3: Expansion</h5>
-                        <div class="spacer-sm"></div>
-                        <p>• International market development<br>
-                        • Festival circuit integration<br>
-                        • Cultural conversation participation<br>
-                        • Artistic risk-taking encouraged<br>
-                        • Second album positioning</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Long-term Legacy</h5>
-                        <div class="spacer-sm"></div>
-                        <p>Hudson Ingram as the songwriter who articulated how Generation Z navigates adulthood—with all its contradictions, beauty, and complexity.</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Guiding Principle</h5>
-                        <div class="spacer-sm"></div>
-                        <p>We're not building a pop star. We're developing an artist whose pop success feels like a natural consequence of undeniable talent and authentic connection.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="large-image break-grid" style="margin-top:8rem;transform:rotate(2deg);">
-            <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Vision"/>
+            <p class="lead editable-text"><strong>The Fanbase:</strong> Women who wish Harry Styles wrote deeper. Gay men who love boyhood but mourn its costs. Straight guys who feel too much but lacked language. Adults who once parent-translated silence.</p>
+            <p class="editable-text"><strong>Posting style:</strong> letters, captionless film stills, blurry backstage; loyalty over virality.</p>
         </div>
     </section>
     
-    <!-- Final Thought -->
-    <section class="kpi-section">
+    <section id="sound-voice">
         <div class="container">
-            <div class="grid">
-                <div class="col-10 offset-1">
-                    <h3 class="text-center" style="color:var(--bg);">GUIDING PRINCIPLE</h3>
-                    <div class="spacer-md"></div>
-                    <p class="lead text-center" style="color:var(--bg);max-width:none;">
-                        Every decision should be filtered through this lens:<br>
-                        Does this deepen Hudson's story or dilute it?
-                    </p>
+            <span class="section-numeral" aria-hidden="true">06</span>
+            <div class="section-heading">
+                <div class="marquee-header editable-text">SOUND & VOICE</div>
+                <h2 class="stylized-subheader editable-text">Anthemic. Intimate. Unmistakably Him.</h2>
+            </div>
+            <div class="creative-layout">
+                <div class="creative-text">
+                     <p class="lead editable-text">Indie-adjacent pop with Americana bloodlines. The production touchstones are Bleachers, The 1975, Jon Brion, Aaron Dessner, and Ruston Kelly, with the structural ambition of *Channel Orange*. The vocal is natural and unpretentious—low cracks invite you in, belts feel earned.</p>
+                    <div class="spacer-lg"></div>
+                    <div class="grid" style="grid-template-columns: repeat(1, 1fr);">
+                        <div class="col-12">
+                            <h5 class="editable-text">Lyrical POV</h5>
+                            <p class="editable-text">Hyper-emotional, self-effacing, intimate without being melodramatic. Writes like he's texting an ex at 2am but crafts it like poetry. Topics: nostalgia, masculinity, being misunderstood, unreturned texts, hometown guilt, getting older at 23.</p>
+                        </div>
+                         <div class="col-12">
+                            <h5 class="editable-text">Sonic Palette</h5>
+                            <ul class="editable-text">
+                                <li>The 1975 – anthemic bite</li>
+                                <li>Folklore-era Swift – diaristic detail</li>
+                                <li>Sam Fender – heartland grit</li>
+                                <li>Bruce Springsteen – timeless storytelling</li>
+                                <li>John Mayer – melodic craftsmanship</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="creative-image">
+                    <div class="image-stack" onclick="toggleStack(this)">
+                        <span class="stack-close">× Close</span>
+                        <div class="image-stack-item editable-image-container"><img src="https://i.pinimg.com/736x/fd/14/43/fd1443d6d53175e7cbfb9241f1f49cb0.jpg" alt="Sound Image 1" onerror="this.onerror=null;this.src='https://placehold.co/600x400/ccc/000?text=Image';"></div>
+                        <div class="image-stack-item editable-image-container"><img src="https://i.pinimg.com/736x/4b/c8/84/4bc8847917db4166bc8ccee1d2c93815.jpg" alt="Sound Image 2" onerror="this.onerror=null;this.src='https://placehold.co/600x400/ccc/000?text=Image';"></div>
+                        <div class="image-stack-item editable-image-container"><img src="https://i.pinimg.com/736x/76/61/3f/76613f986058f3186893710b1ab14865.jpg" alt="Sound Image 3" onerror="this.onerror=null;this.src='https://placehold.co/600x400/ccc/000?text=Image';"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
-    
-    <!-- Final image before footer -->
-    <div class="image-break">
-        <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Hudson final"/>
+
+    <section id="visual-language" class="music-bg">
+        <div class="container">
+            <span class="section-numeral" aria-hidden="true">07</span>
+            <div class="section-heading">
+                <div class="marquee-header editable-text">VISUAL LANGUAGE</div>
+                <h2 class="stylized-subheader editable-text">If You Know, You Know</h2>
+            </div>
+            <div class="grid">
+                <div class="col-4">
+                    <h5 class="editable-text">Palette & Typography</h5>
+                    <div class="editable-image-container">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot%202025-07-21%20at%203.23.23%C3%A2%C2%80%C2%AFPM.png" alt="Color Palette" style="width: 100%; margin-bottom: 1rem;" onerror="this.onerror=null;this.src='https://placehold.co/400x100/ccc/000?text=Palette';">
+                    </div>
+                    <p class="editable-text"><strong>Bookman</strong> Serif + hand-scribbled accent.</p>
+                </div>
+                <div class="col-8">
+                    <h5 class="editable-text">Photography & Wardrobe</h5>
+                    <p class="editable-text">Corinne Day × Bruce Weber natural light, 35mm grain. '90s Leo/Depp thrift-prep (rugby polos, white tanks, lived-in denim, one heirloom item).</p>
+                    <div class="editable-image-container">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot%202025-07-21%20at%203.25.21%C3%A2%C2%80%C2%AFPM.png" alt="Photography style" style="width: 100%; margin-top: 1rem;" onerror="this.onerror=null;this.src='https://placehold.co/800x400/ccc/000?text=Photography';">
+                    </div>
+                </div>
+            </div>
+            <div class="masonry-grid">
+                <div class="masonry-item editable-image-container"><img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Screenshot%202025-07-14%20at%203.25.30%C3%A2%C2%80%C2%AFAM.png" alt="Art Direction 1" onerror="this.onerror=null;this.src='https://placehold.co/600x800/ccc/000?text=Image';"></div>
+                <div class="masonry-item editable-image-container"><img src="https://i.pinimg.com/1200x/41/ae/1d/41ae1d299fd4c8a7bfaf40e03fe69946.jpg" alt="Art Direction 2" onerror="this.onerror=null;this.src='https://placehold.co/600x800/ccc/000?text=Image';"></div>
+                <div class="masonry-item editable-image-container"><img src="https://i.pinimg.com/736x/c7/87/24/c787240586ff5e94aae2b5d12726227b.jpg" alt="Art Direction 3" onerror="this.onerror=null;this.src='https://placehold.co/600x800/ccc/000?text=Image';"></div>
+                <div class="masonry-item editable-image-container"><img src="https://i.pinimg.com/736x/29/c4/3c/29c43c2543b27cd73f3fbd990799db53.jpg" alt="Art Direction 4" onerror="this.onerror=null;this.src='https://placehold.co/600x800/ccc/000?text=Image';"></div>
+                <div class="masonry-item editable-image-container"><img src="https://i.pinimg.com/736x/bf/f2/8f/bff28fb42f2d8cbfa54b1a72d01d5933.jpg" alt="Art Direction 5" onerror="this.onerror=null;this.src='https://placehold.co/600x800/ccc/000?text=Image';"></div>
+            </div>
+        </div>
+    </section>
+
+    <section id="world-building">
+        <div class="editorial-section left-align">
+            <div class="editorial-accent"></div>
+            <div class="editorial-card">
+                <span class="section-numeral" aria-hidden="true">08</span>
+                <span class="editorial-label">Extra-Narrative World-Building</span>
+                <div class="section-heading">
+                    <h2 class="stylized-subheader editable-text">Lore is the Loyalty Engine</h2>
+                </div>
+                <p class="lead editable-text">The music hits. The world lingers. That's the strategy.</p>
+                <div class="grid" style="margin-top: 3rem; align-items: flex-start;">
+                    <div class="col-4">
+                        <h5 class="editable-text">The Philosophy</h5>
+                        <p class="editable-text">In a landscape flooded with content, context is the differentiator. Hudson doesn't just release music — he constructs a narrative ecosystem fans can live inside. The goal isn't more content. It's more meaning per asset.</p>
+                    </div>
+                    <div class="col-8">
+                        <h5 class="editable-text">The System</h5>
+                        <p class="editable-text">Every non-musical touchpoint plays one role: To deepen the mystery, not solve it. It's all one machine — breadcrumb by breadcrumb:</p>
+                        <ul class="editorial-list">
+                            <li><strong>1. The Feeds = Signal Boosters for Lore</strong> — Cinematic lyric stills (2–3 sec loops, no context), Voicemail audio drops — static screen, cracked voice, 30 sec max, Driving POV clips with one captioned line, Longform show captions, posted like diary entries.</li>
+                            <li><strong>2. The Live Show = Lore in Real Time</strong> — Blue Lyric Seat-Block — physical symbol, onstage each night; Mystery voicemail intros — new clip per show; One small object in his pocket each night (never explained); Polaroid on the guitar, captioned post-show; One mic-less song in intimate rooms only.</li>
+                            <li><strong>3. The Objects = Physical Memory Anchors</strong> — "Linger" capsule tee — cream, subtle chest hit, lyric neck print, Engraved Zippo + city matchbook kits, seasonal drops that feel thrifted, not branded, Packaging design = emotional reveal, not product push.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="editorial-quote">
+                    <div class="editorial-label" style="margin-bottom:0.2rem;">The Strategy at Work</div>
+                    <div>Posts → spark curiosity<br>Rituals → deepen connection<br>Objects → lock memory</div>
+                    <div style="font-size: var(--step-1); margin-top: 1.2rem;">Together, they create emotional imprint — the thing that turns listeners into lifers.</div>
+                    <div style="font-size: var(--step--1); margin-top: 1.2rem; opacity:0.7;"><strong>Don't explain the story. Let them piece it together. That's how you build a myth, not a moment.</strong></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="editorial-row">
+        <section id="guardrails" class="music-bg">
+            <div class="editorial-section">
+                <div class="editorial-accent"></div>
+                <div class="editorial-card">
+                    <span class="section-numeral" aria-hidden="true">09</span>
+                    <span class="editorial-label">Guardrails</span>
+                    <div class="section-heading">
+                        <h2 class="stylized-subheader editable-text">What We Never Do</h2>
+                    </div>
+                    <ul class="editorial-list">
+                        <li class="negative">Cowboy kitsch or overt stars/stripes.</li>
+                        <li class="negative">Neon glitch; keep everything warm-film.</li>
+                        <li class="negative">Lore dumps; one breadcrumb per asset.</li>
+                        <li class="negative">Chase trends or optimize for algorithms.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <section id="impact-signals">
+            <div class="editorial-section">
+                <div class="editorial-accent"></div>
+                <div class="editorial-card">
+                    <span class="section-numeral" aria-hidden="true">10</span>
+                    <span class="editorial-label">Impact Signals</span>
+                    <div class="section-heading">
+                        <h2 class="stylized-subheader editable-text">How We Know It's Working</h2>
+                    </div>
+                    <ul class="editorial-list">
+                        <li>Assets shared w/out context; press asks "Who is this guy?"</li>
+                        <li>Broken-circle or ticket-edge glyph appears in 3+ channels.</li>
+                        <li>Save/share ratio ↑; comment threads guessing voicemail sender.</li>
+                        <li>Post-show merch wear rate; resale chatter on limited collectibles.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
     </div>
+
+    <section id="Assets">
+        <div class="container text-center">
+            <span class="section-numeral" aria-hidden="true">11</span>
+            <p class="section-marker editable-text">DOWNLOAD HUB</p>
+            <div class="section-header-accent" style="justify-content:center;">
+                <h2 class="stylized-subheader editable-text">Press + Brand&nbsp;Pack</h2>
+            </div>
+            <a href="#" class="btn btn-primary">Press Photos ZIP</a>
+            <a href="#" class="btn">Glyph Pack SVG</a>
+            <div class="spacer-md"></div>
+            <p class="opacity-50 editable-text">Label: <a href="mailto:label@interscope.com">label@interscope.com</a> · Mgmt: <a href="mailto:mgmt@amf.com">mgmt@amf.com</a></p>
+        </div>
+    </section>
     
-    <!-- Footer -->
+    <div id="draggable-elements-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;"></div>
+
     <footer class="footer">
         <div class="container">
-            <h2 class="footer-title">September 2025</h2>
-            <p class="lead text-center">
+            <h2 class="footer-title editable-text">September 2025</h2>
+            <p class="lead text-center editable-text">
                 Hudson Ingram<br>
                 Interscope Records × Aaron Dessner
             </p>
-            
-            <div class="spacer-xl"></div>
-            
-            <p class="opacity-50">© 2025 Hudson Ingram • Strategic Blueprint by All My Friends</p>
+            <p class="tagline editable-text">What masculinity sounds like when it finally stops pretending.</p>
+            <p class="opacity-50 editable-text">© 2025 Hudson Ingram • Strategic Blueprint by All My Friends</p>
         </div>
     </footer>
     
-    <!-- Minimal JS -->
-    <script>
-        // Active nav
-        const sections = document.querySelectorAll('section[id]');
-        const navLinks = document.querySelectorAll('.nav-link');
-        
-        window.addEventListener('scroll', () => {
-            let current = '';
-            sections.forEach(section => {
-                if (scrollY >= section.offsetTop - 100) {
-                    current = section.id;
-                }
-            });
-            
-            navLinks.forEach(link => {
-                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
-            });
+    <script defer>
+    document.addEventListener('DOMContentLoaded', function() {
+      // SVG logo animation trigger
+      var navLogo = document.querySelector('.nav-logo');
+      if (navLogo) navLogo.classList.add('animate-logo');
+      // Existing image-timeline-scroll z-index fix
+      const strip = document.querySelector('.image-timeline-scroll');
+      if (!strip) return;
+      const images = Array.from(strip.querySelectorAll('.timeline-image'));
+      images.forEach(img => {
+        img.addEventListener('mouseenter', () => {
+          img.style.zIndex = 2;
         });
-        
-        // Smooth scroll
-        navLinks.forEach(link => {
-            link.addEventListener('click', e => {
-                e.preventDefault();
-                const target = document.querySelector(link.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
+        img.addEventListener('mouseleave', () => {
+          img.style.zIndex = 1;
         });
-        
-        // Toggle image stack
-        function toggleStack(stack) {
-            stack.classList.toggle('expanded');
+      });
+    });
+    </script>
+    <script defer>
+    // --- Scroll-Spy for Navigation ---
+    document.addEventListener('DOMContentLoaded', function() {
+      const navLinks = document.querySelectorAll('.nav-link');
+      const sectionIds = Array.from(navLinks).map(link => link.getAttribute('href')).filter(href => href && href.startsWith('#'));
+      const sections = sectionIds.map(id => document.querySelector(id));
+      function onScroll() {
+        let scrollPos = window.scrollY || window.pageYOffset;
+        let found = false;
+        for (let i = sections.length - 1; i >= 0; i--) {
+          const section = sections[i];
+          if (!section) continue;
+          const offset = section.getBoundingClientRect().top + window.scrollY;
+          if (scrollPos + 120 >= offset) { // 120px buffer for nav height
+            navLinks.forEach(link => link.classList.remove('active'));
+            if (navLinks[i]) navLinks[i].classList.add('active');
+            found = true;
+            break;
+          }
         }
+        if (!found) navLinks.forEach(link => link.classList.remove('active'));
+      }
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    });
+    </script>
+    <script defer>
+    // --- Section Heading Fade-up on Scroll ---
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.querySelectorAll('.section-heading, .section-numeral').forEach(el => {
+          el.classList.add('visible');
+        });
+        return;
+      }
+      function revealOnScroll() {
+        const revealEls = document.querySelectorAll('.section-heading, .section-numeral');
+        const windowBottom = window.scrollY + window.innerHeight;
+        revealEls.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          const elTop = rect.top + window.scrollY;
+          if (windowBottom > elTop + 40) {
+            el.classList.add('visible');
+          }
+        });
+      }
+      window.addEventListener('scroll', revealOnScroll, { passive: true });
+      revealOnScroll();
+    });
+    </script>
+    <script defer>
+    // --- Image Stack Expand/Collapse ---
+    function toggleStack(stack) {
+      if (!stack) return;
+      stack.classList.toggle('expanded');
+      // Show/hide close button
+      const closeBtn = stack.querySelector('.stack-close');
+      if (closeBtn) closeBtn.style.display = stack.classList.contains('expanded') ? 'block' : 'none';
+    }
+    // Keyboard accessibility: allow Enter/Space to toggle
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('.image-stack').forEach(stack => {
+        stack.setAttribute('tabindex', '0');
+        stack.setAttribute('role', 'button');
+        stack.setAttribute('aria-expanded', 'false');
+        stack.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            toggleStack(stack);
+            stack.setAttribute('aria-expanded', stack.classList.contains('expanded'));
+          }
+        });
+        stack.addEventListener('click', function(e) {
+          // Only close if clicking the close button or not already expanded
+          if (e.target.classList.contains('stack-close') || !stack.classList.contains('expanded')) {
+            toggleStack(stack);
+            stack.setAttribute('aria-expanded', stack.classList.contains('expanded'));
+          }
+        });
+      });
+    });
     </script>
 </body>
-</html>
+</html> 
