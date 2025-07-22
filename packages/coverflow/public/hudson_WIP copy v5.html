@@ -7,16 +7,24 @@
     <meta name="description" content="Hudson Ingram – Strategic positioning and creative blueprint for Interscope Records × Aaron Dessner"/>
     
     <style>
-/* EMERGENCY LOGO FIX */
+/* ———————————— LOGO RELIABILITY STYLES ———————————— */
+/* Ensure SVG logo always displays correctly with proper fallbacks */
 .nav-logo svg {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 300px;
+    /* Fallback state - visible by default */
+    visibility: visible;
+    opacity: 1;
 }
+
+/* Reset any problematic animation states */
 .nav-logo svg path {
-    stroke-dasharray: none !important;
-    stroke-dashoffset: 0 !important;
-    opacity: 1 !important;
+    /* Ensure paths are visible by default */
+    opacity: 1;
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
 }
         /* ———————————— 0. Reset & Core */
         *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -172,15 +180,15 @@
             background:rgba(255,255,255,.95);
             backdrop-filter:blur(10px);
             -webkit-backdrop-filter:blur(10px);
-            overflow-x: auto;
-            white-space: nowrap;
             border-bottom: 1px solid rgba(0,0,0,0.1);
+            /* Remove horizontal scrolling - we'll handle responsively */
         }
         
         .nav-inner{
             display:flex;
             align-items:center;
             justify-content:space-between;
+            position: relative;
         }
         
         .nav-logo{
@@ -234,6 +242,7 @@
             display:flex;
             gap:1.5rem;
             list-style:none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         .nav-link{
@@ -243,12 +252,107 @@
             opacity:.5;
             transition:opacity .2s;
             flex-shrink: 0;
+            white-space: nowrap;
         }
         
         .nav-link:hover,
         .nav-link.active{
             opacity:1;
             text-decoration:none;
+        }
+
+        /* ———————————— RESPONSIVE NAVIGATION ———————————— */
+        /* Hamburger menu button - hidden by default */
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            justify-content: space-around;
+            width: 24px;
+            height: 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            z-index: 1001;
+        }
+
+        .nav-toggle span {
+            width: 100%;
+            height: 2px;
+            background: var(--ink);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-origin: center;
+        }
+
+        /* Hamburger animation states */
+        .nav-toggle.active span:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .nav-toggle.active span:nth-child(2) {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+
+        .nav-toggle.active span:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Responsive breakpoints */
+        @media (max-width: 1024px) {
+            .nav-links {
+                gap: 1rem;
+            }
+            .nav-link {
+                font-size: var(--step--2);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-links {
+                position: fixed;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background: rgba(255, 255, 255, 0.98);
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                flex-direction: column;
+                padding: 2rem var(--gutter);
+                gap: 1.5rem;
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                border-top: 1px solid rgba(0,0,0,0.1);
+                box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            }
+
+            .nav-links.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            .nav-link {
+                font-size: var(--step-0);
+                opacity: 0.7;
+                padding: 0.5rem 0;
+                border-bottom: 1px solid rgba(0,0,0,0.05);
+            }
+
+            .nav-link:last-child {
+                border-bottom: none;
+            }
+
+            .nav-logo {
+                width: 200px;
+                margin-right: 1rem;
+            }
         }
         
         /* ———————————— 6. Hero */
