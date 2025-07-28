@@ -798,6 +798,20 @@ img {
   padding-inline: calc(var(--gutter) * 2);
 }
 
+/* Responsive grid for world-building section */
+@media (max-width: 768px) {
+  #world-building .world-content > div[style*="grid"] {
+    display: block !important;
+    gap: 3rem !important;
+  }
+  
+  #world-building figure[style*="sticky"] {
+    position: relative !important;
+    top: auto !important;
+    margin-bottom: 3rem;
+  }
+}
+
 /* ———————————— FOOTER ———————————— */
 .footer {
   padding-block: 8rem;
@@ -1212,7 +1226,7 @@ img {
             font-size: clamp(4rem, 15vw, 18rem);
             color: var(--accent-1);
             letter-spacing: -0.06em;
-            background: var(--bg);
+            background: transparent;
             padding: 2.5rem 0 2.5rem 0;
             opacity: 1;
             z-index: 1;
@@ -1660,10 +1674,10 @@ img {
 
 .sound-image-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin: 3rem 0;
-  max-width: 800px;
+  max-width: 1000px;
 }
 
 .sound-image-item {
@@ -1849,7 +1863,7 @@ img {
 /* ———————————— COVER ART SYSTEM ———————————— */
 .cover-art-details {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 2rem;
   margin: 3rem 0;
 }
@@ -2088,6 +2102,10 @@ img {
   .video-reference-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
+  }
+  
+  .cover-art-details {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -2467,20 +2485,41 @@ img {
     </section>
 
     <!-- Interstitial marker space between sections 3 and 4, now with handwriting SVG instead of '04' -->
-    <div class="interstitial-marker handwriting-marker" aria-hidden="true">
+    <div class="interstitial-marker handwriting-marker" aria-hidden="true" style="background: none;">
       <svg id="handwriting-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1071.27 92.62" width="80vw" height="auto" style="max-width: 95vw; display: block;">
         <defs>
           <style>
             .handwriting-letter {
               fill: #231f20;
               opacity: 0;
-              animation: showLetter 0.3s ease-out forwards;
+              transform: translateY(3px);
+              animation: handwritingLoop 15s ease-out infinite;
             }
-            @keyframes showLetter {
-              0% { opacity: 0; }
-              100% { opacity: 1; }
+            
+            @keyframes handwritingLoop {
+              0% { 
+                opacity: 0;
+                transform: translateY(3px) scale(0.9);
+              }
+              4% { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+              }
+              70% { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+              }
+              75% { 
+                opacity: 0;
+                transform: translateY(-2px) scale(1.05);
+              }
+              100% { 
+                opacity: 0;
+                transform: translateY(3px) scale(0.9);
+              }
             }
-            /* Sequential animation delays for "linger a little more...." */
+            
+            /* Sequential animation delays for realistic handwriting flow */
             .letter-1 { animation-delay: 0s; }
             .letter-2 { animation-delay: 0.3s; }
             .letter-3 { animation-delay: 0.6s; }
@@ -2744,6 +2783,36 @@ img {
                          alt="Songwriter at piano - intimate creative process reflecting diaristic songwriting"
                          loading="lazy">
                 </div>
+                <div class="sound-image-item">
+                    <img src="https://people.com/thmb/IPnFCGE1TWNRcyJw--BYnRCCQ74=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc():focal(619x0:621x2)/img_5232-85dbd682031e4fe29ca2a66acfdddcbc.jpg" 
+                         alt="Intimate performance aesthetic - authentic storytelling and emotional connection"
+                         loading="lazy">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Musical Influences Spotify Embed -->
+    <section class="spotify-interlude" style="background: rgba(0, 0, 255, 0.03); padding: 6rem 0;">
+        <div class="container">
+            <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+                <div style="margin-bottom: 3rem;">
+                    <div class="marquee-header" style="margin-bottom: 1rem; font-size: var(--step--1); font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; opacity: 0.5;">MUSICAL DNA</div>
+                    <h3 style="font-size: var(--step-2); font-weight: 700; letter-spacing: -0.03em; margin: 0;">Hudson's Musical Influences</h3>
+                </div>
+                
+                <div style="border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12); background: #ffffff; padding: 1rem;">
+                    <iframe data-testid="embed-iframe" 
+                            style="border-radius:12px" 
+                            src="https://open.spotify.com/embed/playlist/7uumoiZkiGsN68NgIh4CrR?utm_source=generator&theme=0" 
+                            width="100%" 
+                            height="352" 
+                            frameBorder="0" 
+                            allowfullscreen="" 
+                            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                            loading="lazy">
+                    </iframe>
+                </div>
             </div>
         </div>
     </section>
@@ -2808,6 +2877,14 @@ img {
                     <h5>OBJECT FUNCTION</h5>
                     <p>Objects double as merch icons, stage props, and lore breadcrumbs, tying the trilogy together visually and narratively.</p>
                 </div>
+            </div>
+            
+            <!-- Cover art reference image -->
+            <div class="cover-art-reference" style="margin: 3rem 0;">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Singles and EP Ref.png" 
+                     alt="Singles and EP Reference - 5 square cover arts showing the cover art system in action"
+                     style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1);"
+                     loading="lazy">
             </div>
             
             <!-- Result callout -->
@@ -2938,32 +3015,41 @@ img {
                 <p class="lead">The music hits. The world lingers. That's the strategy.</p>
                     </div>
             
-            <!-- Organized world-building system -->
-            <div class="world-system">
-                <div class="world-section">
-                    <h5>THE PHILOSOPHY</h5>
-                    <p>In a landscape flooded with content, context is the differentiator. Hudson doesn't just release music — he constructs a narrative ecosystem fans can live inside.</p>
-                </div>
-                <div class="world-section">
-                    <h5>THE SYSTEM</h5>
-                    <p>Every non-musical touchpoint plays one role: To deepen the mystery, not solve it:</p>
-                    <ul>
-                        <li><strong>The Feeds:</strong> Cinematic lyric stills, voicemail audio drops, driving POV clips</li>
-                        <li><strong>Live Shows:</strong> Mystery voicemail intros, symbolic objects, mic-less intimate songs</li>
-                        <li><strong>Physical Objects:</strong> Limited merch drops that feel thrifted, not branded</li>
+            <!-- Organized world-building system with accompanying visual -->
+            <div style="display: grid; grid-template-columns: 1fr 1.2fr; gap: 4rem; align-items: flex-start; margin: 4rem 0;">
+                <!-- Left: Lore Iceberg Visual -->
+                <figure style="margin: 0; position: sticky; top: 2rem; align-self: start;">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Taylor Iceberg.jpg" 
+                         alt="Taylor Swift Iceberg - Layers of Fandom Knowledge" 
+                         style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 8px 32px rgba(0,0,0,0.12);" 
+                         loading="lazy">
+                    <figcaption style="margin-top: 1rem; font-size: var(--step--1); opacity: 0.7; font-style: italic; letter-spacing: 0.025em; text-align: center;">
+                        The deeper you go, the more devoted they become.
+                    </figcaption>
+                </figure>
+                
+                <!-- Right: World-building content -->
+                <div class="world-system">
+                    <div class="world-section">
+                        <h5>THE PHILOSOPHY</h5>
+                        <p>In a landscape flooded with content, context is the differentiator. Hudson doesn't just release music — he constructs a narrative ecosystem fans can live inside.</p>
+                    </div>
+                    <div class="world-section">
+                        <h5>THE SYSTEM</h5>
+                        <p>Every non-musical touchpoint plays one role: To deepen the mystery, not solve it:</p>
+                        <ul>
+                            <li><strong>The Feeds:</strong> Cinematic lyric stills, voicemail audio drops, driving POV clips</li>
+                            <li><strong>Live Shows:</strong> Mystery voicemail intros, symbolic objects, mic-less intimate songs</li>
+                            <li><strong>Physical Objects:</strong> Limited merch drops that feel thrifted, not branded</li>
                         </ul>
                     </div>
                 </div>
+            </div>
             
             <figure class="quote-callout">
                 <blockquote class="quote">
                     Don't explain the story. Let them piece it together. That's how you build a myth, not a moment.
                     </blockquote>
-                </figure>
-                
-                <!-- Quote pull-out for rhythm -->
-                <figure class="quote-callout" style="margin: 6rem 0;">
-                    <blockquote class="quote">Lore is the loyalty engine.</blockquote>
                 </figure>
         </div>
     </section>
