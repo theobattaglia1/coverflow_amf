@@ -58,6 +58,11 @@
         position: relative;
       }
       
+      /* Use Bookman selectively for editorial hierarchy */
+      .stylized-subheader {
+        font-family: "Bookman", "Times New Roman", serif;
+      }
+      
       h1 { font-size: var(--step-6); letter-spacing: -.06em; }
       h2 { font-size: var(--step-5); letter-spacing: -.05em; }
       h3 { font-size: var(--step-4); letter-spacing: -.04em; }
@@ -70,12 +75,16 @@
         line-height: .8;
         letter-spacing: -.08em;
         text-transform: uppercase;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif !important;
       }
       
       p {
         margin-bottom: 1.5rem;
-        max-width: 65ch;
+        max-width: 70ch;
       }
+      
+      /* Tighten paragraph width throughout */
+      .container p { max-width: 70ch; }
       
       .lead {
         font-size: var(--step-1);
@@ -140,26 +149,130 @@
         margin-bottom: 1rem;
         display: block;
       }
-
-      .hudson-blurb {
-        margin-top: 2.5rem;
-        margin-bottom: 2.5rem;
-        padding: 2rem 2.5rem;
-        background: rgba(0,0,0,0.03);
-        border-left: 4px solid var(--accent);
-        border-radius: 10px;
-        font-size: var(--step-0);
-        line-height: 1.6;
-        color: var(--ink);
-        box-shadow: 0 2px 12px rgba(0,0,0,0.04);
-        max-width: 600px;
+      
+      /* Section slugs - editorial hierarchy */
+      .section-slug {
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: var(--step--1);
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        opacity: 0.4;
+        margin-bottom: 1rem;
+        display: block;
       }
-      @media (max-width: 600px) {
-        .hudson-blurb {
-          padding: 1.2rem 1rem;
-          font-size: var(--step--1);
-          max-width: 100%;
-        }
+      
+      /* Timeline with flowing progression */
+      .timeline-bar {
+        display: flex;
+        gap: 2rem;
+        position: relative;
+        margin: 4rem 0 6rem;
+        padding: 3rem 0;
+        background: var(--bg);
+      }
+      
+      .timeline-bar::before {
+        content: "";
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        right: 12px;
+        height: 1px;
+        background: linear-gradient(to right, var(--accent), rgba(0,0,255,0.3), rgba(0,0,255,0.1));
+        z-index: 1;
+      }
+      
+      .timeline-step {
+        flex: 1;
+        text-align: left;
+        position: relative;
+        padding-top: 3rem;
+        z-index: 2;
+      }
+      
+      .timeline-step:nth-child(1)::before {
+        content: "I";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        background: var(--accent);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      
+      .timeline-step:nth-child(2)::before {
+        content: "II";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        background: rgba(0,0,255,0.7);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      
+      .timeline-step:nth-child(3)::before {
+        content: "III";
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 24px;
+        height: 24px;
+        background: rgba(0,0,255,0.4);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+      }
+      
+      .timeline-step h4 {
+        font-size: var(--step-1);
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        line-height: 1.2;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        letter-spacing: -0.02em;
+      }
+      
+      .timeline-phase {
+        font-size: var(--step--1);
+        opacity: 0.6;
+        margin-bottom: 1rem;
+        font-style: italic;
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        letter-spacing: -0.01em;
+      }
+      
+      .timeline-details {
+        font-size: var(--step--1);
+        line-height: 1.4;
+      }
+      
+      .timeline-details div {
+        margin-bottom: 0.25rem;
+      }
+      
+      .timeline-details strong {
+        font-weight: 600;
       }
     </style>
     <style id="deferred-css" media="print" onload="this.media='all'">
@@ -365,13 +478,14 @@ img {
 }
 
 /* ———————————— STRUCTURED HERO TYPOGRAPHY ———————————— */
-.hero-artist-name {
-  font-size: var(--step-3);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  margin: 1.5rem 0 2rem 0;
-  color: var(--ink);
-}
+      .hero-artist-name {
+        font-size: var(--step-3);
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        margin: 1.5rem 0 2rem 0;
+        color: var(--ink);
+        font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+      }
 
 .hero-project-info {
   margin-bottom: 2rem;
@@ -453,207 +567,6 @@ img {
   z-index: 1;
 }
 
-/* ———————————— AMBIENT ACCESSORY IMAGES ———————————— */
-.ambient-image {
-  position: absolute;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.25;
-  transition: opacity 0.3s ease;
-}
-
-.ambient-image.subtle {
-  opacity: 0.12;
-}
-
-.ambient-image.background {
-  opacity: 0.06;
-  z-index: -1;
-}
-
-/* Section positioning containers */
-section {
-  position: relative;
-  overflow: hidden;
-}
-
-.ambient-1 {
-  width: 35vw;
-  right: 5%;
-  top: 15%;
-  transform: rotate(3deg);
-}
-
-.ambient-2 {
-  width: 30vw;
-  left: -5%;
-  top: 40%;
-  transform: rotate(-4deg);
-}
-
-.ambient-3 {
-  width: 40vw;
-  right: -8%;
-  top: 35%;
-  transform: rotate(2deg);
-}
-
-.ambient-4 {
-  width: 32vw;
-  left: 8%;
-  top: 20%;
-  transform: rotate(-3deg);
-}
-
-.ambient-5 {
-  width: 45vw;
-  right: 10%;
-  top: 15%;
-  transform: rotate(1deg);
-}
-
-.ambient-6 {
-  width: 28vw;
-  left: -3%;
-  top: 30%;
-  transform: rotate(-2deg);
-}
-
-.ambient-7 {
-  width: 38vw;
-  right: 15%;
-  top: 45%;
-  transform: rotate(4deg);
-}
-
-.ambient-8 {
-  width: 34vw;
-  left: 12%;
-  top: 55%;
-  transform: rotate(-1deg);
-}
-
-.ambient-9 {
-  width: 26vw;
-  right: 8%;
-  top: 65%;
-  transform: rotate(2deg);
-}
-
-.ambient-10 {
-  width: 32vw;
-  left: -4%;
-  top: 25%;
-  transform: rotate(-3deg);
-}
-
-.ambient-11 {
-  width: 38vw;
-  right: 12%;
-  top: 35%;
-  transform: rotate(1deg);
-}
-
-.ambient-12 {
-  width: 29vw;
-  left: 6%;
-  top: 50%;
-  transform: rotate(-2deg);
-}
-
-.ambient-13 {
-  width: 42vw;
-  right: -6%;
-  top: 25%;
-  transform: rotate(3deg);
-}
-
-.ambient-14 {
-  width: 31vw;
-  left: 10%;
-  top: 35%;
-  transform: rotate(-4deg);
-}
-
-.ambient-15 {
-  width: 27vw;
-  right: 18%;
-  top: 60%;
-  transform: rotate(2deg);
-}
-
-/* ———————————— VISUAL LANGUAGE SECTION FULL OPACITY IMAGES ———————————— */
-.visual-image {
-  position: absolute;
-  z-index: 1;
-  pointer-events: none;
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.visual-img-1 {
-  width: 15vw;
-  right: 8%;
-  top: 12%;
-  transform: rotate(-1deg);
-}
-
-.visual-img-2 {
-  width: 12.5vw;
-  right: 25%;
-  top: 10%;
-  transform: rotate(2deg);
-}
-
-.visual-img-3 {
-  width: 17.5vw;
-  right: 5%;
-  top: 18%;
-  transform: rotate(1deg);
-}
-
-.visual-img-4 {
-  width: 13.75vw;
-  right: 20%;
-  top: 24%;
-  transform: rotate(-2deg);
-}
-
-.visual-img-5 {
-  width: 16.25vw;
-  right: 12%;
-  top: 14%;
-  transform: rotate(2deg);
-}
-
-.visual-img-6 {
-  width: 11.25vw;
-  right: 30%;
-  top: 16%;
-  transform: rotate(-1deg);
-}
-
-.visual-img-7 {
-  width: 15vw;
-  right: 15%;
-  top: 26%;
-  transform: rotate(3deg);
-}
-
-.visual-img-8 {
-  width: 10vw;
-  right: 35%;
-  top: 20%;
-  transform: rotate(-3deg);
-}
-
-.visual-img-9 {
-  width: 18.75vw;
-  right: 2%;
-  top: 8%;
-  transform: rotate(1deg);
-}
-
 /* ———————————— SIMPLE COMPONENTS ———————————— */
 .section-marker {
                 font-size: var(--step--2);
@@ -719,16 +632,6 @@ section {
     align-items: flex-start;
     gap: 0.5rem;
     margin-bottom: 0.5rem;
-  }
-  
-  /* Hide ambient images on mobile to avoid clutter */
-  .ambient-image {
-    display: none;
-  }
-  
-  /* Hide visual language full-opacity images on mobile */
-  .visual-image {
-    display: none;
   }
   
   .hero-description {
@@ -864,6 +767,33 @@ section {
 /* ———————————— SIMPLE BACKGROUNDS ———————————— */
 .music-bg {
   background: #FAFAFA;
+  margin-inline: calc(var(--gutter) * -2);
+  padding-inline: calc(var(--gutter) * 2);
+}
+
+/* Dusty navy background for thematic pivot */
+.industry-context-bg {
+  background: #2c3e50;
+  color: #ffffff;
+  margin-inline: calc(var(--gutter) * -2);
+  padding-inline: calc(var(--gutter) * 2);
+}
+
+/* Light blue backgrounds for visual variety */
+.light-blue-bg {
+  background: rgba(0, 0, 255, 0.07);
+  margin-inline: calc(var(--gutter) * -2);
+  padding-inline: calc(var(--gutter) * 2);
+}
+
+.lighter-blue-bg {
+  background: rgba(0, 100, 255, 0.06);
+  margin-inline: calc(var(--gutter) * -2);
+  padding-inline: calc(var(--gutter) * 2);
+}
+
+.subtle-blue-bg {
+  background: rgba(0, 150, 255, 0.05);
   margin-inline: calc(var(--gutter) * -2);
   padding-inline: calc(var(--gutter) * 2);
 }
@@ -1077,12 +1007,22 @@ section {
     padding: 2rem 1.5rem;
         }
   
-  .ep-timeline {
-            grid-template-columns: 1fr;
-          }
+  .timeline-bar {
+    flex-direction: column;
+    gap: 3rem;
+    padding: 2rem 0;
+  }
   
-  .ep-card:nth-child(2) { 
-    margin-top: 0; 
+  .timeline-bar::before {
+    display: none;
+  }
+  
+  .timeline-step {
+    padding-left: 3rem;
+  }
+  
+  .timeline-step h4 {
+    font-size: var(--step-0);
   }
   
   .release-player {
@@ -1157,7 +1097,8 @@ section {
   height: 80vh;
             position: relative;
             overflow: hidden;
-  margin: 4rem 0;
+  margin: 0;
+  margin-bottom: -20vh;
         }
 
         .video-background {
@@ -1319,6 +1260,46 @@ section {
   width: 100%;
 }
 
+/* Hover-swap on film stills - living movie poster effect */
+.timeline-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.timeline-image img {
+  transition: transform 0.3s ease;
+}
+
+.timeline-image:hover img {
+  transform: scale(1.05);
+}
+
+.timeline-image::after {
+  content: attr(data-lyric);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 1rem;
+  font-family: "Bookman", "Times New Roman", serif;
+  font-size: var(--step--1);
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.timeline-image:hover::after {
+  transform: translateY(0);
+}
+
+/* Hide checkmark text on mobile */
+@media (max-width: 768px) {
+  .mobile-hide {
+    display: none;
+  }
+}
+
         /* Custom selection color */
         ::selection {
   background: var(--accent);
@@ -1416,7 +1397,7 @@ section {
 
 .industry-image-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin: 3rem 0;
   max-width: 800px;
@@ -1436,6 +1417,8 @@ section {
 .artist-comparison-table {
   margin: 3rem 0;
   border: 1px solid var(--ink);
+  overflow-x: auto;
+  min-width: 900px;
 }
 
 .table-header {
@@ -2055,7 +2038,7 @@ section {
   .industry-image-grid,
   .brand-image-grid,
   .sound-image-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
     max-width: 100%;
   }
   
@@ -2117,17 +2100,17 @@ section {
             <div class="nav-inner container">
             <div class="nav-logo">HUDSON INGRAM</div>
             <ul class="nav-links">
-                <li><a href="#positioning" class="nav-link active">Positioning</a></li>
-                <li><a href="#brand" class="nav-link">Brand</a></li>
-                <li><a href="#music" class="nav-link">Music</a></li>
-                <li><a href="#visual" class="nav-link">Visual</a></li>
-                <li><a href="#strategy" class="nav-link">Strategy</a></li>
-                <li><a href="#vision" class="nav-link">Vision</a></li>
+                <li><a href="#release-strategy" class="nav-link active">Strategy</a></li>
+                <li><a href="#core-identity" class="nav-link">Brand</a></li>
+                <li><a href="#industry-context" class="nav-link">Positioning</a></li>
+                <li><a href="#audience" class="nav-link">Audience</a></li>
+                <li><a href="#sound-voice" class="nav-link">Music</a></li>
+                <li><a href="#visual-language" class="nav-link">Visual</a></li>
                 </ul>
         </div>
     </nav>
     <!-- Hero / Executive Summary -->
-    <section class="hero" id="positioning">
+    <section class="hero">
         <div class="container">
             <div class="hero-content">
                 <h1 class="display" data-misreg="THE FIRST ACT">THE FIRST<br>ACT</h1>
@@ -2154,9 +2137,10 @@ section {
                     <div class="north-star-label">Strategic North Star:</div>
                     <div class="north-star-text">Balance cultural credibility with commercial firepower through disciplined execution and leveraged serendipity.</div>
                 </div>
-                <div class="hudson-blurb">
-                  Hudson Ingram is an 19-year-old Nashville-based singer-songwriter from Austin,Texas, making music that marries scale with the nuanced depth of a real storyteller. Raised in a musical household as the son of country singer Jack Ingram, he seamlessly blends introspective lyrics with infectious melodies, creating a sound that's both sophisticated and instantly engaging.<br>
-                  Signed to a joint venture between Interscope Records and Aaron Dessner, Hudson is collaborating with Dessner along with others like Noah Conrad, Jack Schrepferman, Adam Melchor, Steph Jones, Charlie Puth, Justin Tranter, Mags Duval, Annika Bennett, Sammy Witte, and Hoskins, positioning himself as a modern fusion of timeless
+                
+                <!-- 30-word elevator pitch -->
+                <div class="hero-elevator" style="margin-top: 2rem; padding: 1rem; background: rgba(0, 0, 255, 0.05); border-left: 4px solid var(--accent);">
+                    <div style="font-size: var(--step--1); font-weight: 500; line-height: 1.5;">The trilogy matters because it turns Hudson from "promising newcomer" into "essential voice"—serialized storytelling that builds myth, not just momentum.</div>
                 </div>
             </div>
             </div>
@@ -2173,18 +2157,8 @@ section {
             <h2 class="parallax-text editable-text" id="parallaxText">Pretty On First Glance,<br>Haunted On Second.</h2>
         </div>
     </section>
-
-    <section id="music" class="music-bg">
-        <!-- Ambient Image 1 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Set 1-003.jpg" 
-             alt="" 
-             class="ambient-image ambient-1"/>
-        
-        <!-- Ambient Image 9 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Stars Extra.png" 
-             alt="" 
-             class="ambient-image ambient-9 background"/>
-             
+    
+    <section id="release-strategy" class="music-bg">
         <!-- Constrained content area, offset to the left -->
         <div class="release-content">
             <div class="release-header">
@@ -2200,34 +2174,46 @@ section {
                 <iframe id="disco-playlist-24176665" name="disco-playlist-24176665" allowfullscreen frameborder="0" class="disco-embed" src="https://allmyfriendsinc.disco.ac/e/p/24176665?download=true&s=BoacTTK9BxfMm1nv1cmKC4TqlHE%3AoGiro13p&artwork=true&color=%233282C2&theme=white" width="100%" height="395" style="border-radius: 12px;"></iframe>
             </div>
             
-            <div class="ep-timeline">
-            <div class="ep-card">
-                    <h4>PT 1<br>FALL '25</h4>
-                    <p style="opacity: 0.7; margin-bottom: 1rem;">The departure.</p>
-                    <ul style="list-style: none;">
-                    <li><strong>Single:</strong> 1 Oct • <br>'Til October</li><br>
-                    <li><strong>Single:</strong> 14 Nov • <br>Real Life</li><br>
-                    <li><strong>Single:</strong> 9 Jan • <br>Abigail</li><br>
-                    <li style="margin-top: 1rem;"><strong>15 Feb EP Release</strong><br>+ Real Life Feat. Sydney Rose(focus)<br>+ Baby Just Be<br>+ Wouldn't That Be Nice</li>
-                </ul>
+            <!-- Horizontal Timeline Bar -->
+            <div class="timeline-bar" id="timeline-bar">
+                <div class="timeline-step">
+                    <h4>PT 1 — FALL '25</h4>
+                    <div class="timeline-phase">The departure.</div>
+                    <div class="timeline-details">
+                        <div><strong>1 Oct:</strong> 'Til October</div>
+                        <div><strong>14 Nov:</strong> Abigail</div>
+                        <div><strong>9 Jan:</strong> Linger</div>
+                        <div style="margin-top: 0.75rem; font-weight: 600;">15 Feb EP Release</div>
+                        <div style="font-size: var(--step--2); opacity: 0.7; margin-top: 0.25rem;">+ Real Life Feat. Sydney Rose (focus)</div>
+                        <div style="font-size: var(--step--2); opacity: 0.7;">+ Baby Just Be</div>
+                        <div style="font-size: var(--step--2); opacity: 0.7;">+ Wouldn't That Be Nice</div>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <h4>PT 2 — FALL/WINTER '26</h4>
+                    <div class="timeline-phase">The restless road.</div>
+                    <div class="timeline-details">
+                        <div>A phase exploring the space between who you were and who you're becoming.</div>
+                        <div style="margin-top: 0.75rem; font-weight: 600;">6-7 songs</div>
+                    </div>
+                </div>
+                <div class="timeline-step">
+                    <h4>PT 3 — SPRING/SUMMER '27</h4>
+                    <div class="timeline-phase">The return-home reckoning.</div>
+                    <div class="timeline-details">
+                        <div>A confrontation with the ghosts you left behind.</div>
+                        <div style="margin-top: 0.75rem; font-weight: 600;">6-7 songs</div>
+                    </div>
+                </div>
             </div>
-            <div class="ep-card">
-                    <h4>PT 2<br>FALL/WINTER '26</h4>
-                    <p>A restless-road phase exploring the space between who you were and who you're becoming. 3-4 new songs.</p>
-            </div>
-            <div class="ep-card">
-                    <h4>PT 3<br>SPRING/SUMMER '27</h4>
-                    <p>The return-home reckoning. A confrontation with the ghosts you left behind. 3-4 new songs.</p>
-            </div>
-        </div>
         </div>
         
         <!-- Full-width photo collection -->
         <div class="release-filmstrip">
             <div class="image-timeline-scroll" aria-label="The Long Way Home filmstrip">
-            <div class="timeline-image"><img src="https://i.pinimg.com/1200x/41/ae/1d/41ae1d299fd4c8a7bfaf40e03fe69946.jpg" alt="Film still 1 from The Long Way Home" loading="lazy"></div>
-            <div class="timeline-image"><img src="https://i.pinimg.com/1200x/4c/5e/3d/4c5e3dcc720077b714fff4138dbc523e.jpg" alt="Film still 2 from The Long Way Home" loading="lazy"></div>
-            <div class="timeline-image"><img src="https://i.pinimg.com/1200x/a0/5b/cb/a05bcb60bc0e958c4b7d7c1d1eee34e9.jpg" alt="Film still 3 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image" data-lyric="I'm taking the long way home tonight"><img src="https://i.pinimg.com/1200x/41/ae/1d/41ae1d299fd4c8a7bfaf40e03fe69946.jpg" alt="Film still 1 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image" data-lyric="Pretty on first glance, haunted on second"><img src="https://i.pinimg.com/1200x/4c/5e/3d/4c5e3dcc720077b714fff4138dbc523e.jpg" alt="Film still 2 from The Long Way Home" loading="lazy"></div>
+            <div class="timeline-image" data-lyric="Every mile between us feels like mercy"><img src="https://i.pinimg.com/1200x/a0/5b/cb/a05bcb60bc0e958c4b7d7c1d1eee34e9.jpg" alt="Film still 3 from The Long Way Home" loading="lazy"></div>
             <div class="timeline-image"><img src="https://i.pinimg.com/736x/04/69/dc/0469dcc0ca349bfc588a709c4bf31e4e.jpg" alt="Film still 4 from The Long Way Home" loading="lazy"></div>
             <div class="timeline-image"><img src="https://i.pinimg.com/736x/b3/01/83/b30183009daf493dcdb2757e8fc36574.jpg" alt="Film still 5 from The Long Way Home" loading="lazy"></div>
             <div class="timeline-image"><img src="https://i.pinimg.com/736x/dd/de/18/ddde189521b5bb3ea3456ad21f0aa4c6.jpg" alt="Film still 6 from The Long Way Home" loading="lazy"></div>
@@ -2240,17 +2226,7 @@ section {
         </div>
     </section>
 
-    <section id="brand">
-        <!-- Ambient Image 2 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson16.png" 
-             alt="" 
-             class="ambient-image ambient-2 subtle"/>
-        
-        <!-- Ambient Image 10 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/PNG image.png" 
-             alt="" 
-             class="ambient-image ambient-10 subtle"/>
-             
+    <section id="core-identity" class="subtle-blue-bg">
         <!-- Right-offset content area, opposite of Section 01 -->
         <div class="identity-content">
             <div class="identity-header">
@@ -2260,6 +2236,16 @@ section {
                     <h2 class="stylized-subheader">THE GOLDEN CHILD WITH GHOSTS</h2>
             </div>
                 <p class="lead">Hudson is the varsity-jacket dream who absorbed every family fracture in silence. Now he alchemizes that backlog into widescreen, heart-punch pop. He still looks like the poster in your locker; he just sings the stuff you never dared to write there.</p>
+                
+                <!-- 15-sec Super 8 loop for basement vibe -->
+                <div style="margin: 2rem 0; position: relative; overflow: hidden; border-radius: 8px;">
+                    <video autoplay loop muted playsinline style="width: 100%; height: 200px; object-fit: cover;">
+                        <source src="https://storage.googleapis.com/allmyfriends-assets-2025/video/Hudson/Hudson%20Ingram%20Super-8%20(uncolored).mov" type="video/mp4">
+                    </video>
+                </div>
+                
+                <!-- Anchor link to video strategy -->
+                <p style="margin: 2rem 0;"><a href="#visual-language" style="color: var(--accent); font-weight: 500;">LEARN THE VIDEO PLAN →</a></p>
             </div>
             
             <!-- Structured comparison with subtle divider -->
@@ -2371,25 +2357,15 @@ section {
         </div>
     </div>
 
-    <section id="industry-context" class="music-bg">
-        <!-- Ambient Image 3 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson21.png" 
-             alt="" 
-             class="ambient-image ambient-3 background"/>
-        
-        <!-- Ambient Image 11 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson77.tif" 
-             alt="" 
-             class="ambient-image ambient-11"/>
-             
+    <section id="industry-context" class="industry-context-bg">
         <!-- Left-offset content area -->
         <div class="industry-content">
             <div class="industry-header">
-            <span class="section-numeral" aria-hidden="true">03</span>
+            <span class="section-numeral" aria-hidden="true" style="color: rgba(255,255,255,0.3);">03</span>
             <div class="section-heading">
-                    <div class="marquee-header">FAN-DRIVEN RENAISSANCE</div>
-                    <h2 class="stylized-subheader">WHY HUDSON? — THE OPEN LANE</h2>
-                </div>
+                    <div class="marquee-header" style="color: rgba(255,255,255,0.7);">FAN-DRIVEN RENAISSANCE</div>
+                    <h2 class="stylized-subheader" style="color: #ffffff;">WHY HUDSON? — THE OPEN LANE</h2>
+            </div>
                 <p class="lead">No male act currently owns the same cultural intersection early-era Taylor Swift did.</p>
                 <p>No male artist today delivers the exact combination that made early-era Taylor Swift unstoppable: razor-sharp diary lyrics, stadium-scale accessibility, and a universally "safe-to-stan" image. Hudson is engineered to occupy that vacant intersection—confessional enough to tattoo on your heart, broad enough to own pop radio, and polished enough for brands, parents, and critics to embrace.</p>
             </div>
@@ -2411,8 +2387,6 @@ section {
                     </div>
                     <div class="artist-col" data-artist="Early Taylor Swift">
                         <span class="check">✓</span> hallmark
-                   
-
                     </div>
                     <div class="artist-col" data-artist="Harry Styles">
                         <span class="empty">◻</span> mostly vibe & imagery
@@ -2473,7 +2447,22 @@ section {
                 <p><strong>Hudson's thesis is to close that triangle:</strong><br>
                 Poster-boy approachability + diaristic heartbreak + arena-ready hooks—without losing critical credibility.</p>
             </div>
-        
+            
+            <!-- Organized 4x1 image grid -->
+            <div class="industry-image-grid">
+                <div class="industry-image-item">
+                    <img src="https://i.pinimg.com/736x/b6/f6/b7/b6f6b73465135a7e8480c251ac2cd18c.jpg" alt="Cultural context reference" loading="lazy">
+                </div>
+                <div class="industry-image-item">
+                    <img src="https://static01.nyt.com/images/2022/05/21/arts/20STYLES-REVIEW1/merlin_207158274_90bf3081-7ed5-41f4-8c57-85b98e9a76a9-articleLarge.jpg?quality=75&auto=webp&disable=upscale" alt="Harry Styles concert performance - contemporary male pop star landscape" loading="lazy">
+                        </div>
+                <div class="industry-image-item">
+                    <img src="https://i.pinimg.com/1200x/72/94/92/729492116bde6ccba2f762d7229e92c6.jpg" alt="Fan-driven culture reference" loading="lazy">
+                </div>
+                <div class="industry-image-item">
+                    <img src="https://miro.medium.com/v2/resize:fit:1024/1*sBFsNNy376MmeI_NRQqW3g.jpeg" alt="Music industry cultural shift and fan engagement" loading="lazy">
+                </div>
+            </div>
         </div>
     </section>
 
@@ -2533,9 +2522,9 @@ section {
         <path class="handwriting-letter letter-12" d="M531.37,44.98c0-2.72.26-5.41.96-8.05.37-1.4,1-2.69,1.95-3.8.58-.68,1.24-1.25,2.13-1.45,1.1-.25,1.76.17,1.76,1.3,0,1.02-.14,2.07-.39,3.07-1.05,4.26-2.01,8.53-2.6,12.88-.07.55-.22,1.09-.41,1.61-.25.7-.65,1.31-1.51,1.31-.92,0-1.2-.73-1.38-1.42-.31-1.23-.54-2.49-.53-3.78,0-.56,0-1.12,0-1.67Z"/>
         <path class="handwriting-letter letter-13" d="M540.03,15.09c-.06.45-.06.94-.2,1.39-.2.64-.65,1.1-1.34,1.24-.74.15-1.22-.26-1.58-.84-.64-1.05-1.13-2.17-.62-3.4.34-.84.9-1.57,1.96-1.45.91.11,1.37.78,1.58,1.6.12.46.13.95.2,1.45Z"/>
         <path class="handwriting-letter letter-14" d="M576.8,35.85c1.6.39,3.18.12,4.75-.1,1.83-.26,3.66-.42,5.48-.01.69.16,1.47.35,1.52,1.27.04.84-.56,1.3-1.23,1.61-1.39.64-2.87.96-4.38,1.19-2.13.33-4.24.74-6.29,1.45-1.58.54-2.84,1.48-3.63,2.95-1.49,2.79-2.35,5.78-2.35,8.94,0,2.78,1.26,4.07,4.03,4.35.16.02.32,0,.48.01,1.08.07,2.12.21,2.37,1.53.21,1.15-.52,2.13-1.93,2.65-3.62,1.34-8.72-1.61-9.69-5.68-.63-2.66-.75-5.37-.35-8.09.08-.55.19-1.1.21-1.66.07-1.69-.21-1.93-1.93-1.74-1.11.12-2.16.59-3.31.47-2.33-.24-3.06-1.77-1.69-3.64.92-1.25,2.1-2.21,3.59-2.69.98-.32,1.99-.59,3-.8,2.05-.43,3.66-1.45,4.91-3.15,1.81-2.46,3.07-5.23,4.53-7.89,1.11-2.03,2.22-4.06,3.34-6.09.47-.85,1.07-1.59,1.86-2.17.62-.46,1.34-.57,2.03-.25.71.33.6,1.06.61,1.68.02,1.23-.45,2.35-.85,3.47-1.17,3.23-2.8,6.27-4.18,9.41-.41.92-1.1,1.78-.88,2.96Z"/>
-        <path class="handwriting-letter letter-15" d="M614.43,50.97c-.16-1.29.18-2.54.31-3.81.28-2.71-.04-3.01-2.65-2.49-.78.15-1.55.44-2.36.34-.86-.12-1.8-.16-2.28-1.06-.54-1-.07-1.85.5-2.66,1.34-1.88,3.29-2.91,5.45-3.19,3.46-.44,6.92-.08,6.3,5.36-.28,2.44-1.23,4.62-2.67,6.59-.82,1.13-1.93,1.88-3.23,2.38-.8.31-1.86.62-1.75,1.69.12,1.21,1.3,1.24,2.23,1.41,2.16.4,4.31-.03,6.44-.28,2.69-.31,5.36-.89,8.05-1.23,1.08-.14,1.58-.46,1.49-1.62-.12-1.39-.13-2.77,1.7-3.19,1.75-.4,3.45.33,4.47,2.01.92,1.51.83,2.93-.26,4.2-.92,1.06-2.16,1.66-3.41,2.17-3.28,1.33-6.72,2.02-10.21,2.53-1.34.2-2.67.57-3.67.46Z"/>
+        <path class="handwriting-letter letter-15" d="M614.43,50.97c-.16-1.29.18-2.54.31-3.81.28-2.71-.04-3.01-2.65-2.49-.78.15-1.55.44-2.36.34-.86-.12-1.8-.16-2.28-1.06-.54-1-.07-1.85.5-2.66,1.34-1.88,3.29-2.91,5.45-3.19,3.46-.44,5.66-2.37,7.24-5.26,2.07-3.78,4.13-7.58,6.19-11.36.54-.98,1.11-1.95,1.96-2.7.73-.63,1.6-.88,2.43-.41.7.4.64,1.24.54,1.96-.22,1.68-.83,3.25-1.51,4.78-1.34,2.99-2.73,5.96-4.04,8.95-.79,1.79-.6,2.06,1.41,1.95,1.75-.09,3.5-.37,5.25-.49,1.11-.08,2.24-.08,3.33.25.62.19,1.31.36,1.42,1.1.13.84-.48,1.3-1.13,1.66-.77.43-1.61.69-2.48.86-2.19.43-4.38.9-6.57,1.32-3.52.67-5.61,2.8-6.57,6.2-.56,2-1.21,3.98-1.19,6.09.04,2.96,1.19,4.2,4.14,4.5,2.07.21,2.84.71,2.86,1.85.02,1.16-1.14,2.22-2.78,2.56-3.74.76-8.21-2.25-9.02-6.18-.32-1.56-.64-3.14-.46-4.76Z"/>
         <path class="handwriting-letter letter-16" d="M669.56,15c-.42,4.45-1.61,9.33-2.83,14.21-1.69,6.73-3.4,13.46-4.58,20.31-.41,2.36-.72,4.73-.71,7.14,0,1.04,0,2.08-.39,3.07-.6,1.52-1.66,1.87-3.01.94-.99-.68-1.4-1.71-1.63-2.83-.7-3.42-.46-6.84.24-10.22,2.26-10.94,4.97-21.77,8.08-32.5.31-1.07.68-2.13,1.11-3.16.31-.76.83-1.43,1.79-1.28,1.04.16,1.78.74,1.91,1.84.07.63.01,1.27.01,2.49Z"/>
-        <path class="handwriting-letter letter-17" d="M702.28,48.41c-3.81-.04-6.91-.7-9.76-2.32-3.53-2.01-5.14-5.98-3.92-9.86,1.1-3.5,3.13-6.46,5.75-9,1.73-1.67,3.87-1.79,6.06-1.25,1.36.33,2.11,1.32,2.38,2.72.83,4.4-1.82,9.68-5.85,11.56-.22.1-.44.18-.65.3-.56.32-1.23.64-1.12,1.39.1.67.67,1.06,1.34,1.22,1.25.25,2.58.39,3.85.33,4.32-.26,8.56-1.1,12.83-1.73.67-.1,1.02-.34,1.01-1.03,0-.32,0-.64.02-.96.12-2.34,1.34-3.28,3.6-2.74,1.76.42,3.05,1.69,3.61,3.32.43,1.53-.4,2.61-1.5,3.52-.74.62-1.59,1.08-2.48,1.44-4.65,1.87-9.53,2.61-13.92,3.08Z"/>
+        <path class="handwriting-letter letter-17" d="M702.28,48.41c-3.81-.04-6.91-.7-9.76-2.32-3.53-2.01-5.14-5.98-3.92-9.86,1.1-3.5,3.13-6.46,5.75-9,1.73-1.67,3.87-1.79,6.06-1.25,1.36.33,2.11,1.32,2.38,2.72.83,4.4-1.82,9.68-5.85,11.56-.22.1-.44.18-.65.3-.56.32-1.23.64-1.12,1.39.1.67.67,1.06,1.34,1.22,1.01.25,2.03.39,3.08.33,4.32-.26,8.56-1.1,12.83-1.73.67-.1,1.02-.34,1.01-1.03,0-.32,0-.64.02-.96.12-2.34,1.34-3.28,3.6-2.74,1.76.42,2.67,1.69,3.12,3.32.43,1.53-.4,2.61-1.5,3.52-.74.62-1.59,1.08-2.48,1.44-4.65,1.87-9.53,2.61-13.92,3.08Z"/>
         <path class="handwriting-letter letter-18" d="M806.32,44.1c.99-.11,1.48-.9,2.08-1.48,3.21-3.13,5.92-6.71,8.97-9.98.75-.8,1.44-1.68,2.8-2.21.3,1.8.04,3.42-.13,5.04-.44,4.14-.73,8.27-.33,12.44.34,3.43,1.44,6.55,3.53,9.28,3.38,4.41,7.38,8.18,11.95,11.34,1.59,1.1,3.33,1.87,5.14,2.54,1.14.42,2.95.77,2.63,2.27-.34,1.6-2.2,1.1-3.32.87-10.67-2.12-18.96-7.39-23.19-17.9-1.39-3.45-1.93-7.08-2.43-10.72-.11-.79-.09-1.6-.6-2.44-.79.36-.95,1.18-1.26,1.82-1.51,3.04-3.72,5.33-6.8,6.82-3.4,1.66-5.88,4.36-7.94,7.47-.84,1.27-1.67,2.54-2.73,3.63-.55.57-1.15,1.14-1.83,1.53-1.49.86-2.47.37-2.72-1.32-.24-1.62.14-3.2.63-4.72.87-2.74,1.88-5.43,2.85-8.14.88-2.48,1.77-4.96,2.68-7.43.42-1.12.95-2.2,1.65-3.18.71-.98,1.57-1.62,2.84-1.3,1.11.28,2.04-.07,2.9-.73.19-.15.38-.3.59-.42.78-.45,1.58-.88,2.46-.32,1.01.64.82,1.66.64,2.59-.15.78-.49,1.51-.71,2.28-.22.74-.72,1.43-.37,2.36Z"/>
         <path class="handwriting-letter letter-19" d="M863.69,48.3c-.41.04-.68-.09-.7-.46-.02-.32.11-.62.5-.63.33,0,.64.15.68.49.04.33-.21.54-.48.61Z"/>
         <path class="handwriting-letter letter-20" d="M869.13,33.49c1.64-2.27,3.48-4.01,5.81-5.16,4.41-2.17,8.65-.97,11.14,3.27,2.25,3.82,2.23,7.92,1.13,12.07-.27,1-.67,1.96-1.06,2.92-.35.87-.99,1.68.12,2.51.32.24.29.77,0,1.1-.34.37-.75.22-1.01-.12-.71-.9-.9.01-1.13.36-1.3,1.93-2.66,3.81-4.44,5.33-1.68,1.43-3.5,2.49-5.83,2.39-3.24-.14-5.55-2.14-6.13-5.34-.35-1.93-.19-3.84.22-5.71.83-3.71,2.57-7.04,4.66-10.19.76-1.14,1.75-2.09,3.16-2.42.62-.14,1.31-.35,1.79.24.4.49.14,1.06-.06,1.58-.73,1.86-1.48,3.71-2.19,5.58-.88,2.31-1.78,4.62-2.56,6.97-.57,1.71.05,2.64,1.71,2.95.79.14,1.47-.02,1.81-.79.84-1.95,2.24-3.5,3.63-5.03,2.83-3.11,2.12-7.76.9-10.63-.48-1.14-1.49-1.62-2.65-1.81-1.74-.29-3.48-.45-5.25-.27-1.25.13-2.5.15-3.76.22Z"/>
@@ -2546,17 +2535,9 @@ section {
     </div>
 
 
+
+
     <section id="audience" class="music-bg">
-        <!-- Ambient Image 4 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson125.tif" 
-             alt="" 
-             class="ambient-image ambient-4"/>
-        
-        <!-- Ambient Image 12 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/P1130772.jpg" 
-             alt="" 
-             class="ambient-image ambient-12 subtle"/>
-             
         <!-- Left-offset content area -->
         <div class="audience-content">
             <div class="audience-header">
@@ -2636,12 +2617,7 @@ section {
         </div>
     </section>
     
-    <section id="cultural-alignment" class="music-bg">
-        <!-- Ambient Image 5 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson134.tif" 
-             alt="" 
-             class="ambient-image ambient-5 subtle"/>
-             
+    <section id="cultural-alignment" class="light-blue-bg">
         <!-- Right-offset content area -->
         <div class="brand-content">
             <div class="brand-header">
@@ -2722,16 +2698,6 @@ section {
     </section>
     
     <section id="sound-voice">
-        <!-- Ambient Image 6 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson138.tif" 
-             alt="" 
-             class="ambient-image ambient-6"/>
-        
-        <!-- Ambient Image 13 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson134.tif" 
-             alt="" 
-             class="ambient-image ambient-13 background"/>
-             
         <!-- Right-offset content area -->
         <div class="sound-content">
             <div class="sound-header">
@@ -2739,7 +2705,7 @@ section {
             <div class="section-heading">
                     <div class="marquee-header">SOUND & VOICE</div>
                     <h2 class="stylized-subheader">ANTHEMIC. INTIMATE. UNMISTAKABLY HIM.</h2>
-                </div>
+            </div>
                 <p class="lead">Indie-adjacent pop with Americana bloodlines. The production touchstones are Bleachers, The 1975, Jon Brion, Aaron Dessner, and Ruston Kelly, with the structural ambition of *Channel Orange*. The vocal is natural and unpretentious—low cracks invite you in, belts feel earned.</p>
                         </div>
             
@@ -2782,20 +2748,7 @@ section {
         </div>
     </section>
 
-    <section id="visual" class="music-bg">
-        <!-- Ambient Image 7 moved to RIGHT side behind text -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson72.tif" 
-             alt="" 
-             class="ambient-image ambient-7 background" 
-             style="right: -5%; left: auto; width: 45vw; top: 10%; opacity: 0.1;"/>
-        
-        <!-- Ambient Image 14 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson38.tif" 
-             alt="" 
-             class="ambient-image ambient-14"/>
-
-
-
+    <section id="visual-language" class="music-bg">
         <!-- Left-offset content area -->
         <div class="visual-content">
             <div class="visual-header">
@@ -2804,56 +2757,9 @@ section {
                     <div class="marquee-header">VISUAL LANGUAGE</div>
                     <h2 class="stylized-subheader">IF YOU KNOW, YOU KNOW</h2>
             </div>
-            </div>
-
-            <!-- Full Opacity Visual Images Collage (now inside .visual-content) -->
-
-        <div class="visual-collage">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/IMG_4164.JPG" alt="" class="collage-img img-1">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/IMG_4161.JPG" alt="" class="collage-img img-2">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/IMG_4150.JPG" alt="" class="collage-img img-3">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/b8bcec54b6448c3519478f36cb51addd.jpg" alt="" class="collage-img img-4">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/c9302da188271b8b00ea414fb9c02ef0.jpg" alt="" class="collage-img img-5">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/a29bd29bd3aef14d7feb18988f8fbb56.jpg" alt="" class="collage-img img-6">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/f7506a8c6893a98b77257121925e5229.jpg" alt="" class="collage-img img-7">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/dc90b8584ddb28f0b8808d9eacdff934.jpg" alt="" class="collage-img img-8">
-        </div>
-        <style>
-        .visual-collage {
-          display: grid;
-          grid-template-columns: repeat(4, 2fr);
-          gap: 2.2rem 1.5rem;
-          max-width: 900px;
-          margin: 0 auto 3rem auto;
-          position: relative;
-          z-index: 2;
-        }
-        .collage-img {
-          width: 100%;
-          aspect-ratio: 1/1;
-          object-fit: cover;
-          border-radius: 10px;
-          box-shadow: 0 4px 16px rgba(0,0,0,0.10);
-          background: #fff;
-          transition: transform 0.2s;
-          border: 2px solid #fff;
-        }
-        .img-1 { transform: rotate(-2deg) scale(1.04); z-index: 2; }
-        .img-2 { transform: rotate(2deg) scale(0.98); z-index: 3; }
-        .img-3 { transform: rotate(-1deg) scale(1.01); z-index: 1; }
-        .img-4 { transform: rotate(1.5deg) scale(1.02); z-index: 2; }
-        .img-5 { transform: rotate(-3deg) scale(0.97); z-index: 2; }
-        .img-6 { transform: rotate(2.5deg) scale(1.03); z-index: 1; }
-        .img-7 { transform: rotate(-1.5deg) scale(1.00); z-index: 2; }
-        .img-8 { transform: rotate(1deg) scale(0.99); z-index: 2; }
-        @media (max-width: 900px) {
-          .visual-collage {
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1.2rem;
-            max-width: 98vw;
-          }
-        }
-        </style>
+                    </div>
+            
+            <!-- Organized visual details -->
             <div class="visual-details">
                 <div class="visual-section">
                     <h5>PALETTE & TYPOGRAPHY</h5>
@@ -2877,8 +2783,6 @@ section {
             </div>
             </div>
         </div>
-        
-       
         
         <!-- Cover Art System - Right-offset content area (opposite side) -->
         <div class="brand-content">
@@ -2914,102 +2818,101 @@ section {
         </div>
         
         <!-- Video Strategy - Left-offset content area (opposite side) -->
-        <section id="strategy">
-            <div class="industry-content">
-                <div class="video-strategy-header">
-                    <div class="section-heading">
-                        <div class="marquee-header">VIDEO STRATEGY</div>
-                        <h2 class="stylized-subheader">PHYSICALISE THE FEELING,<br>DON'T ILLUSTRATE THE PLOT</h2>
-                    </div>
-                    <p class="lead">Hudson videos should hit you in the chest within ten seconds, using practical effects, single-take tricks, miniatures, forced perspective, and lo-fi shooting formats (Super 8, DV, steady handheld). They must be easy to describe, easy to GIF, and impossible to forget.</p>
+        <div class="industry-content">
+            <div class="video-strategy-header">
+                <div class="section-heading">
+                    <div class="marquee-header">VIDEO STRATEGY</div>
+                    <h2 class="stylized-subheader">"PHYSICALISE THE FEELING,<br>DON'T ILLUSTRATE THE PLOT"</h2>
                 </div>
-                <!-- Video strategy principles -->
-                <div class="video-strategy-details">
-                    <div class="video-strategy-section">
-                        <h5>FEELING > PLOT</h5>
-                        <p>We are not trying to jam in an over-ambitious narrative - we just want to capture and convey a feeling.</p>
-                    </div>
-                    <div class="video-strategy-section">
-                        <h5>ONE-LINE HOOK</h5>
-                        <p>Simple enough conceptually that you could describe it in one sentence.</p>
-                    </div>
-                    <div class="video-strategy-section">
-                        <h5>LO-FI PROD / HIGH-CONCEPT IDEAS</h5>
-                        <p>Shoot scrappy but think creatively - turn the challenge of keeping budget tight into an opportunity to elevate things conceptually. Practical effects, real props, hidden cuts, projector tricks, miniature sets, colour-gel headlights—ideas that look expensive because they're clever.</p>
-                    </div>
-                    <div class="video-strategy-section">
-                        <h5>REPEATABLE RITUAL</h5>
-                        <p>Fans should recognise a Hudson video in two frames: blue-leaning grade, tactile prop, single motif that ties back to the EP object (car, moving box, porch light).</p>
-                    </div>
+                <p class="lead">Hudson videos should hit you in the chest within ten seconds, using practical effects, single-take tricks, miniatures, forced perspective, and lo-fi shooting formats (Super 8, DV, steady handheld). They must be easy to describe, easy to GIF, and impossible to forget.</p>
+            </div>
+            
+            <!-- Video strategy principles -->
+            <div class="video-strategy-details">
+                <div class="video-strategy-section">
+                    <h5>FEELING > PLOT</h5>
+                    <p>We are not trying to jam in an over-ambitious narrative - we just want to capture and convey a feeling.</p>
                 </div>
-                
-                <!-- Key References -->
-                <div class="video-references">
-                    <h5>KEY REFERENCES</h5>
-                    <p>All-American Rejects — "Move Along" (multiplicity montage done with wardrobe swaps & locked-off camera)<br>
-                    Coldplay — "The Scientist" (one-take reverse world; concept carries emotion)<br>
-                    Phoebe Bridgers — "Motion Sickness" (lo-fi scooter ride, charisma > budget)<br>
-                    Del Water Gap — "Losing You" (intimate handheld aesthetic, emotional resonance over production value)<br>
-                    sombr — "we never dated" (bedroom pop simplicity, relatable vulnerability)<br>
-                    Role Model — "Sally, When The Wine Runs Out" (nostalgic visual storytelling, authentic moments)<br>
-                    Bleachers — "I Wanna Get Better" (therapy-session framing = hook for jump-cuts)</p>
+                <div class="video-strategy-section">
+                    <h5>ONE-LINE HOOK</h5>
+                    <p>Simple enough conceptually that you could describe it in one sentence.</p>
                 </div>
-                
-                <!-- Video reference GIFs -->
-                <div class="video-reference-grid">
-                    <div class="video-ref-item">
-                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - The All-American Rejects - Move Along (1080p).mp4.gif" 
-                             alt="All-American Rejects - Move Along"
-                             loading="lazy">
-                        <p class="video-ref-caption">All-American Rejects<br>"Move Along"</p>
-                    </div>
-                    <div class="video-ref-item">
-                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - Coldplay - The Scientist (Official 4K Video) (1080p).mp4.gif" 
-                             alt="Coldplay - The Scientist"
-                             loading="lazy">
-                        <p class="video-ref-caption">Coldplay<br>"The Scientist"</p>
-                    </div>
-                    <div class="video-ref-item">
-                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - Phoebe Bridgers - Motion Sickness (Official Video) (1080p).mp4.gif" 
-                             alt="Phoebe Bridgers - Motion Sickness"
-                             loading="lazy">
-                        <p class="video-ref-caption">Phoebe Bridgers<br>"Motion Sickness"</p>
-                    </div>
-                    <div class="video-ref-item">
-                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - Del Water Gap - Ode to a Conversation Stuck in Your Throat (Official Video) (1080p).mp4.gif" 
-                             alt="Del Water Gap - Ode to a Conversation Stuck in Your Throat"
-                             loading="lazy">
-                        <p class="video-ref-caption">Del Water Gap<br>"Ode to a Conversation"</p>
-                    </div>
-                    <div class="video-ref-item">
-                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - sombr - we never dated (official lyric video) (1080p).mp4.gif" 
-                             alt="sombr - we never dated"
-                             loading="lazy">
-                        <p class="video-ref-caption">sombr<br>"we never dated"</p>
-                    </div>
-                    <div class="video-ref-item">
-                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - ROLE MODEL - Sally, When The Wine Runs Out (Official Music Video) (1080p).mp4.gif" 
-                             alt="Role Model - Sally, When The Wine Runs Out"
-                             loading="lazy">
-                        <p class="video-ref-caption">Role Model<br>"Sally, When The Wine Runs Out"</p>
-                    </div>
+                <div class="video-strategy-section">
+                    <h5>LO-FI PROD / HIGH-CONCEPT IDEAS</h5>
+                    <p>Shoot scrappy but think creatively - turn the challenge of keeping budget tight into an opportunity to elevate things conceptually. Practical effects, real props, hidden cuts, projector tricks, miniature sets, colour-gel headlights—ideas that look expensive because they're clever.</p>
                 </div>
-                
-                <!-- Always-on section -->
-                <div class="video-always-on">
-                    <h5>ALWAYS-ON VISUALISERS & SOCIALS</h5>
-                    <p><strong>Voicemail Loops</strong> – 6-second answering-machine LED flicker + subtitle lyric.<br>
-                    <strong>Cinematic Lyric Stills</strong> – Frame-grabs graded like '90s film, Bookman serif caption; reposted as "movie quotes."<br>
-                    <strong>Miniature BTS Reels</strong> – 30-second clips of Hudson painting or wiring the tiny set pieces.<br>
-                    <strong>Driving POV GIFs</strong> – Infinite-loop highway lines with overlay lyric; filler between singles.</p>
-                </div>
-                
-                <!-- Bottom line callout -->
-                <div class="video-strategy-result">
-                    <p><strong>Bottom line:</strong> if the idea doesn't physicalise a feeling in one simple, shareable image, scrap it and go simpler.</p>
+                <div class="video-strategy-section">
+                    <h5>REPEATABLE RITUAL</h5>
+                    <p>Fans should recognise a Hudson video in two frames: blue-leaning grade, tactile prop, single motif that ties back to the EP object (car, moving box, porch light).</p>
                 </div>
             </div>
-        </section>
+            
+            <!-- Key References -->
+            <div class="video-references">
+                <h5>KEY REFERENCES</h5>
+                <p>All-American Rejects — "Move Along" (multiplicity montage done with wardrobe swaps & locked-off camera)<br>
+                Coldplay — "The Scientist" (one-take reverse world; concept carries emotion)<br>
+                Phoebe Bridgers — "Motion Sickness" (lo-fi scooter ride, charisma > budget)<br>
+                Del Water Gap — "Losing You" (intimate handheld aesthetic, emotional resonance over production value)<br>
+                sombr — "we never dated" (bedroom pop simplicity, relatable vulnerability)<br>
+                Role Model — "Sally, When The Wine Runs Out" (nostalgic visual storytelling, authentic moments)<br>
+                Bleachers — "I Wanna Get Better" (therapy-session framing = hook for jump-cuts)</p>
+            </div>
+            
+            <!-- Video reference GIFs -->
+            <div class="video-reference-grid">
+                <div class="video-ref-item">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - The All-American Rejects - Move Along (1080p).mp4.gif" 
+                         alt="All-American Rejects - Move Along"
+                         loading="lazy">
+                    <p class="video-ref-caption">All-American Rejects<br>"Move Along"</p>
+                </div>
+                <div class="video-ref-item">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - Coldplay - The Scientist (Official 4K Video) (1080p).mp4.gif" 
+                         alt="Coldplay - The Scientist"
+                         loading="lazy">
+                    <p class="video-ref-caption">Coldplay<br>"The Scientist"</p>
+                </div>
+                <div class="video-ref-item">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - Phoebe Bridgers - Motion Sickness (Official Video) (1080p).mp4.gif" 
+                         alt="Phoebe Bridgers - Motion Sickness"
+                         loading="lazy">
+                    <p class="video-ref-caption">Phoebe Bridgers<br>"Motion Sickness"</p>
+                </div>
+                <div class="video-ref-item">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - Del Water Gap - Ode to a Conversation Stuck in Your Throat (Official Video) (1080p).mp4.gif" 
+                         alt="Del Water Gap - Ode to a Conversation Stuck in Your Throat"
+                         loading="lazy">
+                    <p class="video-ref-caption">Del Water Gap<br>"Ode to a Conversation"</p>
+                </div>
+                <div class="video-ref-item">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - sombr - we never dated (official lyric video) (1080p).mp4.gif" 
+                         alt="sombr - we never dated"
+                         loading="lazy">
+                    <p class="video-ref-caption">sombr<br>"we never dated"</p>
+                </div>
+                <div class="video-ref-item">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ytdl.canehill.info - ROLE MODEL - Sally, When The Wine Runs Out (Official Music Video) (1080p).mp4.gif" 
+                         alt="Role Model - Sally, When The Wine Runs Out"
+                         loading="lazy">
+                    <p class="video-ref-caption">Role Model<br>"Sally, When The Wine Runs Out"</p>
+                </div>
+            </div>
+            
+            <!-- Always-on section -->
+            <div class="video-always-on">
+                <h5>ALWAYS-ON VISUALISERS & SOCIALS</h5>
+                <p><strong>Voicemail Loops</strong> – 6-second answering-machine LED flicker + subtitle lyric.<br>
+                <strong>Cinematic Lyric Stills</strong> – Frame-grabs graded like '90s film, Bookman serif caption; reposted as "movie quotes."<br>
+                <strong>Miniature BTS Reels</strong> – 30-second clips of Hudson painting or wiring the tiny set pieces.<br>
+                <strong>Driving POV GIFs</strong> – Infinite-loop highway lines with overlay lyric; filler between singles.</p>
+            </div>
+            
+            <!-- Bottom line callout -->
+            <div class="video-strategy-result">
+                <p><strong>Bottom line:</strong> if the idea doesn't physicalise a feeling in one simple, shareable image, scrap it and go simpler.</p>
+            </div>
+        </div>
         
         <!-- Full-width visual filmstrip -->
         <div class="visual-filmstrip">
@@ -3023,17 +2926,7 @@ section {
         </div>
     </section>
 
-    <section id="world-building">
-        <!-- Ambient Image 8 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson36.tif" 
-             alt="" 
-             class="ambient-image ambient-8 subtle"/>
-        
-        <!-- Ambient Image 15 -->
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot 2025-07-14 at 7.04.56â¯PM.png" 
-             alt="" 
-             class="ambient-image ambient-15 subtle"/>
-             
+    <section id="world-building" class="lighter-blue-bg">
         <!-- Right-offset content area -->
         <div class="world-content">
             <div class="world-header">
@@ -3067,27 +2960,56 @@ section {
                     Don't explain the story. Let them piece it together. That's how you build a myth, not a moment.
                     </blockquote>
                 </figure>
+                
+                <!-- Quote pull-out for rhythm -->
+                <figure class="quote-callout" style="margin: 6rem 0;">
+                    <blockquote class="quote">Lore is the loyalty engine.</blockquote>
+                </figure>
         </div>
     </section>
 
-    <section id="Assets">
+    <section id="Assets" style="padding: 4rem 0;">
         <div class="container text-center">
-            <p class="section-marker editable-text">DOWNLOAD HUB</p>
-            <div class="section-header-accent" style="justify-content:center;">
-                <h2 class="stylized-subheader editable-text">Press + Brand&nbsp;Pack</h2>
+            <span class="section-numeral" aria-hidden="true">10</span>
+            <h2 style="font-size: var(--step-3); font-weight: 700; margin-bottom: 2rem; letter-spacing: -0.02em;">Press + Brand Pack</h2>
+            <div style="display: flex; gap: 1rem; justify-content: center; margin-bottom: 3rem;">
+                <a href="#" class="btn btn-primary" style="padding: 0.75rem 1.5rem;">Press Photos ZIP</a>
+                <a href="#" class="btn" style="padding: 0.75rem 1.5rem;">Glyph Pack SVG</a>
             </div>
-            <a href="#" class="btn btn--primary" data-anim>Assets</a>
-            <a href="#" class="btn" data-anim>One-Sheet</a>
-            <div class="spacer-md"></div>
-            <p class="opacity-50 editable-text">Label: <a href="mailto:label@interscope.com">label@interscope.com</a> · Mgmt: <a href="mailto:mgmt@amf.com">mgmt@amf.com</a></p>
+            <div style="font-size: var(--step--1); opacity: 0.7; line-height: 1.6; text-align: left; max-width: 600px; margin: 0 auto;">
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Management: All My Friends Inc.</div>
+                    <div>Theo Battaglia | 424.298.0341 | <a href="mailto:theo@allmyfriendsinc.com" style="color: inherit; text-decoration: underline;">theo@allmyfriendsinc.com</a></div>
+                    <div>Lila Dickstein | 646.884.0994 | <a href="mailto:lila@allmyfriendsinc.com" style="color: inherit; text-decoration: underline;">lila@allmyfriendsinc.com</a></div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Label: Interscope / Aaron Dessner</div>
+                    <div>A&R: Charlie Christie</div>
+                    <div>Marketing: Jake Sarno</div>
+                    <div>Creative: Christiana Divona</div>
+                    <div>Digital: Tasha Belikove, Tristan Barajas</div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Touring: Wasserman</div>
+                    <div>Boaz Saidman, Leigh Millhauser</div>
+                </div>
+                
+                <div>
+                    <div style="font-weight: 600; margin-bottom: 0.5rem;">Legal: Myman Greenspan</div>
+                    <div>Josh Karp</div>
+                </div>
+            </div>
         </div>
     </section>
     
     <div id="draggable-elements-container" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1000;"></div>
 
+
     
     <script defer>
-    // Simple scroll-spy for navigation
+    // Enhanced scroll-spy with intersection observer for better performance
     document.addEventListener('DOMContentLoaded', function() {
       const navLinks = document.querySelectorAll('.nav-link');
       const sections = Array.from(navLinks).map(link => {
@@ -3095,31 +3017,41 @@ section {
         return href ? document.querySelector(href) : null;
       }).filter(Boolean);
       
-      function onScroll() {
-        let scrollPos = window.scrollY + 120;
-        for (let i = sections.length - 1; i >= 0; i--) {
-          if (sections[i] && scrollPos >= sections[i].offsetTop) {
-            navLinks.forEach(link => link.classList.remove('active'));
-            if (navLinks[i]) navLinks[i].classList.add('active');
-            break;
-          }
-        }
-      }
+      // Intersection Observer for nav highlighting
+      const observerOptions = {
+        rootMargin: '-20% 0px -80% 0px',
+        threshold: 0
+      };
       
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const index = sections.indexOf(entry.target);
+            navLinks.forEach(link => link.classList.remove('active'));
+            if (navLinks[index]) navLinks[index].classList.add('active');
+          }
+        });
+      }, observerOptions);
+      
+      sections.forEach(section => {
+        if (section) observer.observe(section);
+      });
+      
+             // Removed timeline progress functionality - cleaner without it
+      
+      // Add anchor link functionality
+      const anchorLinks = document.querySelectorAll('a[href^="#"]');
+      anchorLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
     });
     </script>
 
-    <section id="vision">
-        <div class="container text-center">
-            <p class="section-marker editable-text">VISION</p>
-            <div class="section-header-accent" style="justify-content:center;">
-                <h2 class="stylized-subheader editable-text">The Road Ahead</h2>
-            </div>
-            <p class="lead">This is a placeholder for the Vision section. Add your vision content here.</p>
-        </div>
-    </section>
-
 </body>
-</html>
+</html> 
