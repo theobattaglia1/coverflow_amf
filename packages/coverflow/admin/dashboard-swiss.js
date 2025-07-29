@@ -881,6 +881,21 @@ async function uploadAndCreateCover(file) {
       console.log('[UPLOAD] Success! File URL:', data.url);
       console.log('[UPLOAD] Thumbnail URL:', data.thumbnailUrl || 'No thumbnail');
       
+      // Test if thumbnail actually loads
+      if (data.thumbnailUrl) {
+        const testImg = new Image();
+        testImg.onload = () => console.log('[UPLOAD] Thumbnail loads successfully!');
+        testImg.onerror = () => console.error('[UPLOAD] Thumbnail failed to load:', data.thumbnailUrl);
+        testImg.src = data.thumbnailUrl;
+      }
+      
+      // Warn if TIFF
+      if (/\.tif{1,2}$/i.test(file.name)) {
+        showToast('UPLOAD SUCCESSFUL, BUT TIFF IMAGES MAY NOT PREVIEW IN BROWSERS', 7000);
+      } else {
+        showToast(`UPLOADED ${file.name.toUpperCase()}`);
+      }
+      
       // Create new cover
       const newCover = {
         id: Date.now(),
