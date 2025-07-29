@@ -16,7 +16,12 @@ import cors from 'cors';
 import rateLimit from 'express-rate-limit';
 import { Storage } from '@google-cloud/storage';
 import sharp from 'sharp';
+import ffmpeg from 'fluent-ffmpeg';
+import ffmpegPath from 'ffmpeg-static';
 import { execSync } from 'child_process';
+
+// Set FFmpeg path
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 // --- Diagnostic Log ---
 // This line confirms that the correct file is being executed on Render.
@@ -724,73 +729,126 @@ app.put('/api/assets/bulk-update', requireAuth('editor'), async (req, res) => {
 });
 
 
-// GCS Asset Upload
+// GCS Asset Upload with Comprehensive Thumbnail Generation
 app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, res) => {
     let file = req.files?.find(f => ['file', 'image'].includes(f.fieldname));
     if (!file) return res.status(400).json({ error: 'No file provided' });
     
-    const folder = req.body.folder ? req.body.folder.trim() : ''; // Trim whitespace
+    const folder = req.body.folder ? req.body.folder.trim() : '';
     let buffer = file.buffer, filename = file.originalname, contentType = file.mimetype;
     
-    if (contentType === 'image/tiff') {
-        try {
+    console.log(`[UPLOAD] Processing file: ${filename}, type: ${contentType}, size: ${buffer.length} bytes`);
+    
+    try {
+        // Handle HEIC files - convert to web-compatible format
+        if (contentType === 'image/heic' || filename.toLowerCase().endsWith('.heic')) {
+            console.log('[UPLOAD] Converting HEIC to JPEG...');
+            buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
+            filename = filename.replace(/\.heic$/i, '.jpg');
+            contentType = 'image/jpeg';
+        }
+        
+        // Handle TIFF files
+        if (contentType === 'image/tiff') {
+            console.log('[UPLOAD] Converting TIFF to PNG...');
             buffer = await sharp(file.buffer).png().toBuffer();
             filename = filename.replace(/\.tif{1,2}$/i, '.png');
             contentType = 'image/png';
-        } catch (err) {
-            return res.status(500).json({ error: 'Failed to convert TIFF to PNG' });
         }
+
+        // Generate thumbnail for ALL file types
+        console.log('[UPLOAD] Generating thumbnail...');
+        const thumbnailData = await generateThumbnail(file.buffer, filename, file.mimetype);
+        
+        // Upload original file
+        const gcsPath = [folder, filename].filter(Boolean).join('/');
+        const bucket = gcsStorage.bucket(gcsBucketName);
+        const blob = bucket.file(gcsPath);
+        
+        // Upload thumbnail
+        const thumbnailPath = [folder, 'thumbnails', thumbnailData.filename].filter(Boolean).join('/');
+        const thumbnailBlob = bucket.file(thumbnailPath);
+        
+        // Upload both files to GCS
+        console.log('[UPLOAD] Uploading original file to GCS...');
+        await new Promise((resolve, reject) => {
+            const blobStream = blob.createWriteStream({ resumable: false, contentType });
+            blobStream.on('error', reject);
+            blobStream.on('finish', resolve);
+            blobStream.end(buffer);
+        });
+        
+        console.log('[UPLOAD] Uploading thumbnail to GCS...');
+        await new Promise((resolve, reject) => {
+            const thumbnailStream = thumbnailBlob.createWriteStream({ 
+                resumable: false, 
+                contentType: thumbnailData.contentType 
+            });
+            thumbnailStream.on('error', reject);
+            thumbnailStream.on('finish', resolve);
+            thumbnailStream.end(thumbnailData.buffer);
+        });
+        
+        const gcsUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+        const thumbnailUrl = `https://storage.googleapis.com/${bucket.name}/${thumbnailBlob.name}`;
+        
+        console.log('[UPLOAD] Files uploaded successfully');
+        console.log('[UPLOAD] Original URL:', gcsUrl);
+        console.log('[UPLOAD] Thumbnail URL:', thumbnailUrl);
+        
+        // Update assets.json with both URLs
+        if (folder) {
+            try {
+                const assetsPath = path.join(DATA_DIR, 'assets.json');
+                const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+                
+                let targetFolder = null;
+                if (assets.children) {
+                    targetFolder = assets.children.find(c => c.type === 'folder' && c.name === folder);
+                }
+                
+                if (targetFolder) {
+                    if (!targetFolder.children) targetFolder.children = [];
+                    
+                    const imageEntry = {
+                        type: file.mimetype.startsWith('video/') ? 'video' : 'image',
+                        url: gcsUrl,
+                        thumbnailUrl: thumbnailUrl,
+                        name: filename.replace(/\.[^/.]+$/, ''),
+                        filename: filename,
+                        originalFilename: file.originalname,
+                        size: file.size,
+                        mimeType: file.mimetype,
+                        uploadedAt: new Date().toISOString()
+                    };
+                    
+                    targetFolder.children.push(imageEntry);
+                    await safeWriteJson(assetsPath, assets);
+                    console.log(`[UPLOAD] Added ${imageEntry.type} to folder '${folder}':`, filename);
+                } else {
+                    console.warn(`[UPLOAD] Folder '${folder}' not found in assets.json`);
+                }
+            } catch (err) {
+                console.error('[UPLOAD] Failed to update assets.json:', err);
+            }
+        }
+        
+        res.json({ 
+            url: gcsUrl, 
+            thumbnailUrl: thumbnailUrl,
+            type: file.mimetype.startsWith('video/') ? 'video' : 'image',
+            filename: filename,
+            size: file.size
+        });
+        
+    } catch (error) {
+        console.error('[UPLOAD] Error processing file:', error);
+        res.status(500).json({ 
+            error: 'Failed to process file', 
+            details: error.message,
+            filename: filename 
+        });
     }
-
-    const gcsPath = [folder, filename].filter(Boolean).join('/');
-    const bucket = gcsStorage.bucket(gcsBucketName);
-    const blob = bucket.file(gcsPath);
-    const blobStream = blob.createWriteStream({ resumable: false, contentType });
-
-    blobStream.on('error', err => res.status(500).json({ error: err.message }))
-              .on('finish', async () => {
-                  const gcsUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-                  
-                  // If uploaded to a folder, add to assets.json folder structure
-                  if (folder) {
-                      try {
-                          const assetsPath = path.join(DATA_DIR, 'assets.json');
-                          const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
-                          
-                          // Find the target folder in assets.json
-                          let targetFolder = null;
-                          if (assets.children) {
-                              targetFolder = assets.children.find(c => c.type === 'folder' && c.name === folder);
-                          }
-                          
-                          if (targetFolder) {
-                              // Add the uploaded image to the folder's children
-                              if (!targetFolder.children) targetFolder.children = [];
-                              
-                              const imageEntry = {
-                                  type: 'image',
-                                  url: gcsUrl,
-                                  name: filename.replace(/\.[^/.]+$/, ''), // Remove extension for display name
-                                  uploadedAt: new Date().toISOString()
-                              };
-                              
-                              targetFolder.children.push(imageEntry);
-                              
-                              // Write updated assets.json
-                              await safeWriteJson(assetsPath, assets);
-                              console.log(`[UPLOAD] Added image to folder '${folder}':`, filename);
-                          } else {
-                              console.warn(`[UPLOAD] Folder '${folder}' not found in assets.json - image uploaded to GCS but not added to folder structure`);
-                          }
-                      } catch (err) {
-                          console.error('[UPLOAD] Failed to update assets.json:', err);
-                          // Continue anyway - file was uploaded to GCS successfully
-                      }
-                  }
-                  
-                  res.json({ url: gcsUrl });
-              })
-              .end(buffer);
 });
 
 // --- CORRECTED GCS ASSET LISTING ENDPOINT ---
@@ -1013,6 +1071,110 @@ app.post('/api/backup/restore/:type', requireAuth('admin'), async (req, res) => 
     res.status(500).json({ error: 'Failed to restore backup', details: err.message });
   }
 });
+
+// Enhanced thumbnail generation function
+async function generateThumbnail(buffer, filename, contentType) {
+  const isVideo = contentType.startsWith('video/');
+  const isImage = contentType.startsWith('image/');
+  
+  try {
+    if (isImage) {
+      // Handle all image formats including HEIC
+      const thumbnailBuffer = await sharp(buffer)
+        .resize(300, 300, { 
+          fit: 'cover', 
+          position: 'center',
+          withoutEnlargement: false 
+        })
+        .jpeg({ quality: 85 })
+        .toBuffer();
+      
+      return {
+        buffer: thumbnailBuffer,
+        filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+        contentType: 'image/jpeg'
+      };
+    } else if (isVideo) {
+      // Generate video thumbnail
+      return new Promise((resolve, reject) => {
+        const tempVideoPath = `/tmp/${Date.now()}_${filename}`;
+        const tempThumbPath = `/tmp/${Date.now()}_thumb.jpg`;
+        
+        // Write video buffer to temp file
+        require('fs').writeFileSync(tempVideoPath, buffer);
+        
+        ffmpeg(tempVideoPath)
+          .screenshots({
+            timestamps: ['00:00:01'],
+            filename: 'thumb.jpg',
+            folder: '/tmp',
+            size: '300x300'
+          })
+          .on('end', () => {
+            try {
+              const thumbnailBuffer = require('fs').readFileSync('/tmp/thumb.jpg');
+              
+              // Cleanup temp files
+              require('fs').unlinkSync(tempVideoPath);
+              require('fs').unlinkSync('/tmp/thumb.jpg');
+              
+              resolve({
+                buffer: thumbnailBuffer,
+                filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+                contentType: 'image/jpeg'
+              });
+            } catch (err) {
+              reject(err);
+            }
+          })
+          .on('error', (err) => {
+            // Cleanup and reject
+            try {
+              require('fs').unlinkSync(tempVideoPath);
+            } catch {}
+            reject(err);
+          });
+      });
+    } else {
+      // For non-image, non-video files, generate a generic icon
+      const iconBuffer = await generateFileTypeIcon(filename);
+      return {
+        buffer: iconBuffer,
+        filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+        contentType: 'image/jpeg'
+      };
+    }
+  } catch (error) {
+    console.error('Thumbnail generation failed:', error);
+    // Fallback to generic icon
+    const iconBuffer = await generateFileTypeIcon(filename);
+    return {
+      buffer: iconBuffer,
+      filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+      contentType: 'image/jpeg'
+    };
+  }
+}
+
+// Generate generic file type icon
+async function generateFileTypeIcon(filename) {
+  const extension = filename.split('.').pop().toUpperCase();
+  
+  // Create a simple SVG icon with the file extension
+  const svgIcon = `
+    <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
+      <rect width="300" height="300" fill="#f5f5f5" stroke="#333" stroke-width="2"/>
+      <rect x="20" y="20" width="220" height="260" fill="#fff" stroke="#333" stroke-width="1"/>
+      <text x="150" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333">${extension}</text>
+      <text x="150" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#666">FILE</text>
+    </svg>
+  `;
+  
+  // Convert SVG to JPEG
+  return await sharp(Buffer.from(svgIcon))
+    .jpeg({ quality: 85 })
+    .toBuffer();
+}
 
 // Start Server
 app.listen(PORT, () => {

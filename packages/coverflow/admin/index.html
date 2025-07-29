@@ -17,6 +17,18 @@
     <div class="container">
       <div class="admin-logo">AMF://ADMIN</div>
       
+      <!-- Global Search Bar -->
+      <div class="global-search-container">
+        <input type="text" 
+               class="global-search-input" 
+               id="globalSearch" 
+               placeholder="SEARCH ACROSS ALL SECTIONS..."
+               autocomplete="off">
+        <div class="global-search-results" id="globalSearchResults" style="display: none;">
+          <!-- Search results will be populated here -->
+        </div>
+      </div>
+      
       <nav class="admin-nav">
         <a href="#covers" class="active">COVERS</a>
         <a href="#assets">ASSETS</a>
@@ -87,14 +99,58 @@
               </select>
               
               <select class="filter-select" id="sortOrder">
+                <option value="date">NEWEST FIRST</option>
                 <option value="index">MANUAL ORDER</option>
                 <option value="title">TITLE A-Z</option>
                 <option value="title-desc">TITLE Z-A</option>
-                <option value="date">NEWEST FIRST</option>
                 <option value="date-desc">OLDEST FIRST</option>
               </select>
+              
+              <button class="btn btn-sm" onclick="toggleAdvancedFilters('covers')" id="advancedFiltersToggle">
+                ADVANCED FILTERS
+              </button>
             </div>
           </div>
+          
+          <!-- Advanced Filters Section -->
+          <div class="advanced-filters" id="advancedFilters" style="display: none;">
+            <div class="advanced-filters-header">
+              <h4>ADVANCED FILTERS</h4>
+            </div>
+            
+            <div class="advanced-filters-grid">
+              <div class="filter-group">
+                <label class="filter-label">DATE RANGE</label>
+                <div class="date-range-inputs">
+                  <input type="date" class="date-input" id="dateFrom" placeholder="FROM">
+                  <span class="date-separator">TO</span>
+                  <input type="date" class="date-input" id="dateTo" placeholder="TO">
+                </div>
+              </div>
+              
+              <div class="filter-group">
+                <label class="filter-label">TAGS</label>
+                <input type="text" class="search-input" id="tagsFilter" placeholder="ENTER TAGS SEPARATED BY COMMAS...">
+              </div>
+              
+              <div class="filter-group">
+                <label class="filter-label">QUICK FILTERS</label>
+                <div class="quick-filters">
+                  <button class="quick-filter-btn" onclick="applyQuickFilter('recent')" data-filter="recent">
+                    LAST 7 DAYS
+                  </button>
+                  <button class="quick-filter-btn" onclick="applyQuickFilter('month')" data-filter="month">
+                    LAST MONTH
+                  </button>
+                  <button class="quick-filter-btn" onclick="applyQuickFilter('favorites')" data-filter="favorites">
+                    FAVORITES
+                  </button>
+                  <button class="quick-filter-btn" onclick="clearAllFilters()" data-filter="clear">
+                    CLEAR ALL
+                  </button>
+                </div>
+              </div>
+            </div>
 
           <!-- Batch Operations Bar -->
           <div class="batch-operations" id="batchOperations" style="display: none;">
@@ -155,6 +211,64 @@
           <h1 class="section-title" data-text="ASSETS">ASSETS</h1>
         </div>
         
+        <!-- Enhanced Asset Controls -->
+        <div class="asset-controls">
+          <!-- Search and Filter Row -->
+          <div class="asset-search-filter-container">
+            <input type="text" 
+                   class="search-input" 
+                   id="assetSearch" 
+                   placeholder="SEARCH ASSETS BY NAME, TYPE, OR FOLDER..."
+                   autocomplete="off">
+            
+            <div class="asset-filter-controls">
+              <select class="filter-select" id="assetTypeFilter">
+                <option value="">ALL TYPES</option>
+                <option value="image">IMAGES</option>
+                <option value="video">VIDEOS</option>
+                <option value="document">DOCUMENTS</option>
+              </select>
+              
+              <select class="filter-select" id="assetSortOrder">
+                <option value="date-desc">NEWEST FIRST</option>
+                <option value="date-asc">OLDEST FIRST</option>
+                <option value="name-asc">NAME A-Z</option>
+                <option value="name-desc">NAME Z-A</option>
+                <option value="size-desc">LARGEST FIRST</option>
+                <option value="size-asc">SMALLEST FIRST</option>
+              </select>
+              
+              <select class="filter-select" id="assetFolderFilter">
+                <option value="">ALL FOLDERS</option>
+                <!-- Folders will be populated dynamically -->
+              </select>
+            </div>
+          </div>
+          
+          <!-- View Mode and Actions Row -->
+          <div class="asset-view-actions-row">
+            <div class="asset-view-modes">
+              <button class="view-mode-btn active" data-view="grid" onclick="setAssetViewMode('grid')" title="Grid View">
+                <span class="view-icon">⊞</span>
+              </button>
+              <button class="view-mode-btn" data-view="list" onclick="setAssetViewMode('list')" title="List View">
+                <span class="view-icon">□</span>
+              </button>
+              <button class="view-mode-btn" data-view="coverflow" onclick="setAssetViewMode('coverflow')" title="Coverflow View">
+                <span class="view-icon">≋</span>
+              </button>
+            </div>
+            
+            <div class="asset-actions">
+              <button class="btn btn-sm" onclick="toggleAssetMultiSelectMode()">
+                <span id="assetMultiSelectToggleText">MULTI-SELECT</span>
+              </button>
+              <button class="btn btn-sm" onclick="refreshAssets()">REFRESH</button>
+              <span class="asset-count-indicator" id="assetCountIndicator">0 ASSETS</span>
+            </div>
+          </div>
+        </div>
+        
         <div class="asset-browser">
           <!-- Folder navigation -->
           <div class="folder-panel">
@@ -197,6 +311,65 @@
         <div class="section-marker">
           <span class="section-number">03 —</span>
           <h1 class="section-title" data-text="AUDIO">AUDIO</h1>
+        </div>
+        
+        <!-- Enhanced Audio Controls -->
+        <div class="audio-controls">
+          <!-- Search and Filter Row -->
+          <div class="audio-search-filter-container">
+            <input type="text" 
+                   class="search-input" 
+                   id="audioSearch" 
+                   placeholder="SEARCH AUDIO BY NAME, ARTIST, OR FOLDER..."
+                   autocomplete="off">
+            
+            <div class="audio-filter-controls">
+              <select class="filter-select" id="audioTypeFilter">
+                <option value="">ALL FORMATS</option>
+                <option value="mp3">MP3</option>
+                <option value="wav">WAV</option>
+                <option value="flac">FLAC</option>
+                <option value="m4a">M4A</option>
+              </select>
+              
+              <select class="filter-select" id="audioSortOrder">
+                <option value="date-desc">NEWEST FIRST</option>
+                <option value="date-asc">OLDEST FIRST</option>
+                <option value="name-asc">NAME A-Z</option>
+                <option value="name-desc">NAME Z-A</option>
+                <option value="duration-desc">LONGEST FIRST</option>
+                <option value="duration-asc">SHORTEST FIRST</option>
+              </select>
+              
+              <select class="filter-select" id="audioFolderFilter">
+                <option value="">ALL FOLDERS</option>
+                <!-- Folders will be populated dynamically -->
+              </select>
+            </div>
+          </div>
+          
+          <!-- View Mode and Actions Row -->
+          <div class="audio-view-actions-row">
+            <div class="audio-view-modes">
+              <button class="view-mode-btn active" data-view="list" onclick="setAudioViewMode('list')" title="List View">
+                <span class="view-icon">□</span>
+              </button>
+              <button class="view-mode-btn" data-view="grid" onclick="setAudioViewMode('grid')" title="Grid View">
+                <span class="view-icon">⊞</span>
+              </button>
+              <button class="view-mode-btn" data-view="player" onclick="setAudioViewMode('player')" title="Player View">
+                <span class="view-icon">♪</span>
+              </button>
+            </div>
+            
+            <div class="audio-actions">
+              <button class="btn btn-sm" onclick="toggleAudioMultiSelectMode()">
+                <span id="audioMultiSelectToggleText">MULTI-SELECT</span>
+              </button>
+              <button class="btn btn-sm" onclick="refreshAudio()">REFRESH</button>
+              <span class="audio-count-indicator" id="audioCountIndicator">0 TRACKS</span>
+            </div>
+          </div>
         </div>
         
         <div class="audio-browser">

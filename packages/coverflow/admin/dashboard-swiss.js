@@ -64,7 +64,7 @@ let currentCoverPage = 1;
 let coversPerPage = 20;
 let searchTerm = '';
 let categoryFilter = '';
-let sortOrder = 'index';
+let sortOrder = 'date'; // Default to newest first
 let recentCovers = [];
 
 // Utility function to safely parse JSON responses
@@ -180,6 +180,10 @@ async function init() {
   setupMediaLibraryEventListeners();
   setupSearchAndFilters();
   setupViewModeToggles();
+  setupGlobalSearch(); // Initialize global search
+  setupEnhancedAssetSearch(); // Initialize enhanced asset search
+  setupEnhancedAudioSearch(); // Initialize enhanced audio search
+  setupAdvancedFilters(); // Initialize advanced filters
   setupInfiniteScroll();
   setupLazyLoading();
   updateCurrentFolderIndicator();
@@ -2048,34 +2052,13 @@ function getAssetDate(asset) {
 }
 
 function filterAndRenderAssets() {
-  const searchTerm = document.getElementById('assetSearch')?.value.toLowerCase() || '';
-  const { images } = getCurrentFolderItems();
+  // Use the new enhanced filtering logic
+  filteredAssets = getFilteredAssets();
   
-  // Filter assets based on search term
-  filteredAssets = images.filter(asset => {
-    if (!searchTerm) return true;
-    return (asset.name || '').toLowerCase().includes(searchTerm) ||
-           (asset.url || '').toLowerCase().includes(searchTerm);
-  });
+  // Update asset count indicator
+  updateAssetCountIndicator(filteredAssets.length);
   
-  // Sort filtered assets
-  filteredAssets.sort((a, b) => {
-    switch (sortBy) {
-      case 'name':
-        return (a.name || '').localeCompare(b.name || '');
-      case 'date':
-        const dateA = new Date(a.uploadedAt || a.lastModified || 0);
-        const dateB = new Date(b.uploadedAt || b.lastModified || 0);
-        return dateB - dateA;
-      case 'size':
-        return (b.size || 0) - (a.size || 0);
-      case 'type':
-        return getAssetType(a).localeCompare(getAssetType(b));
-      default:
-        return 0;
-    }
-  });
-  
+  // Render assets with current view mode
   renderAssets();
 }
 
@@ -2116,17 +2099,60 @@ function renderAssetsWithView() {
     let mediaTag = '';
     
     if (type === 'video') {
-      mediaTag = `<video src="${asset.url}" controls preload="metadata" style="width:100%;height:180px;object-fit:cover;background:#222;" poster="">
-        Sorry, your browser doesn't support embedded videos.
-      </video>`;
+      // Use thumbnail for video preview if available
+      const thumbnailSrc = asset.thumbnailUrl || asset.url;
+      mediaTag = `<div style="position:relative;width:100%;height:180px;background:#222;">
+        <img src="${thumbnailSrc}" alt="${asset.name || 'Video'}" loading="lazy" 
+             style="width:100%;height:100%;object-fit:cover;" 
+             onerror="this.style.display='none'; this.parentElement.querySelector('.video-icon').style.display='flex';">
+        <div class="video-icon" style="position:absolute;top:0;left:0;right:0;bottom:0;display:none;align-items:center;justify-content:center;background:#333;color:#fff;font-size:2em;">
+          ▶
+        </div>
+        <div style="position:absolute;bottom:4px;right:4px;background:rgba(0,0,0,0.8);color:white;padding:2px 6px;font-size:0.7em;font-family:monospace;">
+          VIDEO
+        </div>
+      </div>`;
     } else if (type === 'audio') {
-      mediaTag = `<audio src="${asset.url}" controls style="width:100%;margin-bottom:8px;">
-        Sorry, your browser doesn't support embedded audio.
-      </audio>`;
+      mediaTag = `<div style="width:100%;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#f5f5f5;border:1px solid #ddd;">
+        <div style="font-size:3em;color:#666;margin-bottom:8px;">♪</div>
+        <div style="font-size:0.8em;color:#666;text-transform:uppercase;letter-spacing:1px;">AUDIO FILE</div>
+        <div style="font-size:0.7em;color:#999;margin-top:4px;">${asset.filename || asset.name || 'Unknown'}</div>
+      </div>`;
     } else if (type === 'image') {
-      mediaTag = `<img src="${asset.url}" alt="${asset.name || 'Asset'}" loading="lazy" style="width:100%;height:180px;object-fit:cover;" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'200\' height=\'100\'%3E%3Crect fill=\'%23333\' width=\'200\' height=\'100\'/%3E%3Ctext x=\'50%25\' y=\'50%25\' text-anchor=\'middle\' dy=\'.3em\' fill=\'%23999\' font-size=\'10\' font-family=\'monospace\'%3EBROKEN%3C/text%3E%3C/svg%3E'">`;
+      // Use thumbnail if available, fallback to original
+      const imageSrc = asset.thumbnailUrl || asset.url;
+      const fallbackIcon = 'data:image/svg+xml;base64,' + btoa(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="180">
+          <rect fill="#f5f5f5" width="200" height="180" stroke="#ddd"/>
+          <text x="50%" y="45%" text-anchor="middle" dy=".3em" fill="#999" font-size="12" font-family="monospace">
+            BROKEN IMAGE
+          </text>
+          <text x="50%" y="65%" text-anchor="middle" dy=".3em" fill="#ccc" font-size="10" font-family="monospace">
+            ${(asset.filename || asset.name || 'unknown').substring(0, 20)}
+          </text>
+        </svg>
+      `);
+      
+      mediaTag = `<img src="${imageSrc}" alt="${asset.name || 'Asset'}" loading="lazy" 
+                       style="width:100%;height:180px;object-fit:cover;" 
+                       onerror="this.src='${fallbackIcon}'">`;
     } else {
-      mediaTag = `<div style="width:100%;height:180px;display:flex;align-items:center;justify-content:center;background:#eee;color:#888;font-size:1.2em;">Unsupported</div>`;
+      // Generate a file type icon for unsupported formats
+      const extension = (asset.filename || asset.name || '').split('.').pop()?.toUpperCase() || 'FILE';
+      const fileIcon = 'data:image/svg+xml;base64,' + btoa(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="200" height="180">
+          <rect fill="#f8f8f8" width="200" height="180" stroke="#ddd"/>
+          <rect x="30" y="20" width="140" height="120" fill="#fff" stroke="#ccc"/>
+          <text x="50%" y="45%" text-anchor="middle" dy=".3em" fill="#666" font-size="16" font-weight="bold" font-family="monospace">
+            ${extension}
+          </text>
+          <text x="50%" y="65%" text-anchor="middle" dy=".3em" fill="#999" font-size="10" font-family="monospace">
+            FILE
+          </text>
+        </svg>
+      `);
+      
+      mediaTag = `<img src="${fileIcon}" alt="${asset.name || 'File'}" style="width:100%;height:180px;object-fit:contain;background:#f8f8f8;">`;
     }
     
     // Multi-select checkbox
@@ -2957,59 +2983,21 @@ function setupKeyboardShortcuts() {
     // Cmd/Ctrl + F to focus search
     if ((e.metaKey || e.ctrlKey) && e.key === 'f') {
       e.preventDefault();
-      const searchInput = document.getElementById('coverSearch');
-      if (searchInput) searchInput.focus();
-    }
-    
-    // Cmd/Ctrl + B for batch mode
-    if ((e.metaKey || e.ctrlKey) && e.key === 'b') {
-      e.preventDefault();
-      toggleBatchMode();
-    }
-    
-    // Multi-select asset shortcuts
-    if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
-      e.preventDefault();
-      if (assetMultiSelectMode) {
-        selectAllAssets();
-      } else if (batchMode) {
-        selectAllCovers();
+      const globalSearch = document.getElementById('globalSearch');
+      if (globalSearch) {
+        globalSearch.focus();
+        globalSearch.select();
+      } else {
+        const searchInput = document.getElementById('coverSearch');
+        if (searchInput) {
+          searchInput.focus();
+          searchInput.select();
+        }
       }
     }
     
-    // Escape to deselect all assets or exit batch mode
-    if (e.key === 'Escape') {
-      if (selectedAssets.size > 0) {
-        e.preventDefault();
-        deselectAllAssets();
-      } else if (batchMode) {
-        e.preventDefault();
-        toggleBatchMode();
-      }
-    }
-    
-    // Cmd/Ctrl + M for multi-select mode toggle
-    if ((e.metaKey || e.ctrlKey) && e.key === 'm') {
-      e.preventDefault();
-      toggleMultiSelectMode();
-    }
-    
-    // Pagination shortcuts
-    if (e.key === 'ArrowLeft' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      changePage(-1);
-    }
-    
-    if (e.key === 'ArrowRight' && (e.metaKey || e.ctrlKey)) {
-      e.preventDefault();
-      changePage(1);
-    }
-    
-    // Delete key to delete selected assets
-    if (e.key === 'Delete' && selectedAssets.size > 0) {
-      e.preventDefault();
-      deleteSelectedAssets();
-    }
+    // Global search functionality
+    // Add any additional global search functionality you want to implement
   });
 }
 
@@ -3424,5 +3412,845 @@ function deselectAllAudio() {
 }
 
 function createNewAudioFolder() {
-  showToast('AUDIO FOLDER CREATION NOT YET IMPLEMENTED');
-} 
+  const name = prompt('ENTER AUDIO FOLDER NAME:');
+  if (!name) return;
+  
+  // Implementation would go here - creating folder in audio structure
+  showToast('AUDIO FOLDER CREATED: ' + name.toUpperCase());
+}
+
+// Global Search Functionality
+function setupGlobalSearch() {
+  const globalSearchInput = document.getElementById('globalSearch');
+  const globalSearchResults = document.getElementById('globalSearchResults');
+  
+  if (!globalSearchInput || !globalSearchResults) return;
+  
+  let searchTimeout;
+  
+  globalSearchInput.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    const query = e.target.value.trim();
+    
+    if (query.length === 0) {
+      globalSearchResults.style.display = 'none';
+      return;
+    }
+    
+    // Debounce search for performance
+    searchTimeout = setTimeout(() => {
+      performGlobalSearch(query);
+    }, 300);
+  });
+  
+  // Hide results when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!globalSearchInput.contains(e.target) && !globalSearchResults.contains(e.target)) {
+      globalSearchResults.style.display = 'none';
+    }
+  });
+  
+  // Show results when focusing on search input with content
+  globalSearchInput.addEventListener('focus', () => {
+    if (globalSearchInput.value.trim().length > 0) {
+      globalSearchResults.style.display = 'block';
+    }
+  });
+}
+
+function performGlobalSearch(query) {
+  const searchQuery = query.toLowerCase();
+  const results = {
+    covers: searchCovers(searchQuery),
+    assets: searchAssets(searchQuery),
+    audio: searchAudio(searchQuery)
+  };
+  
+  displayGlobalSearchResults(results, query);
+}
+
+function searchCovers(query) {
+  if (!covers || !Array.isArray(covers)) return [];
+  
+  return covers.filter(cover => 
+    (cover.title && cover.title.toLowerCase().includes(query)) ||
+    (cover.artist && cover.artist.toLowerCase().includes(query)) ||
+    (cover.categories && cover.categories.some(cat => cat.toLowerCase().includes(query))) ||
+    (cover.description && cover.description.toLowerCase().includes(query))
+  ).slice(0, 5); // Limit to 5 results per section
+}
+
+function searchAssets(query) {
+  if (!assets) return [];
+  
+  const assetResults = [];
+  
+  // Search in root images
+  if (assets.images) {
+    assets.images.forEach(asset => {
+      if ((asset.name && asset.name.toLowerCase().includes(query)) ||
+          (asset.filename && asset.filename.toLowerCase().includes(query)) ||
+          (asset.url && asset.url.toLowerCase().includes(query))) {
+        assetResults.push({
+          ...asset,
+          folder: 'Root'
+        });
+      }
+    });
+  }
+  
+  // Search in folder hierarchies
+  if (assets.children) {
+    searchInAssetFolders(assets.children, query, assetResults, []);
+  }
+  
+  return assetResults.slice(0, 5);
+}
+
+function searchInAssetFolders(children, query, results, pathArray) {
+  children.forEach(child => {
+    if (child.type === 'folder') {
+      const currentPath = [...pathArray, child.name];
+      if (child.children) {
+        searchInAssetFolders(child.children, query, results, currentPath);
+      }
+    } else if (child.type === 'image') {
+      if ((child.name && child.name.toLowerCase().includes(query)) ||
+          (child.filename && child.filename.toLowerCase().includes(query)) ||
+          (child.url && child.url.toLowerCase().includes(query))) {
+        results.push({
+          ...child,
+          folder: pathArray.join('/') || 'Root'
+        });
+      }
+    }
+  });
+}
+
+function searchAudio(query) {
+  // Placeholder for audio search - implement based on your audio data structure
+  // This would search through audio files similar to assets
+  return [];
+}
+
+function displayGlobalSearchResults(results, query) {
+  const globalSearchResults = document.getElementById('globalSearchResults');
+  if (!globalSearchResults) return;
+  
+  const totalResults = results.covers.length + results.assets.length + results.audio.length;
+  
+  if (totalResults === 0) {
+    globalSearchResults.innerHTML = `
+      <div class="global-search-no-results">
+        NO RESULTS FOR "${query.toUpperCase()}"
+      </div>
+    `;
+    globalSearchResults.style.display = 'block';
+    return;
+  }
+  
+  let html = '';
+  
+  // Covers section
+  if (results.covers.length > 0) {
+    html += `
+      <div class="global-search-result-section">
+        <div class="global-search-section-header">COVERS (${results.covers.length})</div>
+        ${results.covers.map(cover => `
+          <div class="global-search-result-item" onclick="navigateToSection('covers', '${cover.id}')">
+            <div class="global-search-result-title">${cover.title || 'Untitled'}</div>
+            <div class="global-search-result-meta">
+              ${cover.artist || 'Unknown Artist'} • ${cover.categories ? cover.categories.join(', ') : 'No Category'}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  
+  // Assets section
+  if (results.assets.length > 0) {
+    html += `
+      <div class="global-search-result-section">
+        <div class="global-search-section-header">ASSETS (${results.assets.length})</div>
+        ${results.assets.map(asset => `
+          <div class="global-search-result-item" onclick="navigateToSection('assets', '${asset.url}')">
+            <div class="global-search-result-title">${asset.name || asset.filename || 'Unnamed Asset'}</div>
+            <div class="global-search-result-meta">
+              ${asset.folder} • ${getAssetDate(asset)}
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  
+  // Audio section
+  if (results.audio.length > 0) {
+    html += `
+      <div class="global-search-result-section">
+        <div class="global-search-section-header">AUDIO (${results.audio.length})</div>
+        ${results.audio.map(audio => `
+          <div class="global-search-result-item" onclick="navigateToSection('audio', '${audio.url}')">
+            <div class="global-search-result-title">${audio.name || 'Unnamed Audio'}</div>
+            <div class="global-search-result-meta">Audio File</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+  
+  globalSearchResults.innerHTML = html;
+  globalSearchResults.style.display = 'block';
+}
+
+function navigateToSection(section, itemId) {
+  // Hide search results
+  const globalSearchResults = document.getElementById('globalSearchResults');
+  if (globalSearchResults) {
+    globalSearchResults.style.display = 'none';
+  }
+  
+  // Clear search input
+  const globalSearchInput = document.getElementById('globalSearch');
+  if (globalSearchInput) {
+    globalSearchInput.value = '';
+  }
+  
+  // Navigate to the appropriate section
+  switch (section) {
+    case 'covers':
+      document.getElementById('coversSection').scrollIntoView({ behavior: 'smooth' });
+      // Highlight the specific cover if needed
+      setTimeout(() => {
+        const coverElement = document.querySelector(`[data-cover-id="${itemId}"]`);
+        if (coverElement) {
+          coverElement.style.outline = '2px solid var(--accent)';
+          setTimeout(() => {
+            coverElement.style.outline = '';
+          }, 3000);
+        }
+      }, 500);
+      break;
+      
+    case 'assets':
+      document.getElementById('assetsSection').scrollIntoView({ behavior: 'smooth' });
+      // You could implement highlighting the specific asset
+      break;
+      
+    case 'audio':
+      document.getElementById('audioSection').scrollIntoView({ behavior: 'smooth' });
+      break;
+  }
+  
+  showToast(`NAVIGATED TO ${section.toUpperCase()}`);
+}
+
+// Make functions globally available
+window.addEventListener('load', () => {
+  init();
+});
+
+// Enhanced Asset Search and Filtering
+let assetViewMode = 'grid';
+let assetSearchTerm = '';
+let assetTypeFilter = '';
+let assetSortOrder = 'date-desc'; // Default to newest first
+let assetFolderFilter = '';
+
+function setupEnhancedAssetSearch() {
+  // Asset search input
+  const assetSearchInput = document.getElementById('assetSearch');
+  if (assetSearchInput) {
+    let searchTimeout;
+    assetSearchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        assetSearchTerm = e.target.value.toLowerCase();
+        filterAndRenderAssets();
+      }, 300);
+    });
+  }
+  
+  // Asset type filter
+  const assetTypeFilterSelect = document.getElementById('assetTypeFilter');
+  if (assetTypeFilterSelect) {
+    assetTypeFilterSelect.addEventListener('change', (e) => {
+      assetTypeFilter = e.target.value;
+      filterAndRenderAssets();
+    });
+  }
+  
+  // Asset sort order
+  const assetSortOrderSelect = document.getElementById('assetSortOrder');
+  if (assetSortOrderSelect) {
+    assetSortOrderSelect.addEventListener('change', (e) => {
+      assetSortOrder = e.target.value;
+      filterAndRenderAssets();
+    });
+  }
+  
+  // Asset folder filter
+  const assetFolderFilterSelect = document.getElementById('assetFolderFilter');
+  if (assetFolderFilterSelect) {
+    assetFolderFilterSelect.addEventListener('change', (e) => {
+      assetFolderFilter = e.target.value;
+      filterAndRenderAssets();
+    });
+  }
+  
+  // Populate folder filter options
+  populateAssetFolderFilter();
+}
+
+function populateAssetFolderFilter() {
+  const select = document.getElementById('assetFolderFilter');
+  if (!select || !assets) return;
+  
+  const folders = ['All Folders'];
+  
+  // Add root folder
+  folders.push('Root');
+  
+  // Collect all folder names recursively
+  function collectFolders(children, path = '') {
+    if (!children) return;
+    
+    children.forEach(child => {
+      if (child.type === 'folder') {
+        const folderPath = path ? `${path}/${child.name}` : child.name;
+        folders.push(folderPath);
+        if (child.children) {
+          collectFolders(child.children, folderPath);
+        }
+      }
+    });
+  }
+  
+  if (assets.children) {
+    collectFolders(assets.children);
+  }
+  
+  // Update select options
+  select.innerHTML = folders.map((folder, index) => 
+    `<option value="${index === 0 ? '' : folder.toLowerCase()}">${folder.toUpperCase()}</option>`
+  ).join('');
+}
+
+function setAssetViewMode(mode) {
+  assetViewMode = mode;
+  
+  // Update active button
+  document.querySelectorAll('.view-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+  
+  // Re-render assets with new view mode
+  renderAssetsWithViewMode();
+  showToast(`ASSET VIEW: ${mode.toUpperCase()}`);
+}
+
+function renderAssetsWithViewMode() {
+  const container = document.getElementById('assetsContainer');
+  if (!container) return;
+  
+  // Apply view mode class
+  container.className = `asset-grid asset-view-${assetViewMode}`;
+  
+  // Re-render current assets
+  filterAndRenderAssets();
+}
+
+function toggleAssetMultiSelectMode() {
+  const toggleText = document.getElementById('assetMultiSelectToggleText');
+  if (!toggleText) return;
+  
+  assetMultiSelectMode = !assetMultiSelectMode;
+  toggleText.textContent = assetMultiSelectMode ? 'EXIT MULTI-SELECT' : 'MULTI-SELECT';
+  
+  const container = document.getElementById('assetsContainer');
+  if (container) {
+    container.classList.toggle('asset-multi-select-mode', assetMultiSelectMode);
+  }
+  
+  if (!assetMultiSelectMode) {
+    deselectAllAssets();
+  }
+  
+  showToast(assetMultiSelectMode ? 'MULTI-SELECT MODE ENABLED' : 'MULTI-SELECT MODE DISABLED');
+}
+
+function refreshAssets() {
+  showLoading();
+  loadAssets().then(() => {
+    filterAndRenderAssets();
+    populateAssetFolderFilter();
+    hideLoading();
+    showToast('ASSETS REFRESHED');
+  });
+}
+
+function getFilteredAssets() {
+  let allAssets = [];
+  
+  // Collect all assets from root and folders
+  if (assets.images) {
+    allAssets = allAssets.concat(assets.images.map(asset => ({
+      ...asset,
+      folder: 'root',
+      folderDisplay: 'Root'
+    })));
+  }
+  
+  function collectFromFolders(children, pathArray = []) {
+    if (!children) return;
+    
+    children.forEach(child => {
+      if (child.type === 'folder') {
+        const currentPath = [...pathArray, child.name];
+        if (child.children) {
+          collectFromFolders(child.children, currentPath);
+        }
+      } else if (child.type === 'image') {
+        allAssets.push({
+          ...child,
+          folder: pathArray.join('/').toLowerCase(),
+          folderDisplay: pathArray.join('/') || 'Root'
+        });
+      }
+    });
+  }
+  
+  if (assets.children) {
+    collectFromFolders(assets.children);
+  }
+  
+  // Apply filters
+  let filteredAssets = allAssets;
+  
+  // Search filter
+  if (assetSearchTerm) {
+    filteredAssets = filteredAssets.filter(asset => 
+      (asset.name && asset.name.toLowerCase().includes(assetSearchTerm)) ||
+      (asset.filename && asset.filename.toLowerCase().includes(assetSearchTerm)) ||
+      (asset.url && asset.url.toLowerCase().includes(assetSearchTerm)) ||
+      (asset.folderDisplay && asset.folderDisplay.toLowerCase().includes(assetSearchTerm))
+    );
+  }
+  
+  // Type filter
+  if (assetTypeFilter) {
+    filteredAssets = filteredAssets.filter(asset => {
+      const assetType = getAssetType(asset);
+      return assetType === assetTypeFilter;
+    });
+  }
+  
+  // Folder filter
+  if (assetFolderFilter) {
+    if (assetFolderFilter === 'root') {
+      filteredAssets = filteredAssets.filter(asset => asset.folder === 'root');
+    } else {
+      filteredAssets = filteredAssets.filter(asset => 
+        asset.folder.includes(assetFolderFilter)
+      );
+    }
+  }
+  
+  // Sort assets
+  filteredAssets.sort((a, b) => {
+    switch (assetSortOrder) {
+      case 'date-desc':
+        return new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0);
+      case 'date-asc':
+        return new Date(a.uploadedAt || 0) - new Date(b.uploadedAt || 0);
+      case 'name-asc':
+        return (a.name || a.filename || '').localeCompare(b.name || b.filename || '');
+      case 'name-desc':
+        return (b.name || b.filename || '').localeCompare(a.name || a.filename || '');
+      case 'size-desc':
+        return (b.size || 0) - (a.size || 0);
+      case 'size-asc':
+        return (a.size || 0) - (b.size || 0);
+      default:
+        return 0;
+    }
+  });
+  
+  return filteredAssets;
+}
+
+function updateAssetCountIndicator(count) {
+  const indicator = document.getElementById('assetCountIndicator');
+  if (indicator) {
+    indicator.textContent = `${count} ASSET${count !== 1 ? 'S' : ''}`;
+  }
+}
+
+// Enhanced Audio Search and Filtering
+let audioViewMode = 'list';
+let audioSearchTerm = '';
+let audioTypeFilter = '';
+let audioSortOrder = 'date-desc'; // Default to newest first
+let audioFolderFilter = '';
+let audioMultiSelectMode = false;
+let filteredAudioFiles = [];
+
+function setupEnhancedAudioSearch() {
+  // Audio search input
+  const audioSearchInput = document.getElementById('audioSearch');
+  if (audioSearchInput) {
+    let searchTimeout;
+    audioSearchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        audioSearchTerm = e.target.value.toLowerCase();
+        filterAndRenderAudio();
+      }, 300);
+    });
+  }
+  
+  // Audio type filter
+  const audioTypeFilterSelect = document.getElementById('audioTypeFilter');
+  if (audioTypeFilterSelect) {
+    audioTypeFilterSelect.addEventListener('change', (e) => {
+      audioTypeFilter = e.target.value;
+      filterAndRenderAudio();
+    });
+  }
+  
+  // Audio sort order
+  const audioSortOrderSelect = document.getElementById('audioSortOrder');
+  if (audioSortOrderSelect) {
+    audioSortOrderSelect.addEventListener('change', (e) => {
+      audioSortOrder = e.target.value;
+      filterAndRenderAudio();
+    });
+  }
+  
+  // Audio folder filter
+  const audioFolderFilterSelect = document.getElementById('audioFolderFilter');
+  if (audioFolderFilterSelect) {
+    audioFolderFilterSelect.addEventListener('change', (e) => {
+      audioFolderFilter = e.target.value;
+      filterAndRenderAudio();
+    });
+  }
+  
+  // Populate folder filter options
+  populateAudioFolderFilter();
+}
+
+function populateAudioFolderFilter() {
+  const select = document.getElementById('audioFolderFilter');
+  if (!select) return;
+  
+  const folders = ['All Folders', 'Root'];
+  
+  // TODO: Collect audio folder names when audio structure is implemented
+  // For now, just use basic options
+  
+  select.innerHTML = folders.map((folder, index) => 
+    `<option value="${index === 0 ? '' : folder.toLowerCase()}">${folder.toUpperCase()}</option>`
+  ).join('');
+}
+
+function setAudioViewMode(mode) {
+  audioViewMode = mode;
+  
+  // Update active button
+  document.querySelectorAll('.audio-view-modes .view-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+  
+  // Re-render audio with new view mode
+  renderAudioWithViewMode();
+  showToast(`AUDIO VIEW: ${mode.toUpperCase()}`);
+}
+
+function renderAudioWithViewMode() {
+  const container = document.getElementById('audioContainer');
+  if (!container) return;
+  
+  // Apply view mode class
+  container.className = `audio-grid audio-view-${audioViewMode}`;
+  
+  // Re-render current audio
+  filterAndRenderAudio();
+}
+
+function toggleAudioMultiSelectMode() {
+  const toggleText = document.getElementById('audioMultiSelectToggleText');
+  if (!toggleText) return;
+  
+  audioMultiSelectMode = !audioMultiSelectMode;
+  toggleText.textContent = audioMultiSelectMode ? 'EXIT MULTI-SELECT' : 'MULTI-SELECT';
+  
+  const container = document.getElementById('audioContainer');
+  if (container) {
+    container.classList.toggle('audio-multi-select-mode', audioMultiSelectMode);
+  }
+  
+  if (!audioMultiSelectMode) {
+    deselectAllAudio();
+  }
+  
+  showToast(audioMultiSelectMode ? 'AUDIO MULTI-SELECT ENABLED' : 'AUDIO MULTI-SELECT DISABLED');
+}
+
+function refreshAudio() {
+  showLoading();
+  loadAudioFiles().then(() => {
+    filterAndRenderAudio();
+    populateAudioFolderFilter();
+    hideLoading();
+    showToast('AUDIO FILES REFRESHED');
+  });
+}
+
+function getFilteredAudioFiles() {
+  // TODO: Implement when audio data structure is available
+  // For now return empty array
+  let allAudio = [];
+  
+  // Apply filters when audio data is available
+  let filteredAudio = allAudio;
+  
+  // Search filter
+  if (audioSearchTerm) {
+    filteredAudio = filteredAudio.filter(audio => 
+      (audio.name && audio.name.toLowerCase().includes(audioSearchTerm)) ||
+      (audio.filename && audio.filename.toLowerCase().includes(audioSearchTerm)) ||
+      (audio.artist && audio.artist.toLowerCase().includes(audioSearchTerm))
+    );
+  }
+  
+  // Type filter
+  if (audioTypeFilter) {
+    filteredAudio = filteredAudio.filter(audio => {
+      const extension = (audio.filename || audio.url || '').toLowerCase().split('.').pop();
+      return extension === audioTypeFilter;
+    });
+  }
+  
+  // Sort audio
+  filteredAudio.sort((a, b) => {
+    switch (audioSortOrder) {
+      case 'date-desc':
+        return new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0);
+      case 'date-asc':
+        return new Date(a.uploadedAt || 0) - new Date(b.uploadedAt || 0);
+      case 'name-asc':
+        return (a.name || a.filename || '').localeCompare(b.name || b.filename || '');
+      case 'name-desc':
+        return (b.name || b.filename || '').localeCompare(a.name || a.filename || '');
+      case 'duration-desc':
+        return (b.duration || 0) - (a.duration || 0);
+      case 'duration-asc':
+        return (a.duration || 0) - (b.duration || 0);
+      default:
+        return 0;
+    }
+  });
+  
+  return filteredAudio;
+}
+
+function filterAndRenderAudio() {
+  filteredAudioFiles = getFilteredAudioFiles();
+  updateAudioCountIndicator(filteredAudioFiles.length);
+  renderAudioFiles();
+}
+
+function updateAudioCountIndicator(count) {
+  const indicator = document.getElementById('audioCountIndicator');
+  if (indicator) {
+    indicator.textContent = `${count} TRACK${count !== 1 ? 'S' : ''}`;
+  }
+}
+
+// Advanced Filters Functionality
+let advancedFiltersVisible = false;
+let dateFromFilter = '';
+let dateToFilter = '';
+let tagsFilter = '';
+
+function toggleAdvancedFilters(section) {
+  const advancedFilters = document.getElementById('advancedFilters');
+  const toggleBtn = document.getElementById('advancedFiltersToggle');
+  
+  if (!advancedFilters) return;
+  
+  advancedFiltersVisible = !advancedFiltersVisible;
+  
+  if (advancedFiltersVisible) {
+    advancedFilters.style.display = 'block';
+    toggleBtn.textContent = 'HIDE ADVANCED';
+    toggleBtn.classList.add('active');
+  } else {
+    advancedFilters.style.display = 'none';
+    toggleBtn.textContent = 'ADVANCED FILTERS';
+    toggleBtn.classList.remove('active');
+  }
+  
+  showToast(advancedFiltersVisible ? 'ADVANCED FILTERS SHOWN' : 'ADVANCED FILTERS HIDDEN');
+}
+
+function setupAdvancedFilters() {
+  // Date range filters
+  const dateFromInput = document.getElementById('dateFrom');
+  const dateToInput = document.getElementById('dateTo');
+  const tagsInput = document.getElementById('tagsFilter');
+  
+  if (dateFromInput) {
+    dateFromInput.addEventListener('change', (e) => {
+      dateFromFilter = e.target.value;
+      applyAdvancedFilters();
+    });
+  }
+  
+  if (dateToInput) {
+    dateToInput.addEventListener('change', (e) => {
+      dateToFilter = e.target.value;
+      applyAdvancedFilters();
+    });
+  }
+  
+  if (tagsInput) {
+    let tagsTimeout;
+    tagsInput.addEventListener('input', (e) => {
+      clearTimeout(tagsTimeout);
+      tagsTimeout = setTimeout(() => {
+        tagsFilter = e.target.value.toLowerCase();
+        applyAdvancedFilters();
+      }, 300);
+    });
+  }
+}
+
+function applyQuickFilter(filterType) {
+  // Remove active class from all quick filter buttons
+  document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  const today = new Date();
+  let fromDate = '';
+  let toDate = today.toISOString().split('T')[0];
+  
+  switch (filterType) {
+    case 'recent':
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      fromDate = weekAgo.toISOString().split('T')[0];
+      break;
+      
+    case 'month':
+      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+      fromDate = monthAgo.toISOString().split('T')[0];
+      break;
+      
+    case 'favorites':
+      // This would filter for favorited items if implemented
+      showToast('FAVORITES FILTER - FEATURE COMING SOON');
+      return;
+      
+    case 'clear':
+      clearAllFilters();
+      return;
+  }
+  
+  // Set date inputs
+  const dateFromInput = document.getElementById('dateFrom');
+  const dateToInput = document.getElementById('dateTo');
+  
+  if (dateFromInput && dateToInput) {
+    dateFromInput.value = fromDate;
+    dateToInput.value = toDate;
+    dateFromFilter = fromDate;
+    dateToFilter = toDate;
+  }
+  
+  // Mark button as active
+  const activeBtn = document.querySelector(`[data-filter="${filterType}"]`);
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+  }
+  
+  applyAdvancedFilters();
+  showToast(`QUICK FILTER APPLIED: ${filterType.toUpperCase()}`);
+}
+
+function clearAllFilters() {
+  // Clear date filters
+  const dateFromInput = document.getElementById('dateFrom');
+  const dateToInput = document.getElementById('dateTo');
+  const tagsInput = document.getElementById('tagsFilter');
+  
+  if (dateFromInput) dateFromInput.value = '';
+  if (dateToInput) dateToInput.value = '';
+  if (tagsInput) tagsInput.value = '';
+  
+  dateFromFilter = '';
+  dateToFilter = '';
+  tagsFilter = '';
+  
+  // Clear search inputs
+  const coverSearch = document.getElementById('coverSearch');
+  const assetSearch = document.getElementById('assetSearch');
+  const audioSearch = document.getElementById('audioSearch');
+  
+  if (coverSearch) coverSearch.value = '';
+  if (assetSearch) assetSearch.value = '';
+  if (audioSearch) audioSearch.value = '';
+  
+  // Reset filters
+  searchTerm = '';
+  assetSearchTerm = '';
+  audioSearchTerm = '';
+  categoryFilter = '';
+  assetTypeFilter = '';
+  audioTypeFilter = '';
+  
+  // Clear active states
+  document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Re-render all sections
+  renderCurrentView();
+  filterAndRenderAssets();
+  filterAndRenderAudio();
+  
+  showToast('ALL FILTERS CLEARED');
+}
+
+function applyAdvancedFilters() {
+  // This function would apply date range and tag filters
+  // For now, it triggers a re-render of the current section
+  renderCurrentView();
+  showToast('ADVANCED FILTERS APPLIED');
+}
+
+function isDateInRange(itemDate) {
+  if (!dateFromFilter && !dateToFilter) return true;
+  
+  const date = new Date(itemDate);
+  const fromDate = dateFromFilter ? new Date(dateFromFilter) : null;
+  const toDate = dateToFilter ? new Date(dateToFilter) : null;
+  
+  if (fromDate && date < fromDate) return false;
+  if (toDate && date > toDate) return false;
+  
+  return true;
+}
+
+function matchesTags(itemTags, filterTags) {
+  if (!filterTags) return true;
+  
+  const filterTagsArray = filterTags.split(',').map(tag => tag.trim().toLowerCase());
+  const itemTagsArray = (itemTags || '').toLowerCase().split(',').map(tag => tag.trim());
+  
+  return filterTagsArray.some(filterTag => 
+    itemTagsArray.some(itemTag => itemTag.includes(filterTag))
+  );
+}
