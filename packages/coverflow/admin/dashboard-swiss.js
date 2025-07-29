@@ -860,34 +860,38 @@ async function uploadAndCreateCover(file) {
   try {
     const res = await fetch('/upload-image', {
       method: 'POST',
+      credentials: 'include',
       body: formData
     });
     
-    const data = await res.json();
+    console.log('[UPLOAD] Server response status:', res.status, res.statusText);
     
-    if (res.ok) {
-      // Create new cover
-      const newCover = {
-        id: Date.now(),
-        index: covers.length,
-        albumTitle: 'NEW COVER',
-        coverLabel: 'ARTIST NAME',
-        frontImage: data.url,
-        backImage: data.url,
-        category: ['artists']
-      };
+    let data;
+    try {
+      data = await res.json();
+      console.log('[UPLOAD] Server response data:', data);
+    } catch (err) {
+      console.error('[UPLOAD] Failed to parse server response as JSON:', err);
+      console.log('[UPLOAD] Raw response:', await res.text());
+      showToast('UPLOAD FAILED: INVALID SERVER RESPONSE', 5000);
+      continue;
+    }
+    
+    if (res.ok && data && data.url) {
+      uploadedAny = true;
+      console.log('[UPLOAD] Success! File URL:', data.url);
+      console.log('[UPLOAD] Thumbnail URL:', data.thumbnailUrl || 'No thumbnail');
       
-      covers.push(newCover);
-      hasChanges = true;
-      updateSaveButton();
-      renderCovers();
-      
-      // Auto-open edit modal
-      setTimeout(() => editCover(newCover), 300);
-      
-      showToast('COVER CREATED — PLEASE EDIT DETAILS');
+      // Warn if TIFF
+      if (/\.tif{1,2}$/i.test(file.name)) {
+        showToast('UPLOAD SUCCESSFUL, BUT TIFF IMAGES MAY NOT PREVIEW IN BROWSERS', 7000);
+      } else {
+        showToast(`UPLOADED ${file.name.toUpperCase()}`);
+      }
     } else {
-      throw new Error(data.error || 'Upload failed');
+      console.error('[UPLOAD] Upload failed:', data);
+      showToast('UPLOAD FAILED: ' + (data && data.error ? data.error.toUpperCase() : 'UNKNOWN ERROR'), 5000);
+      continue;
     }
   } catch (err) {
     showToast('FAILED TO UPLOAD IMAGE', 5000);
@@ -1827,17 +1831,28 @@ async function handleAssetUpload(files) {
       }
       const res = await fetch('/upload-image', {
         method: 'POST',
+        credentials: 'include',
         body: formData
       });
+      
+      console.log('[UPLOAD] Server response status:', res.status, res.statusText);
+      
       let data;
       try {
         data = await res.json();
+        console.log('[UPLOAD] Server response data:', data);
       } catch (err) {
+        console.error('[UPLOAD] Failed to parse server response as JSON:', err);
+        console.log('[UPLOAD] Raw response:', await res.text());
         showToast('UPLOAD FAILED: INVALID SERVER RESPONSE', 5000);
         continue;
       }
+      
       if (res.ok && data && data.url) {
         uploadedAny = true;
+        console.log('[UPLOAD] Success! File URL:', data.url);
+        console.log('[UPLOAD] Thumbnail URL:', data.thumbnailUrl || 'No thumbnail');
+        
         // Warn if TIFF
         if (/\.tif{1,2}$/i.test(file.name)) {
           showToast('UPLOAD SUCCESSFUL, BUT TIFF IMAGES MAY NOT PREVIEW IN BROWSERS', 7000);
@@ -1845,6 +1860,7 @@ async function handleAssetUpload(files) {
           showToast(`UPLOADED ${file.name.toUpperCase()}`);
         }
       } else {
+        console.error('[UPLOAD] Upload failed:', data);
         showToast('UPLOAD FAILED: ' + (data && data.error ? data.error.toUpperCase() : 'UNKNOWN ERROR'), 5000);
         continue;
       }
@@ -2988,7 +3004,7 @@ function setupKeyboardShortcuts() {
         globalSearch.focus();
         globalSearch.select();
       } else {
-        const searchInput = document.getElementById('coverSearch');
+      const searchInput = document.getElementById('coverSearch');
         if (searchInput) {
           searchInput.focus();
           searchInput.select();
@@ -4253,4 +4269,4 @@ function matchesTags(itemTags, filterTags) {
   return filterTagsArray.some(filterTag => 
     itemTagsArray.some(itemTag => itemTag.includes(filterTag))
   );
-}
+} 
