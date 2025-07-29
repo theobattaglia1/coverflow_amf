@@ -1224,136 +1224,69 @@ async function generateThumbnail(buffer, filename, contentType) {
         filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
         contentType: 'image/jpeg'
       };
-    } else if (isVideo) {
-      // For now, generate a simple video icon instead of extracting frames
-      console.log(`[THUMBNAIL] Generating video icon for: ${filename}`);
-      const videoIconBuffer = await generateVideoIcon(filename);
-      return {
-        buffer: videoIconBuffer,
-        filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
-        contentType: 'image/jpeg'
-      };
     } else {
-      // For non-image, non-video files, generate a generic icon
-      console.log(`[THUMBNAIL] Generating file type icon for: ${filename} (${contentType})`);
-      const iconBuffer = await generateFileTypeIcon(filename);
+      // For non-image files (video, audio, etc), create a simple solid color thumbnail
+      // This avoids complex SVG operations that might be causing server crashes
+      console.log(`[THUMBNAIL] Creating simple color thumbnail for: ${filename} (${contentType})`);
+      
+      // Create a simple solid color thumbnail
+      const colorThumbnail = await sharp({
+        create: {
+          width: 300,
+          height: 300,
+          channels: 3,
+          background: isVideo ? { r: 40, g: 40, b: 40 } : { r: 200, g: 200, b: 200 }
+        }
+      })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+      
+      console.log(`[THUMBNAIL] Simple thumbnail created successfully`);
+      
       return {
-        buffer: iconBuffer,
+        buffer: colorThumbnail,
         filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
         contentType: 'image/jpeg'
       };
     }
   } catch (error) {
     console.error(`[THUMBNAIL] Generation failed for ${filename}:`, error.message);
-    // Fallback to generic icon
-    console.log(`[THUMBNAIL] Using fallback icon for: ${filename}`);
-    const iconBuffer = await generateFileTypeIcon(filename);
-    return {
-      buffer: iconBuffer,
-      filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
-      contentType: 'image/jpeg'
-    };
+    
+    // Ultra-simple fallback - just a gray rectangle
+    try {
+      console.log(`[THUMBNAIL] Using ultra-simple fallback for: ${filename}`);
+      const fallbackBuffer = await sharp({
+        create: {
+          width: 300,
+          height: 300,
+          channels: 3,
+          background: { r: 150, g: 150, b: 150 }
+        }
+      })
+      .jpeg({ quality: 85 })
+      .toBuffer();
+      
+      return {
+        buffer: fallbackBuffer,
+        filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+        contentType: 'image/jpeg'
+      };
+    } catch (fallbackError) {
+      console.error(`[THUMBNAIL] Even fallback failed:`, fallbackError.message);
+      throw fallbackError;
+    }
   }
 }
 
-// Generate video icon
-async function generateVideoIcon(filename) {
-  try {
-    const iconBuffer = await sharp({
-      create: {
-        width: 300,
-        height: 300,
-        channels: 3,
-        background: { r: 40, g: 40, b: 40 }
-      }
-    })
-    .composite([
-      {
-        input: Buffer.from(`
-          <svg width="300" height="300">
-            <rect x="0" y="0" width="300" height="300" fill="#222"/>
-            <polygon points="120,90 120,210 210,150" fill="white"/>
-            <text x="150" y="250" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="white">VIDEO</text>
-            <text x="150" y="270" text-anchor="middle" font-family="Arial" font-size="10" fill="#ccc">${filename.substring(0, 20)}</text>
-          </svg>
-        `),
-        top: 0,
-        left: 0
-      }
-    ])
-    .jpeg({ quality: 85 })
-    .toBuffer();
-    
-    return iconBuffer;
-  } catch (error) {
-    console.error('Video icon generation failed:', error);
-    // Ultra-simple fallback
-    return await sharp({
-      create: {
-        width: 300,
-        height: 300,
-        channels: 3,
-        background: { r: 60, g: 60, b: 60 }
-      }
-    })
-    .jpeg({ quality: 85 })
-    .toBuffer();
-  }
-}
 
-// Generate generic file type icon
-async function generateFileTypeIcon(filename) {
-  const extension = filename.split('.').pop()?.toUpperCase() || 'FILE';
-  
-  try {
-    // Create a simple colored rectangle with text using Sharp
-    const iconBuffer = await sharp({
-      create: {
-        width: 300,
-        height: 300,
-        channels: 3,
-        background: { r: 245, g: 245, b: 245 }
-      }
-    })
-    .composite([
-      {
-        input: Buffer.from(`
-          <svg width="300" height="300">
-            <rect x="30" y="30" width="240" height="180" fill="white" stroke="#ccc" stroke-width="2"/>
-            <text x="150" y="140" text-anchor="middle" font-family="Arial" font-size="28" font-weight="bold" fill="#666">${extension}</text>
-            <text x="150" y="170" text-anchor="middle" font-family="Arial" font-size="16" fill="#999">FILE</text>
-          </svg>
-        `),
-        top: 0,
-        left: 0
-      }
-    ])
-    .jpeg({ quality: 85 })
-    .toBuffer();
-    
-    return iconBuffer;
-  } catch (error) {
-    console.error('File icon generation failed:', error);
-    // Ultra-simple fallback - just a solid color
-    return await sharp({
-      create: {
-        width: 300,
-        height: 300,
-        channels: 3,
-        background: { r: 200, g: 200, b: 200 }
-      }
-    })
-    .jpeg({ quality: 85 })
-    .toBuffer();
-  }
-}
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+const port = process.env.PORT || 10000;
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
   if (process.env.NODE_ENV === 'production') {
     console.log(`Admin interface available at: https://admin.allmyfriendsinc.com/`);
   } else {
-    console.log(`Admin interface: http://localhost:${PORT}/admin/`);
+    console.log(`Admin interface: http://localhost:${port}/admin/`);
   }
 });
