@@ -788,7 +788,8 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
         let thumbnailUrl = null;
         try {
             console.log('[UPLOAD] Generating thumbnail...');
-            const thumbnailData = await generateThumbnail(file.buffer, filename, file.mimetype);
+            // CRITICAL FIX: Use converted buffer and contentType, not original file data
+            const thumbnailData = await generateThumbnail(buffer, filename, contentType);
             
             const thumbnailPath = [folder, 'thumbnails', thumbnailData.filename].filter(Boolean).join('/');
             const thumbnailBlob = bucket.file(thumbnailPath);
@@ -1093,9 +1094,12 @@ async function generateThumbnail(buffer, filename, contentType) {
   const isVideo = contentType.startsWith('video/');
   const isImage = contentType.startsWith('image/');
   
+  console.log(`[THUMBNAIL] Generating thumbnail for: ${filename}, type: ${contentType}, isImage: ${isImage}`);
+  
   try {
     if (isImage) {
-      // Handle all image formats including HEIC
+      // Handle all image formats including HEIC/JPEG conversions
+      console.log(`[THUMBNAIL] Processing image with Sharp...`);
       const thumbnailBuffer = await sharp(buffer)
         .resize(300, 300, { 
           fit: 'cover', 
@@ -1105,6 +1109,8 @@ async function generateThumbnail(buffer, filename, contentType) {
         .jpeg({ quality: 85 })
         .toBuffer();
       
+      console.log(`[THUMBNAIL] Image thumbnail generated successfully, size: ${thumbnailBuffer.length} bytes`);
+      
       return {
         buffer: thumbnailBuffer,
         filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
@@ -1112,7 +1118,7 @@ async function generateThumbnail(buffer, filename, contentType) {
       };
     } else if (isVideo) {
       // For now, generate a simple video icon instead of extracting frames
-      // TODO: Implement FFmpeg video thumbnail extraction later
+      console.log(`[THUMBNAIL] Generating video icon for: ${filename}`);
       const videoIconBuffer = await generateVideoIcon(filename);
       return {
         buffer: videoIconBuffer,
@@ -1121,6 +1127,7 @@ async function generateThumbnail(buffer, filename, contentType) {
       };
     } else {
       // For non-image, non-video files, generate a generic icon
+      console.log(`[THUMBNAIL] Generating file type icon for: ${filename} (${contentType})`);
       const iconBuffer = await generateFileTypeIcon(filename);
       return {
         buffer: iconBuffer,
@@ -1129,8 +1136,9 @@ async function generateThumbnail(buffer, filename, contentType) {
       };
     }
   } catch (error) {
-    console.error('Thumbnail generation failed:', error);
+    console.error(`[THUMBNAIL] Generation failed for ${filename}:`, error.message);
     // Fallback to generic icon
+    console.log(`[THUMBNAIL] Using fallback icon for: ${filename}`);
     const iconBuffer = await generateFileTypeIcon(filename);
     return {
       buffer: iconBuffer,
