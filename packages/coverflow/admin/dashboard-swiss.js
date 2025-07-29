@@ -874,24 +874,37 @@ async function uploadAndCreateCover(file) {
       console.error('[UPLOAD] Failed to parse server response as JSON:', err);
       console.log('[UPLOAD] Raw response:', await res.text());
       showToast('UPLOAD FAILED: INVALID SERVER RESPONSE', 5000);
-      continue;
+      return;
     }
     
     if (res.ok && data && data.url) {
-      uploadedAny = true;
       console.log('[UPLOAD] Success! File URL:', data.url);
       console.log('[UPLOAD] Thumbnail URL:', data.thumbnailUrl || 'No thumbnail');
       
-      // Warn if TIFF
-      if (/\.tif{1,2}$/i.test(file.name)) {
-        showToast('UPLOAD SUCCESSFUL, BUT TIFF IMAGES MAY NOT PREVIEW IN BROWSERS', 7000);
-      } else {
-        showToast(`UPLOADED ${file.name.toUpperCase()}`);
-      }
+      // Create new cover
+      const newCover = {
+        id: Date.now(),
+        index: covers.length,
+        albumTitle: 'NEW COVER',
+        coverLabel: 'ARTIST NAME',
+        frontImage: data.url,
+        backImage: data.url,
+        category: ['artists']
+      };
+      
+      covers.push(newCover);
+      hasChanges = true;
+      updateSaveButton();
+      renderCovers();
+      
+      // Auto-open edit modal
+      setTimeout(() => editCover(newCover), 300);
+      
+      showToast('COVER CREATED — PLEASE EDIT DETAILS');
     } else {
       console.error('[UPLOAD] Upload failed:', data);
       showToast('UPLOAD FAILED: ' + (data && data.error ? data.error.toUpperCase() : 'UNKNOWN ERROR'), 5000);
-      continue;
+      return;
     }
   } catch (err) {
     showToast('FAILED TO UPLOAD IMAGE', 5000);
