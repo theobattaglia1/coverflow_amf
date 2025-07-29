@@ -1849,6 +1849,9 @@ async function handleAssetUpload(files) {
   let uploadedAny = false;
   try {
     for (const file of files) {
+      // TODO: Future enhancement - convert HEIC to JPEG client-side using heic2any library
+      // This would solve the server-side HEIC support issue on platforms like Render
+      
       const formData = new FormData();
       formData.append('file', file);
       formData.append('folder', currentPath || '');
@@ -2445,6 +2448,86 @@ function deselectAllAssets() {
   renderAssetsWithView();
   updateAssetSelectionCounter();
   showToast('ALL ASSETS DESELECTED');
+}
+
+// Select all assets in current folder
+function selectAllAssetsInFolder() {
+  selectedAssets.clear();
+  
+  // Get all assets in current folder using same logic as renderAssetsWithView
+  const assetsToSelect = filteredAssets.length > 0 || document.getElementById('assetSearch')?.value 
+    ? filteredAssets 
+    : getCurrentFolderItems().images;
+  
+  // Add them all to selection
+  assetsToSelect.forEach(asset => {
+    selectedAssets.add(asset.url);
+  });
+  
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+  showToast(`${assetsToSelect.length} ASSETS SELECTED IN ${currentFolder || 'ROOT'}`);
+}
+
+// Copy links of selected assets
+async function copySelectedAssetLinks() {
+  if (selectedAssets.size === 0) {
+    showToast('NO ASSETS SELECTED');
+    return;
+  }
+  
+  // Get all selected asset URLs
+  const selectedUrls = Array.from(selectedAssets);
+  
+  // Create JSON with asset information
+  const selectedAssetsData = selectedUrls.map(url => {
+    const asset = assets.find(a => a.url === url);
+    return {
+      name: asset.name,
+      url: asset.url,
+      thumbnailUrl: asset.thumbnailUrl || null,
+      type: asset.type || 'image',
+      size: asset.size || null,
+      created: asset.created || null
+    };
+  });
+  
+  try {
+    // Try to copy to clipboard first
+    const linksText = selectedUrls.join('\n');
+    await navigator.clipboard.writeText(linksText);
+    
+    // Also offer JSON download
+    const jsonData = JSON.stringify(selectedAssetsData, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `selected-assets-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    showToast(`${selectedAssets.size} LINKS COPIED & JSON DOWNLOADED`);
+  } catch (err) {
+    // Fallback if clipboard fails
+    console.error('Clipboard error:', err);
+    
+    // Just download the JSON
+    const jsonData = JSON.stringify(selectedAssetsData, null, 2);
+    const blob = new Blob([jsonData], { type: 'application/json' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `selected-assets-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    showToast(`${selectedAssets.size} ASSET LINKS DOWNLOADED AS JSON`);
+  }
 }
 
 // Batch operation functions for the toolbar
@@ -4298,3 +4381,11 @@ function matchesTags(itemTags, filterTags) {
     itemTagsArray.some(itemTag => itemTag.includes(filterTag))
   );
 } 
+
+// Make new asset multi-select functions globally available
+window.selectAllAssetsInFolder = selectAllAssetsInFolder;
+window.copySelectedAssetLinks = copySelectedAssetLinks;
+window.deselectAllAssets = deselectAllAssets;
+window.moveSelectedAssets = moveSelectedAssets;
+window.deleteSelectedAssets = deleteSelectedAssets;
+window.downloadSelectedAssets = downloadSelectedAssets;
