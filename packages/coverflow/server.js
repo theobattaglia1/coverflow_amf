@@ -433,10 +433,25 @@ app.delete('/api/users/:username', requireAuth('admin'), async (req, res) => {
 app.post('/api/folder', requireAuth('editor'), async (req, res) => {
     try {
         const { path: folderPath, name } = req.body;
-        console.log(`[FOLDER] Creating folder: ${name} at path: ${folderPath || 'root'}`);
+        
+        console.log(`[FOLDER] Raw request body:`, req.body);
+        console.log(`[FOLDER] Creating folder: "${name}" at path: "${folderPath || 'root'}"`);
+        
+        if (!name || name.trim() === '') {
+            console.error(`[FOLDER] Invalid folder name provided`);
+            return res.status(400).json({ error: 'Folder name is required' });
+        }
         
         const assetsPath = path.join(DATA_DIR, 'assets.json');
-        const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+        let assets;
+        
+        try {
+            const assetsData = await fs.promises.readFile(assetsPath, 'utf-8');
+            assets = JSON.parse(assetsData);
+        } catch (parseError) {
+            console.error(`[FOLDER] Failed to read/parse assets.json:`, parseError);
+            return res.status(500).json({ error: 'Failed to read assets data' });
+        }
         
         // Ensure root structure exists
         if (!assets.children) assets.children = [];
@@ -445,45 +460,74 @@ app.post('/api/folder', requireAuth('editor'), async (req, res) => {
         const pathParts = folderPath ? folderPath.split('/').filter(Boolean) : [];
         let current = assets;
         
+        console.log(`[FOLDER] Navigating through path parts:`, pathParts);
+        
         for (const part of pathParts) {
             if (!current.children) current.children = [];
             const folder = current.children.find(c => c.type === 'folder' && c.name === part);
             if (!folder) {
-                console.error(`[FOLDER] Parent folder not found: ${part}`);
-                return res.status(404).json({ error: `Parent folder not found: ${part}` });
+                console.error(`[FOLDER] Parent folder not found: "${part}" in path "${folderPath}"`);
+                return res.status(404).json({ 
+                    error: `Parent folder not found: ${part}`,
+                    path: folderPath,
+                    searchedFor: part
+                });
             }
             current = folder;
+            console.log(`[FOLDER] Found folder: "${part}"`);
         }
         
         // Ensure current folder has children array
         if (!current.children) current.children = [];
         
         // Check if folder already exists
-        if (current.children.some(c => c.type === 'folder' && c.name === name)) {
-            console.warn(`[FOLDER] Folder already exists: ${name}`);
-            return res.status(400).json({ error: 'Folder already exists' });
+        const existingFolder = current.children.find(c => c.type === 'folder' && c.name === name);
+        if (existingFolder) {
+            console.warn(`[FOLDER] Folder already exists: "${name}" at path "${folderPath}"`);
+            return res.status(400).json({ 
+                error: `Folder "${name}" already exists`,
+                existingFolder: existingFolder.name
+            });
         }
         
         // Create new folder
         const newFolder = {
             type: 'folder',
-            name: name,
+            name: name.trim(),
             children: [],
             createdAt: new Date().toISOString()
         };
         
         current.children.push(newFolder);
+        console.log(`[FOLDER] Added folder to structure:`, newFolder);
         
         // Save to file with atomic write
-        await safeWriteJson(assetsPath, assets);
-        dataCache.invalidate('assets');
+        try {
+            await safeWriteJson(assetsPath, assets);
+            dataCache.invalidate('assets');
+            console.log(`[FOLDER] Successfully saved assets.json`);
+        } catch (saveError) {
+            console.error(`[FOLDER] Failed to save assets.json:`, saveError);
+            return res.status(500).json({ 
+                error: 'Failed to save folder data',
+                details: saveError.message 
+            });
+        }
         
-        console.log(`[FOLDER] Successfully created folder: ${name}`);
-        res.json({ success: true, folder: newFolder });
+        console.log(`[FOLDER] Successfully created folder: "${name}" at path "${folderPath}"`);
+        res.json({ 
+            success: true, 
+            folder: newFolder,
+            path: folderPath 
+        });
         
     } catch (err) {
-        console.error('[FOLDER] Failed to create folder:', err);
-        res.status(500).json({ error: 'Failed to create folder', details: err.message });
+        console.error('[FOLDER] Unexpected error creating folder:', err);
+        res.status(500).json({ 
+            error: 'Failed to create folder', 
+            details: err.message,
+            stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+        });
     }
 });
 
