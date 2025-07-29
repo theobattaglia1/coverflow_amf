@@ -729,7 +729,7 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
     let file = req.files?.find(f => ['file', 'image'].includes(f.fieldname));
     if (!file) return res.status(400).json({ error: 'No file provided' });
     
-    const folder = req.body.folder || '';
+    const folder = req.body.folder ? req.body.folder.trim() : ''; // Trim whitespace
     let buffer = file.buffer, filename = file.originalname, contentType = file.mimetype;
     
     if (contentType === 'image/tiff') {
@@ -748,7 +748,48 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
     const blobStream = blob.createWriteStream({ resumable: false, contentType });
 
     blobStream.on('error', err => res.status(500).json({ error: err.message }))
-              .on('finish', () => res.json({ url: `https://storage.googleapis.com/${bucket.name}/${blob.name}` }))
+              .on('finish', async () => {
+                  const gcsUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
+                  
+                  // If uploaded to a folder, add to assets.json folder structure
+                  if (folder) {
+                      try {
+                          const assetsPath = path.join(DATA_DIR, 'assets.json');
+                          const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+                          
+                          // Find the target folder in assets.json
+                          let targetFolder = null;
+                          if (assets.children) {
+                              targetFolder = assets.children.find(c => c.type === 'folder' && c.name === folder);
+                          }
+                          
+                          if (targetFolder) {
+                              // Add the uploaded image to the folder's children
+                              if (!targetFolder.children) targetFolder.children = [];
+                              
+                              const imageEntry = {
+                                  type: 'image',
+                                  url: gcsUrl,
+                                  name: filename.replace(/\.[^/.]+$/, ''), // Remove extension for display name
+                                  uploadedAt: new Date().toISOString()
+                              };
+                              
+                              targetFolder.children.push(imageEntry);
+                              
+                              // Write updated assets.json
+                              await safeWriteJson(assetsPath, assets);
+                              console.log(`[UPLOAD] Added image to folder '${folder}':`, filename);
+                          } else {
+                              console.warn(`[UPLOAD] Folder '${folder}' not found in assets.json - image uploaded to GCS but not added to folder structure`);
+                          }
+                      } catch (err) {
+                          console.error('[UPLOAD] Failed to update assets.json:', err);
+                          // Continue anyway - file was uploaded to GCS successfully
+                      }
+                  }
+                  
+                  res.json({ url: gcsUrl });
+              })
               .end(buffer);
 });
 

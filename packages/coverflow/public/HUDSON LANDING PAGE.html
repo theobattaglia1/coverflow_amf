@@ -1,20 +1,28 @@
+{% comment %}
+  Hudson Ingram Landing Page Template
+  Save this as: templates/page.hudson-ingram.liquid
+{% endcomment %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Hudson Ingram – Official Site</title>
+<title>{{ page.title | default: "Hudson Ingram – Official Site" }}</title>
 
 <!-- -----  BASIC RESET  ----- -->
 <style>
 :root{
-    --brand: #0063B2;          /* Pantone 18-4245 Electric Blue Lemonade :contentReference[oaicite:0]{index=0} */
+    --brand: #0063B2;          /* Pantone 18-4245 Electric Blue Lemonade */
     --black: #111;
     --white: #fff;
     --grid-gap: 4vw;          /* 4-pt modular spacing scaled */
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:url("https://allmyfriendsinc.com/uploads/upload-1752102975913-294092840.png") center/cover no-repeat fixed;color:var(--white);}
+html,body{height:100%;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:url("{{ 'hudson-bg.png' | asset_url }}") center/cover no-repeat fixed;color:var(--white);}
+
+/* Fallback background if asset not found */
+html,body{background:url("https://storage.googleapis.com/allmyfriends-assets-2025/Hudson/Hudson%20Ingram%20-%20Blue%20BG.png") center/cover no-repeat fixed;}
 
 body{display:grid;grid-template-rows:1fr auto}
 
@@ -70,12 +78,38 @@ footer{
 footer a{color:var(--white);text-decoration:none;}
 footer a:hover{text-decoration:underline;}
 </style>
+
+<!-- Prevent JavaScript errors from external scripts -->
+<script>
+// Prevent circular-text.js errors
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if circular-text elements exist before any scripts try to access them
+    const circularTextElements = document.querySelectorAll('[data-circular-text]');
+    if (circularTextElements.length === 0) {
+        // Create a safe fallback for any scripts that might try to access circular text
+        window.circularTextFallback = {
+            innerText: '',
+            textContent: ''
+        };
+    }
+});
+
+// Prevent other common null reference errors
+window.addEventListener('error', function(e) {
+    if (e.message.includes('Cannot read properties of null') || 
+        e.message.includes('circular-text.js')) {
+        console.warn('Suppressed error from external script:', e.message);
+        e.preventDefault();
+        return false;
+    }
+});
+</script>
 </head>
 <body>
 
 <section class="hero">
     <div>
-        <img src="https://allmyfriendsinc.com/uploads/upload-1752102895885-649919476.png" alt="Hudson Ingram" class="logo">
+        <img src="{{ 'hudson-logo.png' | asset_url }}" alt="Hudson Ingram" class="logo" onerror="this.src='https://storage.googleapis.com/allmyfriends-assets-2025/hudson%20logo.png'">
 
         <nav class="links">
             <a href="https://open.spotify.com/artist/1BRxpuKTlqnqSofTbVx4oo" target="_blank">Spotify</a>
@@ -88,9 +122,9 @@ footer a:hover{text-decoration:underline;}
 </section>
 
 <footer>
-    <span>© 2025 Hudson Ingram. All rights reserved.</span>
+    <span>© {{ 'now' | date: "%Y" }} Hudson Ingram. All rights reserved.</span>
     <span>Contact → <a href="mailto:hi@allmyfriendsinc.com">hi@allmyfriendsinc.com</a></span>
 </footer>
 
 </body>
-</html>
+</html> 
