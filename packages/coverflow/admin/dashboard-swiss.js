@@ -2471,6 +2471,8 @@ function selectAllAssetsInFolder() {
 
 // Copy links of selected assets
 async function copySelectedAssetLinks() {
+  console.log('[COPY LINKS] Starting with selectedAssets:', selectedAssets);
+  
   if (selectedAssets.size === 0) {
     showToast('NO ASSETS SELECTED');
     return;
@@ -2478,55 +2480,121 @@ async function copySelectedAssetLinks() {
   
   // Get all selected asset URLs
   const selectedUrls = Array.from(selectedAssets);
+  console.log('[COPY LINKS] Selected URLs:', selectedUrls);
   
   // Create JSON with asset information
   const selectedAssetsData = selectedUrls.map(url => {
-    const asset = assets.find(a => a.url === url);
+    // Find asset in the hierarchical structure
+    let foundAsset = null;
+    
+    // Helper function to search recursively
+    const findAssetByUrl = (items) => {
+      for (const item of items) {
+        if (item.url === url) {
+          return item;
+        }
+        if (item.children) {
+          const found = findAssetByUrl(item.children);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+    
+    // Search in root images first
+    if (assets.images) {
+      foundAsset = assets.images.find(img => img.url === url);
+    }
+    
+    // If not found, search in folders
+    if (!foundAsset && assets.children) {
+      foundAsset = findAssetByUrl(assets.children);
+    }
+    
+    if (!foundAsset) {
+      console.warn('[COPY LINKS] Asset not found for URL:', url);
+      // Still include the URL even if we can't find metadata
+      return {
+        name: url.split('/').pop(), // Get filename from URL
+        url: url,
+        thumbnailUrl: null,
+        type: 'unknown',
+        size: null,
+        created: null
+      };
+    }
+    
     return {
-      name: asset.name,
-      url: asset.url,
-      thumbnailUrl: asset.thumbnailUrl || null,
-      type: asset.type || 'image',
-      size: asset.size || null,
-      created: asset.created || null
+      name: foundAsset.name,
+      url: foundAsset.url,
+      thumbnailUrl: foundAsset.thumbnailUrl || null,
+      type: foundAsset.type || 'image',
+      size: foundAsset.size || null,
+      created: foundAsset.created || null
     };
   });
   
+  console.log('[COPY LINKS] Asset data prepared:', selectedAssetsData);
+  
+  // Always download JSON file first
+  const jsonData = JSON.stringify(selectedAssetsData, null, 2);
+  const blob = new Blob([jsonData], { type: 'application/json' });
+  const downloadUrl = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = downloadUrl;
+  a.download = `selected-assets-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  window.URL.revokeObjectURL(downloadUrl);
+  
+  // Try to copy to clipboard
   try {
-    // Try to copy to clipboard first
+    // Create a formatted text with all URLs
     const linksText = selectedUrls.join('\n');
-    await navigator.clipboard.writeText(linksText);
     
-    // Also offer JSON download
-    const jsonData = JSON.stringify(selectedAssetsData, null, 2);
-    const blob = new Blob([jsonData], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `selected-assets-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    
-    showToast(`${selectedAssets.size} LINKS COPIED & JSON DOWNLOADED`);
+    // Check if we're in a secure context (HTTPS)
+    if (window.isSecureContext && navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(linksText);
+      console.log('[COPY LINKS] Successfully copied to clipboard');
+      showToast(`${selectedAssets.size} LINKS COPIED TO CLIPBOARD & JSON DOWNLOADED`);
+    } else {
+      // Fallback: create a temporary textarea
+      const textarea = document.createElement('textarea');
+      textarea.value = linksText;
+      textarea.style.position = 'fixed';
+      textarea.style.top = '0';
+      textarea.style.left = '0';
+      textarea.style.width = '2px';
+      textarea.style.height = '2px';
+      textarea.style.padding = '0';
+      textarea.style.border = 'none';
+      textarea.style.outline = 'none';
+      textarea.style.boxShadow = 'none';
+      textarea.style.background = 'transparent';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      
+      try {
+        const successful = document.execCommand('copy');
+        if (successful) {
+          console.log('[COPY LINKS] Fallback copy successful');
+          showToast(`${selectedAssets.size} LINKS COPIED TO CLIPBOARD & JSON DOWNLOADED`);
+        } else {
+          console.log('[COPY LINKS] Fallback copy failed');
+          showToast(`${selectedAssets.size} ASSET LINKS DOWNLOADED AS JSON (Copy to clipboard failed)`);
+        }
+      } catch (err) {
+        console.error('[COPY LINKS] Fallback copy error:', err);
+        showToast(`${selectedAssets.size} ASSET LINKS DOWNLOADED AS JSON (Copy to clipboard failed)`);
+      }
+      
+      document.body.removeChild(textarea);
+    }
   } catch (err) {
-    // Fallback if clipboard fails
-    console.error('Clipboard error:', err);
-    
-    // Just download the JSON
-    const jsonData = JSON.stringify(selectedAssetsData, null, 2);
-    const blob = new Blob([jsonData], { type: 'application/json' });
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `selected-assets-${new Date().toISOString().split('T')[0]}.json`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    window.URL.revokeObjectURL(url);
-    
-    showToast(`${selectedAssets.size} ASSET LINKS DOWNLOADED AS JSON`);
+    console.error('[COPY LINKS] Clipboard error:', err);
+    showToast(`${selectedAssets.size} ASSET LINKS DOWNLOADED AS JSON (Copy to clipboard failed)`);
   }
 }
 
