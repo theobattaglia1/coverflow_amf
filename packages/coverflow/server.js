@@ -973,16 +973,33 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
         // Update assets.json with URLs
         if (folder) {
             try {
+                console.log(`[UPLOAD] Attempting to update assets.json for folder: "${folder}"`);
                 const assetsPath = path.join(DATA_DIR, 'assets.json');
                 const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+                
+                console.log(`[UPLOAD] Assets.json loaded, checking for children array...`);
+                console.log(`[UPLOAD] Assets.children exists:`, !!assets.children);
+                console.log(`[UPLOAD] Assets.children length:`, assets.children?.length || 0);
+                
+                if (assets.children) {
+                    console.log(`[UPLOAD] Looking for folder "${folder}" in:`, assets.children.map(c => `"${c.name}" (type: ${c.type})`));
+                }
                 
                 let targetFolder = null;
                 if (assets.children) {
                     targetFolder = assets.children.find(c => c.type === 'folder' && c.name === folder);
                 }
                 
+                console.log(`[UPLOAD] Target folder found:`, !!targetFolder);
                 if (targetFolder) {
-                    if (!targetFolder.children) targetFolder.children = [];
+                    console.log(`[UPLOAD] Target folder name: "${targetFolder.name}", children count:`, targetFolder.children?.length || 0);
+                }
+                
+                if (targetFolder) {
+                    if (!targetFolder.children) {
+                        targetFolder.children = [];
+                        console.log(`[UPLOAD] Initialized children array for folder "${folder}"`);
+                    }
                     
                     const imageEntry = {
                         type: file.mimetype.startsWith('video/') ? 'video' : 'image',
@@ -996,16 +1013,25 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
                         uploadedAt: new Date().toISOString()
                     };
                     
+                    console.log(`[UPLOAD] Adding entry to folder:`, imageEntry);
                     targetFolder.children.push(imageEntry);
+                    
+                    console.log(`[UPLOAD] Folder now has ${targetFolder.children.length} children`);
+                    console.log(`[UPLOAD] Saving assets.json...`);
                     await safeWriteJson(assetsPath, assets);
                     dataCache.invalidate('assets');
+                    console.log(`[UPLOAD] Successfully saved to assets.json and invalidated cache`);
                     console.log(`[UPLOAD] Added ${imageEntry.type} to folder '${folder}':`, filename);
                 } else {
-                    console.warn(`[UPLOAD] Folder '${folder}' not found in assets.json`);
+                    console.warn(`[UPLOAD] ERROR: Folder '${folder}' not found in assets.json`);
+                    console.warn(`[UPLOAD] Available folders:`, assets.children?.filter(c => c.type === 'folder').map(c => c.name) || []);
                 }
             } catch (err) {
                 console.error('[UPLOAD] Failed to update assets.json:', err);
+                console.error('[UPLOAD] Error details:', err.stack);
             }
+        } else {
+            console.log('[UPLOAD] No folder specified, not updating assets.json');
         }
         
         res.json({ 
