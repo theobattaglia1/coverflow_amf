@@ -743,33 +743,36 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
         // Handle HEIC files - convert to web-compatible format
         if (contentType === 'image/heic' || filename.toLowerCase().endsWith('.heic')) {
             console.log('[UPLOAD] Converting HEIC to JPEG...');
-            buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
-            filename = filename.replace(/\.heic$/i, '.jpg');
-            contentType = 'image/jpeg';
+            try {
+                buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
+                filename = filename.replace(/\.heic$/i, '.jpg');
+                contentType = 'image/jpeg';
+                console.log('[UPLOAD] HEIC conversion successful');
+            } catch (heicError) {
+                console.error('[UPLOAD] HEIC conversion failed:', heicError.message);
+                // Continue with original file if conversion fails
+            }
         }
         
         // Handle TIFF files
         if (contentType === 'image/tiff') {
             console.log('[UPLOAD] Converting TIFF to PNG...');
-            buffer = await sharp(file.buffer).png().toBuffer();
-            filename = filename.replace(/\.tif{1,2}$/i, '.png');
-            contentType = 'image/png';
+            try {
+                buffer = await sharp(file.buffer).png().toBuffer();
+                filename = filename.replace(/\.tif{1,2}$/i, '.png');
+                contentType = 'image/png';
+                console.log('[UPLOAD] TIFF conversion successful');
+            } catch (tiffError) {
+                console.error('[UPLOAD] TIFF conversion failed:', tiffError.message);
+                // Continue with original file if conversion fails
+            }
         }
 
-        // Generate thumbnail for ALL file types
-        console.log('[UPLOAD] Generating thumbnail...');
-        const thumbnailData = await generateThumbnail(file.buffer, filename, file.mimetype);
-        
-        // Upload original file
+        // Upload original file first
         const gcsPath = [folder, filename].filter(Boolean).join('/');
         const bucket = gcsStorage.bucket(gcsBucketName);
         const blob = bucket.file(gcsPath);
         
-        // Upload thumbnail
-        const thumbnailPath = [folder, 'thumbnails', thumbnailData.filename].filter(Boolean).join('/');
-        const thumbnailBlob = bucket.file(thumbnailPath);
-        
-        // Upload both files to GCS
         console.log('[UPLOAD] Uploading original file to GCS...');
         await new Promise((resolve, reject) => {
             const blobStream = blob.createWriteStream({ resumable: false, contentType });
@@ -778,25 +781,36 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
             blobStream.end(buffer);
         });
         
-        console.log('[UPLOAD] Uploading thumbnail to GCS...');
-        await new Promise((resolve, reject) => {
-            const thumbnailStream = thumbnailBlob.createWriteStream({ 
-                resumable: false, 
-                contentType: thumbnailData.contentType 
-            });
-            thumbnailStream.on('error', reject);
-            thumbnailStream.on('finish', resolve);
-            thumbnailStream.end(thumbnailData.buffer);
-        });
-        
         const gcsUrl = `https://storage.googleapis.com/${bucket.name}/${blob.name}`;
-        const thumbnailUrl = `https://storage.googleapis.com/${bucket.name}/${thumbnailBlob.name}`;
+        console.log('[UPLOAD] Original file uploaded successfully:', gcsUrl);
         
-        console.log('[UPLOAD] Files uploaded successfully');
-        console.log('[UPLOAD] Original URL:', gcsUrl);
-        console.log('[UPLOAD] Thumbnail URL:', thumbnailUrl);
+        // Try to generate and upload thumbnail (don't fail if this doesn't work)
+        let thumbnailUrl = null;
+        try {
+            console.log('[UPLOAD] Generating thumbnail...');
+            const thumbnailData = await generateThumbnail(file.buffer, filename, file.mimetype);
+            
+            const thumbnailPath = [folder, 'thumbnails', thumbnailData.filename].filter(Boolean).join('/');
+            const thumbnailBlob = bucket.file(thumbnailPath);
+            
+            console.log('[UPLOAD] Uploading thumbnail to GCS...');
+            await new Promise((resolve, reject) => {
+                const thumbnailStream = thumbnailBlob.createWriteStream({ 
+                    resumable: false, 
+                    contentType: thumbnailData.contentType 
+                });
+                thumbnailStream.on('error', reject);
+                thumbnailStream.on('finish', resolve);
+                thumbnailStream.end(thumbnailData.buffer);
+            });
+            
+            thumbnailUrl = `https://storage.googleapis.com/${bucket.name}/${thumbnailBlob.name}`;
+            console.log('[UPLOAD] Thumbnail uploaded successfully:', thumbnailUrl);
+        } catch (thumbnailError) {
+            console.warn('[UPLOAD] Thumbnail generation failed, continuing without thumbnail:', thumbnailError.message);
+        }
         
-        // Update assets.json with both URLs
+        // Update assets.json with URLs
         if (folder) {
             try {
                 const assetsPath = path.join(DATA_DIR, 'assets.json');
@@ -813,7 +827,7 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
                     const imageEntry = {
                         type: file.mimetype.startsWith('video/') ? 'video' : 'image',
                         url: gcsUrl,
-                        thumbnailUrl: thumbnailUrl,
+                        thumbnailUrl: thumbnailUrl, // Will be null if thumbnail failed
                         name: filename.replace(/\.[^/.]+$/, ''),
                         filename: filename,
                         originalFilename: file.originalname,
@@ -824,6 +838,7 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
                     
                     targetFolder.children.push(imageEntry);
                     await safeWriteJson(assetsPath, assets);
+                    dataCache.invalidate('assets');
                     console.log(`[UPLOAD] Added ${imageEntry.type} to folder '${folder}':`, filename);
                 } else {
                     console.warn(`[UPLOAD] Folder '${folder}' not found in assets.json`);
@@ -838,7 +853,8 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
             thumbnailUrl: thumbnailUrl,
             type: file.mimetype.startsWith('video/') ? 'video' : 'image',
             filename: filename,
-            size: file.size
+            size: file.size,
+            success: true
         });
         
     } catch (error) {
@@ -1095,46 +1111,14 @@ async function generateThumbnail(buffer, filename, contentType) {
         contentType: 'image/jpeg'
       };
     } else if (isVideo) {
-      // Generate video thumbnail
-      return new Promise((resolve, reject) => {
-        const tempVideoPath = `/tmp/${Date.now()}_${filename}`;
-        const tempThumbPath = `/tmp/${Date.now()}_thumb.jpg`;
-        
-        // Write video buffer to temp file
-        require('fs').writeFileSync(tempVideoPath, buffer);
-        
-        ffmpeg(tempVideoPath)
-          .screenshots({
-            timestamps: ['00:00:01'],
-            filename: 'thumb.jpg',
-            folder: '/tmp',
-            size: '300x300'
-          })
-          .on('end', () => {
-            try {
-              const thumbnailBuffer = require('fs').readFileSync('/tmp/thumb.jpg');
-              
-              // Cleanup temp files
-              require('fs').unlinkSync(tempVideoPath);
-              require('fs').unlinkSync('/tmp/thumb.jpg');
-              
-              resolve({
-                buffer: thumbnailBuffer,
-                filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
-                contentType: 'image/jpeg'
-              });
-            } catch (err) {
-              reject(err);
-            }
-          })
-          .on('error', (err) => {
-            // Cleanup and reject
-            try {
-              require('fs').unlinkSync(tempVideoPath);
-            } catch {}
-            reject(err);
-          });
-      });
+      // For now, generate a simple video icon instead of extracting frames
+      // TODO: Implement FFmpeg video thumbnail extraction later
+      const videoIconBuffer = await generateVideoIcon(filename);
+      return {
+        buffer: videoIconBuffer,
+        filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+        contentType: 'image/jpeg'
+      };
     } else {
       // For non-image, non-video files, generate a generic icon
       const iconBuffer = await generateFileTypeIcon(filename);
@@ -1156,24 +1140,96 @@ async function generateThumbnail(buffer, filename, contentType) {
   }
 }
 
-// Generate generic file type icon
-async function generateFileTypeIcon(filename) {
-  const extension = filename.split('.').pop().toUpperCase();
-  
-  // Create a simple SVG icon with the file extension
-  const svgIcon = `
-    <svg width="300" height="300" xmlns="http://www.w3.org/2000/svg">
-      <rect width="300" height="300" fill="#f5f5f5" stroke="#333" stroke-width="2"/>
-      <rect x="20" y="20" width="220" height="260" fill="#fff" stroke="#333" stroke-width="1"/>
-      <text x="150" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#333">${extension}</text>
-      <text x="150" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#666">FILE</text>
-    </svg>
-  `;
-  
-  // Convert SVG to JPEG
-  return await sharp(Buffer.from(svgIcon))
+// Generate video icon
+async function generateVideoIcon(filename) {
+  try {
+    const iconBuffer = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 40, g: 40, b: 40 }
+      }
+    })
+    .composite([
+      {
+        input: Buffer.from(`
+          <svg width="300" height="300">
+            <rect x="0" y="0" width="300" height="300" fill="#222"/>
+            <polygon points="120,90 120,210 210,150" fill="white"/>
+            <text x="150" y="250" text-anchor="middle" font-family="Arial" font-size="14" font-weight="bold" fill="white">VIDEO</text>
+            <text x="150" y="270" text-anchor="middle" font-family="Arial" font-size="10" fill="#ccc">${filename.substring(0, 20)}</text>
+          </svg>
+        `),
+        top: 0,
+        left: 0
+      }
+    ])
     .jpeg({ quality: 85 })
     .toBuffer();
+    
+    return iconBuffer;
+  } catch (error) {
+    console.error('Video icon generation failed:', error);
+    // Ultra-simple fallback
+    return await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 60, g: 60, b: 60 }
+      }
+    })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+  }
+}
+
+// Generate generic file type icon
+async function generateFileTypeIcon(filename) {
+  const extension = filename.split('.').pop()?.toUpperCase() || 'FILE';
+  
+  try {
+    // Create a simple colored rectangle with text using Sharp
+    const iconBuffer = await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 245, g: 245, b: 245 }
+      }
+    })
+    .composite([
+      {
+        input: Buffer.from(`
+          <svg width="300" height="300">
+            <rect x="30" y="30" width="240" height="180" fill="white" stroke="#ccc" stroke-width="2"/>
+            <text x="150" y="140" text-anchor="middle" font-family="Arial" font-size="28" font-weight="bold" fill="#666">${extension}</text>
+            <text x="150" y="170" text-anchor="middle" font-family="Arial" font-size="16" fill="#999">FILE</text>
+          </svg>
+        `),
+        top: 0,
+        left: 0
+      }
+    ])
+    .jpeg({ quality: 85 })
+    .toBuffer();
+    
+    return iconBuffer;
+  } catch (error) {
+    console.error('File icon generation failed:', error);
+    // Ultra-simple fallback - just a solid color
+    return await sharp({
+      create: {
+        width: 300,
+        height: 300,
+        channels: 3,
+        background: { r: 200, g: 200, b: 200 }
+      }
+    })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+  }
 }
 
 // Start Server

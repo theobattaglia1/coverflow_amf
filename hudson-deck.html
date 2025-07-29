@@ -1,0 +1,1793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hudson Ingram — September 2025 Rollout</title>
+    <meta name="description" content="Hudson Ingram – Strategic positioning and creative blueprint for Interscope Records × Aaron Dessner"/>
+    
+    <style>
+        /* ———————————— 0. Reset & Core */
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        
+        /* ———————————— 1. Design System Variables */
+        :root{
+            /* Core Palette */
+            --bg:#FFFFFF;
+            --ink:#000000;
+            --accent:#0000FF; /* Classic blue */
+            /* Fluid Type Scale - Tighter, now more compact */
+            --step--2: clamp(.625rem,.7vw,.75rem);
+            --step--1: clamp(.75rem,.85vw,.875rem);
+            --step-0:  clamp(.875rem,1vw,1rem);
+            --step-1:  clamp(.9rem,1vw,1.1rem);
+            --step-2:  clamp(1.1rem,1.2vw,1.3rem);
+            --step-3:  clamp(1.5rem,1.8vw,2rem);
+            --step-4:  clamp(2rem,2.5vw,2.5rem);
+            --step-5:  clamp(2.5rem,4vw,4rem);
+            --step-6:  clamp(3rem,6vw,6rem);
+            /* Grid & Spacing */
+            --gutter:1.2rem;
+            --max-width:1280px;
+            --section-space:5.5rem;
+        }
+        
+        /* ———————————— 2. Base Typography */
+        html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased;}
+        body{
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-weight:400;
+            font-size:var(--step-0);
+            line-height:1.4;
+            color:var(--ink);
+            background:var(--bg);
+            letter-spacing:-.01em;
+        }
+        
+        h1,h2,h3,h4,h5,h6{
+            font-weight:700;
+            line-height:1;
+            letter-spacing:-.04em; /* TIGHT */
+            margin:0;
+            position:relative;
+        }
+        
+        h1{font-size:var(--step-6);letter-spacing:-.06em;}
+        h2{font-size:var(--step-5);letter-spacing:-.05em;}
+        h3{font-size:var(--step-4);letter-spacing:-.04em;}
+        h4{font-size:var(--step-3);letter-spacing:-.03em;}
+        h5{font-size:var(--step-2);letter-spacing:-.02em;}
+        
+        .display{
+            font-size:clamp(2.5rem,8vw,7rem); /* Reduce by ~50% */
+            font-weight:900;
+            line-height:.9;
+            letter-spacing:-.08em;
+            text-transform:uppercase;
+        }
+        
+        p{
+            margin-bottom:1rem;
+            max-width:65ch;
+        }
+        
+        .lead{
+            font-size:var(--step-1);
+            line-height:1.5;
+            font-weight:400;
+            letter-spacing:-.02em;
+        }
+        
+        a{
+            color:var(--ink);
+            text-decoration:none;
+        }
+        
+        a:hover{
+            text-decoration:underline;
+            text-underline-offset:2px;
+        }
+        
+        strong{
+            font-weight:700;
+        }
+        
+        /* CHAOS: Subtle mis-registration on key headlines */
+        [data-misreg]::after{
+            content:attr(data-misreg);
+            position:absolute;
+            top:1px;
+            left:1px;
+            color:var(--accent);
+            opacity:.1;
+            z-index:-1;
+        }
+        
+        /* ———————————— 3. Grid System */
+        .container{
+            max-width:var(--max-width);
+            margin-inline:auto;
+            padding-inline:var(--gutter);
+        }
+        
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:var(--gutter);
+        }
+        
+        .col-12{grid-column:span 12;}
+        .col-10{grid-column:span 10;}
+        .col-8{grid-column:span 8;}
+        .col-7{grid-column:span 7;}
+        .col-6{grid-column:span 6;}
+        .col-5{grid-column:span 5;}
+        .col-4{grid-column:span 4;}
+        .col-3{grid-column:span 3;}
+        .col-2{grid-column:span 2;}
+        
+        /* Column offsets */
+        .offset-1{grid-column-start:2;}
+        .offset-2{grid-column-start:3;}
+        .offset-3{grid-column-start:4;}
+        
+        @media(max-width:768px){
+            .grid{grid-template-columns:repeat(4,1fr);}
+            [class*="col-"]{grid-column:span 4;}
+            [class*="offset-"]{grid-column-start:1;}
+        }
+        
+        /* ———————————— 4. Section Architecture */
+        section{
+            padding-block:var(--section-space);
+            position:relative;
+        }
+        
+        section:first-child{
+            padding-top:0;
+        }
+        
+        /* CHAOS: Selective disruption */
+        .break-grid{
+            margin-left:calc(var(--gutter) * -2);
+            margin-right:calc(var(--gutter) * -4);
+        }
+        
+        /* ———————————— 5. Navigation */
+        .nav{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            z-index:1000;
+            padding:1.5rem 0;
+            background:rgba(255,255,255,.95);
+            backdrop-filter:blur(10px);
+        }
+        
+        .nav-inner{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+        
+        .nav-logo{
+            font-size:1.5rem;
+            font-weight:900;
+            letter-spacing:-.05em;
+        }
+        
+        .nav-links{
+            display:flex;
+            gap:3rem;
+            list-style:none;
+        }
+        
+        .nav-link{
+            font-size:var(--step--1);
+            font-weight:500;
+            letter-spacing:-.02em;
+            opacity:.5;
+            transition:opacity .2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active{
+            opacity:1;
+            text-decoration:none;
+        }
+        
+        /* ———————————— 6. Hero */
+        .hero{
+            height:100vh;
+            display:flex;
+            align-items:center;
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .hero-content{
+            position:relative;
+            z-index:2;
+        }
+        
+        .hero-title{
+            margin-bottom:2rem;
+        }
+        
+        /* CHAOS: Off-kilter hero image */
+        .hero-image{
+            position:absolute;
+            right:-10%;
+            top:50%;
+            transform:translateY(-50%) rotate(-2deg);
+            width:45vw;
+            height:70vh;
+            object-fit:cover;
+            z-index:1;
+        }
+        
+        @media(max-width:768px){
+            .hero-image{
+                width:100%;
+                height:50vh;
+                right:0;
+                top:auto;
+                bottom:0;
+                transform:none;
+            }
+        }
+        
+        /* ———————————— 7. Story Section */
+        .section-marker{
+            font-size:var(--step--2);
+            font-weight:700;
+            letter-spacing:-.02em;
+            margin-bottom:2rem;
+            opacity:.2;
+        }
+        
+        /* Large off-kilter image */
+        .large-image{
+            position:relative;
+            margin-block:6rem;
+            margin-left:-10vw;
+            width:60vw;
+            height:70vh;
+            overflow:hidden;
+            transform:rotate(1deg);
+        }
+        
+        .large-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        /* Small accent image */
+        .accent-image{
+            position:absolute;
+            width:25vw;
+            height:35vh;
+            overflow:hidden;
+            z-index:-1;
+        }
+        
+        .accent-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        .accent-image.top-right{
+            top:-5rem;
+            right:-5rem;
+            transform:rotate(-3deg);
+        }
+        
+        .accent-image.bottom-left{
+            bottom:-3rem;
+            left:-8rem;
+            transform:rotate(2deg);
+        }
+        
+        /* Pull quote */
+        .quote{
+            font-size:var(--step-3);
+            font-weight:300;
+            line-height:1.2;
+            letter-spacing:-.03em;
+            margin-block:6rem;
+            padding-left:2rem;
+            border-left:4px solid var(--ink);
+        }
+        
+        /* ———————————— 8. Vision Section */
+        .vision-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:4rem;
+            margin-top:6rem;
+        }
+        
+        .vision-item{
+            position:relative;
+        }
+        
+        .vision-item h5{
+            margin-bottom:1rem;
+        }
+        
+        /* CHAOS: Second item offset */
+        .vision-item:nth-child(2){
+            margin-top:4rem;
+        }
+        
+        /* Vision item images */
+        .vision-item-image{
+            width:100%;
+            height:200px;
+            margin-bottom:1.5rem;
+            overflow:hidden;
+            transform:rotate(-1deg);
+        }
+        
+        .vision-item-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        @media(max-width:768px){
+            .vision-grid{
+                grid-template-columns:1fr;
+            }
+            .vision-item:nth-child(2){
+                margin-top:0;
+            }
+        }
+        
+        /* ———————————— 9. Creative Section */
+        .creative-layout{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:var(--gutter);
+            align-items:start;
+            margin-block:6rem;
+        }
+        
+        .creative-text{
+            grid-column:span 5;
+        }
+        
+        .creative-image{
+            grid-column:span 7;
+            position:relative;
+            height:500px;
+            transform:rotate(-1deg) translateX(4rem);
+        }
+        
+        .creative-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        /* Alternating layout */
+        .creative-layout:nth-child(even) .creative-text{
+            grid-column:8/13;
+            order:2;
+        }
+        
+        .creative-layout:nth-child(even) .creative-image{
+            grid-column:1/7;
+            order:1;
+            transform:rotate(1deg) translateX(-4rem);
+        }
+        
+        /* Full-width image break */
+        .image-break{
+            margin-block:8rem;
+            height:50vh;
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .image-break img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        /* Image grid */
+        .image-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:2rem;
+            margin-block:4rem;
+        }
+        
+        .image-grid-item{
+            height:300px;
+            overflow:hidden;
+            transform:rotate(-1deg);
+        }
+        
+        .image-grid-item:nth-child(even){
+            transform:rotate(1deg);
+            margin-top:2rem;
+        }
+        
+        .image-grid-item img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        @media(max-width:768px){
+            .creative-text,
+            .creative-image,
+            .creative-layout:nth-child(even) .creative-text,
+            .creative-layout:nth-child(even) .creative-image{
+                grid-column:span 12;
+                transform:none;
+            }
+            
+            .image-grid{
+                grid-template-columns:1fr;
+            }
+        }
+        
+        /* ———————————— 10. Music Section */
+        .music-bg{
+            background:#FAFAFA;
+            margin-inline:calc(var(--gutter) * -2);
+            padding-inline:calc(var(--gutter) * 2);
+        }
+        
+        /* ———————————— 11. Timeline */
+        .timeline{
+            position:relative;
+            padding-top:4rem;
+        }
+        
+        .timeline-line{
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            height:1px;
+            background:var(--ink);
+            opacity:.1;
+        }
+        
+        .timeline-items{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:3rem;
+            position:relative;
+        }
+        
+        .timeline-item{
+            padding-top:2rem;
+        }
+        
+        .timeline-marker{
+            position:absolute;
+            top:-6px;
+            left:0;
+            width:12px;
+            height:12px;
+            background:var(--ink);
+            border-radius:50%;
+        }
+        
+        @media(max-width:768px){
+            .timeline-items{
+                grid-template-columns:1fr;
+            }
+        }
+        
+        /* ———————————— 12. KPI Section */
+        .kpi-section{
+            background:var(--ink);
+            color:var(--bg);
+            margin-inline:calc(var(--gutter) * -2);
+            padding:8rem var(--gutter);
+        }
+        
+        .kpi-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:4rem;
+        }
+        
+        .kpi-number{
+            font-size:var(--step-6);
+            font-weight:900;
+            letter-spacing:-.06em;
+            line-height:1;
+            margin-bottom:.5rem;
+        }
+        
+        .kpi-label{
+            font-size:var(--step--1);
+            font-weight:400;
+            letter-spacing:-.01em;
+            opacity:.7;
+        }
+        
+        /* ———————————— 13. Footer */
+        .footer{
+            padding-block:8rem;
+            text-align:center;
+        }
+        
+        .footer-title{
+            font-size:var(--step-5);
+            margin-bottom:2rem;
+            letter-spacing:-.05em;
+        }
+        
+        .btn{
+            display:inline-block;
+            padding:1rem 2rem;
+            border:2px solid var(--ink);
+            font-weight:500;
+            letter-spacing:-.02em;
+            transition:all .2s;
+            margin:.5rem;
+        }
+        
+        .btn:hover{
+            background:var(--ink);
+            color:var(--bg);
+            text-decoration:none;
+        }
+        
+        .btn-primary{
+            background:var(--ink);
+            color:var(--bg);
+        }
+        
+        .btn-primary:hover{
+            background:transparent;
+            color:var(--ink);
+        }
+        
+        /* ———————————— 14. Utilities */
+        .spacer-xs{height:1rem;}
+        .spacer-sm{height:2rem;}
+        .spacer-md{height:3rem;}
+        .spacer-lg{height:4rem;}
+        .spacer-xl{height:6rem;}
+        
+        .text-center{text-align:center;}
+        .opacity-50{opacity:.5;}
+        .opacity-20{opacity:.2;}
+        
+        /* ———————————— 15. New Section Styles */
+        .words-display{
+            font-size:var(--step-3);
+            font-weight:300;
+            letter-spacing:-.03em;
+            text-align:center;
+            margin-block:4rem;
+        }
+        
+        .words-display span{
+            display:inline-block;
+            margin:0 1rem;
+        }
+        
+        /* ———————————— 16. Image Stack Styles */
+        .image-stack{
+            position:relative;
+            width:100%;
+            height:500px;
+            cursor:pointer;
+            margin-block:4rem;
+        }
+        
+        .image-stack-item{
+            position:absolute;
+            width:80%;
+            height:80%;
+            overflow:hidden;
+            transition:all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow:0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .image-stack-item img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        .image-stack-item:nth-child(1){
+            top:0;
+            left:0;
+            z-index:3;
+        }
+        
+        .image-stack-item:nth-child(2){
+            top:20px;
+            left:20px;
+            z-index:2;
+            opacity:0.9;
+        }
+        
+        .image-stack-item:nth-child(3){
+            top:40px;
+            left:40px;
+            z-index:1;
+            opacity:0.8;
+        }
+        
+        /* Expanded state */
+        .image-stack.expanded{
+            height:auto;
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:2rem;
+        }
+        
+        .image-stack.expanded .image-stack-item{
+            position:relative;
+            top:0!important;
+            left:0!important;
+            width:100%;
+            height:400px;
+            opacity:1!important;
+        }
+        
+        .stack-close{
+            position:absolute;
+            top:-40px;
+            right:0;
+            font-size:var(--step-1);
+            cursor:pointer;
+            display:none;
+        }
+        
+        .image-stack.expanded .stack-close{
+            display:block;
+        }
+        
+        /* ———————————— 17. Print Styles */
+        @media print{
+            @page{margin:1in;}
+            body{background:#fff;color:#000;}
+            .nav{display:none;}
+            section{padding-block:3rem;}
+            .hero-image,.large-image{transform:none;}
+        }
+        /* ———————————— 18. Editorial Section Header Accent ———————————— */
+        .section-header-accent {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .header-bar {
+            width: 8px;
+            height: 2.5rem;
+            background: var(--accent);
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        h2.section-title {
+            position: relative;
+            z-index: 1;
+            background: none;
+            padding-left: 0;
+            margin: 0;
+        }
+        h2.section-title[data-section]::before {
+            content: attr(data-section);
+            position: absolute;
+            left: -2.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 3.5rem;
+            color: var(--accent);
+            opacity: 0.08;
+            font-weight: 900;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner container">
+            <div class="nav-logo">HUDSON INGRAM</div>
+            <ul class="nav-links">
+                <li><a href="#positioning" class="nav-link active">Positioning</a></li>
+                <li><a href="#brand" class="nav-link">Brand</a></li>
+                <li><a href="#music" class="nav-link">Music</a></li>
+                <li><a href="#visual" class="nav-link">Visual</a></li>
+                <li><a href="#strategy" class="nav-link">Strategy</a></li>
+                <li><a href="#vision" class="nav-link">Vision</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Hero / Executive Summary -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="display" data-misreg="SEPTEMBER 2025">SEPTEMBER<br>2025</h1>
+                <p class="lead">Hudson Ingram<br>Interscope Records × Aaron Dessner<br>Strategic Positioning & Creative Blueprint</p>
+                <div class="spacer-md"></div>
+                <p class="opacity-50">This campaign transforms Hudson from emerging talent to essential voice<br>by balancing artistic credibility with mainstream accessibility.</p>
+                <div class="spacer-sm"></div>
+                <p><strong>Strategic North Star:</strong><br>
+                Balance cultural credibility with commercial firepower through<br>disciplined execution and leveraged serendipity.</p>
+            </div>
+        </div>
+        <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" 
+             alt="Hudson Ingram" 
+             class="hero-image"/>
+    </section>
+    
+    <!-- Artist Positioning -->
+    <section id="positioning" style="position:relative;">
+        <div class="accent-image top-right">
+            <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Accent"/>
+        </div>
+        
+        <div class="container">
+            <p class="section-marker">01 — ARTIST POSITIONING</p>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="01">THE EVOLVED<br>AMERICAN<br>STORYTELLER</h2>
+                    </div>
+                    <div class="spacer-md"></div>
+                    <p class="lead">
+                        Hudson occupies untapped territory in the market — the sophisticated vulnerability that made Taylor Swift a generation's voice, delivered through a distinctly masculine lens.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-6">
+                    <h5>Core Proposition</h5>
+                    <p>Hudson Ingram represents the evolution of American songwriting - where Texas authenticity meets contemporary pop sophistication.</p>
+                    <div class="spacer-sm"></div>
+                    <h5>Key Elements</h5>
+                    <p>• 18-year-old Nashville-based artist from Texas<br>
+                    • Signed to Interscope Records / Aaron Dessner joint venture<br>
+                    • September rollout positions Hudson as the bridge between indie credibility and mainstream accessibility<br>
+                    • Target: Convert cultural cache into commercial momentum</p>
+                </div>
+                <div class="col-6">
+                    <h5>Hudson occupies the white space between:</h5>
+                    <p>• Taylor Swift's narrative precision<br>
+                    • Harry Styles' genre fluidity<br>
+                    • Noah Kahan's emotional authenticity<br>
+                    • The National's sonic sophistication</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="large-image break-grid">
+            <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" 
+                 alt="Hudson portrait"/>
+        </div>
+        
+        <div class="container">
+            <div class="grid">
+                <div class="col-10">
+                    <h3>Positioning Pillars</h3>
+                    <div class="spacer-md"></div>
+                </div>
+                <div class="col-3">
+                    <h5>01</h5>
+                    <p><strong>Crafted Vulnerability</strong><br>
+                    Songs that feel like diary entries set to ambitious production</p>
+                </div>
+                <div class="col-3">
+                    <h5>02</h5>
+                    <p><strong>Geographic Authenticity</strong><br>
+                    Texas roots informing universal themes</p>
+                </div>
+                <div class="col-3">
+                    <h5>03</h5>
+                    <p><strong>Generational Bridge</strong><br>
+                    18-year-old perspective with timeless sensibility</p>
+                </div>
+                <div class="col-3">
+                    <h5>04</h5>
+                    <p><strong>Collaborative Elevation</strong><br>
+                    Dessner production bringing indie prestige to pop accessibility</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NEW: The Missing Archetype -->
+    <section style="position:relative;">
+        <div class="container">
+            <p class="section-marker">02 — THE MISSING ARCHETYPE</p>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="02">A CULTURAL<br>VACUUM</h2>
+                    </div>
+                    <div class="spacer-md"></div>
+                    <p class="lead">
+                        There's a visible vacuum in pop culture: we lack an authentic, scale-worthy male artist that captures the emotional honesty and accessibility of legacy names like Bieber, Mendes, or Mayer.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-6">
+                    <p>Meanwhile, female artists continue to break through with depth and resonance. Hudson fills that void. He is not an industry creation—he's a generational writer, grounded in self-awareness and cultural intuition.</p>
+                </div>
+                <div class="col-6">
+                    <div class="image-stack" onclick="toggleStack(this)">
+                        <span class="stack-close">× Close</span>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Cultural context"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Cultural context"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Cultural context"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Image Break -->
+    <div class="image-break">
+        <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Visual break"/>
+    </div>
+    
+    <!-- Brand Architecture -->
+    <section id="brand" style="position:relative;">
+        <div class="accent-image bottom-left">
+            <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Accent"/>
+        </div>
+        
+        <div class="container">
+            <p class="section-marker">03 — BRAND ARCHITECTURE</p>
+            
+            <div class="grid">
+                <div class="col-7">
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="03">THE THOUGHTFUL<br>PROVOCATEUR</h2>
+                    </div>
+                    <div class="spacer-md"></div>
+                    <p class="lead">
+                        Every touchpoint reinforces Hudson's core identity: the thoughtful provocateur who makes depth feel effortless.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-4">
+                    <h5>Core Brand Identity</h5>
+                    <p><strong>Archetype:</strong> The Thoughtful Provocateur<br>
+                    <strong>Voice:</strong> Conversational precision, never precious<br>
+                    <strong>Visual Grammar:</strong> Filmic naturalism meets considered composition</p>
+                </div>
+                <div class="col-4">
+                    <h5>Brand Hierarchy</h5>
+                    <p>1. Primary: Sophisticated vulnerability<br>
+                    2. Secondary: American authenticity<br>
+                    3. Tertiary: Genre-fluid exploration</p>
+                </div>
+                <div class="col-4">
+                    <h5>Non-negotiables</h5>
+                    <p>• No retromania or nostalgia-bait<br>
+                    • Accessibility without condescension<br>
+                    • Depth without pretension<br>
+                    • Never sacrifice authenticity for virality</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="image-grid">
+                <div class="image-grid-item">
+                    <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Brand visual"/>
+                </div>
+                <div class="image-grid-item">
+                    <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Brand visual"/>
+                </div>
+                <div class="image-grid-item">
+                    <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Brand visual"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NEW: The Modern Heartthrob -->
+    <section>
+        <div class="container">
+            <p class="section-marker">04 — THE MODERN HEARTTHROB</p>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="04">EMOTIONAL<br>INTELLIGENCE</h2>
+                    </div>
+                    <div class="spacer-md"></div>
+                    <p class="lead">
+                        Hudson is the boy-next-door with emotional intelligence. A modern American heartthrob. Magnetic without being performative.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <p>Someone guys want to be around and girls want to be close to. He's cinematic, warm, and rooted in realness—accessibly iconic.</p>
+                    <div class="spacer-sm"></div>
+                    <p>The modern heartthrob doesn't pose. He exists. He doesn't perform vulnerability. He embodies it.</p>
+                </div>
+                <div class="creative-image">
+                    <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Modern heartthrob"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NEW: Hudson In 5 Words -->
+    <section class="music-bg">
+        <div class="container">
+            <p class="section-marker">05 — HUDSON IN 5 WORDS</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="05">HUDSON IN<br>5 WORDS</h2>
+            </div>
+            <div class="words-display">
+                <span>EARNEST.</span>
+                <span>MAGNETIC.</span>
+                <span>CINEMATIC.</span>
+                <span>FAMILIAR.</span>
+                <span>MYTHIC.</span>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="words-display opacity-50">
+                <span>Soft power.</span>
+                <span>Hard truths.</span>
+                <span>Clean lines.</span>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Musical Direction -->
+    <section id="music" class="music-bg">
+        <div class="container">
+            <p class="section-marker">06 — MUSICAL DIRECTION</p>
+            
+            <div class="grid">
+                <div class="col-10">
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="06">SONIC<br>ARCHITECTURE</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        The September release establishes Hudson's sonic signature: where bedroom intimacy meets orchestral ambition, produced by the architect of modern indie's most affecting moments.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <h5>Sound Architecture for September Release</h5>
+                    <p><strong>Production Philosophy:</strong> Aaron Dessner's orchestral indie meets contemporary pop urgency</p>
+                    <div class="spacer-sm"></div>
+                    <p><strong>Sonic Palette:</strong><br>
+                    • Core: Acoustic instruments processed through modern lens<br>
+                    • Texture: Strings/brass for emotional weight<br>
+                    • Rhythm: Organic drums with programmed precision<br>
+                    • Space: Cathedral reverbs contrasting intimate vocals</p>
+                </div>
+                <div class="creative-image">
+                    <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Studio reference"/>
+                </div>
+            </div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <h5>Reference Points</h5>
+                    <p>• The National's emotional complexity<br>
+                    • Phoebe Bridgers' confessional clarity<br>
+                    • Taylor Swift's folklore/evermore era sophistication<br>
+                    • Bleachers' maximalist moments</p>
+                    <div class="spacer-sm"></div>
+                    <p><strong>September Single:</strong> Lead with accessibility, follow with depth. The song should work stripped down to voice and guitar, but soar with full production.</p>
+                </div>
+                <div class="creative-image">
+                    <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Musical reference"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Another large image break -->
+    <div class="large-image break-grid" style="margin-left:auto;margin-right:-10vw;transform:rotate(-2deg);">
+        <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Hudson performance"/>
+    </div>
+    
+    <!-- Visual Strategy -->
+    <section id="visual">
+        <div class="container">
+            <p class="section-marker">07 — VISUAL STRATEGY</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="07">VISUAL<br>STRATEGY</h2>
+            </div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <h3>AESTHETIC<br>FRAMEWORK</h3>
+                    <div class="spacer-sm"></div>
+                    <p class="lead">Hudson's visual language speaks in American vernacular — where documentary truth meets cinematic beauty, all washed in shades of blue.</p>
+                    <div class="spacer-sm"></div>
+                    <p><strong>Primary Visual Direction:</strong><br>
+                    • Documentary realism elevated through composition<br>
+                    • Natural light as primary tool<br>
+                    • Environments that tell stories<br>
+                    • Blue as core color - sky, water, denim, twilight</p>
+                </div>
+                <div class="creative-image">
+                    <div class="image-stack" onclick="toggleStack(this)">
+                        <span class="stack-close">× Close</span>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Visual reference"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Visual reference"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Visual reference"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Visual reference"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Visual reference"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Visual reference"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <h3>COLOR<br>PHILOSOPHY</h3>
+                    <div class="spacer-sm"></div>
+                    <p>• Blue anchors the palette — from deep indigo to pale sky<br>
+                    • Warm earth tones as supporting cast<br>
+                    • Selective pops for narrative emphasis<br>
+                    • Film grain for texture, not nostalgia</p>
+                    <div class="spacer-sm"></div>
+                    <p><strong>Photography Approach:</strong><br>
+                    • Environmental portraits over studio shoots<br>
+                    • Movement and candid moments prioritized<br>
+                    • Every image advances narrative<br>
+                    • Texas landscapes meeting intimate interiors</p>
+                </div>
+                <div class="creative-image">
+                    <div class="image-stack" onclick="toggleStack(this)">
+                        <span class="stack-close">× Close</span>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Color reference"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Color reference"/>
+                        </div>
+                        <div class="image-stack-item">
+                            <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Color reference"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <h3>KEY VISUAL<br>COLLABORATORS</h3>
+                    <div class="spacer-sm"></div>
+                    <p><strong>Photography:</strong> Renell Medrano, Joshua Woods aesthetic<br>
+                    <strong>Video:</strong> Jacob Bixenman, Gordy De St. Jeor approach</p>
+                </div>
+                <div class="creative-image">
+                    <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" 
+                         alt="Social reference"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NEW: Almost Within Reach -->
+    <section>
+        <div class="container">
+            <p class="section-marker">08 — ALMOST WITHIN REACH</p>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="08">TACTILE &<br>INTIMATE</h2>
+                    </div>
+                    <div class="spacer-md"></div>
+                    <p class="lead">
+                        Visual tone = tactile, intimate, and cinematic. Hudson feels like someone you almost know—or wish you did.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="vision-grid">
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Cover art approach"/>
+                    </div>
+                    <h5>Cover Art</h5>
+                    <p>Emotive, composed, often revealing less than expected</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Photo approach"/>
+                    </div>
+                    <h5>Photos</h5>
+                    <p>Natural light, soft focus, hints of narrative</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Video approach"/>
+                    </div>
+                    <h5>Music Videos</h5>
+                    <p>Fragmented scenes, small-town mystique, character-driven</p>
+                </div>
+            </div>
+            
+            <div class="spacer-md"></div>
+            
+            <div class="grid">
+                <div class="col-12">
+                    <p class="text-center"><strong>Social:</strong> Lo-fi visuals, romantic blur, personal yet not overexposed</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NEW: Artful, Not Expensive -->
+    <section class="music-bg">
+        <div class="container">
+            <p class="section-marker">09 — ARTFUL, NOT EXPENSIVE</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="09">CONSTRAINT AS<br>BRAND CODE</h2>
+            </div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        Hudson's brand doesn't need glossy budgets. Everything should feel considered, raw, and beautiful.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-4">
+                    <h5>YouTube</h5>
+                    <p>One-take, analog textures, minimal sets</p>
+                </div>
+                <div class="col-4">
+                    <h5>Spotify Canvas</h5>
+                    <p>Textural animation, abstract storytelling</p>
+                </div>
+                <div class="col-4">
+                    <h5>Social</h5>
+                    <p>Journal-style captions, fragmented visuals, mystery with warmth</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="image-stack" onclick="toggleStack(this)">
+                <span class="stack-close">× Close</span>
+                <div class="image-stack-item">
+                    <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Production approach"/>
+                </div>
+                <div class="image-stack-item">
+                    <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Production approach"/>
+                </div>
+                <div class="image-stack-item">
+                    <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Production approach"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Content Strategy -->
+    <section style="position:relative;">
+        <div class="accent-image top-right">
+            <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Accent"/>
+        </div>
+        
+        <div class="container">
+            <p class="section-marker">10 — CONTENT PILLAR STRATEGY</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="10">FIVE CORE<br>CONTENT STREAMS</h2>
+            </div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        Content strategy follows a simple rule: if it doesn't deepen Hudson's story or strengthen fan connection, it doesn't exist.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="vision-grid">
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Process"/>
+                    </div>
+                    <h5>1. Process Documentation (25%)</h5>
+                    <p>• Studio footage with Dessner<br>
+                    • Songwriting moments<br>
+                    • Creative decision-making visible</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Environmental"/>
+                    </div>
+                    <h5>2. Environmental Storytelling (25%)</h5>
+                    <p>• Texas homecoming content<br>
+                    • Nashville creative community<br>
+                    • American landscape as character</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Collaborative"/>
+                    </div>
+                    <h5>3. Collaborative Moments (20%)</h5>
+                    <p>• Featured artist interactions<br>
+                    • Producer relationships<br>
+                    • Musical community building</p>
+                </div>
+            </div>
+            
+            <div class="spacer-md"></div>
+            
+            <div class="grid">
+                <div class="col-6">
+                    <h5>4. Performance Evolution (20%)</h5>
+                    <p>• Intimate sessions to festival stages<br>
+                    • Technical growth visible<br>
+                    • Audience connection documented</p>
+                </div>
+                <div class="col-6">
+                    <h5>5. Cultural Commentary (10%)</h5>
+                    <p>• Hudson's generational perspective<br>
+                    • Musical influences explored<br>
+                    • Thoughtful not reactive</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Full-width image break -->
+    <div class="image-break">
+        <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Hudson portrait break"/>
+    </div>
+    
+    <!-- Digital Strategy -->
+    <section class="music-bg">
+        <div class="container">
+            <p class="section-marker">11 — DIGITAL ECOSYSTEM PHILOSOPHY</p>
+            <div class="grid">
+                <div class="col-10">
+                    <div class="section-header-accent">
+                        <div class="header-bar"></div>
+                        <h2 class="section-title" data-section="11">STORYTELLING WITHOUT<br>COMPROMISE</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        We use digital platforms to build Hudson's legacy in real-time, creating content that serves the archive as much as the algorithm.
+                    </p>
+                    <div class="spacer-md"></div>
+                    <p><strong>Core Principle:</strong> Use digital platforms to deepen Hudson's narrative without diluting his artistry. We're building a sustainable artist, not a viral moment.</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-3">
+                    <h5>Platform Philosophy</h5>
+                    <p><strong>Quality over quantity</strong><br>
+                    Every post advances the story</p>
+                    <div class="spacer-sm"></div>
+                    <p><strong>Depth over surface</strong><br>
+                    Give fans reasons to return</p>
+                </div>
+                <div class="col-3">
+                    <div class="spacer-lg"></div>
+                    <p><strong>Mystery maintained</strong><br>
+                    Not everything needs documentation</p>
+                    <div class="spacer-sm"></div>
+                    <p><strong>Authenticity protected</strong><br>
+                    Hudson's voice, not algorithmic optimization</p>
+                </div>
+                <div class="col-6">
+                    <h5>Key Differentiators from "Common" Pop</h5>
+                    <p>• No trend-chasing content<br>
+                    • Artistic documentation over lifestyle flexing<br>
+                    • Community building over follower accumulation<br>
+                    • Long-form storytelling in short-form mediums</p>
+                    <div class="spacer-sm"></div>
+                    <p><strong>The Anti-Benson Boone:</strong> Where others optimize for the algorithm, we optimize for the archive. Each piece of content should feel valuable in 5 years.</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="image-grid">
+                <div class="image-grid-item">
+                    <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Digital strategy"/>
+                </div>
+                <div class="image-grid-item">
+                    <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Digital strategy"/>
+                </div>
+                <div class="image-grid-item">
+                    <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Digital strategy"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Media Strategy -->
+    <section>
+        <div class="container">
+            <p class="section-marker">12 — MEDIA STRATEGY THOUGHTSTARTERS</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="12">BUILDING CREDIBILITY<br>THAT SCALES</h2>
+            </div>
+            
+            <div class="grid">
+                <div class="col-12">
+                    <h5>The Dual Ambition</h5>
+                    <p>Hudson as the artist other artists revere AND the one who fills stadiums. The modern rock star who remains the boy next door — achieving Taylor Swift-scale impact while maintaining Phoebe Bridgers-level artistic respect.</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <h5>Near-Term Foundation Building</h5>
+                    <div class="spacer-sm"></div>
+                    <p><strong>Performance Platforms:</strong><br>
+                    • Vevo intimate sessions - stripped arrangements<br>
+                    • Jam in the Van - authentic, unpolished energy<br>
+                    • Tiny Desk submission - credibility marker<br>
+                    • KEXP session - indie co-sign<br>
+                    • Later... with Jools Holland - international introduction</p>
+                </div>
+                <div class="creative-image">
+                    <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Media strategy"/>
+                </div>
+            </div>
+            
+            <div class="creative-layout">
+                <div class="creative-text">
+                    <h5>Editorial Strategy</h5>
+                    <div class="spacer-sm"></div>
+                    <p>• Music blog premieres building to mainstream features<br>
+                    • Substack newsletter features creating thoughtful narrative<br>
+                    • Podcast deep-dives establishing artistic depth<br>
+                    • University radio creating grassroots heat<br>
+                    • Regional press in Texas/Tennessee building hometown hero status</p>
+                </div>
+                <div class="creative-image">
+                    <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Editorial strategy"/>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-10 offset-1">
+                    <p class="quote">
+                        "The Strategic Path: Start where the tastemakers live, build undeniable momentum that mainstream media cannot ignore. Create the conditions where Hudson's arena tour feels both inevitable and earned — where both Pitchfork and People Magazine claim him as their own."
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- NEW: Where Discovery Happens -->
+    <section class="music-bg">
+        <div class="container">
+            <p class="section-marker">13 — WHERE DISCOVERY HAPPENS</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="13">CULTURAL<br>PLACEMENT</h2>
+            </div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        Build credibility and early fandom by being discoverable in the right places. Let people "find" Hudson and claim him as their own gem.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="vision-grid">
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Editorial platforms"/>
+                    </div>
+                    <h5>Editorial & Live Platforms</h5>
+                    <p>• Mahogany<br>
+                    • La Blogothèque<br>
+                    • ColorsxStudios</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Narrative formats"/>
+                    </div>
+                    <h5>Narrative Formats</h5>
+                    <p>• Lo-fi YouTube series<br>
+                    • Visual poems<br>
+                    • Intimate documentaries</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Cultural crossover"/>
+                    </div>
+                    <h5>Cultural Crossover</h5>
+                    <p>• Literary zines<br>
+                    • Short film festivals<br>
+                    • Photo journals</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Another large image -->
+    <div class="large-image break-grid" style="transform:rotate(-1deg);">
+        <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Visual break"/>
+    </div>
+    
+    <!-- Partnership Strategy -->
+    <section>
+        <div class="container">
+            <p class="section-marker">14 — PARTNERSHIP ALIGNMENT</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="14">BRAND RELATIONSHIPS<br>THAT ENHANCE</h2>
+            </div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        Every partnership must pass the inevitability test — feeling like a natural extension of Hudson's world rather than a commercial intrusion.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="vision-grid">
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Fashion"/>
+                    </div>
+                    <h5>Fashion/Lifestyle</h5>
+                    <p>• Levi's - American authenticity angle<br>
+                    • Film camera brands - documentation aesthetic<br>
+                    • Independent bookstores - literary connection<br>
+                    • Vinyl pressing plants - physical music commitment</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Platform"/>
+                    </div>
+                    <h5>Platform Partnerships</h5>
+                    <p>• Spotify RADAR - artist development focus<br>
+                    • Apple Music Up Next - when timing aligns<br>
+                    • Bandcamp presence - indie credibility<br>
+                    • SXSW 2026 - Texas homecoming moment</p>
+                </div>
+                <div class="vision-item">
+                    <div class="vision-item-image">
+                        <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Cultural"/>
+                    </div>
+                    <h5>Cultural Alignment</h5>
+                    <p>• Small venue preservation initiatives<br>
+                    • Music education access programs<br>
+                    • Mental health awareness (organic integration)<br>
+                    • Environmental consciousness (actions over words)</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-8 offset-2">
+                    <p class="text-center"><strong>Philosophy:</strong> Every partnership should feel inevitable, not transactional. If it requires explanation, it's wrong for Hudson.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Live Philosophy -->
+    <section class="music-bg" style="position:relative;">
+        <div class="accent-image bottom-left">
+            <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Accent"/>
+        </div>
+        
+        <div class="container">
+            <p class="section-marker">15 — LIVE PERFORMANCE PHILOSOPHY</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="15">THE STAGE AS<br>SACRED SPACE</h2>
+            </div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        Hudson's live show transforms any venue into an intimate conversation, scaling emotional connection rather than just production value.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-4">
+                    <h5>Core Principles</h5>
+                    <p>• Storytelling between songs is essential<br>
+                    • Acoustic moments are mandatory<br>
+                    • Visual production subtle but impactful<br>
+                    • Setlist as emotional journey</p>
+                </div>
+                <div class="col-4">
+                    <h5>Performance Evolution</h5>
+                    <p>• Begin in listening rooms<br>
+                    • Graduate to theaters<br>
+                    • Festivals as victory laps<br>
+                    • Always maintain intimate moments</p>
+                </div>
+                <div class="col-4">
+                    <h5>Merchandise Philosophy</h5>
+                    <p>• Products as art objects<br>
+                    • Limited runs over mass production<br>
+                    • Collaborative designs with visual artists<br>
+                    • Sustainability prioritized</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-8 offset-2">
+                    <h4 class="text-center">The Hudson Show</h4>
+                    <p class="lead text-center">Should feel like being invited into his living room,<br>even in a 5,000-cap venue.</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="image-stack" onclick="toggleStack(this)">
+                <span class="stack-close">× Close</span>
+                <div class="image-stack-item">
+                    <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Live performance"/>
+                </div>
+                <div class="image-stack-item">
+                    <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Live performance"/>
+                </div>
+                <div class="image-stack-item">
+                    <img src="https://i.pinimg.com/736x/a8/08/0f/a8080f0393c45e21d06acb37d2ea3c58.jpg" alt="Live performance"/>
+                </div>
+                <div class="image-stack-item">
+                    <img src="https://www.euphoriazine.com/wp-content/uploads/2024/01/thumbnail_image4.jpeg" alt="Live performance"/>
+                </div>
+                <div class="image-stack-item">
+                    <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Live performance"/>
+                </div>
+                <div class="image-stack-item">
+                    <img src="https://i.pinimg.com/736x/b9/15/fe/b915fe9ad211dcdc3665b1feb12a2934.jpg" alt="Live performance"/>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Long-Term Vision -->
+    <section id="vision">
+        <div class="container">
+            <p class="section-marker">16 — LONG-TERM VISION</p>
+            <div class="section-header-accent">
+                <div class="header-bar"></div>
+                <h2 class="section-title" data-section="16">12—24<br>MONTHS</h2>
+            </div>
+            
+            <div class="spacer-md"></div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        We're architecting a career built to span decades — where artistic growth and commercial success amplify rather than compromise each other.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="timeline">
+                <div class="timeline-line"></div>
+                <div class="timeline-items">
+                    <div class="timeline-item">
+                        <span class="timeline-marker"></span>
+                        <h5>Year 1 Foundation</h5>
+                        <div class="spacer-sm"></div>
+                        <p>• Establish Hudson as essential new voice<br>
+                        • Build sustainable touring practice<br>
+                        • Create collaborative network<br>
+                        • Develop distinctive visual language<br>
+                        • Cultivate artist community respect</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <span class="timeline-marker"></span>
+                        <h5>Year 2 Expansion</h5>
+                        <div class="spacer-sm"></div>
+                        <p>• International market development organically<br>
+                        • Festival circuit integration<br>
+                        • Cultural conversation participation<br>
+                        • Artistic risk-taking encouraged<br>
+                        • Second album positioning begun</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <span class="timeline-marker"></span>
+                        <h5>Ultimate Positioning</h5>
+                        <div class="spacer-sm"></div>
+                        <p>Hudson Ingram as the songwriter who articulated how Generation Z navigates adulthood — with all its contradictions, beauty, and complexity.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <span class="timeline-marker"></span>
+                        <h5>Final Thought</h5>
+                        <div class="spacer-sm"></div>
+                        <p>We're not building a pop star. We're developing an artist whose pop success feels like a natural consequence of undeniable talent and authentic connection.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="large-image break-grid" style="margin-top:8rem;transform:rotate(2deg);">
+            <img src="https://i.pinimg.com/736x/96/13/be/9613beaa0d3aa1cd23aa1568b59abda0.jpg" alt="Vision"/>
+        </div>
+    </section>
+    
+    <!-- Final Thought -->
+    <section class="kpi-section">
+        <div class="container">
+            <div class="grid">
+                <div class="col-10 offset-1">
+                    <h3 class="text-center" style="color:var(--bg);">GUIDING PRINCIPLE</h3>
+                    <div class="spacer-md"></div>
+                    <p class="lead text-center" style="color:var(--bg);max-width:none;">
+                        Every decision should be filtered through this lens:<br>
+                        Does this deepen Hudson's story or dilute it?
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Final image before footer -->
+    <div class="image-break">
+        <img src="https://i.pinimg.com/736x/ef/03/f2/ef03f25d7db44ffd140da0d16d7e7104.jpg" alt="Hudson final"/>
+    </div>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <h2 class="footer-title">September 2025</h2>
+            <p class="lead text-center">
+                Hudson Ingram<br>
+                Interscope Records × Aaron Dessner
+            </p>
+            
+            <div class="spacer-xl"></div>
+            
+            <p class="opacity-50">© 2025 Hudson Ingram • Strategic Blueprint by All My Friends</p>
+        </div>
+    </footer>
+    
+    <!-- Minimal JS -->
+    <script>
+        // Active nav
+        const sections = document.querySelectorAll('section[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                if (scrollY >= section.offsetTop - 100) {
+                    current = section.id;
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+            });
+        });
+        
+        // Smooth scroll
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        // Toggle image stack
+        function toggleStack(stack) {
+            stack.classList.toggle('expanded');
+        }
+    </script>
+</body>
+</html>
