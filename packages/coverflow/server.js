@@ -848,34 +848,85 @@ app.post('/upload-image', requireAuth('editor'), assetUpload.any(), async (req, 
     console.log(`[UPLOAD] Processing file: ${filename}, type: ${contentType}, size: ${buffer.length} bytes`);
     
     try {
-        // Handle HEIC files - convert to web-compatible format
-        if (contentType === 'image/heic' || filename.toLowerCase().endsWith('.heic')) {
-            console.log('[UPLOAD] Converting HEIC to JPEG...');
-            try {
-                buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
-                filename = filename.replace(/\.heic$/i, '.jpg');
-                contentType = 'image/jpeg';
-                console.log('[UPLOAD] HEIC conversion successful');
-            } catch (heicError) {
-                console.error('[UPLOAD] HEIC conversion failed:', heicError.message);
-                // Continue with original file if conversion fails
-            }
-        }
+        // Comprehensive file conversion for web compatibility
+        const originalContentType = contentType;
         
-        // Handle TIFF files
-        if (contentType === 'image/tiff') {
-            console.log('[UPLOAD] Converting TIFF to PNG...');
+        // Handle ALL image formats - convert to web-compatible formats
+        if (contentType.startsWith('image/') || isImageByExtension(filename)) {
+            console.log(`[UPLOAD] Processing image file: ${filename}, original type: ${contentType}`);
+            
             try {
-                buffer = await sharp(file.buffer).png().toBuffer();
-                filename = filename.replace(/\.tif{1,2}$/i, '.png');
-                contentType = 'image/png';
-                console.log('[UPLOAD] TIFF conversion successful');
-            } catch (tiffError) {
-                console.error('[UPLOAD] TIFF conversion failed:', tiffError.message);
+                // For formats that need conversion to web-compatible versions
+                if (contentType === 'image/heic' || 
+                    contentType === 'image/heif' ||
+                    filename.toLowerCase().endsWith('.heic') || 
+                    filename.toLowerCase().endsWith('.heif')) {
+                    
+                    console.log('[UPLOAD] Converting HEIC/HEIF to JPEG...');
+                    buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
+                    filename = filename.replace(/\.heic?$/i, '.jpg');
+                    contentType = 'image/jpeg';
+                    
+                } else if (contentType === 'image/tiff' || 
+                          contentType === 'image/tif' ||
+                          filename.toLowerCase().endsWith('.tiff') || 
+                          filename.toLowerCase().endsWith('.tif')) {
+                    
+                    console.log('[UPLOAD] Converting TIFF to PNG...');
+                    buffer = await sharp(file.buffer).png({ quality: 90 }).toBuffer();
+                    filename = filename.replace(/\.tif{1,2}$/i, '.png');
+                    contentType = 'image/png';
+                    
+                } else if (contentType === 'image/bmp' || filename.toLowerCase().endsWith('.bmp')) {
+                    
+                    console.log('[UPLOAD] Converting BMP to JPEG...');
+                    buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
+                    filename = filename.replace(/\.bmp$/i, '.jpg');
+                    contentType = 'image/jpeg';
+                    
+                } else if (contentType === 'image/webp' || filename.toLowerCase().endsWith('.webp')) {
+                    
+                    // WebP is web-compatible, but convert to JPEG for broader compatibility
+                    console.log('[UPLOAD] Converting WebP to JPEG for compatibility...');
+                    buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
+                    filename = filename.replace(/\.webp$/i, '.jpg');
+                    contentType = 'image/jpeg';
+                    
+                } else if (isRawImageFormat(filename)) {
+                    
+                    console.log('[UPLOAD] Converting RAW image format to JPEG...');
+                    buffer = await sharp(file.buffer).jpeg({ quality: 90 }).toBuffer();
+                    filename = filename.replace(/\.(raw|cr2|nef|dng|orf|arw|rw2|pef|srw|x3f)$/i, '.jpg');
+                    contentType = 'image/jpeg';
+                    
+                } else {
+                    // For other image formats (JPEG, PNG, GIF), keep as-is but ensure they're optimized
+                    console.log('[UPLOAD] Optimizing existing web-compatible image...');
+                    if (contentType === 'image/jpeg' || filename.toLowerCase().endsWith('.jpg') || filename.toLowerCase().endsWith('.jpeg')) {
+                        // Optimize JPEG
+                        buffer = await sharp(file.buffer).jpeg({ quality: 85, progressive: true }).toBuffer();
+                    } else if (contentType === 'image/png' || filename.toLowerCase().endsWith('.png')) {
+                        // Optimize PNG
+                        buffer = await sharp(file.buffer).png({ quality: 85, progressive: true }).toBuffer();
+                    }
+                    // Keep GIF and SVG as-is since they have special properties
+                }
+                
+                console.log(`[UPLOAD] Image conversion successful: ${originalContentType} → ${contentType}`);
+                
+            } catch (conversionError) {
+                console.error('[UPLOAD] Image conversion failed:', conversionError.message);
+                console.log('[UPLOAD] Proceeding with original file...');
                 // Continue with original file if conversion fails
             }
         }
 
+        // Handle video files - keep original but note the type for thumbnails
+        if (contentType.startsWith('video/')) {
+            console.log(`[UPLOAD] Video file detected: ${filename}, type: ${contentType}`);
+            // Videos are kept as-is, but we'll extract thumbnails
+        }
+        
         // Upload original file first
         const gcsPath = [folder, filename].filter(Boolean).join('/');
         const bucket = gcsStorage.bucket(gcsBucketName);
@@ -1197,17 +1248,19 @@ app.post('/api/backup/restore/:type', requireAuth('admin'), async (req, res) => 
   }
 });
 
-// Enhanced thumbnail generation function
+// Enhanced thumbnail generation function with comprehensive format support
 async function generateThumbnail(buffer, filename, contentType) {
   const isVideo = contentType.startsWith('video/');
-  const isImage = contentType.startsWith('image/');
+  const isImage = contentType.startsWith('image/') || isImageByExtension(filename);
   
   console.log(`[THUMBNAIL] Generating thumbnail for: ${filename}, type: ${contentType}, isImage: ${isImage}`);
   
   try {
     if (isImage) {
-      // Handle all image formats including HEIC/JPEG conversions
+      // Handle ALL image formats with Sharp - it supports a huge range
       console.log(`[THUMBNAIL] Processing image with Sharp...`);
+      
+      // Sharp can handle: JPEG, PNG, WebP, AVIF, TIFF, GIF, SVG, HEIC, and many others
       const thumbnailBuffer = await sharp(buffer)
         .resize(300, 300, { 
           fit: 'cover', 
@@ -1224,24 +1277,51 @@ async function generateThumbnail(buffer, filename, contentType) {
         filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
         contentType: 'image/jpeg'
       };
+    } else if (isVideo) {
+      // For videos, try to extract an actual frame thumbnail
+      console.log(`[THUMBNAIL] Attempting video frame extraction for: ${filename}`);
+      
+      try {
+        const videoThumbnail = await extractVideoFrame(buffer, filename);
+        return {
+          buffer: videoThumbnail,
+          filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+          contentType: 'image/jpeg'
+        };
+      } catch (videoError) {
+        console.warn(`[THUMBNAIL] Video frame extraction failed, using dark placeholder:`, videoError.message);
+        // Fallback to dark solid color for videos
+        const darkThumbnail = await sharp({
+          create: {
+            width: 300,
+            height: 300,
+            channels: 3,
+            background: { r: 40, g: 40, b: 40 }
+          }
+        })
+        .jpeg({ quality: 85 })
+        .toBuffer();
+        
+        return {
+          buffer: darkThumbnail,
+          filename: filename.replace(/\.[^/.]+$/, '_thumb.jpg'),
+          contentType: 'image/jpeg'
+        };
+      }
     } else {
-      // For non-image files (video, audio, etc), create a simple solid color thumbnail
-      // This avoids complex SVG operations that might be causing server crashes
+      // For other file types, create a simple colored thumbnail
       console.log(`[THUMBNAIL] Creating simple color thumbnail for: ${filename} (${contentType})`);
       
-      // Create a simple solid color thumbnail
       const colorThumbnail = await sharp({
         create: {
           width: 300,
           height: 300,
           channels: 3,
-          background: isVideo ? { r: 40, g: 40, b: 40 } : { r: 200, g: 200, b: 200 }
+          background: { r: 200, g: 200, b: 200 }
         }
       })
       .jpeg({ quality: 85 })
       .toBuffer();
-      
-      console.log(`[THUMBNAIL] Simple thumbnail created successfully`);
       
       return {
         buffer: colorThumbnail,
@@ -1252,9 +1332,8 @@ async function generateThumbnail(buffer, filename, contentType) {
   } catch (error) {
     console.error(`[THUMBNAIL] Generation failed for ${filename}:`, error.message);
     
-    // Ultra-simple fallback - just a gray rectangle
+    // Ultra-simple fallback
     try {
-      console.log(`[THUMBNAIL] Using ultra-simple fallback for: ${filename}`);
       const fallbackBuffer = await sharp({
         create: {
           width: 300,
@@ -1278,6 +1357,87 @@ async function generateThumbnail(buffer, filename, contentType) {
   }
 }
 
+// Check if file is an image by extension (backup for when MIME type is wrong)
+function isImageByExtension(filename) {
+  const imageExtensions = [
+    '.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff', '.tif',
+    '.heic', '.heif', '.avif', '.svg', '.ico', '.raw', '.cr2', '.nef',
+    '.dng', '.orf', '.arw', '.rw2', '.pef', '.srw', '.x3f'
+  ];
+  
+  const ext = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+  return imageExtensions.includes(ext);
+}
+
+// Check if file is a RAW image format
+function isRawImageFormat(filename) {
+  const rawExtensions = [
+    '.raw', '.cr2', '.nef', '.dng', '.orf', '.arw', '.rw2', 
+    '.pef', '.srw', '.x3f', '.crw', '.dcr', '.mrw', '.raf', '.3fr'
+  ];
+  
+  const ext = filename.toLowerCase().substring(filename.lastIndexOf('.'));
+  return rawExtensions.includes(ext);
+}
+
+// Extract frame from video file for thumbnail
+async function extractVideoFrame(buffer, filename) {
+  return new Promise((resolve, reject) => {
+    const tempVideoPath = `/tmp/${Date.now()}_${filename.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+    const tempFramePath = `/tmp/${Date.now()}_frame.jpg`;
+    
+    try {
+      // Write video buffer to temp file
+      fs.writeFileSync(tempVideoPath, buffer);
+      
+      // Use FFmpeg to extract a single frame
+      ffmpeg(tempVideoPath)
+        .seekInput(1) // Seek to 1 second
+        .frames(1) // Extract only 1 frame
+        .output(tempFramePath)
+        .size('300x300')
+        .format('image2')
+        .on('end', () => {
+          try {
+            // Read the extracted frame
+            const frameBuffer = fs.readFileSync(tempFramePath);
+            
+            // Create a proper thumbnail from the frame
+            sharp(frameBuffer)
+              .resize(300, 300, { 
+                fit: 'cover', 
+                position: 'center' 
+              })
+              .jpeg({ quality: 85 })
+              .toBuffer()
+              .then(thumbnailBuffer => {
+                // Cleanup temp files
+                try { fs.unlinkSync(tempVideoPath); } catch {}
+                try { fs.unlinkSync(tempFramePath); } catch {}
+                
+                console.log(`[THUMBNAIL] Video frame extracted successfully`);
+                resolve(thumbnailBuffer);
+              })
+              .catch(reject);
+          } catch (readError) {
+            // Cleanup and reject
+            try { fs.unlinkSync(tempVideoPath); } catch {}
+            try { fs.unlinkSync(tempFramePath); } catch {}
+            reject(readError);
+          }
+        })
+        .on('error', (err) => {
+          // Cleanup and reject
+          try { fs.unlinkSync(tempVideoPath); } catch {}
+          try { fs.unlinkSync(tempFramePath); } catch {}
+          reject(err);
+        })
+        .run();
+    } catch (err) {
+      reject(err);
+    }
+  });
+}
 
 
 // Start Server
