@@ -433,46 +433,110 @@ app.delete('/api/users/:username', requireAuth('admin'), async (req, res) => {
 app.post('/api/folder', requireAuth('editor'), async (req, res) => {
     try {
         const { path: folderPath, name } = req.body;
+        console.log(`[FOLDER] Creating folder: ${name} at path: ${folderPath || 'root'}`);
+        
         const assetsPath = path.join(DATA_DIR, 'assets.json');
         const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+        
+        // Ensure root structure exists
+        if (!assets.children) assets.children = [];
+        
+        // Navigate to the parent folder
         const pathParts = folderPath ? folderPath.split('/').filter(Boolean) : [];
         let current = assets;
+        
         for (const part of pathParts) {
-            if (!current.folders) current.folders = [];
-            current = current.folders.find(f => f.name === part);
-            if (!current) return res.status(404).send('Parent folder not found');
+            if (!current.children) current.children = [];
+            const folder = current.children.find(c => c.type === 'folder' && c.name === part);
+            if (!folder) {
+                console.error(`[FOLDER] Parent folder not found: ${part}`);
+                return res.status(404).json({ error: `Parent folder not found: ${part}` });
+            }
+            current = folder;
         }
+        
+        // Ensure current folder has children array
         if (!current.children) current.children = [];
-        if (current.children.some(c => c.name === name)) {
+        
+        // Check if folder already exists
+        if (current.children.some(c => c.type === 'folder' && c.name === name)) {
+            console.warn(`[FOLDER] Folder already exists: ${name}`);
             return res.status(400).json({ error: 'Folder already exists' });
         }
-        current.children.push({ type: 'folder', name, children: [], folders: [] });
-        await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
-        res.json({ success: true });
+        
+        // Create new folder
+        const newFolder = {
+            type: 'folder',
+            name: name,
+            children: [],
+            createdAt: new Date().toISOString()
+        };
+        
+        current.children.push(newFolder);
+        
+        // Save to file with atomic write
+        await safeWriteJson(assetsPath, assets);
+        dataCache.invalidate('assets');
+        
+        console.log(`[FOLDER] Successfully created folder: ${name}`);
+        res.json({ success: true, folder: newFolder });
+        
     } catch (err) {
-        res.status(500).json({ error: 'Failed to create folder' });
+        console.error('[FOLDER] Failed to create folder:', err);
+        res.status(500).json({ error: 'Failed to create folder', details: err.message });
     }
 });
 
 app.delete('/api/folder', requireAuth('editor'), async (req, res) => {
     try {
         const { path: folderPath } = req.body;
+        console.log(`[FOLDER] Deleting folder at path: ${folderPath}`);
+        
         const assetsPath = path.join(DATA_DIR, 'assets.json');
         const assets = JSON.parse(await fs.promises.readFile(assetsPath, 'utf-8'));
+        
         const pathParts = folderPath.split('/').filter(Boolean);
         const folderName = pathParts.pop();
+        
+        // Navigate to parent folder
         let parent = assets;
         for (const part of pathParts) {
-            if (!parent.folders) return res.status(404).json({ error: 'Parent folder not found' });
-            parent = parent.folders.find(f => f.name === part);
-            if (!parent) return res.status(404).json({ error: 'Parent folder not found' });
+            if (!parent.children) {
+                console.error(`[FOLDER] Parent folder not found: ${part}`);
+                return res.status(404).json({ error: 'Parent folder not found' });
+            }
+            const folder = parent.children.find(c => c.type === 'folder' && c.name === part);
+            if (!folder) {
+                console.error(`[FOLDER] Parent folder not found: ${part}`);
+                return res.status(404).json({ error: 'Parent folder not found' });
+            }
+            parent = folder;
         }
-        if (!parent.children) return res.status(404).json({ error: 'Folder not found' });
+        
+        if (!parent.children) {
+            console.error(`[FOLDER] Folder not found: ${folderName}`);
+            return res.status(404).json({ error: 'Folder not found' });
+        }
+        
+        // Remove the folder
+        const originalLength = parent.children.length;
         parent.children = parent.children.filter(c => !(c.type === 'folder' && c.name === folderName));
-        await fs.promises.writeFile(assetsPath, JSON.stringify(assets, null, 2));
+        
+        if (parent.children.length === originalLength) {
+            console.error(`[FOLDER] Folder not found: ${folderName}`);
+            return res.status(404).json({ error: 'Folder not found' });
+        }
+        
+        // Save to file with atomic write
+        await safeWriteJson(assetsPath, assets);
+        dataCache.invalidate('assets');
+        
+        console.log(`[FOLDER] Successfully deleted folder: ${folderName}`);
         res.json({ success: true });
+        
     } catch (err) {
-        res.status(500).json({ error: 'Failed to delete folder' });
+        console.error('[FOLDER] Failed to delete folder:', err);
+        res.status(500).json({ error: 'Failed to delete folder', details: err.message });
     }
 });
 
