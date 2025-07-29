@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: coverflow-amf
+    env: node
+    buildCommand: |
+      apt-get update && apt-get install -y libheif-dev libvips-dev
+      cd packages/coverflow && npm install
+    startCommand: cd packages/coverflow && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
