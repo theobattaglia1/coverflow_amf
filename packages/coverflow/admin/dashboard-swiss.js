@@ -635,7 +635,7 @@ async function loadAssets() {
       });
     }
     
-    renderAssets();
+    renderAssetsWithView();
     renderRecentAssets();
     
   } catch (err) {
@@ -765,7 +765,8 @@ function setupFolderDropZone(element, folderName) {
   });
 }
 
-function renderAssets(assetsToRender = assets) {
+// DEPRECATED - Use renderAssetsWithView instead
+function renderAssets_DEPRECATED(assetsToRender = assets) {
   const assetGrid = document.getElementById('assetsContainer');
   if (!assetGrid) {
     console.error('[FRONTEND] assetGrid element not found');
@@ -1754,7 +1755,7 @@ function navigateToFolder(path) {
     item.classList.toggle('active', item.dataset && item.dataset.path === path);
   });
   
-  renderAssets();
+  renderAssetsWithView();
 }
 
 // Update asset name
@@ -1825,7 +1826,7 @@ async function deleteAsset(url) {
   }
   
   await saveAssets();
-  renderAssets();
+  renderAssetsWithView();
 }
 
 // Copy to clipboard (full URL)
@@ -1985,7 +1986,7 @@ async function handleAssetUpload(files) {
       
       // Reload assets from server to ensure consistency
       await loadAssets();
-      renderAssets();
+      renderAssetsWithView();
     }
   } catch (err) {
     showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 5000);
@@ -2099,7 +2100,7 @@ window.switchView = function(view) {
   assetGrid.className = `asset-grid ${view}-view`;
   
   // Re-render assets with new view
-  renderAssets();
+  renderAssetsWithView();
 };
 
 function setupMediaLibraryEventListeners() {
@@ -2257,7 +2258,7 @@ function filterAndRenderAssets() {
   updateAssetCountIndicator(filteredAssets.length);
   
   // Render assets with current view mode
-  renderAssets();
+  renderAssetsWithView();
 }
 
 // Enhanced renderAssets function that supports different views
