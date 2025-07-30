@@ -623,12 +623,16 @@ async function loadAssets() {
     
     // Merge GCS images with existing assets structure
     if (gcsData.images) {
-      assets.images = gcsData.images.map(url => ({ 
-        url, 
-        type: 'image',
-        name: url.split('/').pop(),
-        source: 'gcs'
-      }));
+      assets.images = gcsData.images.map(url => {
+        const filename = url.split('/').pop().toLowerCase();
+        const isVideo = filename.match(/\.(mov|mp4|webm|avi)$/i);
+        return { 
+          url, 
+          type: isVideo ? 'video' : 'image',
+          name: url.split('/').pop(),
+          source: 'gcs'
+        };
+      });
     }
     
     renderAssets();
@@ -869,7 +873,7 @@ function getCurrentFolderItems() {
   if (Array.isArray(current.folders)) allFolders = allFolders.concat(current.folders);
   const seen = new Set();
   const folders = allFolders.filter(f => f && f.type === 'folder' && f.name && !seen.has(f.name) && seen.add(f.name));
-  const images = allFolders.filter(f => f && f.type === 'image');
+  const images = allFolders.filter(f => f && (f.type === 'image' || f.type === 'video' || (f.url && !f.type)));
   return { folders, images };
 }
 
@@ -1917,6 +1921,7 @@ async function handleAssetDrop(e) {
 async function handleAssetUpload(files) {
   showLoading();
   let uploadedAny = false;
+  let uploadedAssets = [];
   try {
     for (const file of files) {
       // TODO: Future enhancement - convert HEIC to JPEG client-side using heic2any library
@@ -1951,6 +1956,7 @@ async function handleAssetUpload(files) {
       
       if (res.ok && data && data.url) {
         uploadedAny = true;
+        uploadedAssets.push(data);
         console.log('[UPLOAD] Success! File URL:', data.url);
         console.log('[UPLOAD] Thumbnail URL:', data.thumbnailUrl || 'No thumbnail');
         
@@ -1967,6 +1973,10 @@ async function handleAssetUpload(files) {
       }
     }
     if (uploadedAny) {
+      // Update local assets structure with uploaded files
+      updateLocalAssetsWithUploads(uploadedAssets);
+      
+      // Reload assets from server to ensure consistency
       await loadAssets();
       renderAssets();
     }
@@ -1976,6 +1986,70 @@ async function handleAssetUpload(files) {
   } finally {
     hideLoading();
   }
+}
+
+// Update local assets structure with newly uploaded files
+function updateLocalAssetsWithUploads(uploadedAssets) {
+  if (!assets.images) {
+    assets.images = [];
+  }
+  
+  for (const uploadedAsset of uploadedAssets) {
+    // Add to images array
+    const assetEntry = {
+      url: uploadedAsset.url,
+      type: uploadedAsset.type || 'image',
+      filename: uploadedAsset.filename,
+      thumbnailUrl: uploadedAsset.thumbnailUrl
+    };
+    
+    // Check if asset already exists
+    const existingIndex = assets.images.findIndex(img => 
+      (typeof img === 'string' && img === uploadedAsset.url) ||
+      (img.url && img.url === uploadedAsset.url)
+    );
+    
+    if (existingIndex === -1) {
+      assets.images.push(assetEntry);
+      console.log('[UPLOAD] Added asset to local structure:', assetEntry);
+    }
+    
+    // Update folder structure if in a subfolder
+    if (currentPath) {
+      // Find or create the folder in children array
+      if (!assets.children) {
+        assets.children = [];
+      }
+      
+      let folder = assets.children.find(child => child.name === currentPath);
+      if (!folder) {
+        folder = {
+          name: currentPath,
+          type: 'folder',
+          children: []
+        };
+        assets.children.push(folder);
+        console.log('[UPLOAD] Created new folder in structure:', currentPath);
+      }
+      
+      // Add asset to folder's children
+      if (!folder.children) {
+        folder.children = [];
+      }
+      
+      const folderAssetExists = folder.children.some(child => 
+        child.url === uploadedAsset.url || child === uploadedAsset.url
+      );
+      
+      if (!folderAssetExists) {
+        folder.children.push(assetEntry);
+        console.log('[UPLOAD] Added asset to folder:', currentPath, assetEntry);
+      }
+    }
+  }
+  
+  // Re-render folders to show the new assets
+  renderFolders();
 }
 
 // Make functions globally available
