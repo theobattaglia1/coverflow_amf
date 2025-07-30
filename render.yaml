@@ -3,9 +3,12 @@ services:
     name: coverflow-amf
     env: node
     buildCommand: |
+      export NODE_OPTIONS="--max-old-space-size=4096"
       apt-get update && apt-get install -y libheif-dev libvips-dev
-      cd packages/coverflow && npm install
+      cd packages/coverflow && npm ci --production
     startCommand: cd packages/coverflow && npm start
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NODE_OPTIONS
+        value: --max-old-space-size=2048
