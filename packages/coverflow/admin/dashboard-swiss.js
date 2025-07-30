@@ -773,10 +773,13 @@ function renderAssets(assetsToRender = assets) {
   }
   assetGrid.innerHTML = '';
   
-  const filteredAssets = filterAssets(assetsToRender);
+  // Get current folder items
+  const currentItems = getCurrentFolderItems();
+  const assetsToDisplay = currentItems.images || [];
+  
   const startIndex = (currentPage - 1) * assetsPerPage;
   const endIndex = startIndex + assetsPerPage;
-  const pageAssets = filteredAssets.slice(startIndex, endIndex);
+  const pageAssets = assetsToDisplay.slice(startIndex, endIndex);
   
   pageAssets.forEach((asset, index) => {
     const assetElement = document.createElement('div');
