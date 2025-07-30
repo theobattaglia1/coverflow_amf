@@ -431,8 +431,9 @@ function setupDragAndDrop() {
 }
 
 async function handleUpload(file) {
-  if (!file || !file.type.startsWith('image/')) {
-    showToast('PLEASE UPLOAD AN IMAGE FILE', 'error');
+  // Accept both image and video files
+  if (!file || (!file.type.startsWith('image/') && !file.type.startsWith('video/'))) {
+    showToast('PLEASE UPLOAD AN IMAGE OR VIDEO FILE', 'error');
     return;
   }
   
@@ -448,7 +449,7 @@ async function handleUpload(file) {
   
   try {
     const formData = new FormData();
-    formData.append('image', file);
+    formData.append('image', file); // Keep the field name for backward compatibility
     
     const res = await fetch(getApiBasePath() + '/upload-image', {
       method: 'POST',
@@ -462,9 +463,23 @@ async function handleUpload(file) {
     
     const { url } = await res.json();
     document.getElementById('frontImage').value = url;
-    document.getElementById('frontImagePreview').src = url;
     
-    showToast('IMAGE UPLOADED SUCCESSFULLY');
+    // Handle preview differently for videos
+    if (file.type.startsWith('video/')) {
+      // Create a video element for preview
+      const preview = document.getElementById('frontImagePreview');
+      const videoPreview = document.createElement('video');
+      videoPreview.src = url;
+      videoPreview.controls = true;
+      videoPreview.style.width = '100%';
+      videoPreview.style.maxHeight = '300px';
+      preview.style.display = 'none';
+      preview.parentNode.insertBefore(videoPreview, preview.nextSibling);
+    } else {
+      document.getElementById('frontImagePreview').src = url;
+    }
+    
+    showToast(`${file.type.startsWith('video/') ? 'VIDEO' : 'IMAGE'} UPLOADED SUCCESSFULLY`);
   } catch (err) {
     showToast('UPLOAD FAILED: ' + err.message.toUpperCase(), 'error');
   } finally {

@@ -761,12 +761,82 @@ function setupFolderDropZone(element, folderName) {
   });
 }
 
-function renderAssets() {
-  // Reset pagination when rendering
-  currentPage = 0;
-  filteredAssets = [];
-  renderAssetsWithView();
+function renderAssets(assetsToRender = assets) {
+  const assetGrid = document.getElementById('assetGrid');
+  assetGrid.innerHTML = '';
+  
+  const filteredAssets = filterAssets(assetsToRender);
+  const startIndex = (currentPage - 1) * assetsPerPage;
+  const endIndex = startIndex + assetsPerPage;
+  const pageAssets = filteredAssets.slice(startIndex, endIndex);
+  
+  pageAssets.forEach((asset, index) => {
+    const assetElement = document.createElement('div');
+    assetElement.className = 'asset-item';
+    assetElement.setAttribute('draggable', true);
+    assetElement.dataset.assetIndex = startIndex + index;
+    assetElement.dataset.assetUrl = asset.url || asset;
+    
+    // Check if asset is a video
+    const isVideo = asset.url ? asset.url.toLowerCase().match(/\.(mov|mp4|webm|avi)$/i) : 
+                    typeof asset === 'string' && asset.toLowerCase().match(/\.(mov|mp4|webm|avi)$/i);
+    
+    if (isVideo) {
+      // Create video element for video files
+      const video = document.createElement('video');
+      video.src = asset.url || asset;
+      video.controls = false;
+      video.muted = true;
+      video.style.width = '100%';
+      video.style.height = '100%';
+      video.style.objectFit = 'cover';
+      
+      // Add poster frame
+      video.addEventListener('loadeddata', function() {
+        video.currentTime = 1; // Show 1 second in as thumbnail
+      });
+      
+      assetElement.appendChild(video);
+      
+      // Add video indicator
+      const videoIndicator = document.createElement('div');
+      videoIndicator.className = 'video-indicator';
+      videoIndicator.innerHTML = '▶';
+      videoIndicator.style.cssText = 'position: absolute; bottom: 5px; right: 5px; background: rgba(0,0,0,0.7); color: white; padding: 2px 6px; border-radius: 3px; font-size: 12px;';
+      assetElement.appendChild(videoIndicator);
+      
+      // Play preview on hover
+      assetElement.addEventListener('mouseenter', () => {
+        video.play();
+      });
+      
+      assetElement.addEventListener('mouseleave', () => {
+        video.pause();
+        video.currentTime = 1;
+      });
+    } else {
+      // Original image handling
+      const img = document.createElement('img');
+      img.src = asset.url || asset;
+      img.alt = 'Asset';
+      img.loading = 'lazy';
+      assetElement.appendChild(img);
+    }
+    
+    // Click handler
+    assetElement.addEventListener('click', () => handleAssetClick(asset.url || asset));
+    
+    // Drag handlers
+    assetElement.addEventListener('dragstart', handleDragStart);
+    assetElement.addEventListener('dragend', handleDragEnd);
+    
+    assetGrid.appendChild(assetElement);
+  });
+  
+  renderPagination(filteredAssets.length);
 }
+
+// ... existing code ...
 
 // Get items in current folder
 function getCurrentFolderItems() {

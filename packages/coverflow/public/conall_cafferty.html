@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>conall cafferty — things he never said</title>
+    <meta name="description" content="Modern folk-pop with a soft-spoken soul and a blues-bred backbone.">
+    
+    <!-- Open Graph / Social Media Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="conall cafferty — things he never said">
+    <meta property="og:description" content="Modern folk-pop with a soft-spoken soul and a blues-bred backbone.">
+    <meta property="og:image" content="https://storage.googleapis.com/allmyfriends/conall/IMG_1317.jpg">
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400&display=swap');
+        
+        :root {
+            /* Primary Palette */
+            --oatmeal: #D8CFC4;
+            --washed-denim: #6C7A89;
+            --bruised-navy: #2F3A47;
+            --tobacco-brown: #8A6F5A;
+            --sun-faded-maroon: #935B5E;
+            
+            /* Accent Palette */
+            --dusty-sage: #A5A29F;
+            --typewriter-black: #1C1C1C;
+            --cream-paper: #F4F0E6;
+            --polaroid-white: #F8F6F1;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--typewriter-black);
+            background-color: var(--cream-paper);
+            overflow-x: hidden;
+        }
+        
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'EB Garamond', serif;
+            font-weight: 400;
+            line-height: 1.2;
+            text-transform: lowercase;
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            margin-bottom: 1rem;
+        }
+        
+        h2 {
+            font-size: clamp(2rem, 6vw, 3.5rem);
+            margin-bottom: 1.5rem;
+        }
+        
+        h3 {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            margin-bottom: 1rem;
+        }
+        
+        h4 {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            margin-bottom: 0.8rem;
+        }
+        
+        .italic {
+            font-style: italic;
+        }
+        
+        /* Container and Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .section {
+            padding: 100px 0;
+            position: relative;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: var(--cream-paper);
+            padding: 20px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        nav.visible {
+            opacity: 1;
+        }
+        
+        nav ul {
+            list-style: none;
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            font-size: 14px;
+        }
+        
+        nav a {
+            color: var(--typewriter-black);
+            text-decoration: none;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+        
+        nav a:hover {
+            opacity: 1;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            background: var(--cream-paper);
+        }
+        
+        .hero-content {
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .hero h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            margin-bottom: 0.5rem;
+        }
+        
+        .hero .tagline {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+        }
+        
+        .hero .subheading {
+            max-width: 800px;
+            margin: 0 auto;
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+        
+        /* Scattered Images */
+        .accent-image {
+            position: absolute;
+            z-index: 5;
+            opacity: 0.9;
+            transition: all 0.5s ease;
+            cursor: pointer;
+        }
+        
+        .accent-image:hover {
+            transform: scale(1.05);
+            opacity: 1;
+        }
+        
+        .accent-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Content Areas */
+        .content-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: start;
+            position: relative;
+        }
+        
+        .content-area.left .content {
+            order: 1;
+        }
+        
+        .content-area.left .visual {
+            order: 2;
+        }
+        
+        .content-area.right .content {
+            order: 2;
+        }
+        
+        .content-area.right .visual {
+            order: 1;
+        }
+        
+        .content-area.center {
+            grid-template-columns: 1fr;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .content h3 {
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+        
+        .content p {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--dusty-sage);
+        }
+        
+        th {
+            font-family: 'EB Garamond', serif;
+            font-weight: 500;
+            background: var(--oatmeal);
+        }
+        
+        /* Lists */
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.8rem;
+        }
+        
+        ul li:before {
+            content: "·";
+            position: absolute;
+            left: 0;
+            color: var(--tobacco-brown);
+        }
+        
+        /* Color Swatches */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 2rem 0;
+        }
+        
+        .color-swatch {
+            text-align: center;
+        }
+        
+        .color-box {
+            width: 100%;
+            height: 120px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+        }
+        
+        /* Image Grids */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 2rem 0;
+        }
+        
+        .image-grid img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            filter: grayscale(20%);
+            transition: all 0.3s ease;
+        }
+        
+        .image-grid img:hover {
+            filter: grayscale(0%);
+            transform: scale(1.02);
+        }
+        
+        /* Film Strip */
+        .film-strip {
+            display: flex;
+            gap: 20px;
+            overflow-x: auto;
+            padding: 20px 0;
+            margin: 2rem 0;
+        }
+        
+        .film-strip img {
+            height: 200px;
+            width: auto;
+            filter: sepia(20%);
+            transition: all 0.3s ease;
+        }
+        
+        .film-strip img:hover {
+            filter: sepia(0%);
+            transform: scale(1.05);
+        }
+        
+        /* Personas */
+        .persona {
+            background: var(--polaroid-white);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-radius: 4px;
+        }
+        
+        .persona h4 {
+            color: var(--tobacco-brown);
+            margin-bottom: 1rem;
+        }
+        
+        .persona .profile {
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 80px 0;
+            text-align: center;
+            font-family: 'EB Garamond', serif;
+            font-style: italic;
+            font-size: 1.2rem;
+            color: var(--tobacco-brown);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .content-area {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .content-area.left .content,
+            .content-area.right .content {
+                order: 1;
+            }
+            
+            .content-area.left .visual,
+            .content-area.right .visual {
+                order: 2;
+            }
+            
+            .image-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .color-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav id="navigation">
+        <ul>
+            <li><a href="#hero">home</a></li>
+            <li><a href="#who">who he is</a></li>
+            <li><a href="#archetype">archetype</a></li>
+            <li><a href="#pillars">pillars</a></li>
+            <li><a href="#audience">audience</a></li>
+            <li><a href="#look">look & feel</a></li>
+            <li><a href="#sound">sound</a></li>
+            <li><a href="#digital">digital</a></li>
+        </ul>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="hero-content fade-in">
+            <h1>conall cafferty</h1>
+            <p class="tagline">Modern folk-pop with a soft-spoken soul and a blues-bred backbone.</p>
+            <p class="subheading">
+                A 20-year-old East Coast native now rooted in Nashville, Conall writes from the corners of emotional experience — the things you almost said, the moments you almost acted. Blending jazz, blues, and singer-songwriter tradition with modern vulnerability, he gives voice to the ache just beneath stillness.
+            </p>
+        </div>
+        
+        <!-- Scattered accent images -->
+        <div class="accent-image" style="width: 200px; height: 250px; top: 10%; left: 5%; transform: rotate(-5deg);">
+            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4453.jpg" alt="">
+        </div>
+        <div class="accent-image" style="width: 180px; height: 220px; bottom: 15%; right: 8%; transform: rotate(3deg);">
+            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4456.jpg" alt="">
+        </div>
+    </section>
+
+    <!-- Who He Is -->
+    <section class="section" id="who">
+        <div class="container">
+            <div class="content-area left">
+                <div class="content fade-in">
+                    <h2>who he is</h2>
+                    <h3>He's not the loudest in the room — he's the one you remember.</h3>
+                    <p>
+                        Conall Cafferty makes music for people who feel everything and may keep it bottled up in favor of keeping things light. He's not angling to be mysterious — he just doesn't overexplain or overcomplicate. His songs sit in the ache between moments, where tension lives in the things unsaid and love sometimes looks like staying too long.
+                    </p>
+                    <p>
+                        At a time when pop is either oversharing or overdressed, Conall offers something quieter, more enduring: songwriting that invites projection. He writes from the edges — the missed chance, the second thought, the joke that deflects — and that's why fans see themselves in him.
+                    </p>
+                    <p>
+                        There's a kind of magnetism in restraint. Conall doesn't reach for your attention. He makes space for it.
+                    </p>
+                </div>
+                <div class="visual fade-in">
+                    <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_1317.jpg" alt="Conall Cafferty" style="width: 100%; height: 600px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scattered accent image -->
+        <div class="accent-image" style="width: 150px; height: 200px; top: 20%; right: 10%; transform: rotate(-8deg);">
+            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4474.jpg" alt="">
+        </div>
+    </section>
+
+    <!-- Core Archetype -->
+    <section class="section" id="archetype">
+        <div class="container">
+            <div class="content-area right">
+                <div class="content fade-in">
+                    <h2>core archetype</h2>
+                    <h3>The Unspoken Anchor</h3>
+                    <p class="italic">
+                        Steady in the background, sharp when it counts — he's quietly funny, emotionally fluent, and more self-aware than he lets on.
+                    </p>
+                    
+                    <table>
+                        <tr>
+                            <th>Public Persona</th>
+                            <th>Private Reality</th>
+                        </tr>
+                        <tr>
+                            <td>Wry, laid-back, and charming</td>
+                            <td>Loyal to a fault, emotionally observant</td>
+                        </tr>
+                        <tr>
+                            <td>Cool without trying</td>
+                            <td>Haunted by what's unspoken</td>
+                        </tr>
+                        <tr>
+                            <td>Funny in passing, never performative</td>
+                            <td>Feels more than he shares</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="visual fade-in">
+                    <div class="image-grid">
+                        <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4484.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4486.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/conall/PNG%20image%202.png" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brand Pillars -->
+    <section class="section" id="pillars">
+        <div class="container">
+            <div class="content-area center">
+                <div class="content fade-in">
+                    <h2>brand pillars</h2>
+                    
+                    <div style="text-align: left; max-width: 700px; margin: 0 auto;">
+                        <div style="margin-bottom: 3rem;">
+                            <h4>1. Unsaid Says Everything</h4>
+                            <p>He doesn't overshare. His restraint is the invitation.</p>
+                            <p class="italic">Litmus: Does this leave space for the listener to project themselves into it?</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 3rem;">
+                            <h4>2. Devoted by Default</h4>
+                            <p>He stays longer than he should — and writes from that ache.</p>
+                            <p class="italic">Litmus: Would he still show up, even if it hurts?</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 3rem;">
+                            <h4>3. Humor as Pressure Valve</h4>
+                            <p>He's funny, but it's rarely the point. It's how he manages the weight of feeling.</p>
+                            <p class="italic">Litmus: Is the humor protecting something, not just entertaining?</p>
+                        </div>
+                        
+                        <div style="margin-bottom: 3rem;">
+                            <h4>4. Soft-Centered Cool</h4>
+                            <p>He's not aloof. He's careful. There's warmth behind the restraint.</p>
+                            <p class="italic">Litmus: Does this balance approachability with mystique, not performance?</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scattered accent images -->
+        <div class="accent-image" style="width: 180px; height: 240px; top: 15%; left: 5%; transform: rotate(5deg);">
+            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4455.jpg" alt="">
+        </div>
+        <div class="accent-image" style="width: 200px; height: 250px; bottom: 10%; right: 5%; transform: rotate(-3deg);">
+            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4463.jpg" alt="">
+        </div>
+    </section>
+
+    <!-- Audience Map -->
+    <section class="section" id="audience">
+        <div class="container">
+            <h2 class="fade-in" style="text-align: center; margin-bottom: 4rem;">audience map</h2>
+            
+            <div class="persona fade-in">
+                <h4>Persona 1: The Cultivated Romantic</h4>
+                <p class="profile"><strong>Profile:</strong> 24–35, mostly women, deeply invested in lyrics, playlists, and romantic realism.</p>
+                <p><strong>Needs:</strong> Someone who captures complex emotions without dramatizing them.</p>
+                <p><strong>What Conall Represents:</strong> <em>"He sings what I can't say."</em></p>
+                <p><strong>Proof Points:</strong></p>
+                <ul>
+                    <li>Voice-note intimacy</li>
+                    <li>Lyric-forward visuals</li>
+                    <li>Emotional arcs across EPs</li>
+                </ul>
+            </div>
+            
+            <div class="persona fade-in">
+                <h4>Persona 2: The Soft Fanboy</h4>
+                <p class="profile"><strong>Profile:</strong> 18–28, introspective guys who crave emotional language but rarely find it modeled.</p>
+                <p><strong>Needs:</strong> Permission to feel deeply without spectacle.</p>
+                <p><strong>What Conall Represents:</strong> <em>"He gets it — and doesn't perform it."</em></p>
+                <p><strong>Proof Points:</strong></p>
+                <ul>
+                    <li>Understated live cuts</li>
+                    <li>Self-aware softness</li>
+                    <li>Unfiltered lyric clips</li>
+                </ul>
+            </div>
+            
+            <div class="persona fade-in">
+                <h4>Persona 3: The Lore Seeker / "Protector Fan"</h4>
+                <p class="profile"><strong>Profile:</strong> 16–24, often queer or neurodivergent, thrives on nuance and found-family dynamics.</p>
+                <p><strong>Needs:</strong> Someone to decode and defend.</p>
+                <p><strong>What Conall Represents:</strong> <em>"He's a secret I want to keep and share."</em></p>
+                <p><strong>Proof Points:</strong></p>
+                <ul>
+                    <li>Cryptic lyric references</li>
+                    <li>Subtle fan rituals</li>
+                    <li>Visual breadcrumbs</li>
+                </ul>
+            </div>
+            
+            <div class="persona fade-in">
+                <h4>Persona 4: The Folk Purist / Americana Heart</h4>
+                <p class="profile"><strong>Profile:</strong> 28–55+, often male, raised on acoustic instruments and lyrical storytelling.</p>
+                <p><strong>Needs:</strong> Authenticity. A sense that it's about the song, not the scene.</p>
+                <p><strong>What Conall Represents:</strong> <em>"Finally — someone young who still cares about craft."</em></p>
+                <p><strong>Proof Points:</strong></p>
+                <ul>
+                    <li>Live-band instrumentation</li>
+                    <li>Jazz/blues roots subtly showing</li>
+                    <li>Raw studio footage and NPR-style sets</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Look & Feel -->
+    <section class="section" id="look">
+        <div class="container">
+            <div class="content-area left">
+                <div class="content fade-in">
+                    <h2>look & feel</h2>
+                    
+                    <h4>Photo Direction</h4>
+                    <ul>
+                        <li>Light leaks, imperfect focus, caught-in-passing moments</li>
+                        <li>Backseat reflections, motel mirrors, windows at dusk</li>
+                        <li>Feels like someone else is quietly watching him</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 2rem;">Primary Palette</h4>
+                    <div class="color-grid">
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #D8CFC4; color: #1C1C1C;">#D8CFC4</div>
+                            <p>Oatmeal<br><small>Warm neutral base</small></p>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #6C7A89;">#6C7A89</div>
+                            <p>Washed Denim<br><small>Soft, vintage blue</small></p>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #2F3A47;">#2F3A47</div>
+                            <p>Bruised Navy<br><small>Desaturated, moody blue-black</small></p>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #8A6F5A;">#8A6F5A</div>
+                            <p>Tobacco Brown<br><small>Earthy, faded warmth</small></p>
+                        </div>
+                        <div class="color-swatch">
+                            <div class="color-box" style="background: #935B5E;">#935B5E</div>
+                            <p>Sun-Faded Maroon<br><small>Muted red with worn depth</small></p>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin-top: 2rem;">Typography</h4>
+                    <ul>
+                        <li><strong>Primary:</strong> Helvetica Neue or Suisse Int'l — for body text, captions, interface elements. Clean, unfussy, emotionally neutral.</li>
+                        <li><strong>Secondary (Accent):</strong> Garamond, Tiempos, or Publico — used for headers, pull quotes, lyrics. Brings an analog, literary softness.</li>
+                        <li><strong>Usage Rule:</strong> The sans should feel like his tone when he's deflecting. The serif is what he <em>really</em> means.</li>
+                        <li><strong>Styling Tips:</strong> Lowercase bias, no excessive tracking, intentional line breaks. Looks more like a letter than a layout.</li>
+                    </ul>
+                </div>
+                <div class="visual fade-in">
+                    <h4>Visual References</h4>
+                    <div class="film-strip">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_9.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_10.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_11.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_12.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_13.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_14.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_15.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_16.jpeg" alt="">
+                    </div>
+                    
+                    <div class="image-grid" style="margin-top: 2rem;">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_17.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_18.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_19.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_20.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_21.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_22.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_23.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_24.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_25.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_26.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_27.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_28.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_29.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_30.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_31.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_32.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_33.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_34.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_35.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_36.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_37.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_38.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_39.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_40.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_41.jpeg" alt="">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sound & Voice -->
+    <section class="section" id="sound">
+        <div class="container">
+            <div class="content-area right">
+                <div class="content fade-in">
+                    <h2>sound & voice profile</h2>
+                    
+                    <h4>Sonic Touchpoints</h4>
+                    <ul>
+                        <li><strong>John Mayer (early)</strong> — Introspective charm, melodic restraint, emotional storytelling</li>
+                        <li><strong>Ray LaMontagne</strong> — Soulful grit, poetic stillness, analog depth</li>
+                        <li><strong>Amos Lee</strong> — Warmth-forward, vocally expressive, grounded in soul-folk</li>
+                        <li><strong>Gregory Alan Isakov</strong> — Sparse and vivid, timeless modern folk</li>
+                        <li><strong>Dermot Kennedy</strong> — Lyrical weight with contemporary appeal</li>
+                        <li><strong>Caamp / Vance Joy / The Lumineers</strong> — Indie-leaning folk-pop that balances hook and heart</li>
+                        <li><strong>Jake Minch / Noah Kahan</strong> — Gen-Z aware, emotionally literate, conversational intimacy</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 2rem;">Vocal Delivery</h4>
+                    <ul>
+                        <li>Breath-forward and unforced</li>
+                        <li>Conversational in tone, emotionally fluent without melodrama</li>
+                        <li>When it breaks, it means something — restraint is part of the language</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 2rem;">Production Ethos</h4>
+                    <ul>
+                        <li>Live-feeling, warm mic proximity</li>
+                        <li>Acoustic-forward with jazz-informed chord voicings</li>
+                        <li>Minimal processing — texture and room tone are welcome</li>
+                        <li>Aesthetic priority: imperfection that feels intentional</li>
+                    </ul>
+                    
+                    <h4 style="margin-top: 2rem;">Lyrical POV</h4>
+                    <ul>
+                        <li>Regret as fluency, longing as tempo</li>
+                        <li>Rarely declarative — he doesn't confess, he observes</li>
+                        <li>Subtext-heavy: most lyrics could've been left unsent</li>
+                        <li>Themes of proximity, passivity, and emotional self-erasure</li>
+                    </ul>
+                </div>
+                <div class="visual fade-in">
+                    <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4469.jpg" alt="" style="width: 100%; height: 600px; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scattered accent image -->
+        <div class="accent-image" style="width: 220px; height: 280px; bottom: 20%; left: 10%; transform: rotate(7deg);">
+            <img src="https://storage.googleapis.com/allmyfriends/conall/Screenshot_Conall_Live_Performance.png" alt="">
+        </div>
+    </section>
+
+    <!-- Digital / Social -->
+    <section class="section" id="digital">
+        <div class="container">
+            <h2 class="fade-in" style="text-align: center; margin-bottom: 4rem;">digital / social content framework</h2>
+            
+            <div class="content-area center">
+                <div class="content fade-in">
+                    <h3>Platform Strategy Overview</h3>
+                    
+                    <table style="margin: 2rem 0;">
+                        <tr>
+                            <th>Platform</th>
+                            <th>Tone</th>
+                            <th>Function</th>
+                        </tr>
+                        <tr>
+                            <td><strong>TikTok (Main)</strong></td>
+                            <td>Earnest, raw, intimate</td>
+                            <td>Home for stripped-back performances, soft-spoken confessionals, acoustic versions, lyric-driven moments. This is "music Conall."</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TikTok (Burner)</strong></td>
+                            <td>Absurd, deadpan, ironic</td>
+                            <td>Controlled chaos. Lo-fi, comedic promo disguised as character content. Think <em>if the barista you liked was weird online.</em></td>
+                        </tr>
+                        <tr>
+                            <td><strong>Instagram</strong></td>
+                            <td>Poetic, curated, human</td>
+                            <td>Editorialized intimacy: behind-the-scenes, live stills, film-photo diary, thoughtful captioning. Feels closer to a scrapbook than a billboard.</td>
+                        </tr>
+                    </table>
+                    
+                    <div style="text-align: left; margin-top: 3rem;">
+                        <h4>Content Pillars by Platform</h4>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h5>TikTok (Main) — @conallcafferty</h5>
+                            <ul>
+                                <li><strong>Voice-over Lyrics:</strong> Lo-fi camera roll visuals narrated by lyrics as inner monologue.</li>
+                                <li><strong>"What I Didn't Say" Series:</strong> Each video is a micro-confession related to a song lyric. Text on screen or into camera.</li>
+                                <li><strong>Soft Launch Performance Clips:</strong> Acoustic versions performed in unassuming settings… car, bedroom, kitchen… not staged.</li>
+                                <li><strong>"One Line That Changed Everything":</strong> He isolates one lyric from his song and explains it in under 15 seconds.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h5>TikTok (Burner) — papi</h5>
+                            <ul>
+                                <li><strong>Alt-Promo:</strong> Pretending to hate his own music. Clips like "this guy sounds like he's in love with you and won't admit it" over a snippet of his own song.</li>
+                                <li><strong>Character Skits:</strong> Plays the sad waiter, the barista who glances at you too long, or "guy you used to know" archetypes to plug music.</li>
+                                <li><strong>"How I'd Gaslight You With This Song":</strong> Ironic romantic manipulation using his own lyrics.</li>
+                                <li><strong>Lo-Fi Lore:</strong> Satirical explainer videos of fictional backstories behind lyrics. Feels unhinged, but the music is real.</li>
+                            </ul>
+                        </div>
+                        
+                        <div style="margin-bottom: 2rem;">
+                            <h5>Instagram</h5>
+                            <ul>
+                                <li><strong>Polaroid & Film Diary:</strong> Grainy stills with emotionally ambiguous captions (or just timestamps).</li>
+                                <li><strong>Fan-Submitted Photo Threads:</strong> "This lyric, your camera roll." Build interaction via shared visuals.</li>
+                                <li><strong>Caption Essays:</strong> A few deeper, poetic photo captions that touch on song themes without marketing tone.</li>
+                                <li><strong>Live Moments / Voicemail Rituals:</strong> Highlight reels of his show rituals (e.g., Polaroid wall, voicemail openers).</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h4 style="margin-top: 3rem;">Tone & Voice Guidelines</h4>
+                    <ul style="text-align: left;">
+                        <li><strong>Humor:</strong> Dry, ironic, self-aware. Jokes should feel found, not forced.</li>
+                        <li><strong>Emotion:</strong> Never overwrought. Lead with specificity, not sentimentality.</li>
+                        <li><strong>Language:</strong> Minimalist. Sentences can trail off... or stop mid-thought. Avoid hashtags unless ironic.</li>
+                        <li><strong>Aesthetic:</strong> Low-gloss, emotionally resonant, photograph-before-polish.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>still here.</p>
+    </footer>
+
+    <script>
+        // Navigation visibility
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('navigation');
+            if (window.scrollY > 100) {
+                nav.classList.add('visible');
+            } else {
+                nav.classList.remove('visible');
+            }
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Fade in animation
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+        
+        // Parallax effect for accent images
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const parallaxElements = document.querySelectorAll('.accent-image');
+            
+            parallaxElements.forEach(el => {
+                const speed = 0.5;
+                const yPos = -(scrolled * speed);
+                el.style.transform = `translateY(${yPos}px) rotate(${el.style.transform.match(/rotate\((.+)\)/)[1]})`;
+            });
+        });
+    </script>
+</body>
+</html>

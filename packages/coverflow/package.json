@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'No build step required'",
-    "install": "npm install --platform=linux --arch=x64 sharp"
+    "build": "echo 'Installing Sharp with HEIC support' && npm rebuild sharp",
+    "install": "npm install"
   },
   "keywords": [],
   "author": "",
