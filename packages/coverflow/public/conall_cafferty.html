@@ -11,7 +11,7 @@
     <meta property="og:type" content="website">
     <meta property="og:title" content="conall cafferty — things he never said">
     <meta property="og:description" content="Modern folk-pop with a soft-spoken soul and a blues-bred backbone.">
-    <meta property="og:image" content="https://storage.googleapis.com/allmyfriends/conall/IMG_1317.jpg">
+    <meta property="og:image" content="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_1317.jpg">
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Inter:wght@300;400&display=swap');
@@ -135,11 +135,33 @@
             justify-content: center;
             position: relative;
             background: var(--cream-paper);
+            overflow: hidden;
+        }
+        
+        .hero-video-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 1;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(245, 240, 232, 0.7);
+            z-index: 2;
         }
         
         .hero-content {
             text-align: center;
             z-index: 10;
+            position: relative;
         }
         
         .hero h1 {
@@ -416,6 +438,12 @@
 
     <!-- Hero Section -->
     <section class="hero" id="hero">
+        <!-- Video Background -->
+        <video class="hero-video-bg" autoplay muted loop playsinline>
+            <source src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/conallcaffertySCENESxjoey3.2.mov" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        
         <div class="hero-content fade-in">
             <h1>conall cafferty</h1>
             <p class="tagline">Modern folk-pop with a soft-spoken soul and a blues-bred backbone.</p>
@@ -426,10 +454,10 @@
         
         <!-- Scattered accent images -->
         <div class="accent-image" style="width: 200px; height: 250px; top: 10%; left: 5%; transform: rotate(-5deg);">
-            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4453.jpg" alt="">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4453.jpg" alt="">
         </div>
         <div class="accent-image" style="width: 180px; height: 220px; bottom: 15%; right: 8%; transform: rotate(3deg);">
-            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4456.jpg" alt="">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4456.jpg" alt="">
         </div>
     </section>
 
@@ -451,14 +479,14 @@
                     </p>
                 </div>
                 <div class="visual fade-in">
-                    <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_1317.jpg" alt="Conall Cafferty" style="width: 100%; height: 600px; object-fit: cover;">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_1317.jpg" alt="Conall Cafferty" style="width: 100%; height: 600px; object-fit: cover;">
                 </div>
             </div>
         </div>
         
         <!-- Scattered accent image -->
         <div class="accent-image" style="width: 150px; height: 200px; top: 20%; right: 10%; transform: rotate(-8deg);">
-            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4474.jpg" alt="">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4474.jpg" alt="">
         </div>
     </section>
 
@@ -494,9 +522,9 @@
                 </div>
                 <div class="visual fade-in">
                     <div class="image-grid">
-                        <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4484.jpg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4486.jpg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/conall/PNG%20image%202.png" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4484.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4486.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/PNG image 2.jpg" alt="">
                     </div>
                 </div>
             </div>
@@ -541,10 +569,10 @@
         
         <!-- Scattered accent images -->
         <div class="accent-image" style="width: 180px; height: 240px; top: 15%; left: 5%; transform: rotate(5deg);">
-            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4455.jpg" alt="">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4455.jpg" alt="">
         </div>
         <div class="accent-image" style="width: 200px; height: 250px; bottom: 10%; right: 5%; transform: rotate(-3deg);">
-            <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4463.jpg" alt="">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4463.jpg" alt="">
         </div>
     </section>
 
@@ -656,42 +684,42 @@
                 <div class="visual fade-in">
                     <h4>Visual References</h4>
                     <div class="film-strip">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_9.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_10.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_11.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_12.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_13.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_14.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_15.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_16.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/0a49e221ce04ea1825b531bab5af2a48.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/02b540ad83af0471ff0fb6f0411a611c.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/2f9ebebc6422be6380df18b7518992e9.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/5bc3f42c40e957f56ba1613d9620c40d.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/06ec3f8dcd214da5d4ebc189d11dab16.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/8bf8077927188818f9db4c9b6ccda3ea.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/9fa9e6fc14bc7255db1f1b9565c7ba3c.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/28bde0063780bc5d92187c09eba45bae.jpg" alt="">
                     </div>
                     
                     <div class="image-grid" style="margin-top: 2rem;">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_17.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_18.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_19.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_20.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_21.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_22.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_23.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_24.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_25.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_26.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_27.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_28.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_29.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_30.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_31.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_32.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_33.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_34.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_35.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_36.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_37.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_38.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_39.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_40.jpeg" alt="">
-                        <img src="https://storage.googleapis.com/allmyfriends/references/nrml_41.jpeg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/70ecc914133dcef0e36fa9b63fdba5da.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/084dda1b70d8456ae97ee0e04526d7fa.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/87ddc4c807e6ff4fa8a94e6d73e7d14c.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/172c27468c2da43789e51db168227fa6.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/352bd88a9ae865e4498aa9853d62c720 (1).jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/524dbc78847716ec677d88f4c48e2024.png" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/788d22766545948b78d4aad7bc5a8597.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/1294ab89b3f4ef3384ca358a88b173a5.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/2559c36a7233410db711d1cf93644e1c.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/26996f11b963aff6b2d6a515fb198e2c.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/83084d18d504b0e753f097a452813f0e.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/87872dc0f1d2d967c5e60ed5d1a8fdda.png" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/639930cc05962c996e3ad8540fc78eb4.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/bb85709a98e2db2237c887d46fcf13d0.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/bebc013c8594cb087e6f88c7dc497e9d.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/bf6943fda250db097d2babc16149a754.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/c824413e5f636dab201dd46bb57d7ae2.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/ca1990cb1dcc871b3d85771abd8700e4.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/d6e8877fd6322b5f1723e72e134af692.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/d13e24915914a5c5ac08ee1b219d18f9.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/d421cad55bce063a13f794992657dfda.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/e72e859daa5fc1c876fd8be934db86de.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/e211de1ed987be007640af0469d35802.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/f7cc8b5f7beaa643248e9e777a6dadc3.jpg" alt="">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Creative References/f2513fb0f830edf99fde7de5df88fd4e.jpg" alt="">
                     </div>
                 </div>
             </div>
@@ -740,14 +768,14 @@
                     </ul>
                 </div>
                 <div class="visual fade-in">
-                    <img src="https://storage.googleapis.com/allmyfriends/conall/IMG_4469.jpg" alt="" style="width: 100%; height: 600px; object-fit: cover;">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/IMG_4469.jpg" alt="" style="width: 100%; height: 600px; object-fit: cover;">
                 </div>
             </div>
         </div>
         
         <!-- Scattered accent image -->
         <div class="accent-image" style="width: 220px; height: 280px; bottom: 20%; left: 10%; transform: rotate(7deg);">
-            <img src="https://storage.googleapis.com/allmyfriends/conall/Screenshot_Conall_Live_Performance.png" alt="">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall - Himself/Screenshot 2025-07-28 at 3.49.41 PM.jpg" alt="">
         </div>
     </section>
 
