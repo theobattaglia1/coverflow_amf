@@ -5,8 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "node server.js",
-    "build": "echo 'Installing Sharp with HEIC support' && npm rebuild sharp",
-    "install": "npm install"
+    "build": "echo 'Installing Sharp with HEIC support' && npm rebuild sharp"
   },
   "keywords": [],
   "author": "",
