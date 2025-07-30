@@ -1984,6 +1984,9 @@ async function handleAssetUpload(files) {
       // Update local assets structure with uploaded files
       updateLocalAssetsWithUploads(uploadedAssets);
       
+      // Save the updated assets structure to the server
+      await saveAssets();
+      
       // Reload assets from server to ensure consistency
       await loadAssets();
       renderAssetsWithView();
@@ -2024,33 +2027,42 @@ function updateLocalAssetsWithUploads(uploadedAssets) {
     
     // Update folder structure if in a subfolder
     if (currentPath) {
-      // Find or create the folder in children array
-      if (!assets.children) {
-        assets.children = [];
+      // Navigate to the correct folder based on the path
+      const pathParts = currentPath.split('/').filter(Boolean);
+      let current = assets;
+      
+      for (const part of pathParts) {
+        // Ensure children array exists
+        if (!current.children) {
+          current.children = [];
+        }
+        
+        // Find or create the folder
+        let folder = current.children.find(child => child.name === part && child.type === 'folder');
+        if (!folder) {
+          folder = {
+            name: part,
+            type: 'folder',
+            children: []
+          };
+          current.children.push(folder);
+          console.log('[UPLOAD] Created new folder in structure:', part);
+        }
+        
+        current = folder;
       }
       
-      let folder = assets.children.find(child => child.name === currentPath);
-      if (!folder) {
-        folder = {
-          name: currentPath,
-          type: 'folder',
-          children: []
-        };
-        assets.children.push(folder);
-        console.log('[UPLOAD] Created new folder in structure:', currentPath);
+      // Add asset to the final folder's children
+      if (!current.children) {
+        current.children = [];
       }
       
-      // Add asset to folder's children
-      if (!folder.children) {
-        folder.children = [];
-      }
-      
-      const folderAssetExists = folder.children.some(child => 
+      const folderAssetExists = current.children.some(child => 
         child.url === uploadedAsset.url || child === uploadedAsset.url
       );
       
       if (!folderAssetExists) {
-        folder.children.push(assetEntry);
+        current.children.push(assetEntry);
         console.log('[UPLOAD] Added asset to folder:', currentPath, assetEntry);
       }
     }
