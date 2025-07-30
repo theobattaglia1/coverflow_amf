@@ -766,7 +766,11 @@ function setupFolderDropZone(element, folderName) {
 }
 
 function renderAssets(assetsToRender = assets) {
-  const assetGrid = document.getElementById('assetGrid');
+  const assetGrid = document.getElementById('assetsContainer');
+  if (!assetGrid) {
+    console.error('[FRONTEND] assetGrid element not found');
+    return;
+  }
   assetGrid.innerHTML = '';
   
   const filteredAssets = filterAssets(assetsToRender);
