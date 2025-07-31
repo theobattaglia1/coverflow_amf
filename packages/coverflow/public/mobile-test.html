@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Style Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        .test-section {
+            background: #ccc;
+            padding: 50px;
+            text-align: center;
+        }
+        
+        .test-section h1 {
+            font-size: 3rem;
+            margin: 20px 0;
+        }
+        
+        @media (max-width: 768px) {
+            .test-section {
+                background: #f00 !important;
+                padding: 10px !important;
+            }
+            
+            .test-section h1 {
+                font-size: 1rem !important;
+                margin: 5px 0 !important;
+            }
+        }
+        
+        .info {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px;
+            font-size: 12px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-section">
+        <h1>Mobile Test</h1>
+        <p>If mobile styles are working:</p>
+        <ul style="text-align: left; max-width: 300px; margin: 0 auto;">
+            <li>Background should be RED</li>
+            <li>Padding should be 10px</li>
+            <li>H1 should be 1rem</li>
+        </ul>
+    </div>
+    
+    <div class="info" id="info"></div>
+    
+    <script>
+        const info = document.getElementById('info');
+        function updateInfo() {
+            info.innerHTML = `
+                Window width: ${window.innerWidth}px<br>
+                Media query active: ${window.innerWidth <= 768 ? 'YES' : 'NO'}<br>
+                User Agent: ${navigator.userAgent.includes('Mobile') ? 'Mobile' : 'Desktop'}
+            `;
+        }
+        updateInfo();
+        window.addEventListener('resize', updateInfo);
+    </script>
+</body>
+</html>

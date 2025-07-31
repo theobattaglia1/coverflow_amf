@@ -436,11 +436,26 @@
             
             /* Hide or minimize video background on mobile */
             .hero-video-bg {
-                display: none;
+                display: none !important;
             }
             
             .hero-overlay {
-                background: rgba(245, 240, 232, 0.95);
+                background: rgba(245, 240, 232, 0.95) !important;
+            }
+            
+            /* Force navigation to be more compact on mobile */
+            nav {
+                padding: 5px 0 !important;
+            }
+            
+            nav ul {
+                gap: 5px !important;
+                padding: 0 5px !important;
+            }
+            
+            nav a {
+                font-size: 0.7rem !important;
+                padding: 3px 5px !important;
             }
             
             /* Reduce section padding on mobile */
@@ -1024,6 +1039,16 @@
     </footer>
 
     <script>
+        // Debug info
+        const debugInfo = document.createElement('div');
+        debugInfo.style.cssText = 'position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 10px; font-size: 12px; z-index: 9999; border-radius: 5px;';
+        debugInfo.innerHTML = `Width: ${window.innerWidth}px | Mobile: ${window.innerWidth <= 768 ? 'YES' : 'NO'}`;
+        document.body.appendChild(debugInfo);
+        
+        window.addEventListener('resize', () => {
+            debugInfo.innerHTML = `Width: ${window.innerWidth}px | Mobile: ${window.innerWidth <= 768 ? 'YES' : 'NO'}`;
+        });
+        
         // Navigation visibility
         window.addEventListener('scroll', function() {
             const nav = document.getElementById('navigation');
