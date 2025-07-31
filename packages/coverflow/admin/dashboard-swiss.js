@@ -198,15 +198,31 @@ async function init() {
 
 // Load covers with smooth animation
 async function loadCovers() {
+  console.log('📂 Loading covers from server...');
   showLoading('covers');
   
   try {
-    const res = await fetch('/data/covers.json');
-    covers = await res.json();
+    const res = await fetch('/data/covers.json?t=' + Date.now()); // Cache busting
+    console.log('📡 Covers fetch response status:', res.status);
+    
+    const loadedCovers = await res.json();
+    console.log('📋 Covers loaded from server:', loadedCovers.length, 'covers');
+    
+    // Log a few sample covers for debugging
+    if (loadedCovers.length > 0) {
+      console.log('📄 Sample cover data:', {
+        id: loadedCovers[0].id,
+        title: loadedCovers[0].albumTitle,
+        label: loadedCovers[0].coverLabel
+      });
+    }
+    
+    covers = loadedCovers;
     renderCovers();
+    console.log('✅ Covers loaded and rendered successfully');
   } catch (err) {
+    console.error('❌ Failed to load covers:', err);
     showToast('FAILED TO LOAD COVERS', 5000);
-    console.error(err);
   } finally {
     hideLoading();
   }
@@ -322,7 +338,26 @@ function editCover(cover) {
   // Form submit handler
   document.getElementById('editCoverForm').onsubmit = async (e) => {
     e.preventDefault();
+    console.log('📝 Form submitted for cover:', cover.id, 'current title:', cover.albumTitle);
+    
     const formData = new FormData(e.target);
+    
+    // Log the form data being captured
+    console.log('📋 Form data captured:', {
+      albumTitle: formData.get('albumTitle'),
+      coverLabel: formData.get('coverLabel'), 
+      category: formData.get('category'),
+      spotifyEmbed: formData.get('spotifyEmbed'),
+      contactEmail: formData.get('contactEmail'),
+      frontImage: formData.get('frontImage'),
+      backImage: formData.get('backImage')
+    });
+    
+    // Store old values for comparison
+    const oldTitle = cover.albumTitle;
+    const oldLabel = cover.coverLabel;
+    
+    // Update cover object
     cover.albumTitle = formData.get('albumTitle');
     cover.coverLabel = formData.get('coverLabel');
     cover.category = formData.get('category').split(',').map(c => c.trim()).filter(Boolean);
@@ -330,6 +365,25 @@ function editCover(cover) {
     cover.contactEmail = formData.get('contactEmail');
     cover.frontImage = formData.get('frontImage');
     cover.backImage = formData.get('backImage');
+    
+    console.log('🔄 Cover object after update:', {
+      id: cover.id,
+      oldTitle,
+      newTitle: cover.albumTitle,
+      oldLabel, 
+      newLabel: cover.coverLabel,
+      changed: oldTitle !== cover.albumTitle || oldLabel !== cover.coverLabel
+    });
+    
+    // Find and update the cover in the covers array
+    const coverIndex = covers.findIndex(c => c.id === cover.id);
+    if (coverIndex !== -1) {
+      covers[coverIndex] = cover;
+      console.log('✅ Updated cover in covers array at index:', coverIndex);
+    } else {
+      console.error('❌ Could not find cover in covers array!', cover.id);
+    }
+    
     hasChanges = true;
     console.log('✏️ Cover updated, setting hasChanges to true:', cover.albumTitle);
     updateSaveButton();
@@ -527,12 +581,20 @@ async function saveChanges() {
     }
     
     const result = await res.json();
+    console.log('💾 Save result from server:', result);
+    
     hasChanges = false;
     updateSaveButton();
     showToast('CHANGES SAVED SUCCESSFULLY');
     
+    console.log('🔄 About to reload covers to verify save...');
+    console.log('📊 Current covers array before reload:', covers.length, 'covers');
+    
     // Reload covers to verify save
     await loadCovers();
+    
+    console.log('📊 Covers array after reload:', covers.length, 'covers');
+    console.log('✅ Save and reload completed');
     
   } catch (err) {
     console.error('Save failed:', err);
