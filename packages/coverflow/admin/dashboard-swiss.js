@@ -204,6 +204,43 @@ async function init() {
     pushLive: typeof window.pushLive,
     editCover: typeof window.editCover
   });
+  
+  // Debug: Check if action buttons exist in DOM
+  setTimeout(() => {
+    const saveBtn = document.querySelector('[onclick="saveChanges()"]');
+    const pushBtn = document.querySelector('[onclick="pushLive()"]');
+    const coversActions = document.querySelector('.covers-actions');
+    
+    console.log('🔍 DOM Button Check:', {
+      saveButton: !!saveBtn,
+      pushButton: !!pushBtn,
+      coversActionsContainer: !!coversActions,
+      saveButtonVisible: saveBtn ? getComputedStyle(saveBtn).display !== 'none' : false,
+      coversActionsVisible: coversActions ? getComputedStyle(coversActions).display !== 'none' : false
+    });
+    
+    if (coversActions) {
+      console.log('📏 Covers actions container styles:', {
+        display: getComputedStyle(coversActions).display,
+        visibility: getComputedStyle(coversActions).visibility,
+        height: getComputedStyle(coversActions).height,
+        position: getComputedStyle(coversActions).position
+      });
+      
+      // Force make visible if hidden
+      if (getComputedStyle(coversActions).display === 'none') {
+        console.log('⚠️ Covers actions container is hidden! Forcing to show...');
+        coversActions.style.display = 'flex';
+        coversActions.style.marginTop = '2rem';
+        coversActions.style.gap = '1rem';
+      }
+      
+      // Scroll to make sure buttons are visible
+      coversActions.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    } else {
+      console.error('❌ Covers actions container not found in DOM!');
+    }
+  }, 1000);
 }
 
 // Load covers with smooth animation
