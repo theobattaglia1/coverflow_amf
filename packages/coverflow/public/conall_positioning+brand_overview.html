@@ -402,32 +402,42 @@
         
         /* Responsive */
         @media (max-width: 768px) {
-            /* Reduce hero section spacing on mobile - 40% smaller overall */
+            /* Drastically reduce hero section on mobile */
             .hero {
                 height: auto;
-                min-height: 35vh;
-                padding: 15px 20px 15px;
+                min-height: unset;
+                padding: 10px 15px 10px;
             }
             
             .hero-content {
-                padding-top: 5px;
+                padding-top: 0;
             }
             
-            /* Make logo/title much smaller on mobile */
+            /* Make logo/title very compact on mobile */
             .hero h1 {
-                font-size: clamp(1.5rem, 5vw, 2.8rem);
-                margin-bottom: 0.1rem;
+                font-size: 1.3rem;
+                margin-bottom: 0;
             }
             
             .hero .tagline {
-                font-size: clamp(0.8rem, 2vw, 1rem);
-                margin-bottom: 0.4rem;
+                font-size: 0.75rem;
+                margin-bottom: 0.2rem;
             }
             
             .hero .subheading {
-                font-size: clamp(0.75rem, 1.4vw, 0.85rem);
+                font-size: 0.7rem;
                 padding: 0 10px;
-                line-height: 1.4;
+                line-height: 1.3;
+                margin-bottom: 0;
+            }
+            
+            /* Hide or minimize video background on mobile */
+            .hero-video-bg {
+                display: none;
+            }
+            
+            .hero-overlay {
+                background: rgba(245, 240, 232, 0.95);
             }
             
             /* Reduce section padding on mobile */
