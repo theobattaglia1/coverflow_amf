@@ -897,7 +897,7 @@ html, body {
 /* === MOBILE LAYOUT (VERTICAL & ELEGANT) === */
 @media (max-width: 768px) {
   body {
-    padding-top: 300px; /* Increased to accommodate taller logo frame */
+    padding-top: 120px; /* Drastically reduced from 300px */
     padding-bottom: 0;
     font-size: 18px;
     line-height: 1.4;
@@ -910,29 +910,29 @@ html, body {
     left: 0;
     right: 0;
     justify-content: center;
-    padding: 24px clamp(16px, 4vw, 24px) 3px; /* Reduced bottom padding from 5px to 3px */
-    margin: 0 0 8px 0; /* Reduce space below logo */
+    padding: 5px 10px 5px; /* Minimal padding */
+    margin: 0; /* Remove margin */
     background: rgba(0,0,0,0.95);
     backdrop-filter: blur(20px) saturate(1.2);
     border-bottom: 1px solid rgba(255,255,255,0.06);
     z-index: 101; /* Above filter bar */
     height: auto; /* Let height adjust to content */
-    min-height: 220px; /* Increased to accommodate taller logo frame */
+    min-height: unset; /* Remove min-height */
   }
 
   .logo-frame {
-    max-width: 280px !important; /* Slightly wider for mobile */
-    height: 180px !important; /* Increased from 140px to preserve spacing proportions */
+    max-width: 180px !important; /* 30% smaller than 280px */
+    height: 70px !important; /* Much smaller height */
     overflow: visible !important; /* Ensure nothing gets clipped */
   }
 
   /* === MOBILE FILTER BAR (BELOW LOGO) === */
   .filter-nav {
     position: fixed;
-    top: 240px; /* Increased to accommodate taller logo container */
+    top: 80px; /* Adjust to match smaller logo */
     left: 0;
     right: 0;
-    padding: 8px 12px; /* Slightly less padding */
+    padding: 6px 10px; /* Less padding */
     background: rgba(0,0,0,0.9);
     backdrop-filter: blur(16px) saturate(1.1);
     border-bottom: 1px solid rgba(255,255,255,0.06);
