@@ -20,11 +20,11 @@ if (isMobile) {
           style.textContent = `
             @media (max-width: 768px) {
               .logo-wrapper { 
-                transform: scale(0.375) !important; /* 25% smaller than 0.5 */
+                transform: scale(0.3) !important; /* Much smaller to fit properly */
                 transform-origin: center center;
               }
               .logo-container {
-                margin-bottom: 8px !important; /* Proportionally smaller */
+                margin-bottom: 5px !important; /* Smaller margin */
                 left: 0 !important;
               }
             }
