@@ -732,11 +732,7 @@ function setupFilterButtons() {
         
         const f = btn.dataset.filter;
         
-        // Special handling for 'about' filter
-        if (f === 'about') {
-          window.location.href = '/investors.html';
-          return;
-        }
+        // No special redirect needed - contact cover will show normally
         
         // Update visible covers without full re-render
         const allCoverElements = document.querySelectorAll('.cover');
