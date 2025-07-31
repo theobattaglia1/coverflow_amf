@@ -8,35 +8,67 @@ const maxAngle = 80,
 const coverflowEl   = document.getElementById('coverflow'),
       hoverDisplay  = document.getElementById('hover-credits');
 
-// Mobile logo scaling
-if (isMobile) {
-  window.addEventListener('load', () => {
-    const logoFrame = document.querySelector('.logo-frame');
-    if (logoFrame) {
-      logoFrame.onload = function() {
-        try {
-          const logoDoc = logoFrame.contentDocument || logoFrame.contentWindow.document;
-          const style = logoDoc.createElement('style');
-          style.textContent = `
-            @media (max-width: 768px) {
-              .logo-wrapper { 
-                transform: scale(0.3) !important; /* Much smaller to fit properly */
-                transform-origin: center center;
-              }
-              .logo-container {
-                margin-bottom: 5px !important; /* Smaller margin */
-                left: 0 !important;
-              }
-            }
-          `;
-          logoDoc.head.appendChild(style);
-        } catch (e) {
-          console.log('Could not access iframe content');
+// Mobile logo scaling - more robust
+function applyMobileLogoScaling() {
+  const logoFrame = document.querySelector('.logo-frame');
+  if (logoFrame) {
+    try {
+      const logoDoc = logoFrame.contentDocument || logoFrame.contentWindow.document;
+      if (logoDoc && logoDoc.head) {
+        // Remove any existing mobile scaling styles
+        const existingStyle = logoDoc.querySelector('style[data-mobile-scaling]');
+        if (existingStyle) {
+          existingStyle.remove();
         }
-      };
+        
+        const style = logoDoc.createElement('style');
+        style.setAttribute('data-mobile-scaling', 'true');
+        style.textContent = `
+          @media (max-width: 768px) {
+            .logo-wrapper { 
+              transform: scale(0.3) !important; /* Much smaller to fit properly */
+              transform-origin: center center;
+            }
+            .logo-container {
+              margin-bottom: 5px !important; /* Smaller margin */
+              left: 0 !important;
+            }
+          }
+        `;
+        logoDoc.head.appendChild(style);
+        console.log('✅ Mobile logo scaling applied');
+      }
+    } catch (e) {
+      console.log('Could not access iframe content:', e);
     }
-  });
+  }
 }
+
+// Apply scaling on load and when iframe loads
+window.addEventListener('load', () => {
+  if (window.innerWidth <= 768) {
+    applyMobileLogoScaling();
+  }
+});
+
+// Also apply when iframe loads
+document.addEventListener('DOMContentLoaded', () => {
+  const logoFrame = document.querySelector('.logo-frame');
+  if (logoFrame) {
+    logoFrame.addEventListener('load', () => {
+      if (window.innerWidth <= 768) {
+        applyMobileLogoScaling();
+      }
+    });
+  }
+});
+
+// Apply on resize to handle orientation changes
+window.addEventListener('resize', () => {
+  if (window.innerWidth <= 768) {
+    setTimeout(applyMobileLogoScaling, 100); // Small delay to ensure iframe is ready
+  }
+});
 
 // 2) Trails - Enhanced particle system
 const trailCanvas = document.getElementById('trail-canvas'),
