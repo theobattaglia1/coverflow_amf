@@ -218,13 +218,18 @@ window.saveCover = async function() {
   console.log("📦 Sending data to server:", body);
 
   try {
+    console.log("🌐 Making request to:", getApiBasePath() + '/save-cover');
     const response = await fetch(getApiBasePath() + '/save-cover', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body)
     });
 
+    console.log("📡 Response status:", response.status);
+    console.log("📡 Response headers:", response.headers);
+
     const result = await response.json();
+    console.log("📬 Server responded:", result);
 
     if (!response.ok) {
       console.error("❌ Saving cover failed:", result);
@@ -232,7 +237,7 @@ window.saveCover = async function() {
       return;
     }
 
-    console.log("📬 Server responded:", result);
+    console.log("✅ Cover saved successfully!");
     showToast("Cover saved successfully!");
     
     // Redirect after short delay
