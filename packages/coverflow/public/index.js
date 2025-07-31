@@ -8,6 +8,36 @@ const maxAngle = 80,
 const coverflowEl   = document.getElementById('coverflow'),
       hoverDisplay  = document.getElementById('hover-credits');
 
+// Mobile logo scaling
+if (isMobile) {
+  window.addEventListener('load', () => {
+    const logoFrame = document.querySelector('.logo-frame');
+    if (logoFrame) {
+      logoFrame.onload = function() {
+        try {
+          const logoDoc = logoFrame.contentDocument || logoFrame.contentWindow.document;
+          const style = logoDoc.createElement('style');
+          style.textContent = `
+            @media (max-width: 768px) {
+              .logo-wrapper { 
+                transform: scale(0.5) !important; 
+                transform-origin: center center;
+              }
+              .logo-container {
+                margin-bottom: 10px !important;
+                left: 0 !important;
+              }
+            }
+          `;
+          logoDoc.head.appendChild(style);
+        } catch (e) {
+          console.log('Could not access iframe content');
+        }
+      };
+    }
+  });
+}
+
 // 2) Trails - Enhanced particle system
 const trailCanvas = document.getElementById('trail-canvas'),
       trailCtx    = trailCanvas.getContext('2d');

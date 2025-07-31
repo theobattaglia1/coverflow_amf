@@ -923,7 +923,7 @@ html, body {
   .logo-frame {
     max-width: 220px !important; /* About 20% smaller than 280px */
     height: 120px !important; /* Reasonable height */
-    overflow: visible !important; /* Ensure nothing gets clipped */
+    overflow: hidden !important; /* Clip overflow to fit container */
   }
 
   /* === MOBILE FILTER BAR (BELOW LOGO) === */
