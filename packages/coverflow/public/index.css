@@ -921,10 +921,10 @@ html, body {
   }
 
   .logo-frame {
-    max-width: 165px !important; /* 25% smaller than 220px */
-    height: 156px !important; /* 25% smaller than 208px */
+    max-width: 200px !important; /* Wider to accommodate logo */
+    height: 180px !important; /* Taller to accommodate logo */
     overflow: hidden !important; /* Clip overflow to fit container */
-    margin-left: 8px !important; /* Slightly reduced margin to maintain proportion */
+    margin-left: 15px !important; /* More margin to prevent A cutoff */
   }
 
   /* === MOBILE FILTER BAR (BELOW LOGO) === */
