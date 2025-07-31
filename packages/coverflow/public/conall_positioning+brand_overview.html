@@ -402,31 +402,32 @@
         
         /* Responsive */
         @media (max-width: 768px) {
-            /* Reduce hero section spacing on mobile */
+            /* Reduce hero section spacing on mobile - 40% smaller overall */
             .hero {
                 height: auto;
-                min-height: 60vh;
-                padding: 30px 20px 20px;
+                min-height: 35vh;
+                padding: 15px 20px 15px;
             }
             
             .hero-content {
-                padding-top: 10px;
+                padding-top: 5px;
             }
             
-            /* Make logo/title 50% smaller on mobile (30% + additional 20%) */
+            /* Make logo/title much smaller on mobile */
             .hero h1 {
-                font-size: clamp(1.8rem, 6vw, 3.5rem);
-                margin-bottom: 0.2rem;
+                font-size: clamp(1.5rem, 5vw, 2.8rem);
+                margin-bottom: 0.1rem;
             }
             
             .hero .tagline {
-                font-size: clamp(0.9rem, 2.2vw, 1.1rem);
-                margin-bottom: 0.6rem;
+                font-size: clamp(0.8rem, 2vw, 1rem);
+                margin-bottom: 0.4rem;
             }
             
             .hero .subheading {
-                font-size: clamp(0.85rem, 1.6vw, 0.95rem);
+                font-size: clamp(0.75rem, 1.4vw, 0.85rem);
                 padding: 0 10px;
+                line-height: 1.4;
             }
             
             /* Reduce section padding on mobile */
