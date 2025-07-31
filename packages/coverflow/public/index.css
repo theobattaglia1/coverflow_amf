@@ -897,7 +897,7 @@ html, body {
 /* === MOBILE LAYOUT (VERTICAL & ELEGANT) === */
 @media (max-width: 768px) {
   body {
-    padding-top: 200px; /* Balanced reduction */
+    padding-top: 224px; /* Increased to account for taller logo */
     padding-bottom: 0;
     font-size: 18px;
     line-height: 1.4;
@@ -922,14 +922,14 @@ html, body {
 
   .logo-frame {
     max-width: 220px !important; /* About 20% smaller than 280px */
-    height: 120px !important; /* Reasonable height */
+    height: 144px !important; /* Increased by 20% from 120px */
     overflow: hidden !important; /* Clip overflow to fit container */
   }
 
   /* === MOBILE FILTER BAR (BELOW LOGO) === */
   .filter-nav {
     position: fixed;
-    top: 145px; /* Adjust to match logo + padding */
+    top: 169px; /* Adjust to match taller logo + padding */
     left: 0;
     right: 0;
     padding: 8px 12px; /* Restore reasonable padding */
