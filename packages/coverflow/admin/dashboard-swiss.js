@@ -194,6 +194,16 @@ async function init() {
   // Show onboarding tips and create help button
   showOnboardingTips();
   createHelpButton();
+  
+  // Make critical functions globally available at the end of init
+  window.saveChanges = saveChanges;
+  window.pushLive = pushLive;
+  window.editCover = editCover;
+  console.log('🌍 Global functions exposed after init:', {
+    saveChanges: typeof window.saveChanges,
+    pushLive: typeof window.pushLive,
+    editCover: typeof window.editCover
+  });
 }
 
 // Load covers with smooth animation
@@ -545,7 +555,7 @@ function toggleCoverSelection(coverId) {
 
 // Save changes with visual feedback
 async function saveChanges() {
-  console.log('💾 saveChanges() called, hasChanges:', hasChanges, 'covers count:', covers.length);
+  console.log('🚨 saveChanges() FUNCTION CALLED!!! hasChanges:', hasChanges, 'covers count:', covers.length);
   
   if (!hasChanges) {
     showToast('NO CHANGES TO SAVE');
@@ -614,6 +624,14 @@ function updateSaveButton() {
     return;
   }
   
+  // Add click debugging to the button
+  if (!saveBtn.hasClickDebugger) {
+    saveBtn.addEventListener('click', function() {
+      console.log('🖱️ SAVE BUTTON CLICKED! About to call saveChanges()');
+    });
+    saveBtn.hasClickDebugger = true;
+  }
+  
   if (hasChanges) {
     saveBtn.classList.add('btn-primary');
     saveBtn.textContent = 'SAVE CHANGES *';
@@ -623,6 +641,9 @@ function updateSaveButton() {
     saveBtn.textContent = 'SAVE CHANGES';
     console.log('✅ Save button updated to show no changes');
   }
+  
+  // Test that the function is accessible
+  console.log('🧪 Testing saveChanges accessibility:', typeof window.saveChanges, typeof saveChanges);
 }
 
 // Push live with confirmation
@@ -4090,7 +4111,7 @@ function navigateToSection(section, itemId) {
 }
 
 // Make functions globally available
-// Note: init() is already called on DOMContentLoaded above
+// Note: Global functions are exposed at the end of init() function above
 
 // Enhanced Asset Search and Filtering
 let assetViewMode = 'grid';
