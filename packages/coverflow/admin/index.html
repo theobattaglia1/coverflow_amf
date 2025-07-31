@@ -500,27 +500,8 @@ function showSection(sectionId) {
   });
 }
 
-// Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
-  // Load user info
-  fetch('/api/me')
-    .then(res => res.json())
-    .then(data => {
-      if (data.user) {
-        document.getElementById('username').textContent = data.user.username.toUpperCase();
-        document.getElementById('userRole').textContent = data.user.role.toUpperCase();
-        
-        // Show users section only for admins
-        if (data.user.role === 'admin') {
-          document.getElementById('usersSection').style.display = 'block';
-        }
-      }
-    })
-    .catch(err => {
-      console.error('Failed to load user info:', err);
-      // Don't redirect here, let the server handle auth
-    });
-});
+// Note: Main initialization handled by dashboard-swiss.js
+// This prevents duplicate initialization conflicts
 
 // Logout function
 function logout() {

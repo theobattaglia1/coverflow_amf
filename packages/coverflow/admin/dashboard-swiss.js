@@ -141,6 +141,7 @@ function stopSessionKeepalive() {
 document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
+  console.log('🚀 Admin Dashboard initializing...');
   try {
     // Try to load user info, but don't redirect if it fails
     const res = await fetch('/api/me');
@@ -330,6 +331,7 @@ function editCover(cover) {
     cover.frontImage = formData.get('frontImage');
     cover.backImage = formData.get('backImage');
     hasChanges = true;
+    console.log('✏️ Cover updated, setting hasChanges to true:', cover.albumTitle);
     updateSaveButton();
     renderCovers();
     closeModal();
@@ -489,8 +491,11 @@ function toggleCoverSelection(coverId) {
 
 // Save changes with visual feedback
 async function saveChanges() {
+  console.log('💾 saveChanges() called, hasChanges:', hasChanges, 'covers count:', covers.length);
+  
   if (!hasChanges) {
     showToast('NO CHANGES TO SAVE');
+    console.log('❌ No changes detected, aborting save');
     return;
   }
   
@@ -540,12 +545,21 @@ async function saveChanges() {
 // Update save button state
 function updateSaveButton() {
   const saveBtn = document.querySelector('[onclick="saveChanges()"]');
+  console.log('🔄 updateSaveButton called, hasChanges:', hasChanges, 'button found:', !!saveBtn);
+  
+  if (!saveBtn) {
+    console.error('❌ Save button not found! Check if onclick="saveChanges()" exists in HTML');
+    return;
+  }
+  
   if (hasChanges) {
     saveBtn.classList.add('btn-primary');
     saveBtn.textContent = 'SAVE CHANGES *';
+    console.log('✅ Save button updated to show changes pending');
   } else {
     saveBtn.classList.remove('btn-primary');
     saveBtn.textContent = 'SAVE CHANGES';
+    console.log('✅ Save button updated to show no changes');
   }
 }
 
@@ -889,6 +903,12 @@ function getCurrentFolderItems() {
 function setupDragAndDrop() {
   // Cover dropzone
   const coverDropzone = document.getElementById('coverDropzone');
+  console.log('🎯 Setting up cover dropzone, element found:', !!coverDropzone);
+  
+  if (!coverDropzone) {
+    console.error('❌ Cover dropzone element not found! Check if id="coverDropzone" exists');
+    return;
+  }
   
   ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
     coverDropzone.addEventListener(eventName, preventDefaults, false);
@@ -934,6 +954,8 @@ async function handleCoverDrop(e) {
 }
 
 async function uploadAndCreateCover(file) {
+  console.log('📤 Uploading and creating cover for file:', file.name, 'size:', file.size);
+  
   const formData = new FormData();
   formData.append('file', file);
   
@@ -4006,9 +4028,7 @@ function navigateToSection(section, itemId) {
 }
 
 // Make functions globally available
-window.addEventListener('load', () => {
-  init();
-});
+// Note: init() is already called on DOMContentLoaded above
 
 // Enhanced Asset Search and Filtering
 let assetViewMode = 'grid';
