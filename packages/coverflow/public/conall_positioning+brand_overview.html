@@ -402,6 +402,53 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            /* Reduce hero section spacing on mobile */
+            .hero {
+                height: auto;
+                min-height: 70vh;
+                padding: 60px 20px 40px;
+            }
+            
+            .hero-content {
+                padding-top: 20px;
+            }
+            
+            /* Make logo/title 30% smaller on mobile */
+            .hero h1 {
+                font-size: clamp(2.1rem, 7vw, 4.2rem);
+                margin-bottom: 0.3rem;
+            }
+            
+            .hero .tagline {
+                font-size: clamp(1rem, 2.5vw, 1.3rem);
+                margin-bottom: 1rem;
+            }
+            
+            .hero .subheading {
+                font-size: clamp(0.9rem, 1.8vw, 1rem);
+                padding: 0 10px;
+            }
+            
+            /* Reduce section padding on mobile */
+            .section {
+                padding: 60px 0;
+            }
+            
+            /* Navigation adjustments for mobile */
+            nav {
+                padding: 10px 0;
+            }
+            
+            nav ul {
+                gap: 10px;
+                padding: 0 10px;
+            }
+            
+            nav a {
+                font-size: 0.85rem;
+                padding: 5px 8px;
+            }
+            
             .content-area {
                 grid-template-columns: 1fr;
                 gap: 40px;
