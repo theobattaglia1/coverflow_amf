@@ -230,6 +230,18 @@ async function init() {
       saveChangesButtons: document.querySelectorAll('button[onclick*="saveChanges"]').length
     });
     
+    // Check parent visibility
+    const section = document.getElementById('coversSection');
+    if (section) {
+      console.log('📦 Covers section computed styles:', {
+        display: getComputedStyle(section).display,
+        visibility: getComputedStyle(section).visibility,
+        opacity: getComputedStyle(section).opacity,
+        offsetHeight: section.offsetHeight,
+        offsetParent: !!section.offsetParent
+      });
+    }
+    
     if (coversActions) {
       console.log('📏 Covers actions container styles:', {
         display: getComputedStyle(coversActions).display,
@@ -246,18 +258,24 @@ async function init() {
         coversActions.style.gap = '1rem';
       }
       
-      // Make buttons more prominent and scroll to them
+      // Make buttons more prominent WITHOUT overlay positioning
       coversActions.style.backgroundColor = '#ffff00';
       coversActions.style.border = '3px solid red';
       coversActions.style.padding = '1rem';
       coversActions.style.borderRadius = '8px';
-      coversActions.style.position = 'fixed';
-      coversActions.style.top = '50%';
-      coversActions.style.left = '50%';
-      coversActions.style.transform = 'translate(-50%, -50%)';
-      coversActions.style.zIndex = '9999';
       coversActions.style.fontSize = '16px';
-      console.log('🟡 HIGHLIGHTED ACTION BUTTONS WITH YELLOW BACKGROUND AND RED BORDER - POSITIONED AS OVERLAY');
+      coversActions.style.display = 'flex !important';
+      coversActions.style.setProperty('display', 'flex', 'important');
+      
+      console.log('🟡 HIGHLIGHTED ACTION BUTTONS WITH YELLOW BACKGROUND AND RED BORDER');
+      console.log('📍 Button container offset:', {
+        offsetTop: coversActions.offsetTop,
+        offsetLeft: coversActions.offsetLeft,
+        offsetWidth: coversActions.offsetWidth,
+        offsetHeight: coversActions.offsetHeight,
+        scrollTop: document.documentElement.scrollTop,
+        isInViewport: coversActions.getBoundingClientRect().top < window.innerHeight
+      });
       
       // Scroll to make sure buttons are visible
       setTimeout(() => {
