@@ -1,0 +1,1082 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Artist Overviews — All My Friends Inc.</title>
+    <meta name="description" content="Select Artist Overviews – Curated talent for Pulse Records"/>
+    
+    <!-- Open Graph meta tags for social sharing -->
+    <meta property="og:title" content="Select Artist Overviews — All My Friends Inc."/>
+    <meta property="og:description" content="Select Artist Overviews – Curated talent for Pulse Records"/>
+    <meta property="og:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://allmyfriendsinc.com/artists_overview.html"/>
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="Select Artist Overviews — All My Friends Inc."/>
+    <meta name="twitter:description" content="Select Artist Overviews – Curated talent for Pulse Records"/>
+    <meta name="twitter:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    
+    <style>
+        /* ———————————— 0. Reset & Core */
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        
+        /* ———————————— 1. Design System Variables */
+        :root{
+            /* Core Palette */
+            --bg:#FFFFFF;
+            --ink:#000000;
+            --accent:#0000FF;
+            --success:#22C55E;
+            --yellow:#FFD700;
+            
+            /* Fluid Type Scale - Editorial */
+            --step--2: clamp(.5rem,.6vw,.7rem);
+            --step--1: clamp(.625rem,.75vw,.825rem);
+            --step-0:  clamp(.75rem,.9vw,.95rem);
+            --step-1:  clamp(.875rem,1.1vw,1.15rem);
+            --step-2:  clamp(1.25rem,1.8vw,1.8rem);
+            --step-3:  clamp(2rem,2.5vw,2.5rem);
+            --step-4:  clamp(2.5rem,4vw,4rem);
+            --step-5:  clamp(3rem,6vw,6rem);
+            --step-6:  clamp(4.5rem,10vw,10rem);
+            
+            /* Grid & Spacing */
+            --gutter:1.5rem;
+            --max-width:1280px;
+            --section-space:10rem;
+        }
+        
+        /* ———————————— 2. Base Typography */
+        html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased;}
+        body{
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-weight:400;
+            font-size:var(--step-0);
+            line-height:1.4;
+            color:var(--ink);
+            background:var(--bg);
+            letter-spacing:-.01em;
+        }
+        
+        h1,h2,h3,h4,h5,h6{
+            font-weight:700;
+            line-height:1;
+            letter-spacing:-.04em;
+            margin:0;
+            position:relative;
+        }
+        
+        h1{font-size:var(--step-6);letter-spacing:-.06em;}
+        h2{font-size:var(--step-5);letter-spacing:-.05em;}
+        h3{font-size:var(--step-4);letter-spacing:-.04em;}
+        h4{font-size:var(--step-3);letter-spacing:-.03em;}
+        h5{font-size:var(--step-2);letter-spacing:-.02em;}
+        
+        .display{
+            font-size:clamp(4rem,15vw,14rem);
+            font-weight:900;
+            line-height:.8;
+            letter-spacing:-.08em;
+            text-transform:uppercase;
+        }
+        
+        p{
+            margin-bottom:1.5rem;
+            max-width:65ch;
+        }
+        
+        .lead{
+            font-size:var(--step-1);
+            line-height:1.5;
+            font-weight:400;
+            letter-spacing:-.02em;
+        }
+        
+        a{
+            color:var(--ink);
+            text-decoration:none;
+        }
+        
+        a:hover{
+            text-decoration:underline;
+            text-underline-offset:2px;
+        }
+        
+        strong{
+            font-weight:700;
+        }
+        
+        /* ———————————— 3. Grid System */
+        .container{
+            max-width:var(--max-width);
+            margin-inline:auto;
+            padding-inline:var(--gutter);
+        }
+        
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:var(--gutter);
+        }
+        
+        .col-12{grid-column:span 12;}
+        .col-10{grid-column:span 10;}
+        .col-8{grid-column:span 8;}
+        .col-7{grid-column:span 7;}
+        .col-6{grid-column:span 6;}
+        .col-5{grid-column:span 5;}
+        .col-4{grid-column:span 4;}
+        .col-3{grid-column:span 3;}
+        .col-2{grid-column:span 2;}
+        
+        /* Column offsets */
+        .offset-1{grid-column-start:2;}
+        .offset-2{grid-column-start:3;}
+        .offset-3{grid-column-start:4;}
+        
+        @media(max-width:768px){
+            .grid{grid-template-columns:repeat(4,1fr);}
+            [class*="col-"]{grid-column:span 4;}
+            [class*="offset-"]{grid-column-start:1;}
+        }
+        
+        /* ———————————— 4. Section Architecture */
+        section{
+            padding-block:var(--section-space);
+            position:relative;
+        }
+        
+        section:first-child{
+            padding-top:0;
+        }
+        
+        /* ———————————— 5. Navigation */
+        .nav{
+            position:fixed;
+            top:0;
+            left:0;
+            right:0;
+            z-index:1000;
+            padding:1.5rem 0;
+            background:rgba(255,255,255,.95);
+            backdrop-filter:blur(10px);
+        }
+        
+        .nav-inner{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+        
+        .nav-logo{
+            font-size:1.5rem;
+            font-weight:900;
+            letter-spacing:-.05em;
+        }
+        
+        .nav-links{
+            display:flex;
+            gap:3rem;
+            list-style:none;
+        }
+        
+        .nav-link{
+            font-size:var(--step--1);
+            font-weight:500;
+            letter-spacing:-.02em;
+            opacity:.5;
+            transition:opacity .2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active{
+            opacity:1;
+            text-decoration:none;
+        }
+        
+        /* ———————————— 6. Hero */
+        .hero{
+            height:100vh;
+            display:flex;
+            align-items:center;
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .hero-content{
+            position:relative;
+            z-index:2;
+        }
+        
+        .hero-title{
+            margin-bottom:2rem;
+        }
+        
+        .hero-image{
+            position:absolute;
+            right:-10%;
+            top:50%;
+            transform:translateY(-50%) rotate(-2deg);
+            width:45vw;
+            height:70vh;
+            background:var(--ink);
+            opacity:.03;
+            z-index:1;
+        }
+        
+        @media(max-width:768px){
+            .hero-image{
+                width:100%;
+                height:50vh;
+                right:0;
+                top:auto;
+                bottom:0;
+                transform:none;
+            }
+        }
+        
+        /* ———————————— 7. Editorial Artist Sections */
+        .artist-section{
+            margin-block:8rem;
+            position:relative;
+        }
+        
+        .artist-section:nth-child(even){
+            background:var(--yellow);
+            margin-inline:calc(var(--gutter) * -2);
+            padding-inline:calc(var(--gutter) * 2);
+        }
+        
+        .artist-layout{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            align-items:center;
+            min-height:80vh;
+        }
+        
+        .artist-image{
+            position:relative;
+            width:100%;
+            height:600px;
+            overflow:hidden;
+            cursor:pointer;
+            transition:all 0.3s ease;
+        }
+        
+        .artist-image:hover{
+            transform:scale(1.02);
+        }
+        
+        .artist-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:saturate(70%) contrast(1.1);
+            transition:all 0.3s ease;
+        }
+        
+        .artist-image:hover img{
+            filter:saturate(100%) contrast(1);
+        }
+        
+        .artist-content{
+            padding:2rem 0;
+        }
+        
+        .artist-name{
+            font-size:var(--step-5);
+            font-weight:900;
+            letter-spacing:-.08em;
+            line-height:0.8;
+            margin-bottom:1rem;
+            text-transform:uppercase;
+        }
+        
+        .artist-role{
+            font-size:var(--step-1);
+            color:var(--accent);
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+            margin-bottom:2rem;
+            font-weight:600;
+        }
+        
+        .artist-bio{
+            font-size:var(--step-0);
+            line-height:1.6;
+            margin-bottom:2rem;
+            max-width:600px;
+        }
+        
+        .social-links{
+            display:flex;
+            gap:1rem;
+            margin-top:3rem;
+        }
+        
+        .social-link{
+            display:inline-flex;
+            align-items:center;
+            gap:0.5rem;
+            padding:0.75rem 1.5rem;
+            border:2px solid var(--ink);
+            text-decoration:none;
+            color:var(--ink);
+            font-weight:500;
+            transition:all 0.3s ease;
+            font-size:var(--step--1);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .social-link::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:-100%;
+            width:100%;
+            height:100%;
+            background:var(--ink);
+            transition:left 0.3s ease;
+            z-index:-1;
+        }
+        
+        .social-link:hover{
+            color:var(--bg);
+            transform:translateY(-2px);
+        }
+        
+        .social-link:hover::before{
+            left:0;
+        }
+        
+        /* ———————————— 8. Modal System */
+        .artist-modal{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(255,255,255,0.95);
+            backdrop-filter:blur(10px);
+            z-index:2000;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            opacity:0;
+            visibility:hidden;
+            transition:all 0.3s ease;
+        }
+        
+        .artist-modal.active{
+            opacity:1;
+            visibility:visible;
+        }
+        
+        .modal-content{
+            background:var(--bg);
+            max-width:1200px;
+            width:90%;
+            max-height:90vh;
+            overflow-y:auto;
+            position:relative;
+            box-shadow:0 20px 40px rgba(0,0,0,0.1);
+            transform:scale(0.9) translateY(20px);
+            opacity:0;
+            transition:all 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+        
+        .modal-content::-webkit-scrollbar{
+            width:8px;
+        }
+        
+        .modal-content::-webkit-scrollbar-track{
+            background:rgba(0,0,0,0.05);
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb{
+            background:rgba(0,0,0,0.2);
+            border-radius:4px;
+        }
+        
+        .modal-content::-webkit-scrollbar-thumb:hover{
+            background:rgba(0,0,0,0.3);
+        }
+        
+        .artist-modal.active .modal-content{
+            transform:scale(1) translateY(0);
+            opacity:1;
+            transition-delay:0.1s;
+        }
+        
+        .modal-close{
+            position:absolute;
+            top:2rem;
+            right:2rem;
+            width:40px;
+            height:40px;
+            background:var(--ink);
+            color:var(--bg);
+            border:none;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:1.5rem;
+            transition:all 0.3s ease;
+            z-index:10;
+        }
+        
+        .modal-close:hover{
+            background:var(--accent);
+            transform:rotate(90deg);
+        }
+        
+        .modal-music-section{
+            background:#FAFAFA;
+            padding:3rem 4rem;
+        }
+        
+        .artist-music-section{
+            background:#FAFAFA;
+            padding:3rem 4rem;
+            margin-top:4rem;
+            border-radius:8px;
+        }
+        
+        .modal-section-title{
+            font-size:var(--step-2);
+            margin-bottom:2rem;
+            text-transform:uppercase;
+            letter-spacing:-0.02em;
+        }
+        
+        @media(max-width:768px){
+            .artist-layout{
+                grid-template-columns:1fr;
+                gap:2rem;
+                min-height:auto;
+            }
+            
+            .artist-image{
+                height:400px;
+            }
+            
+            .artist-name{
+                font-size:var(--step-4);
+            }
+            
+            .social-links{
+                flex-wrap:wrap;
+            }
+            
+            .modal-music-section{
+                padding:2rem 1rem;
+            }
+        }
+        
+        /* ———————————— 9. Utilities */
+        .spacer-xs{height:2rem;}
+        .spacer-sm{height:4rem;}
+        .spacer-md{height:6rem;}
+        .spacer-lg{height:8rem;}
+        .spacer-xl{height:12rem;}
+        
+        .text-center{text-align:center;}
+        .opacity-50{opacity:.5;}
+        .opacity-20{opacity:.2;}
+        
+        /* ———————————— 10. Mobile Enhancements */
+        @media(max-width:768px){
+            :root{
+                --gutter:1rem;
+                --section-space:5rem;
+            }
+            
+            .nav{
+                padding:1rem 0;
+            }
+            
+            .nav-burger{
+                display:flex;
+            }
+            
+            .nav-links{
+                position:fixed;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                background:var(--bg);
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                gap:2rem;
+                transform:translateX(100%);
+                transition:transform 0.3s ease;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+            }
+            
+            .nav-link{
+                font-size:var(--step-2);
+                opacity:1;
+            }
+            
+            .hero{
+                min-height:100vh;
+                padding-top:5rem;
+            }
+            
+            .display{
+                font-size:clamp(3rem,20vw,8rem);
+                line-height:.9;
+            }
+            
+            section{
+                padding-block:var(--section-space);
+            }
+            
+            .artist-section{
+                margin-block:4rem;
+            }
+            
+            .artist-section:nth-child(even){
+                margin-inline:-1rem;
+                padding-inline:1rem;
+            }
+        }
+        
+        /* ———————————— 11. Print Styles */
+        @media print{
+            @page{
+                margin:0.75in;
+                size:letter;
+            }
+            
+            body{
+                background:#fff;
+                color:#000;
+                font-size:11pt;
+                line-height:1.4;
+            }
+            
+            .nav,
+            .modal-close,
+            .artist-modal{
+                display:none;
+            }
+            
+            section{
+                padding-block:2rem;
+                page-break-inside:avoid;
+            }
+            
+            .hero{
+                height:auto;
+                min-height:100vh;
+                page-break-after:always;
+            }
+            
+            .artist-layout{
+                page-break-inside:avoid;
+            }
+            
+            .artist-image{
+                transform:none !important;
+            }
+            
+            img{
+                max-width:100%;
+                page-break-inside:avoid;
+                filter:none !important;
+            }
+            
+            h1{font-size:48pt;}
+            h2{font-size:36pt;}
+            h3{font-size:24pt;}
+            h4{font-size:18pt;}
+            h5{font-size:14pt;}
+            
+            .display{
+                font-size:60pt;
+            }
+            
+            .artist-section:nth-child(even){
+                background:#f5f5f5 !important;
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+            
+            *{
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner container">
+            <div class="nav-logo">ALL MY FRIENDS</div>
+            <div class="nav-burger" onclick="toggleMobileNav()">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#intro" class="nav-link active" onclick="closeMobileNav()">Intro</a></li>
+                <li><a href="#conall" class="nav-link" onclick="closeMobileNav()">Conall</a></li>
+                <li><a href="#kate" class="nav-link" onclick="closeMobileNav()">Kate</a></li>
+                <li><a href="#tom" class="nav-link" onclick="closeMobileNav()">Tom</a></li>
+                <li><a href="#leon" class="nav-link" onclick="closeMobileNav()">Leon</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Hero / Intro -->
+    <section id="intro" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div style="margin-bottom: 4rem; display: block; width: 100%; overflow: visible; min-height: 560px;">
+                    <style>
+                        .amf-logo {
+                            --logo-unit: 102px;
+                            --bar-width: 77px;
+                            --gap: calc(var(--logo-unit) / 12);
+                            --black: #000;
+                            --white: #fff;
+                            --font-family: 'Helvetica Neue', Arial, sans-serif;
+                        }
+
+                        .amf-logo-wrapper {
+                            width: 100%;
+                            height: 560px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 6rem 2rem 2rem 2rem;
+                        }
+
+                        .amf-logo-container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-start;
+                            user-select: none;
+                        }
+
+                        .amf-logo-elements {
+                            display: flex;
+                            align-items: flex-end;
+                            gap: var(--gap);
+                        }
+
+                        .amf-logo-a .amf-circle {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--black);
+                            color: var(--white);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border: 1px solid var(--white);
+                            border-radius: 50%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            animation: amfRotateKnob 6s linear infinite;
+                        }
+
+                        .amf-rounded-bar {
+                            width: var(--bar-width);
+                            background: var(--black);
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            border-radius: calc(var(--bar-width)/2);
+                            position: relative;
+                            overflow: hidden;
+                            display: flex;
+                            align-items: flex-end;
+                            justify-content: center;
+                        }
+
+                        .amf-bar-m {
+                            height: calc(var(--logo-unit) * 2);
+                        }
+
+                        .amf-bar-f {
+                            height: calc(var(--logo-unit) * 3.7);
+                            top: calc(var(--logo-unit) * 0.8);
+                        }
+
+                        .amf-rounded-bar .amf-letter {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--white);
+                            color: var(--black);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border-radius: 50%;
+                            position: absolute;
+                            bottom: 0;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                        }
+
+                        .amf-bar-m .amf-letter {
+                            animation: amfSliderUpDown 6s ease-in-out infinite alternate;
+                        }
+
+                        .amf-bar-f .amf-letter {
+                            animation: amfSliderDownUp 6.5s ease-in-out infinite alternate;
+                        }
+
+                        @keyframes amfSliderUpDown {
+                            0%, 100% { bottom: 0; }
+                            50%      { bottom: 60%; }
+                        }
+                        @keyframes amfSliderDownUp {
+                            0%, 100% { bottom: 60%; }
+                            50%      { bottom: 0; }
+                        }
+                        @keyframes amfRotateKnob {
+                            from { transform: rotate(0deg); }
+                            to   { transform: rotate(360deg); }
+                        }
+
+                        .amf-logo-a,
+                        .amf-bar-m {
+                            transform: translateY(24px);
+                        }
+
+                        .amf-logo-text {
+                            display: inline-block;
+                            white-space: nowrap;
+                            margin-top: calc(var(--logo-unit) / 2.5);
+                            margin-left: calc(var(--bar-width) * 2 + var(--gap));
+                            transform: translateX(-100%);
+                            font-family: var(--font-family);
+                            font-size: calc(var(--logo-unit) / 3.4);
+                            text-transform: uppercase;
+                            letter-spacing: -0.5px;
+                            color: var(--black);
+                            line-height: 0.8;
+                            font-weight: bold;
+                        }
+
+                        .amf-logo-text div:first-child {
+                            margin: 0;
+                        }
+
+                        .amf-logo-text div:last-child {
+                            margin: 0;
+                            display: block;
+                            text-align: right;
+                        }
+
+                        @media (max-height: 560px), (max-width: 500px) {
+                            .amf-logo-wrapper { transform: scale(0.7); }
+                        }
+                        @media (max-height: 440px), (max-width: 400px) {
+                            .amf-logo-wrapper { transform: scale(0.6); }
+                        }
+                        @media (max-width: 500px) {
+                            .amf-logo {
+                                --logo-unit: 80px;
+                                --bar-width: 64px;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="amf-logo">
+                        <div class="amf-logo-wrapper">
+                            <div class="amf-logo-container">
+                                <div class="amf-logo-elements">
+                                    <div class="amf-logo-a">
+                                        <div class="amf-circle">A</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-m">
+                                        <div class="amf-letter">M</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-f">
+                                        <div class="amf-letter">F</div>
+                                    </div>
+                                </div>
+                                <div class="amf-logo-text">
+                                    <div>ALL MY FRIENDS</div>
+                                    <div>INC</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="lead">Select Artist Overviews<br>for Pulse</p>
+                <div class="spacer-md"></div>
+                <p class="opacity-50">Curated talent showcasing the future of music<br>Click any artist to explore their music</p>
+            </div>
+        </div>
+        <div class="hero-image"></div>
+    </section>
+    
+    <!-- Conall Cafferty -->
+    <section id="conall" class="artist-section">
+        <div class="container">
+            <div class="artist-layout">
+                <div class="artist-image" onclick="openModal('conall-modal')">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png" alt="Conall Cafferty">
+                </div>
+                <div class="artist-content">
+                    <h2 class="artist-name">CONALL<br>CAFFERTY</h2>
+                    <div class="artist-role">Artist/Songwriter</div>
+                    <p class="artist-bio">Conall Cafferty—a 20-year-old singer-songwriter from Montclair, NJ now rooted in Nashville—pairs a self-taught, blues-bred guitar style and distinctive vocal tone with the sharp lyricism he honed during a stint at Belmont's songwriting program and a brief turn on American Idol. His songs fuse porch-born intimacy with the kind of hooks that can fill a room, reflecting influences that range from B.B. King to Damien Rice while never losing their raw, first-take authenticity. Recent co-writes with Jonas Connor, Jack Schrepferman, Jake Finch, and Collin Pastore show Conall carving a lane where indie-twinged Americana feels both deeply personal and ready for the biggest stages.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/conallcafferty/" class="social-link" target="_blank">
+                            <span>📸</span> Instagram
+                        </a>
+                        <a href="https://www.tiktok.com/@conallcafferty" class="social-link" target="_blank">
+                            <span>🎵</span> TikTok
+                        </a>
+                        <a href="https://open.spotify.com/artist/6d1qaR3dUpxiSxOJVVwGMc?si=uYi9sHipR-uokga5AmjEZw" class="social-link" target="_blank">
+                            <span>🎧</span> Spotify
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="artist-music-section">
+                <h3 class="modal-section-title">Music</h3>
+                <iframe style="border-radius: 24px" src="https://untitled.stream/embed/auMykkLeigIV" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Kate Stephenson -->
+    <section id="kate" class="artist-section">
+        <div class="container">
+            <div class="artist-layout">
+                <div class="artist-content">
+                    <h2 class="artist-name">KATE<br>STEPHENSON</h2>
+                    <div class="artist-role">Artist/Creator</div>
+                    <p class="artist-bio">Kate Stephenson is a Nashville-based folk-pop experimentalist from the Illinois suburbs. Raised backstage while her orchestral-musician parents rehearsed and classically trained from childhood, she carries that precision in her bones—then deliberately bends it into spellbinding shapes, using detuned guitars, off-kilter drum loops, and cinematic lyric lines to conjure something unmistakably her own.</p>
+                    <p class="artist-bio">Her work lives where confessional storytelling meets sonic risk: finger-picked melodies collide with glitchy samples, strings swell into sudden dissonance, and off-the-cuff humor disarms before the next emotional gut punch lands. Recording, mixing, and mutating most tracks herself, Stephenson prizes autonomy over polish, chasing the imperfect take that feels undeniable.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/kate_stephenson/" class="social-link" target="_blank">
+                            <span>📸</span> Instagram
+                        </a>
+                        <a href="https://www.tiktok.com/@katestephensonmusic" class="social-link" target="_blank">
+                            <span>🎵</span> TikTok
+                        </a>
+                        <a href="https://open.spotify.com/artist/5RAwXhLQfEX5khIsfnvDne?si=uFIAp68YT32zdcSXSW6wtw" class="social-link" target="_blank">
+                            <span>🎧</span> Spotify
+                        </a>
+                    </div>
+                </div>
+                <div class="artist-image" onclick="openModal('kate-modal')">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg" alt="Kate Stephenson">
+                </div>
+            </div>
+            <div class="artist-music-section">
+                <h3 class="modal-section-title">Music</h3>
+                <iframe style="border-radius: 24px" src="https://untitled.stream/embed/DvbwudWvMBk1" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Tom Siletto -->
+    <section id="tom" class="artist-section">
+        <div class="container">
+            <div class="container">
+                <div class="artist-layout">
+                    <div class="artist-image" onclick="openModal('tom-modal')">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png" alt="Tom Siletto">
+                    </div>
+                    <div class="artist-content">
+                        <h2 class="artist-name">TOM<br>SILETTO</h2>
+                        <div class="artist-role">Artist</div>
+                        <p class="artist-bio">Tom Siletto is an emerging artist in the indie folk/pop scene whose introspective, candid songwriting draws listeners in as if in conversation with a close friend. He seamlessly blends strong lyricism and haunting instrumentation, evoking the gloomy cliffs of Northern California where he grew up.</p>
+                        <p class="artist-bio">Siletto is also part of the duo Darling, which has amassed devoted listeners after just two released songs. Their first single, 'couldn't i,' garnered about 200k streams on Spotify alone in the first month, without help from editorial playlists.</p>
+                        <div class="social-links">
+                            <a href="https://www.instagram.com/tomsiletto/" class="social-link" target="_blank">
+                                <span>📸</span> Instagram
+                            </a>
+                            <a href="https://www.tiktok.com/@tomsilettomusic" class="social-link" target="_blank">
+                                <span>🎵</span> TikTok
+                            </a>
+                            <a href="https://open.spotify.com/artist/425hLCmDHF11OEX57lU2YX?si=3Me-N050RA6YotLL1DB9_Q" class="social-link" target="_blank">
+                                <span>🎧</span> Spotify
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="artist-music-section">
+                    <h3 class="modal-section-title">Music</h3>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/LzuqcxQvWcrM" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Leon Sharplin -->
+    <section id="leon" class="artist-section">
+        <div class="container">
+            <div class="artist-layout">
+                <div class="artist-content">
+                    <h2 class="artist-name">LEON<br>SHARPLIN</h2>
+                    <div class="artist-role">Songwriter/Producer</div>
+                    <p class="artist-bio">Leon Sharplin is a Los Angeles–based producer, songwriter, and multi-instrumentalist from New Zealand whose Berklee-honed chops let him weave finger-picked guitars, chamber-ready strings, and surgically sculpted synths into one seamless folk-pop-R&B mosaic. His "special sauce" is intentional contrast: live instruments tracked with audiophile care, then bent through sleek electronic sound design until the familiar feels future-bound yet instantly cohesive.</p>
+                    <p class="artist-bio">In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifying an artist's own voice—whether that means ghosting behind the console, layering harmony on a vintage bass, or deconstructing a beat until it breathes. A former metal guitarist who detoured through jazz and hip-hop, Sharplin now carries a genre-fluid toolkit and an obsessive attention to detail that turns half-formed sketches into fully realized worlds.</p>
+                    <div class="social-links">
+                        <a href="https://www.instagram.com/leonsharplin/" class="social-link" target="_blank">
+                            <span>📸</span> Instagram
+                        </a>
+                    </div>
+                </div>
+                <div class="artist-image" onclick="openModal('leon-modal')">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png" alt="Leon Sharplin">
+                </div>
+            </div>
+            <div class="artist-music-section">
+                <h3 class="modal-section-title">Music</h3>
+                <iframe style="border-radius: 24px" src="https://untitled.stream/embed/ob42rf6hvgMB" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Artist Modals -->
+    <div class="artist-modal" id="artist-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            
+            <!-- Conall Cafferty Modal -->
+            <div id="conall-modal">
+                <div class="modal-music-section">
+                    <h3 class="modal-section-title">Music</h3>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/auMykkLeigIV" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Kate Stephenson Modal -->
+            <div id="kate-modal">
+                <div class="modal-music-section">
+                    <h3 class="modal-section-title">Music</h3>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/DvbwudWvMBk1" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Tom Siletto Modal -->
+            <div id="tom-modal">
+                <div class="modal-music-section">
+                    <h3 class="modal-section-title">Music</h3>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/LzuqcxQvWcrM" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Leon Sharplin Modal -->
+            <div id="leon-modal">
+                <div class="modal-music-section">
+                    <h3 class="modal-section-title">Music</h3>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/ob42rf6hvgMB" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Mobile Navigation
+        function toggleMobileNav() {
+            const burger = document.querySelector('.nav-burger');
+            const links = document.querySelector('.nav-links');
+            burger.classList.toggle('active');
+            links.classList.toggle('active');
+        }
+        
+        function closeMobileNav() {
+            const burger = document.querySelector('.nav-burger');
+            const links = document.querySelector('.nav-links');
+            burger.classList.remove('active');
+            links.classList.remove('active');
+        }
+        
+        // Modal System
+        function openModal(modalId) {
+            const modal = document.getElementById('artist-modal');
+            const allModals = modal.querySelectorAll('[id$="-modal"]');
+            
+            // Hide all modals
+            allModals.forEach(m => m.style.display = 'none');
+            
+            // Show the selected modal
+            const selectedModal = document.getElementById(modalId);
+            if (selectedModal) {
+                selectedModal.style.display = 'block';
+            }
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('artist-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+        
+        // Close modal on backdrop click
+        document.getElementById('artist-modal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+        
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Active navigation highlighting
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
