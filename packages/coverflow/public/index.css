@@ -29,7 +29,7 @@ html, body {
   display: block;
   width: 100%;
   max-width: 600px; /* Restore original size */
-  height: 250px; /* Slightly increased to accommodate F bar */
+  height: 260px; /* Increased to accommodate full F bar with padding */
   overflow: visible; /* Changed to visible to prevent clipping */
   position: relative;
   z-index: 10002; /* Ensure frame is also highest z-index */
