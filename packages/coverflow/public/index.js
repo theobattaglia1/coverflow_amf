@@ -354,7 +354,16 @@ function renderCovers() {
     // Create back content based on cover type
     let backContent = '<div class="back-content">';
     
-    if (c.albumTitle?.toLowerCase() === 'contact') {
+    // Check if cover has custom back text content
+    if (c.backText) {
+      backContent += `
+        <div class="text-content-wrapper">
+          <div class="text-content">
+            ${c.backText}
+          </div>
+        </div>
+      `;
+    } else if (c.albumTitle?.toLowerCase() === 'contact') {
       // Contact card
       backContent += `
         <a href="mailto:hi@allmyfriendsinc.com" class="contact-card">

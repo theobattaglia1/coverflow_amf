@@ -510,6 +510,15 @@ function editCover(cover) {
                placeholder="https://open.spotify.com/track/...">
       </div>
       <div class="form-group">
+        <label class="form-label">BACK TEXT CONTENT (HTML supported)</label>
+        <textarea class="form-input" name="backText" rows="4" 
+                  placeholder="Add text content for the back of the cover (instead of Spotify embed)"
+                  style="resize: vertical; font-family: monospace;">${cover.backText || ''}</textarea>
+        <small style="color: var(--grey-500); font-size: var(--step--1);">
+          Leave empty for Spotify embed. Supports HTML tags like &lt;h3&gt;, &lt;p&gt;, &lt;a&gt;
+        </small>
+      </div>
+      <div class="form-group">
         <label class="form-label">CONTACT EMAIL</label>
         <input type="email" class="form-input" name="contactEmail" value="${cover.contactEmail || ''}"
                placeholder="artist@example.com">
@@ -557,6 +566,7 @@ function editCover(cover) {
       coverLabel: formData.get('coverLabel'), 
       category: formData.get('category'),
       spotifyEmbed: formData.get('spotifyEmbed'),
+      backText: formData.get('backText'),
       contactEmail: formData.get('contactEmail'),
       frontImage: formData.get('frontImage'),
       backImage: formData.get('backImage')
@@ -571,6 +581,7 @@ function editCover(cover) {
     cover.coverLabel = formData.get('coverLabel');
     cover.category = formData.get('category').split(',').map(c => c.trim()).filter(Boolean);
     cover.spotifyEmbed = formData.get('spotifyEmbed');
+    cover.backText = formData.get('backText');
     cover.contactEmail = formData.get('contactEmail');
     cover.frontImage = formData.get('frontImage');
     cover.backImage = formData.get('backImage');
