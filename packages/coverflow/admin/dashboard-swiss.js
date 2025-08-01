@@ -207,6 +207,16 @@ async function init() {
     editCover: typeof window.editCover
   });
   
+  // Add the missing toggleFullCoversView function
+  window.toggleFullCoversView = function() {
+    console.log('🔄 toggleFullCoversView called');
+    const mainContainer = document.getElementById('coversMainContainer');
+    const recentSection = document.getElementById('recentlyEditedSection');
+    if (mainContainer) {
+      mainContainer.style.display = mainContainer.style.display === 'none' ? 'block' : 'none';
+    }
+  };
+  
   // Debug: Check if action buttons exist in DOM
   setTimeout(() => {
     const saveBtn = document.querySelector('[onclick="saveChanges()"]');
@@ -284,6 +294,35 @@ async function init() {
       }, 500);
     } else {
       console.error('❌ Covers actions container not found in DOM!');
+      
+      // Show all hidden elements in covers section
+      const coversSection = document.getElementById('coversSection');
+      if (coversSection) {
+        console.log('🔧 Making all covers elements visible...');
+        
+        // Show main container
+        const mainContainer = document.getElementById('coversMainContainer');
+        if (mainContainer) {
+          mainContainer.style.display = 'block';
+          console.log('✅ Showed coversMainContainer');
+        }
+        
+        // Show controls
+        const controls = document.getElementById('coversControls');
+        if (controls) {
+          controls.style.display = 'block';
+          console.log('✅ Showed coversControls');
+        }
+        
+        // Make dropzone visible
+        const dropzoneCheck = document.getElementById('coverDropzone');
+        if (dropzoneCheck) {
+          dropzoneCheck.style.display = 'block';
+          console.log('✅ Dropzone found and made visible');
+        } else {
+          console.error('❌ Dropzone not found!');
+        }
+      }
       
       // Create the missing buttons container
       const dropzone = document.getElementById('coverDropzone');
