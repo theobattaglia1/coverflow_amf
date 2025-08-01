@@ -23,14 +23,14 @@ html, body {
   margin: clamp(2rem, 10vh, 3rem) 0 clamp(3rem, 8vh, 4rem); /* Increased bottom margin for F bar clearance */
   position: relative;
   z-index: 10001; /* Highest z-index to ensure logo is always on top */
-  min-height: 280px; /* Ensure minimum height for full logo display */
+  min-height: 300px; /* Ensure minimum height for full logo display */
 }
 .logo-frame {
   border: none;
   display: block;
   width: 100%;
   max-width: 600px; /* Restore original size */
-  height: 260px; /* Increased height to accommodate full F bar */
+  height: 280px; /* Further increased height to fully accommodate F bar */
   overflow: visible; /* Changed to visible to prevent clipping */
   position: relative;
   z-index: 10002; /* Ensure frame is also highest z-index */
