@@ -22,7 +22,7 @@ html, body {
   padding: 0 clamp(8px, 1.5vw, 24px); /* Match filter bar margins */
   margin: clamp(2rem, 10vh, 3rem) 0 clamp(3rem, 8vh, 4rem); /* Increased bottom margin for F bar clearance */
   position: relative;
-  z-index: 5;
+  z-index: 10001; /* Highest z-index to ensure logo is always on top */
 }
 .logo-frame {
   border: none;
@@ -30,7 +30,9 @@ html, body {
   width: 100%;
   max-width: 600px; /* Restore original size */
   height: 240px; /* Restore original height */
-  overflow: hidden;
+  overflow: visible; /* Changed to visible to prevent clipping */
+  position: relative;
+  z-index: 10002; /* Ensure frame is also highest z-index */
   /* Add subtle shadow to ground the logo */
   filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
   /* Subtle animation on load */
