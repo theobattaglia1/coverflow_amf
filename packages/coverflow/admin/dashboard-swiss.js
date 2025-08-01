@@ -235,8 +235,18 @@ async function init() {
         coversActions.style.gap = '1rem';
       }
       
+      // Make buttons more prominent and scroll to them
+      coversActions.style.backgroundColor = '#ffff00';
+      coversActions.style.border = '3px solid red';
+      coversActions.style.padding = '1rem';
+      coversActions.style.borderRadius = '8px';
+      console.log('🟡 HIGHLIGHTED ACTION BUTTONS WITH YELLOW BACKGROUND AND RED BORDER');
+      
       // Scroll to make sure buttons are visible
-      coversActions.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      setTimeout(() => {
+        coversActions.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        console.log('📍 SCROLLED TO ACTION BUTTONS LOCATION');
+      }, 500);
     } else {
       console.error('❌ Covers actions container not found in DOM!');
     }
