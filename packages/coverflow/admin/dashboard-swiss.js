@@ -274,8 +274,14 @@ async function init() {
       coversActions.style.padding = '1rem';
       coversActions.style.borderRadius = '8px';
       coversActions.style.fontSize = '16px';
-      coversActions.style.display = 'flex !important';
-      coversActions.style.setProperty('display', 'flex', 'important');
+      coversActions.style.display = 'flex';
+      coversActions.style.width = '100%';
+      coversActions.style.minHeight = '60px';
+      coversActions.style.gap = '1rem';
+      coversActions.style.justifyContent = 'center';
+      coversActions.style.alignItems = 'center';
+      coversActions.style.marginTop = '2rem';
+      coversActions.style.marginBottom = '2rem';
       
       console.log('🟡 HIGHLIGHTED ACTION BUTTONS WITH YELLOW BACKGROUND AND RED BORDER');
       console.log('📍 Button container offset:', {
@@ -286,6 +292,27 @@ async function init() {
         scrollTop: document.documentElement.scrollTop,
         isInViewport: coversActions.getBoundingClientRect().top < window.innerHeight
       });
+      
+      // Force check parent visibility
+      const parent = coversActions.parentElement;
+      if (parent) {
+        console.log('👨‍👦 Parent element check:', {
+          tagName: parent.tagName,
+          id: parent.id,
+          display: getComputedStyle(parent).display,
+          visibility: getComputedStyle(parent).visibility,
+          width: parent.offsetWidth,
+          height: parent.offsetHeight
+        });
+        
+        // If parent has no dimensions, fix it
+        if (parent.offsetWidth === 0 || parent.offsetHeight === 0) {
+          parent.style.display = 'block';
+          parent.style.width = '100%';
+          parent.style.minHeight = '100px';
+          console.log('🔧 Fixed parent element dimensions');
+        }
+      }
       
       // Scroll to make sure buttons are visible
       setTimeout(() => {
