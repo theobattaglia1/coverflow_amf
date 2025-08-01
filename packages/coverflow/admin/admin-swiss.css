@@ -335,6 +335,8 @@ a:hover {
 /* Section markers: "01 — SECTION TITLE" format */
 .section {
   margin-bottom: var(--space-xxl);
+  width: 100%;
+  overflow: visible; /* Ensure sections don't clip content */
 }
 
 .section-marker {
@@ -1320,6 +1322,8 @@ a:hover {
   margin-bottom: var(--space-xl);
   padding-bottom: var(--space-xl);
   border-bottom: 1px solid var(--grey-100);
+  width: 100%;
+  overflow: hidden; /* Prevent section from expanding */
 }
 
 .subsection-header {
@@ -1356,12 +1360,17 @@ a:hover {
 .recent-covers-grid {
   display: flex;
   gap: var(--space-md);
+  width: 100%;
   max-width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
   padding-bottom: var(--space-sm);
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  /* Ensure the container doesn't shrink */
+  flex-shrink: 0;
+  /* Add some padding on the right for the last item */
+  padding-right: var(--space-md);
 }
 
 .recent-covers-grid::-webkit-scrollbar {
@@ -1380,6 +1389,13 @@ a:hover {
 .recent-covers-grid .cover-item {
   flex: 0 0 120px;
   min-width: 120px;
+  height: 120px;
+  position: relative;
+}
+
+/* Ensure last item is visible */
+.recent-covers-grid .cover-item:last-child {
+  margin-right: var(--space-lg);
 }
 
 /* Enhanced Controls */
