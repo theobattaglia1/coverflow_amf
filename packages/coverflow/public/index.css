@@ -470,6 +470,40 @@ html, body {
   opacity: 0.8;
 }
 
+/* Text content in modal for better readability */
+.text-content-modal {
+  font-size: 18px;
+  line-height: 1.8;
+  color: #e0e0e0;
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.text-content-modal h3 {
+  font-size: 24px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.text-content-modal p {
+  margin: 16px 0;
+  opacity: 0.95;
+}
+
+.text-content-modal a {
+  color: #1db954;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  font-weight: 500;
+}
+
+.text-content-modal a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
 /* === BUTTONS & LABELS === */
 .expand-btn {
   padding: 5px 12px;

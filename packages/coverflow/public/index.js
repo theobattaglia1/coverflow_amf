@@ -481,7 +481,14 @@ function renderCovers() {
       const fc = wrapper.querySelector('.flip-container');
       
       if (off === 0 && fc) {
-        fc.classList.toggle('flipped');
+        // Check if this cover has text content instead of spotify embed
+        const coverData = covers[idx];
+        if (coverData.backText && !fc.classList.contains('flipped')) {
+          // Open text modal instead of flipping
+          openTextModal(coverData);
+        } else {
+          fc.classList.toggle('flipped');
+        }
       } else {
         activeIndex = idx;
         renderCoverFlow();
@@ -622,6 +629,46 @@ window.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') setActiveIndex(activeIndex + 1);
   if (e.key === 'Escape')     document.querySelector('.artist-modal').classList.add('hidden');
 });
+
+// Text content modal
+function openTextModal(cover) {
+  const modal = document.querySelector('.artist-modal');
+  if (!modal) return;
+  
+  const modalContent = modal.querySelector('.modal-content');
+  
+  // Use the front cover image as the banner
+  const bannerImage = cover.frontImage || '';
+  
+  modalContent.innerHTML = `
+    ${bannerImage ? `<img src="${bannerImage}" alt="${cover.albumTitle || ''}" class="artist-photo">` : ''}
+    <div class="artist-info">
+      <h2 class="artist-name">${cover.albumTitle || 'About'}</h2>
+      <div class="text-content-modal">
+        ${cover.backText}
+      </div>
+    </div>
+  `;
+  
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+  
+  // Close on background click
+  modal.onclick = (e) => {
+    if (e.target === modal) {
+      closeArtistModal();
+    }
+  };
+  
+  // Close on Escape key
+  const handleEscape = (e) => {
+    if (e.key === 'Escape') {
+      closeArtistModal();
+      window.removeEventListener('keydown', handleEscape);
+    }
+  };
+  window.addEventListener('keydown', handleEscape);
+}
 
 // 10) Modal open function
 function openArtistModal(cover) {
@@ -882,8 +929,14 @@ document.addEventListener('keydown', (e) => {
       e.preventDefault();
       const activeCover = document.querySelector('.cover-active .flip-container');
       if (activeCover) {
-        activeCover.classList.toggle('flipped');
-        announceFlipState(activeCover.classList.contains('flipped'));
+        // Check if active cover has text content
+        const coverData = covers[activeIndex];
+        if (coverData.backText && !activeCover.classList.contains('flipped')) {
+          openTextModal(coverData);
+        } else {
+          activeCover.classList.toggle('flipped');
+          announceFlipState(activeCover.classList.contains('flipped'));
+        }
       }
       break;
       
