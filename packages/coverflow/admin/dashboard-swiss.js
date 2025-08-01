@@ -3402,10 +3402,10 @@ function getFilteredAndSortedCovers() {
 }
 
 function getRecentCovers() {
-  // Get the 6-8 most recently edited covers (based on ID as timestamp)
+  // Get the 9 most recently edited covers (based on ID as timestamp)
   return [...covers]
     .sort((a, b) => new Date(b.id) - new Date(a.id))
-    .slice(0, 8);
+    .slice(0, 9);
 }
 
 function renderRecentCovers() {

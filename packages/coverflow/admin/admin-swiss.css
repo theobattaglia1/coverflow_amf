@@ -1323,6 +1323,11 @@ a:hover {
   padding-bottom: var(--space-xl);
   border-bottom: 1px solid var(--grey-100);
   width: 100%;
+  max-width: 100vw; /* Allow full viewport width */
+  margin-left: calc(-1 * var(--space-lg)); /* Compensate for container padding */
+  margin-right: calc(-1 * var(--space-lg));
+  padding-left: var(--space-lg);
+  padding-right: var(--space-lg);
   overflow: hidden; /* Prevent section from expanding */
 }
 
@@ -1395,6 +1400,46 @@ a:hover {
 
 /* Ensure last item is visible */
 .recent-covers-grid .cover-item:last-child {
+  margin-right: var(--space-lg);
+}
+
+/* Compact cover items for recent section */
+.cover-item-compact {
+  flex: 0 0 120px;
+  min-width: 120px;
+  height: 120px;
+  position: relative;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.cover-item-compact:hover {
+  transform: scale(1.05);
+}
+
+.cover-item-compact img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 4px;
+}
+
+.cover-meta-compact {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  color: white;
+  padding: 8px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+/* Ensure last compact item is visible */
+.recent-covers-grid .cover-item-compact:last-child {
   margin-right: var(--space-lg);
 }
 
