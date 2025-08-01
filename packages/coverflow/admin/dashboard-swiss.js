@@ -66,7 +66,7 @@ let currentCoverPage = 1;
 let coversPerPage = 20;
 let searchTerm = '';
 let categoryFilter = '';
-let sortOrder = 'date'; // Default to newest first
+let sortOrder = 'index'; // Default to manual order
 let recentCovers = [];
 
 // Utility function to safely parse JSON responses
@@ -3512,22 +3512,32 @@ function renderGridView(pageCovers, container) {
         const oldIndex = evt.oldIndex;
         
         if (oldIndex !== newIndex) {
-          // Find the cover in the array
-          const coverIndex = covers.findIndex(c => c.id === movedCoverId);
-          if (coverIndex !== -1) {
-            // Remove from old position and insert at new position
-            const [movedCover] = covers.splice(coverIndex, 1);
-            
-            // Calculate the actual new position in the full covers array
-            const start = (currentCoverPage - 1) * coversPerPage;
-            const actualNewIndex = start + newIndex;
-            
-            covers.splice(actualNewIndex, 0, movedCover);
-            
-            hasChanges = true;
-            updateSaveButton();
-            showToast('Cover order updated - remember to save changes');
+          // Get the filtered/sorted list that matches current view
+          const filtered = getFilteredAndSortedCovers();
+          const start = (currentCoverPage - 1) * coversPerPage;
+          
+          // Find the moved cover in the filtered list
+          const oldFilteredIndex = start + oldIndex;
+          const newFilteredIndex = start + newIndex;
+          
+          // Reorder in the filtered array
+          const [movedCover] = filtered.splice(oldFilteredIndex, 1);
+          filtered.splice(newFilteredIndex, 0, movedCover);
+          
+          // Update index values for all covers based on new order
+          filtered.forEach((cover, idx) => {
+            cover.index = idx;
+          });
+          
+          // If we're in default sort (by index), update the main covers array
+          if (!sortOrder || sortOrder === 'index') {
+            // Sort main covers array by the new index values
+            covers.sort((a, b) => (a.index || 0) - (b.index || 0));
           }
+          
+          hasChanges = true;
+          updateSaveButton();
+          showToast('Cover order updated - remember to save changes');
         }
       }
     });
