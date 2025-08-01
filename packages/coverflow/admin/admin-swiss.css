@@ -1354,10 +1354,32 @@ a:hover {
 }
 
 .recent-covers-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  display: flex;
   gap: var(--space-md);
   max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: var(--space-sm);
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+.recent-covers-grid::-webkit-scrollbar {
+  height: 8px;
+}
+
+.recent-covers-grid::-webkit-scrollbar-track {
+  background: var(--grey-200);
+}
+
+.recent-covers-grid::-webkit-scrollbar-thumb {
+  background: var(--grey-600);
+  border-radius: 4px;
+}
+
+.recent-covers-grid .cover-item {
+  flex: 0 0 120px;
+  min-width: 120px;
 }
 
 /* Enhanced Controls */

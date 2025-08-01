@@ -212,8 +212,24 @@ async function init() {
     console.log('🔄 toggleFullCoversView called');
     const mainContainer = document.getElementById('coversMainContainer');
     const recentSection = document.getElementById('recentlyEditedSection');
+    const coversControls = document.getElementById('coversControls');
+    
     if (mainContainer) {
-      mainContainer.style.display = mainContainer.style.display === 'none' ? 'block' : 'none';
+      const isHidden = mainContainer.style.display === 'none' || !mainContainer.style.display;
+      mainContainer.style.display = isHidden ? 'block' : 'none';
+      
+      // Also show/hide controls
+      if (coversControls) {
+        coversControls.style.display = isHidden ? 'block' : 'none';
+      }
+      
+      // Toggle button text
+      const btn = event?.target;
+      if (btn) {
+        btn.textContent = isHidden ? 'SHOW LESS ←' : 'VIEW ALL →';
+      }
+      
+      console.log('📊 Toggled covers view:', isHidden ? 'SHOWING ALL' : 'SHOWING RECENT');
     }
   };
   
