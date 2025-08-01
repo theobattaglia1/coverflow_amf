@@ -3415,6 +3415,32 @@ function renderRecentCovers() {
   const recent = getRecentCovers();
   
   container.innerHTML = recent.map(cover => createCompactCoverElement(cover)).join('');
+  
+  // Initialize sortable for recent covers
+  if (typeof Sortable !== 'undefined') {
+    new Sortable(container, {
+      animation: 150,
+      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      handle: '.cover-item-compact',
+      ghostClass: 'sortable-ghost',
+      onEnd: async function(evt) {
+        const movedCoverId = evt.item.dataset.id;
+        const newIndex = evt.newIndex;
+        const oldIndex = evt.oldIndex;
+        
+        if (oldIndex !== newIndex) {
+          // Since recent covers are sorted by date, we need to update the full covers array
+          const coverIndex = covers.findIndex(c => c.id === movedCoverId);
+          if (coverIndex !== -1) {
+            // Just mark as changed - the actual order in recent view doesn't affect main order
+            hasChanges = true;
+            updateSaveButton();
+            showToast('Note: Recent covers are sorted by date. Use main view to reorder.');
+          }
+        }
+      }
+    });
+  }
 }
 
 function createCompactCoverElement(cover) {
@@ -3472,6 +3498,40 @@ function renderCurrentView() {
 function renderGridView(pageCovers, container) {
   container.className = 'covers-grid';
   container.innerHTML = pageCovers.map((cover, index) => createCoverElement(cover, index)).join('');
+  
+  // Initialize sortable for drag-to-reorder
+  if (typeof Sortable !== 'undefined' && !batchMode) {
+    new Sortable(container, {
+      animation: 150,
+      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+      handle: '.cover-item',
+      ghostClass: 'sortable-ghost',
+      onEnd: async function(evt) {
+        const movedCoverId = evt.item.dataset.id;
+        const newIndex = evt.newIndex;
+        const oldIndex = evt.oldIndex;
+        
+        if (oldIndex !== newIndex) {
+          // Find the cover in the array
+          const coverIndex = covers.findIndex(c => c.id === movedCoverId);
+          if (coverIndex !== -1) {
+            // Remove from old position and insert at new position
+            const [movedCover] = covers.splice(coverIndex, 1);
+            
+            // Calculate the actual new position in the full covers array
+            const start = (currentCoverPage - 1) * coversPerPage;
+            const actualNewIndex = start + newIndex;
+            
+            covers.splice(actualNewIndex, 0, movedCover);
+            
+            hasChanges = true;
+            updateSaveButton();
+            showToast('Cover order updated - remember to save changes');
+          }
+        }
+      }
+    });
+  }
 }
 
 function renderListView(pageCovers, container) {

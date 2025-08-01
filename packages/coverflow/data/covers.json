@@ -216,5 +216,19 @@
     "spotifyEmbed": "",
     "contactEmail": "",
     "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png"
+  },
+  {
+    "id": 1754015904078,
+    "index": 8,
+    "albumTitle": "About AMF",
+    "coverLabel": "About Us.",
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot 2025-07-31 at 4.08.45â¯PM.png",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot 2025-07-31 at 4.08.45â¯PM.png",
+    "category": [
+      "about us"
+    ],
+    "spotifyEmbed": "",
+    "backText": "All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.\n",
+    "contactEmail": "hi@allmyfriendsinc.com"
   }
 ]

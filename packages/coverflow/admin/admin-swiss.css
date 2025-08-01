@@ -1443,6 +1443,29 @@ a:hover {
   margin-right: var(--space-lg);
 }
 
+/* Sortable ghost styling for drag and drop */
+.sortable-ghost {
+  opacity: 0.4;
+  background: var(--grey-100);
+  border: 2px dashed var(--grey-400);
+  border-radius: 8px;
+}
+
+/* Ensure cover items are draggable */
+.cover-item {
+  cursor: move;
+}
+
+.cover-item-compact {
+  cursor: move;
+}
+
+/* Disable drag cursor in batch mode */
+.batch-mode .cover-item,
+.batch-mode .cover-item-compact {
+  cursor: pointer;
+}
+
 /* Enhanced Controls */
 .covers-controls {
   display: flex;
