@@ -219,6 +219,15 @@ async function init() {
       coversActionsVisible: coversActions ? getComputedStyle(coversActions).display !== 'none' : false
     });
     
+    // Additional debugging
+    console.log('🔍 DOM Structure Debug:', {
+      coversSection: !!document.getElementById('coversSection'),
+      dropzone: !!document.getElementById('coverDropzone'),
+      allCoverElements: document.querySelectorAll('[class*="cover"]').length,
+      allButtonElements: document.querySelectorAll('button').length,
+      saveChangesButtons: document.querySelectorAll('button[onclick*="saveChanges"]').length
+    });
+    
     if (coversActions) {
       console.log('📏 Covers actions container styles:', {
         display: getComputedStyle(coversActions).display,
@@ -240,7 +249,13 @@ async function init() {
       coversActions.style.border = '3px solid red';
       coversActions.style.padding = '1rem';
       coversActions.style.borderRadius = '8px';
-      console.log('🟡 HIGHLIGHTED ACTION BUTTONS WITH YELLOW BACKGROUND AND RED BORDER');
+      coversActions.style.position = 'fixed';
+      coversActions.style.top = '50%';
+      coversActions.style.left = '50%';
+      coversActions.style.transform = 'translate(-50%, -50%)';
+      coversActions.style.zIndex = '9999';
+      coversActions.style.fontSize = '16px';
+      console.log('🟡 HIGHLIGHTED ACTION BUTTONS WITH YELLOW BACKGROUND AND RED BORDER - POSITIONED AS OVERLAY');
       
       // Scroll to make sure buttons are visible
       setTimeout(() => {
@@ -249,6 +264,41 @@ async function init() {
       }, 500);
     } else {
       console.error('❌ Covers actions container not found in DOM!');
+      
+      // Create the missing buttons container
+      const dropzone = document.getElementById('coverDropzone');
+      if (dropzone) {
+        console.log('🛠️ Creating missing covers-actions container...');
+        
+        const newCoversActions = document.createElement('div');
+        newCoversActions.className = 'covers-actions';
+        newCoversActions.style.display = 'flex';
+        newCoversActions.style.gap = '1rem';
+        newCoversActions.style.marginTop = '2rem';
+        newCoversActions.style.backgroundColor = '#ffff00';
+        newCoversActions.style.border = '3px solid red';
+        newCoversActions.style.padding = '1rem';
+        newCoversActions.style.borderRadius = '8px';
+        
+        // Create buttons
+        const saveBtn = document.createElement('button');
+        saveBtn.className = 'btn btn-primary';
+        saveBtn.onclick = () => window.saveChanges();
+        saveBtn.textContent = 'SAVE CHANGES';
+        
+        const pushBtn = document.createElement('button');
+        pushBtn.className = 'btn';
+        pushBtn.onclick = () => window.pushLive();
+        pushBtn.textContent = 'PUSH LIVE';
+        
+        newCoversActions.appendChild(saveBtn);
+        newCoversActions.appendChild(pushBtn);
+        
+        // Insert after dropzone
+        dropzone.parentNode.insertBefore(newCoversActions, dropzone.nextSibling);
+        
+        console.log('✅ Created missing covers-actions container with SAVE CHANGES and PUSH LIVE buttons');
+      }
     }
   }, 1000);
 }
