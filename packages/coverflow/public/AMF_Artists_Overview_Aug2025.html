@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="frame-ancestors 'self' https://www.notion.so https://notion.so;">
     <title>Select Artist Overviews — All My Friends Inc.</title>
     <meta name="description" content="Select Artist Overviews – Curated talent for  "/>
     
@@ -492,7 +493,27 @@
         .opacity-50{opacity:.5;}
         .opacity-20{opacity:.2;}
         
-        /* ———————————— 10. Mobile Enhancements */
+        /* ———————————— 10. Notion Embed Optimizations */
+        /* Ensure smooth embedding in Notion */
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Optimize for iframe context */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        /* Ensure modals work in iframe context */
+        .artist-modal {
+            position: fixed;
+            z-index: 9999;
+        }
+        
+        /* ———————————— 11. Mobile Enhancements */
         @media(max-width:768px){
             :root{
                 --gutter:1rem;
