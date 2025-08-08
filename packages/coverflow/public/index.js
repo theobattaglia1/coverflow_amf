@@ -271,14 +271,11 @@ coverflowEl.addEventListener('touchmove', e => {
     const dy = e.touches[0].clientY - e.touches[1].clientY;
     const dist = Math.hypot(dx, dy);
     const ratio = dist / pinchStartDist;
-    // Enter overview on pinch-out; while in overview, scale smoothly
-    if (!isOverviewMode && ratio < 0.96) {
+    // Minimal: one-shot toggle only (no live scaling)
+    if (!isOverviewMode && ratio < 0.9) {
       toggleOverview(true);
-      document.body.style.setProperty('--overview-scale', '0.9');
-    }
-    if (isOverviewMode) {
-      const clamped = Math.max(0.8, Math.min(1.0, ratio));
-      document.body.style.setProperty('--overview-scale', String(clamped));
+    } else if (isOverviewMode && ratio > 1.05) {
+      toggleOverview(false);
     }
   }
 }, { passive: true });
