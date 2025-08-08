@@ -42,77 +42,82 @@
 
   function layoutItems(){
     canvas.innerHTML = '';
-    const cols = 10; // denser grid, varying sizes
-    const gap = 36;
-    const baseW = 320;
-    const baseH = 220;
     const frag = document.createDocumentFragment();
-    covers.forEach((c, i) => {
-      const col = i % cols;
-      const row = Math.floor(i / cols);
-      // vary sizes in a repeating pattern for editorial rhythm
-      const variant = i % 6;
-      const w = (variant === 0 ? baseW * 1.2 : variant === 1 ? baseW : variant === 2 ? baseW * 0.9 : variant === 3 ? baseW * 1.4 : variant === 4 ? baseW : baseW * 1.1);
-      const h = (variant === 0 ? baseH * 1.0 : variant === 1 ? baseH * 0.9 : variant === 2 ? baseH * 1.1 : variant === 3 ? baseH * 1.0 : variant === 4 ? baseH * 1.2 : baseH * 0.95);
-      // base position
-      let x = col * (baseW + gap);
-      let y = row * (baseH + gap);
-      // editorial stagger: alternate rows offset and slight jitter
-      const rowOffset = (row % 2 === 0 ? 0 : baseW * 0.4);
-      const jitterX = ((i * 37) % 13) - 6; // -6..6px
-      const jitterY = ((i * 53) % 11) - 5; // -5..5px
-      x = x + rowOffset + jitterX;
-      y = y + jitterY + (variant === 3 ? -12 : 0);
 
-      const item = document.createElement('div');
-      item.className = 'gg-item';
-      item.style.setProperty('--w', w + 'px');
-      item.style.setProperty('--h', h + 'px');
-      item.style.left = x + 'px';
-      item.style.top = y + 'px';
-      item.dataset.id = c.id;
+    const rowPatterns = [
+      [ { w: 640, h: 420, dx: 0, dy: 0 }, { w: 520, h: 360, dx: 80, dy: -20 }, { w: 700, h: 440, dx: 120, dy: 10 } ],
+      [ { w: 560, h: 380, dx: 180, dy: 20 }, { w: 740, h: 460, dx: 120, dy: -10 } ],
+      [ { w: 720, h: 460, dx: 40, dy: -10 }, { w: 520, h: 360, dx: 120, dy: 0 }, { w: 480, h: 340, dx: 140, dy: -16 }, { w: 620, h: 420, dx: 160, dy: 18 } ]
+    ];
 
-      const imgUrl = c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
-      const img = document.createElement('div');
-      img.className = 'img';
-      if (imgUrl) img.style.backgroundImage = `url('${imgUrl}')`;
-      item.appendChild(img);
+    const rowGap = 240;
+    const startXBase = 60;
+    const startY = 40;
+    let rowIndex = 0;
+    let i = 0;
+    while (i < covers.length) {
+      const pattern = rowPatterns[rowIndex % rowPatterns.length];
+      let cursorX = startXBase + (rowIndex % 2 === 1 ? 140 : 0);
+      const yBase = startY + rowIndex * rowGap;
 
-      const meta = document.createElement('div');
-      meta.className = 'meta';
-      const title = document.createElement('p');
-      title.className = 'title';
-      title.textContent = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toUpperCase();
-      const number = document.createElement('p');
-      number.className = 'number';
-      number.textContent = `#${String(i+1).padStart(4,'0')}`;
-      meta.appendChild(title);
-      meta.appendChild(number);
-      item.appendChild(meta);
+      for (let k = 0; k < pattern.length && i < covers.length; k++, i++) {
+        const c = covers[i];
+        const recipe = pattern[k];
+        const x = cursorX + recipe.dx;
+        const y = yBase + recipe.dy;
 
-      let clickedOnce = false;
-      let clickTimer = null;
-      item.addEventListener('click', () => {
-        if (!clickedOnce) {
-          clickedOnce = true;
-          item.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.08)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'cubic-bezier(0.22,1,0.36,1)' });
-          clearTimeout(clickTimer);
-          clickTimer = setTimeout(() => { clickedOnce = false; }, 500);
-        } else {
-          clickedOnce = false;
-          openModal(c);
-        }
-      });
+        const item = document.createElement('div');
+        item.className = 'gg-item';
+        item.style.setProperty('--w', recipe.w + 'px');
+        item.style.setProperty('--h', recipe.h + 'px');
+        item.style.left = x + 'px';
+        item.style.top = y + 'px';
+        item.dataset.id = c.id;
 
-      frag.appendChild(item);
-    });
+        const imgUrl = c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
+        const img = document.createElement('div');
+        img.className = 'img';
+        if (imgUrl) img.style.backgroundImage = `url('${imgUrl}')`;
+        item.appendChild(img);
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        const title = document.createElement('p');
+        title.className = 'title';
+        title.textContent = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toUpperCase();
+        const number = document.createElement('p');
+        number.className = 'number';
+        number.textContent = `#${String(i+1).padStart(4,'0')}`;
+        meta.appendChild(title);
+        meta.appendChild(number);
+        item.appendChild(meta);
+
+        let clickedOnce = false;
+        let clickTimer = null;
+        item.addEventListener('click', () => {
+          if (!clickedOnce) {
+            clickedOnce = true;
+            item.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'cubic-bezier(0.22,1,0.36,1)' });
+            clearTimeout(clickTimer);
+            clickTimer = setTimeout(() => { clickedOnce = false; }, 450);
+          } else {
+            clickedOnce = false;
+            openModal(c);
+          }
+        });
+
+        frag.appendChild(item);
+        cursorX += recipe.w + 120;
+      }
+      rowIndex++;
+    }
 
     canvas.appendChild(frag);
 
-    // Expand canvas virtual size
-    const totalRows = Math.ceil(covers.length / cols) + 1;
-    canvas.style.width = (cols * (baseW + gap) + baseW) + 'px';
-    canvas.style.height = totalRows * (baseH + gap) + 'px';
+    const totalHeight = startY + rowIndex * rowGap + 600;
+    const totalWidth = 3400;
+    canvas.style.width = totalWidth + 'px';
+    canvas.style.height = totalHeight + 'px';
   }
 
   // Drag with momentum
