@@ -155,9 +155,10 @@
 
     canvas.appendChild(frag);
 
-    canvas.style.width = Math.max(2000 * scale, maxRight + 400 * scale) + 'px';
+    // Size canvas tightly to content so outer margins scale with layout
+    canvas.style.width = Math.ceil(maxRight + startXBase) + 'px';
     // Ensure bottom row reaches bottom edge initially
-    canvas.style.height = Math.max(900 * scale, rowY + 0) + 'px';
+    canvas.style.height = Math.ceil(rowY + startXBase) + 'px';
   }
 
   function getScale(){
