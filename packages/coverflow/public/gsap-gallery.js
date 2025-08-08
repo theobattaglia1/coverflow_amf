@@ -3,10 +3,11 @@
   const container = document.getElementById('gg-container');
   const canvas = document.getElementById('gg-canvas');
   const modal = document.getElementById('gg-modal');
-  const overviewBtn = document.getElementById('gg-overview');
+  const viewToggleBtn = document.getElementById('gg-view-toggle');
   const overlays = document.getElementById('gg-overlays');
   const nameList = document.getElementById('gg-name-list');
   const resetChip = document.getElementById('gg-reset');
+  const gridEl = document.getElementById('gg-grid');
 
   let covers = [];
   let isDragging = false;
@@ -82,7 +83,8 @@
       nameList.innerHTML = '';
       const listFrag = document.createDocumentFragment();
       covers
-        .map(c => ({ id: c.id, name: c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled' }))
+        .map(c => ({ id: c.id, name: (c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled').toUpperCase() }))
+        .filter(item => item.name !== 'ABOUT US.' && item.name !== 'CONTACT')
         .sort((a,b)=>a.name.localeCompare(b.name))
         .forEach(item => {
           const a = document.createElement('a');
@@ -348,9 +350,26 @@
     gsap.to(anim, { duration: 0.8, ease: 'power3.inOut', x: targetX, y: targetY, onUpdate(){ translateX = anim.x; translateY = anim.y; applyTransform(); } });
   }
 
-  overviewBtn?.addEventListener('click', () => {
-    gsap.to(canvas, { duration: 0.6, ease: 'power2.out', scale: 0.9, transformOrigin: '50% 50%' });
-    setTimeout(()=> gsap.to(canvas, { duration: 0.6, ease: 'power2.out', scale: 1 }), 600);
+  // Grid toggle
+  viewToggleBtn?.addEventListener('click', () => {
+    if (!gridEl) return;
+    if (gridEl.classList.contains('hidden')) {
+      gridEl.innerHTML = '';
+      const firstNine = covers.slice(0, 9);
+      firstNine.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'gg-grid-item';
+        const imgUrl = c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
+        if (imgUrl) div.style.backgroundImage = `url('${imgUrl}')`;
+        div.addEventListener('click', ()=>{ gridEl.classList.add('hidden'); viewToggleBtn.textContent = 'GRID'; glideTo(c.id); });
+        gridEl.appendChild(div);
+      });
+      gridEl.classList.remove('hidden');
+      viewToggleBtn.textContent = 'ORIGINAL VIEW';
+    } else {
+      gridEl.classList.add('hidden');
+      viewToggleBtn.textContent = 'GRID';
+    }
   });
 
   function openModal(cover){
