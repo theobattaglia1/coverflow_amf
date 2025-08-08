@@ -52,7 +52,7 @@
     ];
 
     const startXBase = 80; // left margin
-    let rowY = 60;         // accumulate row Y based on tallest card in previous row
+    let rowY = 0;          // start flush with top edge
     let rowIndex = 0;
     let i = 0;
 
@@ -125,14 +125,15 @@
       }
       rowIndex++;
       // move to next row with sufficient space beneath tallest card plus organic gap
-      const gapY = 160 + seededRand(rowIndex, 20, 80);
+      const gapY = 80 + seededRand(rowIndex, 10, 60);
       rowY += rowTall + gapY;
     }
 
     canvas.appendChild(frag);
 
-    canvas.style.width = Math.max(2400, maxRight + 400) + 'px';
-    canvas.style.height = Math.max(1600, rowY + 600) + 'px';
+    canvas.style.width = Math.max(3200, maxRight + 800) + 'px';
+    // Ensure bottom row reaches bottom edge initially
+    canvas.style.height = Math.max(1600, rowY + 0) + 'px';
   }
 
   // Drag with momentum
@@ -216,8 +217,7 @@
     if (!overlays) return;
     overlays.innerHTML = '';
     const blocks = [
-      { x: 1480, y: 40, title: '+Get In Touch', lines: ['hi@allmyfriendsinc.com'] },
-      { x: 1600, y: 720, title: 'Est. 2025 • Summer Days', lines: [] }
+      { x: 1480, y: 40, title: '+Get In Touch', lines: ['hi@allmyfriendsinc.com'] }
     ];
     const frag = document.createDocumentFragment();
     blocks.forEach(b => {

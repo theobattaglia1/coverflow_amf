@@ -36,7 +36,7 @@ body {
 .gg-hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); color: rgba(255,255,255,0.8); font-size: 12px; }
 .gg-hint span { display: inline-block; border:1px solid rgba(255,255,255,0.4); padding: 1px 6px; border-radius: 4px; margin: 0 4px; }
 
-.gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 10px; overflow: hidden; cursor: pointer; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
+.gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 0; overflow: hidden; cursor: pointer; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
 .gg-item .img { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .25s ease; }
 .gg-item:hover .img { transform: scale(1.04); }
 .gg-item .meta { position: absolute; left: 14px; bottom: 12px; right: 14px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.75); }
