@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALL MY FRIENDS — Gallery</title>
+  <link rel="stylesheet" href="/index.css" />
+  <link rel="stylesheet" href="/gallery.css" />
+  <style id="global-styles"></style>
+  <!-- Optional GSAP (no inertia plugin used) -->
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#gallery">Skip to gallery</a>
+
+  <header class="gallery-header">
+    <div class="top-logo small">
+      <div class="logo-glow"></div>
+      <iframe class="logo-frame" src="/assets/logo.html" frameborder="0" scrolling="no"></iframe>
+    </div>
+    <nav class="names-strip" id="names-strip" aria-label="Artist list"></nav>
+  </header>
+
+  <main class="gallery-container">
+    <div id="gallery" class="gallery" aria-live="polite"></div>
+  </main>
+
+  <!-- Detail Modal (reuses index.css styles) -->
+  <div class="artist-modal hidden" id="artist-modal">
+    <div class="modal-content">
+      <!-- filled by JS -->
+    </div>
+  </div>
+
+  <script src="/gallery.js"></script>
+</body>
+</html>
+
+
