@@ -15,6 +15,9 @@
   let rafId = 0;
   let expandedId = null;
   let centeredId = null; // track which item is centered for click-to-open
+  let pointerDown = false;
+  let didDrag = false;
+  let downX = 0, downY = 0;
 
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
@@ -130,7 +133,9 @@
         if (label) meta.appendChild(sub);
         item.appendChild(meta);
 
-        item.addEventListener('click', () => {
+        item.addEventListener('click', (ev) => {
+          // If a drag was detected between pointerdown and pointerup, treat as navigation only
+          if (didDrag) return;
           if (centeredId === c.id) {
             openModal(c);
           } else {
@@ -170,7 +175,7 @@
     isDragging = true; container.setPointerCapture(e.pointerId);
     startX = e.clientX - translateX; startY = e.clientY - translateY;
     lastT = performance.now(); lastX = e.clientX; lastY = e.clientY;
-    centeredId = null; // cancel centered state when user starts dragging
+    pointerDown = true; didDrag = false; downX = e.clientX; downY = e.clientY;
   });
   container.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
@@ -181,8 +186,15 @@
     velocityY = (e.clientY - lastY) / dt * 16;
     lastT = now; lastX = e.clientX; lastY = e.clientY;
     applyTransform();
+    if (pointerDown && !didDrag) {
+      const dx = Math.abs(e.clientX - downX);
+      const dy = Math.abs(e.clientY - downY);
+      if (dx > 4 || dy > 4) {
+        didDrag = true; centeredId = null;
+      }
+    }
   });
-  window.addEventListener('pointerup', () => { isDragging = false; });
+  window.addEventListener('pointerup', () => { isDragging = false; pointerDown = false; });
   window.addEventListener('pointercancel', () => { isDragging = false; });
 
   // Wheel pan
