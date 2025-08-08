@@ -58,6 +58,8 @@ body {
   filter: drop-shadow(0 4px 16px rgba(0,0,0,0.35));
 }
 
+.gg-reset-chip { position: fixed; right: 14px; bottom: 18px; z-index: 12; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; }
+
 .gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 0; overflow: hidden; cursor: pointer; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
 .gg-item .img { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .25s ease; }
 .gg-item:hover .img { transform: scale(1.04); }
@@ -85,8 +87,11 @@ body {
 .spotify-button { display: inline-block; margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: #1DB954; color: #000; text-decoration: none; }
 
 @media (max-width: 768px) {
-  .gg-header { grid-template-columns: auto 1fr auto; }
+  .gg-header { grid-template-columns: auto 1fr auto; height: 52px; padding: 0 10px; }
+  .gg-main { padding-top: 52px; }
   .gg-logo { font-size: 14px; }
+  .center-logo-frame { transform: scale(0.42); }
+  .gg-names { gap: 6px; }
 }
 
 

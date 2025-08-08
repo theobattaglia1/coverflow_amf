@@ -6,6 +6,7 @@
   const overviewBtn = document.getElementById('gg-overview');
   const overlays = document.getElementById('gg-overlays');
   const nameList = document.getElementById('gg-name-list');
+  const resetChip = document.getElementById('gg-reset');
 
   let covers = [];
   let isDragging = false;
@@ -94,6 +95,7 @@
 
   function applyFilter(key){
     activeFilter = key || 'all';
+    if (resetChip) resetChip.hidden = activeFilter === 'all';
     if (activeFilter === 'all') { layoutItems(); return; }
     // Dim non-matching and center matching in a row
     layoutItems(); // render current state first (adds dimming in layout)
@@ -131,7 +133,8 @@
   }
 
   // ESC to reset filter
-  window.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') { activeFilter = 'all'; layoutItems(); } });
+  window.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') { activeFilter = 'all'; if(resetChip) resetChip.hidden = true; layoutItems(); } });
+  if (resetChip) resetChip.addEventListener('click', ()=>{ activeFilter = 'all'; resetChip.hidden = true; layoutItems(); });
 
   function layoutItems(){
     canvas.innerHTML = '';
@@ -140,11 +143,18 @@
     const scale = getScale();
 
     // Width/height recipes per row (no absolute deltas)
-    const rowPatterns = [
-      [ { w: 640, h: 420 }, { w: 520, h: 360 }, { w: 700, h: 440 } ],
-      [ { w: 560, h: 380 }, { w: 740, h: 460 } ],
-      [ { w: 720, h: 460 }, { w: 520, h: 360 }, { w: 480, h: 340 }, { w: 620, h: 420 } ]
-    ];
+    const mobile = window.innerWidth <= 768;
+    const rowPatterns = mobile
+      ? [
+          [ { w: 520, h: 340 }, { w: 480, h: 320 } ],
+          [ { w: 560, h: 360 }, { w: 520, h: 340 } ],
+          [ { w: 520, h: 340 }, { w: 480, h: 320 }, { w: 520, h: 340 } ]
+        ]
+      : [
+          [ { w: 640, h: 420 }, { w: 520, h: 360 }, { w: 700, h: 440 } ],
+          [ { w: 560, h: 380 }, { w: 740, h: 460 } ],
+          [ { w: 720, h: 460 }, { w: 520, h: 360 }, { w: 480, h: 340 }, { w: 620, h: 420 } ]
+        ];
 
     const startXBase = 80 * scale; // left margin
     let rowY = 0;          // start flush with top edge
@@ -219,7 +229,7 @@
       }
       rowIndex++;
       // move to next row with sufficient space beneath tallest card plus organic gap
-      const gapY = (80 * scale) + seededRand(rowIndex, 10 * scale, 60 * scale);
+      const gapY = (mobile ? 100 : 80) * scale + seededRand(rowIndex, 10 * scale, 60 * scale);
       rowY += rowTall + gapY;
     }
 
@@ -236,7 +246,8 @@
     const sW = window.innerWidth / 1440;
     const sH = window.innerHeight / 900;
     const s = Math.min(sW, sH);
-    return Math.max(0.6, Math.min(1.25, s));
+    const min = window.innerWidth <= 768 ? 0.8 : 0.6;
+    return Math.max(min, Math.min(1.25, s));
   }
 
   // Drag with momentum
