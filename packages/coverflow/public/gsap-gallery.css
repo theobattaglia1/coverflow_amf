@@ -94,12 +94,13 @@ body {
   .gg-names { gap: 6px; }
 
   /* Mobile: Filters as vertical overlay under header */
-  .gg-filters { position: fixed; top: 56px; left: 12px; right: auto; bottom: auto; z-index: 12; display: flex; flex-direction: column; gap: 6px; background: rgba(0,0,0,0.6); padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.12); }
-  .gg-filters button { text-align: left; padding: 6px 8px; }
+  .gg-filters { position: fixed; top: 56px; left: 12px; right: auto; bottom: auto; z-index: 12; display: flex; flex-direction: column; gap: 4px; background: transparent; padding: 0; border: none; }
+  .gg-filters button { text-align: left; padding: 3px 2px; font-size: 13px; line-height: .95; color: var(--muted); }
+  .gg-filters button:hover, .gg-filters button.active { color: var(--ink); }
 
   /* Mobile: Names list bottom-left */
-  .gg-name-list { display: block; position: fixed; left: 10px; bottom: 70px; top: auto; height: 38vh; width: 180px; background: rgba(0,0,0,0.55); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 8px 10px; }
-  .gg-name-list .name { padding: 3px 0; line-height: 0.95; }
+  .gg-name-list { display: block; position: fixed; left: 10px; bottom: 20px; top: auto; height: 30vh; width: 180px; background: transparent; border: none; padding: 0; }
+  .gg-name-list .name { padding: 2px 0; line-height: 0.95; }
 }
 
 
