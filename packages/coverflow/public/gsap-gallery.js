@@ -44,27 +44,40 @@
     canvas.innerHTML = '';
     const frag = document.createDocumentFragment();
 
+    // Width/height recipes per row (no absolute deltas)
     const rowPatterns = [
-      [ { w: 640, h: 420, dx: 0, dy: 0 }, { w: 520, h: 360, dx: 80, dy: -20 }, { w: 700, h: 440, dx: 120, dy: 10 } ],
-      [ { w: 560, h: 380, dx: 180, dy: 20 }, { w: 740, h: 460, dx: 120, dy: -10 } ],
-      [ { w: 720, h: 460, dx: 40, dy: -10 }, { w: 520, h: 360, dx: 120, dy: 0 }, { w: 480, h: 340, dx: 140, dy: -16 }, { w: 620, h: 420, dx: 160, dy: 18 } ]
+      [ { w: 640, h: 420 }, { w: 520, h: 360 }, { w: 700, h: 440 } ],
+      [ { w: 560, h: 380 }, { w: 740, h: 460 } ],
+      [ { w: 720, h: 460 }, { w: 520, h: 360 }, { w: 480, h: 340 }, { w: 620, h: 420 } ]
     ];
 
-    const rowGap = 240;
-    const startXBase = 60;
-    const startY = 40;
+    const startXBase = 80; // left margin
+    let rowY = 60;         // accumulate row Y based on tallest card in previous row
     let rowIndex = 0;
     let i = 0;
+
+    const seededRand = (seed, min, max) => {
+      // simple reproducible pseudo-random based on seed
+      const x = Math.sin(seed * 9973) * 43758.5453;
+      const t = x - Math.floor(x);
+      return min + t * (max - min);
+    };
+
+    let maxRight = 0;
     while (i < covers.length) {
       const pattern = rowPatterns[rowIndex % rowPatterns.length];
+      // compute tallest in row to prevent vertical overlap
+      const rowTall = Math.max(...pattern.map(p => p.h));
       let cursorX = startXBase + (rowIndex % 2 === 1 ? 140 : 0);
-      const yBase = startY + rowIndex * rowGap;
 
       for (let k = 0; k < pattern.length && i < covers.length; k++, i++) {
         const c = covers[i];
         const recipe = pattern[k];
-        const x = cursorX + recipe.dx;
-        const y = yBase + recipe.dy;
+        const jitterY = seededRand(i, -12, 12);      // small vertical wiggle without overlap
+        const gapX = 120 + seededRand(i * 3, 20, 100); // variable horizontal gutter
+
+        const x = cursorX;
+        const y = rowY + jitterY;
 
         const item = document.createElement('div');
         item.className = 'gg-item';
@@ -107,17 +120,19 @@
         });
 
         frag.appendChild(item);
-        cursorX += recipe.w + 120;
+        cursorX += recipe.w + gapX;
+        maxRight = Math.max(maxRight, cursorX);
       }
       rowIndex++;
+      // move to next row with sufficient space beneath tallest card plus organic gap
+      const gapY = 160 + seededRand(rowIndex, 20, 80);
+      rowY += rowTall + gapY;
     }
 
     canvas.appendChild(frag);
 
-    const totalHeight = startY + rowIndex * rowGap + 600;
-    const totalWidth = 3400;
-    canvas.style.width = totalWidth + 'px';
-    canvas.style.height = totalHeight + 'px';
+    canvas.style.width = Math.max(2400, maxRight + 400) + 'px';
+    canvas.style.height = Math.max(1600, rowY + 600) + 'px';
   }
 
   // Drag with momentum
