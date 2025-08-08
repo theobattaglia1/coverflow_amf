@@ -1418,25 +1418,29 @@ html, body {
   line-height: 1.2;
 }
 
-/* === OVERVIEW MODE (CIRCULAR MOSAIC) === */
+/* === OVERVIEW MODE (CLEAN CIRCULAR GRID) === */
 .overview-active #coverflow-container { perspective: none; }
 .overview-active #coverflow {
-  display: block;
-  position: relative;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
   width: 100%;
-  max-width: none;
-  padding: 8px 8px 120px;
-  transform-origin: 50% 0%;
+  max-width: 720px;
+  padding: 8px 12px 96px;
+  margin: 0 auto;
 }
 .overview-active .cover {
-  position: absolute !important;
-  left: 0; top: 0;
-  transform: translate(var(--mx, 0px), var(--my, 0px)) scale(1);
-  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  position: relative !important;
+  left: auto; top: auto;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1 / 1 !important;
+  transform: scale(1);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
   filter: none !important;
   opacity: 1 !important;
   animation: none !important;
-  box-shadow: 0 10px 28px rgba(0,0,0,0.35);
+  box-shadow: 0 8px 22px rgba(0,0,0,0.35);
   border-radius: 50% !important;
 }
 .overview-active .cover .cover-front,
@@ -1445,14 +1449,9 @@ html, body {
 .overview-active .cover-front::after { display: none; }
 .overview-active .cover-text-overlay { display: none !important; }
 
-/* Size variants (circles only) */
-.overview-active .cover.size-s { width: min(26vw, 140px); aspect-ratio: 1; }
-.overview-active .cover.size-m { width: min(32vw, 180px); aspect-ratio: 1; }
-.overview-active .cover.size-l { width: min(38vw, 220px); aspect-ratio: 1; }
-
 /* Peek state on tap */
 .overview-active .cover.peek {
-  transform: translate(var(--mx, 0px), var(--my, 0px)) scale(1.18);
+  transform: scale(1.12);
   z-index: 20;
   box-shadow: 0 18px 40px rgba(0,0,0,0.45);
 }
