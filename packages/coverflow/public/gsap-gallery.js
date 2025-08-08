@@ -39,7 +39,17 @@
     contactBtn.textContent = 'contact';
     contactBtn.addEventListener('click', () => { window.location.href = 'mailto:hi@allmyfriendsinc.com'; });
     frag.appendChild(contactBtn);
-    covers.map(c => ({ id: c.id, name: c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled' }))
+    const reserved = new Set(['about us.', 'about us', 'contact']);
+    const seen = new Set();
+    covers
+      .map(c => ({ id: c.id, name: c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled' }))
+      .filter(item => {
+        const key = (item.name || '').toLowerCase().trim();
+        if (reserved.has(key)) return false; // avoid duplicates with static buttons
+        if (seen.has(key)) return false;     // dedupe repeated names
+        seen.add(key);
+        return true;
+      })
       .sort((a,b)=>a.name.localeCompare(b.name))
       .forEach(item => {
         const btn = document.createElement('button');
