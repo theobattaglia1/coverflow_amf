@@ -39,7 +39,9 @@ body {
 .gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 10px; overflow: hidden; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.45); }
 .gg-item .img { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .25s ease; }
 .gg-item:hover .img { transform: scale(1.04); }
-.gg-item .caption { position: absolute; bottom: 12px; left: 12px; right: 12px; font-size: 12px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.75); letter-spacing: .02em; }
+.gg-item .meta { position: absolute; left: 14px; bottom: 12px; right: 14px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.75); }
+.gg-item .meta .title { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; margin: 0; }
+.gg-item .meta .number { font-size: 11px; opacity: 0.75; margin-top: 2px; letter-spacing: 0.04em; }
 
 /* Editorial overlay blocks */
 .gg-overlays { position: absolute; inset: 0; pointer-events: none; }

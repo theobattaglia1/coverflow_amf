@@ -54,8 +54,15 @@
       const variant = i % 6;
       const w = (variant === 0 ? baseW * 1.2 : variant === 1 ? baseW : variant === 2 ? baseW * 0.9 : variant === 3 ? baseW * 1.4 : variant === 4 ? baseW : baseW * 1.1);
       const h = (variant === 0 ? baseH * 1.0 : variant === 1 ? baseH * 0.9 : variant === 2 ? baseH * 1.1 : variant === 3 ? baseH * 1.0 : variant === 4 ? baseH * 1.2 : baseH * 0.95);
-      const x = col * (baseW + gap);
-      const y = row * (baseH + gap);
+      // base position
+      let x = col * (baseW + gap);
+      let y = row * (baseH + gap);
+      // editorial stagger: alternate rows offset and slight jitter
+      const rowOffset = (row % 2 === 0 ? 0 : baseW * 0.4);
+      const jitterX = ((i * 37) % 13) - 6; // -6..6px
+      const jitterY = ((i * 53) % 11) - 5; // -5..5px
+      x = x + rowOffset + jitterX;
+      y = y + jitterY + (variant === 3 ? -12 : 0);
 
       const item = document.createElement('div');
       item.className = 'gg-item';
@@ -71,10 +78,17 @@
       if (imgUrl) img.style.backgroundImage = `url('${imgUrl}')`;
       item.appendChild(img);
 
-      const caption = document.createElement('div');
-      caption.className = 'caption';
-      caption.textContent = c.artistDetails?.name || c.coverLabel || c.albumTitle || '';
-      item.appendChild(caption);
+      const meta = document.createElement('div');
+      meta.className = 'meta';
+      const title = document.createElement('p');
+      title.className = 'title';
+      title.textContent = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toUpperCase();
+      const number = document.createElement('p');
+      number.className = 'number';
+      number.textContent = `#${String(i+1).padStart(4,'0')}`;
+      meta.appendChild(title);
+      meta.appendChild(number);
+      item.appendChild(meta);
 
       let clickedOnce = false;
       let clickTimer = null;
@@ -96,8 +110,8 @@
     canvas.appendChild(frag);
 
     // Expand canvas virtual size
-    const totalRows = Math.ceil(covers.length / cols);
-    canvas.style.width = cols * (baseW + gap) + 'px';
+    const totalRows = Math.ceil(covers.length / cols) + 1;
+    canvas.style.width = (cols * (baseW + gap) + baseW) + 'px';
     canvas.style.height = totalRows * (baseH + gap) + 'px';
   }
 
@@ -182,9 +196,7 @@
     if (!overlays) return;
     overlays.innerHTML = '';
     const blocks = [
-      { x: 360, y: 60, title: '+Menu', lines: ['Clarity','Simplicity','Creativity','Authenticity','Connect'] },
-      { x: 1220, y: 40, title: '+Location', lines: ['6357 Selma Ave','Los Angeles','CA 90028'] },
-      { x: 1520, y: 40, title: '+Get In Touch', lines: ['(310) 456-7890','hi@amf.inc'] },
+      { x: 1480, y: 40, title: '+Get In Touch', lines: ['hi@allmyfriendsinc.com'] },
       { x: 1600, y: 720, title: 'Est. 2025 • Summer Days', lines: [] }
     ];
     const frag = document.createDocumentFragment();
