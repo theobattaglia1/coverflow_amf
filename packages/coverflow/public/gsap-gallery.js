@@ -70,12 +70,7 @@
         return true;
       })
       .sort((a,b)=>a.name.localeCompare(b.name))
-      .forEach(item => {
-        const btn = document.createElement('button');
-        btn.textContent = item.name;
-        btn.addEventListener('click', () => glideTo(item.id));
-        frag.appendChild(btn);
-      });
+      .forEach(item => { /* names no longer in top nav; left sticky handles names */ });
     namesEl.appendChild(frag);
 
     // Build left sticky alphabetical list
