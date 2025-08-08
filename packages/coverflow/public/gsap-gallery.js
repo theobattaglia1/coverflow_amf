@@ -64,6 +64,8 @@
     canvas.innerHTML = '';
     const frag = document.createDocumentFragment();
 
+    const scale = getScale();
+
     // Width/height recipes per row (no absolute deltas)
     const rowPatterns = [
       [ { w: 640, h: 420 }, { w: 520, h: 360 }, { w: 700, h: 440 } ],
@@ -71,7 +73,7 @@
       [ { w: 720, h: 460 }, { w: 520, h: 360 }, { w: 480, h: 340 }, { w: 620, h: 420 } ]
     ];
 
-    const startXBase = 80; // left margin
+    const startXBase = 80 * scale; // left margin
     let rowY = 0;          // start flush with top edge
     let rowIndex = 0;
     let i = 0;
@@ -87,22 +89,22 @@
     while (i < covers.length) {
       const pattern = rowPatterns[rowIndex % rowPatterns.length];
       // compute tallest in row to prevent vertical overlap
-      const rowTall = Math.max(...pattern.map(p => p.h));
-      let cursorX = startXBase + (rowIndex % 2 === 1 ? 140 : 0);
+      const rowTall = Math.max(...pattern.map(p => p.h)) * scale;
+      let cursorX = startXBase + (rowIndex % 2 === 1 ? 140 * scale : 0);
 
       for (let k = 0; k < pattern.length && i < covers.length; k++, i++) {
         const c = covers[i];
         const recipe = pattern[k];
-        const jitterY = seededRand(i, -12, 12);      // small vertical wiggle without overlap
-        const gapX = 120 + seededRand(i * 3, 20, 100); // variable horizontal gutter
+        const jitterY = seededRand(i, -12, 12) * scale;      // small vertical wiggle without overlap
+        const gapX = (120 * scale) + seededRand(i * 3, 20 * scale, 100 * scale); // variable horizontal gutter
 
         const x = cursorX;
         const y = rowY + jitterY;
 
         const item = document.createElement('div');
         item.className = 'gg-item';
-        item.style.setProperty('--w', recipe.w + 'px');
-        item.style.setProperty('--h', recipe.h + 'px');
+        item.style.setProperty('--w', (recipe.w * scale) + 'px');
+        item.style.setProperty('--h', (recipe.h * scale) + 'px');
         item.style.left = x + 'px';
         item.style.top = y + 'px';
         item.dataset.id = c.id;
@@ -147,15 +149,23 @@
       }
       rowIndex++;
       // move to next row with sufficient space beneath tallest card plus organic gap
-      const gapY = 80 + seededRand(rowIndex, 10, 60);
+      const gapY = (80 * scale) + seededRand(rowIndex, 10 * scale, 60 * scale);
       rowY += rowTall + gapY;
     }
 
     canvas.appendChild(frag);
 
-    canvas.style.width = Math.max(3200, maxRight + 800) + 'px';
+    canvas.style.width = Math.max(2000 * scale, maxRight + 400 * scale) + 'px';
     // Ensure bottom row reaches bottom edge initially
-    canvas.style.height = Math.max(1600, rowY + 0) + 'px';
+    canvas.style.height = Math.max(900 * scale, rowY + 0) + 'px';
+  }
+
+  function getScale(){
+    // Compute a UI scale relative to a 1440x900 design, clamped for comfort
+    const sW = window.innerWidth / 1440;
+    const sH = window.innerHeight / 900;
+    const s = Math.min(sW, sH);
+    return Math.max(0.6, Math.min(1.25, s));
   }
 
   // Drag with momentum
@@ -181,6 +191,15 @@
   container.addEventListener('wheel', (e) => {
     translateX -= e.deltaX; translateY -= e.deltaY; applyTransform();
   }, { passive: true });
+
+  // Re-layout on resize (debounced)
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      layoutItems();
+    }, 120);
+  });
 
   function startLoop(){ cancelAnimationFrame(rafId); rafId = requestAnimationFrame(tick); }
   function tick(){
