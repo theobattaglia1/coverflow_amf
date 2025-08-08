@@ -277,7 +277,7 @@ coverflowEl.addEventListener('touchmove', e => {
       document.body.style.setProperty('--overview-scale', '0.9');
     }
     if (isOverviewMode) {
-      const clamped = Math.max(0.75, Math.min(1.0, ratio));
+      const clamped = Math.max(0.8, Math.min(1.0, ratio));
       document.body.style.setProperty('--overview-scale', String(clamped));
     }
   }
@@ -498,12 +498,21 @@ function renderCovers() {
         return;
       }
       
-      // In overview mode, a tap selects and exits to focus
+      // In overview mode, a tap peeks (scale up). Second tap opens back cover/modal.
       if (isOverviewMode) {
-        const idx = +wrapper.dataset.index;
-        activeIndex = idx;
-        toggleOverview(false);
-        return;
+        const isPeek = wrapper.classList.contains('peek');
+        if (!isPeek) {
+          document.querySelectorAll('.cover.peek').forEach(el=>el.classList.remove('peek'));
+          wrapper.classList.add('peek');
+          return; // stay in overview during peek
+        } else {
+          // Second tap: transition to focused flow on this item
+          const idx = +wrapper.dataset.index;
+          activeIndex = idx;
+          toggleOverview(false);
+          // slight delay before flipping allowed
+          return;
+        }
       }
 
       // Don't flip if clicking on interactive elements in the back
@@ -1113,6 +1122,7 @@ function toggleOverview(force) {
   // When entering overview, start near a modest zoomed-out feel by scrolling to top
   if (isOverviewMode) {
     coverflowEl.scrollTo({ top: 0, behavior: 'smooth' });
+    document.body.style.setProperty('--overview-scale', '0.9');
   }
   updateLayoutParameters();
   renderCoverFlow();
