@@ -53,7 +53,7 @@
       const size = base;
 
       const item = document.createElement('div');
-      item.className = 'gg-item round';
+      item.className = 'gg-item';
       item.style.setProperty('--size', size + 'px');
       item.style.left = x + 'px';
       item.style.top = y + 'px';
