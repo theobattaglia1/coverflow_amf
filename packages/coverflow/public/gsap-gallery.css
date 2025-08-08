@@ -41,7 +41,8 @@ body {
 .gg-center-logo { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 10; }
 .center-logo-frame {
   /* Bigger internal viewport to avoid cropping, then scale down visually */
-  width: 180px; height: 180px; border: 0; background: transparent;
+  width: 216px; height: 216px; /* 20% larger */
+  border: 0; background: transparent;
   transform: scale(0.55);
   transform-origin: center center;
   opacity: 0.95;

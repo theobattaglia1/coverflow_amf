@@ -29,6 +29,16 @@
   function buildNames(){
     namesEl.innerHTML = '';
     const frag = document.createDocumentFragment();
+    // Static: About Us and contact first
+    const aboutBtn = document.createElement('button');
+    aboutBtn.textContent = 'About Us.';
+    aboutBtn.addEventListener('click', () => { window.location.href = '/AMF_Overview.html'; });
+    frag.appendChild(aboutBtn);
+
+    const contactBtn = document.createElement('button');
+    contactBtn.textContent = 'contact';
+    contactBtn.addEventListener('click', () => { window.location.href = 'mailto:hi@allmyfriendsinc.com'; });
+    frag.appendChild(contactBtn);
     covers.map(c => ({ id: c.id, name: c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled' }))
       .sort((a,b)=>a.name.localeCompare(b.name))
       .forEach(item => {
