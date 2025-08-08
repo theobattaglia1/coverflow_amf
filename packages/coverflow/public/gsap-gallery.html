@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALL MY FRIENDS — Gallery (GSAP)</title>
+  <link rel="stylesheet" href="/gsap-gallery.css" />
+  <style id="global-styles"></style>
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
+</head>
+<body>
+  <header class="gg-header">
+    <div class="gg-left">
+      <div class="gg-logo">ALL MY FRIENDS</div>
+    </div>
+    <nav class="gg-names" id="gg-names" aria-label="Artists"></nav>
+    <div class="gg-right">
+      <button id="gg-overview" class="gg-chip" aria-label="Overview">Overview</button>
+    </div>
+  </header>
+
+  <main class="gg-main">
+    <div class="gg-container" id="gg-container">
+      <div class="gg-canvas" id="gg-canvas" role="grid" aria-live="polite"></div>
+      <div class="gg-vignette"></div>
+    </div>
+  </main>
+
+  <div class="artist-modal hidden" id="gg-modal">
+    <div class="modal-content"></div>
+  </div>
+
+  <script src="/gsap-gallery.js"></script>
+  </body>
+  </html>
+
+
