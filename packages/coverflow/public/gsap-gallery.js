@@ -14,6 +14,7 @@
   let lastT = 0, lastX = 0, lastY = 0;
   let rafId = 0;
   let expandedId = null;
+  let centeredId = null; // track which item is centered for click-to-open
 
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
@@ -129,17 +130,12 @@
         if (label) meta.appendChild(sub);
         item.appendChild(meta);
 
-        let clickedOnce = false;
-        let clickTimer = null;
         item.addEventListener('click', () => {
-          if (!clickedOnce) {
-            clickedOnce = true;
-            item.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 260, easing: 'cubic-bezier(0.22,1,0.36,1)' });
-            clearTimeout(clickTimer);
-            clickTimer = setTimeout(() => { clickedOnce = false; }, 450);
-          } else {
-            clickedOnce = false;
+          if (centeredId === c.id) {
             openModal(c);
+          } else {
+            centeredId = c.id;
+            glideTo(c.id);
           }
         });
 
@@ -174,6 +170,7 @@
     isDragging = true; container.setPointerCapture(e.pointerId);
     startX = e.clientX - translateX; startY = e.clientY - translateY;
     lastT = performance.now(); lastX = e.clientX; lastY = e.clientY;
+    centeredId = null; // cancel centered state when user starts dragging
   });
   container.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
