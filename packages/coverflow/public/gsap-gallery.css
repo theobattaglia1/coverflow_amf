@@ -19,7 +19,7 @@ body {
 }
 .gg-logo { font-weight: 700; letter-spacing: .02em; opacity: .9; white-space: nowrap; }
 .gg-left { display: flex; align-items: center; gap: 12px; }
-.gg-logo-frame { width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; }
+
 .gg-right { display: flex; justify-content: flex-end; }
 .gg-chip { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: #fff; border-radius: 999px; padding: 6px 12px; cursor: pointer; }
 
@@ -36,6 +36,10 @@ body {
 .gg-coords { position: absolute; left: 12px; bottom: 8px; color: rgba(255,255,255,0.8); font-size: 12px; letter-spacing: .02em; }
 .gg-hint { position: absolute; left: 50%; bottom: 12px; transform: translateX(-50%); color: rgba(255,255,255,0.8); font-size: 12px; }
 .gg-hint span { display: inline-block; border:1px solid rgba(255,255,255,0.4); padding: 1px 6px; border-radius: 4px; margin: 0 4px; }
+
+/* Centered viewport-anchored logo */
+.gg-center-logo { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 10; }
+.center-logo-frame { width: 56px; height: 56px; border: 0; opacity: 0.9; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4)); }
 
 .gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 0; overflow: hidden; cursor: pointer; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
 .gg-item .img { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .25s ease; }
