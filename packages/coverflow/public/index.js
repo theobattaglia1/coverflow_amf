@@ -7,6 +7,8 @@ const maxAngle = 80,
       isMobile = window.matchMedia('(max-width:768px)').matches;
 const coverflowEl   = document.getElementById('coverflow'),
       hoverDisplay  = document.getElementById('hover-credits');
+const modeToggleBtn = document.getElementById('mode-toggle');
+let isOverviewMode  = false; // mobile overview grid mode
 
 // Mobile logo scaling - more robust
 function applyMobileLogoScaling() {
@@ -227,12 +229,22 @@ function updateAmbient() {
 // 4) Enhanced swipe/wheel for mobile vertical layout
 let wheelCooldown = false,
     touchStartX   = 0,
-    touchStartY   = 0;
+    touchStartY   = 0,
+    pinchStartDist = null,
+    pinchStartScale = 1;
 
 coverflowEl.addEventListener('touchmove', e => e.preventDefault(), { passive: false });
 coverflowEl.addEventListener('touchstart', e => { 
   touchStartX = e.touches[0].screenX;
   touchStartY = e.touches[0].screenY;
+  if (e.touches.length === 2) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    pinchStartDist = Math.hypot(dx, dy);
+    pinchStartScale = isOverviewMode ? 0.8 : 1;
+  } else {
+    pinchStartDist = null;
+  }
 }, { passive: true });
 coverflowEl.addEventListener('touchend', e => {
   const diffX = e.changedTouches[0].screenX - touchStartX;
@@ -248,6 +260,21 @@ coverflowEl.addEventListener('touchend', e => {
     // Desktop: horizontal swipes
     if (Math.abs(diffX) > 60) {
       setActiveIndex(activeIndex + (diffX < 0 ? 1 : -1));
+    }
+  }
+}, { passive: true });
+
+coverflowEl.addEventListener('touchmove', e => {
+  if (e.touches.length === 2 && pinchStartDist) {
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const dist = Math.hypot(dx, dy);
+    const ratio = dist / pinchStartDist;
+    // If user pinches out (ratio < 0.9), enter overview; pinch in (ratio > 1.1) leave overview
+    if (!isOverviewMode && ratio < 0.9) {
+      toggleOverview(true);
+    } else if (isOverviewMode && ratio > 1.1) {
+      toggleOverview(false);
     }
   }
 }, { passive: true });
@@ -298,7 +325,7 @@ function updateLayoutParameters() {
       container.style.alignItems = 'center';
       container.style.gap = 'clamp(16px, 4vh, 32px)';
       container.style.width = '100%';
-      container.style.maxWidth = '400px';
+      container.style.maxWidth = isOverviewMode ? '100%' : '400px';
       container.style.margin = '0 auto';
     }
   } else {
@@ -467,6 +494,14 @@ function renderCovers() {
         return;
       }
       
+      // In overview mode, a tap selects and exits to focus
+      if (isOverviewMode) {
+        const idx = +wrapper.dataset.index;
+        activeIndex = idx;
+        toggleOverview(false);
+        return;
+      }
+
       // Don't flip if clicking on interactive elements in the back
       if (e.target.closest('.contact-card') || 
           e.target.closest('iframe') || 
@@ -546,7 +581,7 @@ function renderCoverFlow() {
     const i      = +cover.dataset.index;
     const offset = i - activeIndex;
     
-    if (isCurrentlyMobile) {
+    if (isCurrentlyMobile && !isOverviewMode) {
       // Mobile vertical layout - simpler positioning
       cover.style.position = 'relative';
       cover.style.left = '';
@@ -563,6 +598,15 @@ function renderCoverFlow() {
         cover.style.filter = 'blur(1px)';
         cover.style.zIndex = '1';
       }
+    } else if (isCurrentlyMobile && isOverviewMode) {
+      // Overview grid - no transforms per item
+      cover.style.position = '';
+      cover.style.left = '';
+      cover.style.top = '';
+      cover.style.transform = '';
+      cover.style.opacity = '1';
+      cover.style.filter = 'none';
+      cover.style.zIndex = '';
     } else {
       // Desktop coverflow positioning
       const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
@@ -603,11 +647,11 @@ function renderCoverFlow() {
     }
     
     cover.querySelector('.flip-container')?.classList.remove('flipped');
-    cover.classList.toggle('cover-active', offset === 0);
+    cover.classList.toggle('cover-active', !isOverviewMode && offset === 0);
   });
   
-  // Scroll to active cover on mobile
-  if (isCurrentlyMobile) {
+  // Scroll to active cover on mobile when not in overview
+  if (isCurrentlyMobile && !isOverviewMode) {
     setTimeout(() => {
       const activeCover = document.querySelector('.cover-active');
       if (activeCover) {
@@ -998,4 +1042,39 @@ document.addEventListener('keydown', () => {
 document.addEventListener('mousedown', () => {
   document.body.classList.remove('keyboard-nav');
 });
+
+// 16) Overview mode toggle & helpers
+function toggleOverview(force) {
+  const isMobileView = window.innerWidth <= 768;
+  const target = typeof force === 'boolean' ? force : !isOverviewMode;
+  if (!isMobileView && target) return; // only enable overview on mobile
+  isOverviewMode = target;
+  document.body.classList.toggle('overview-active', isOverviewMode);
+  if (modeToggleBtn) {
+    modeToggleBtn.setAttribute('aria-label', isOverviewMode ? 'Switch to flow' : 'Switch to overview');
+    modeToggleBtn.title = isOverviewMode ? 'Flow' : 'Overview';
+  }
+  // When entering overview, start near a modest zoomed-out feel by scrolling to top
+  if (isOverviewMode) {
+    coverflowEl.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  updateLayoutParameters();
+  renderCoverFlow();
+}
+
+modeToggleBtn?.addEventListener('click', () => toggleOverview());
+
+// 17) Gentle discoverability hint (one-time per session)
+(function showGestureHintOnce(){
+  const isMobileView = window.innerWidth <= 768;
+  if (!isMobileView) return;
+  if (sessionStorage.getItem('amf-gesture-hint-shown')) return;
+  const hint = document.createElement('div');
+  hint.className = 'gesture-hint';
+  hint.textContent = 'Pinch to zoom out. Tap ▥ to toggle overview.';
+  document.body.appendChild(hint);
+  sessionStorage.setItem('amf-gesture-hint-shown', '1');
+  setTimeout(()=>{ hint.classList.add('hide'); }, 3500);
+  setTimeout(()=>{ hint.remove(); }, 4500);
+})();
 
