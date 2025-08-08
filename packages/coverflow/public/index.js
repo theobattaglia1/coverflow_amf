@@ -8,7 +8,8 @@ const maxAngle = 80,
 const coverflowEl   = document.getElementById('coverflow'),
       hoverDisplay  = document.getElementById('hover-credits');
 const modeToggleBtn = document.getElementById('mode-toggle');
-let isOverviewMode  = false; // mobile overview grid mode
+let isOverviewMode  = false; // mobile overview mode
+let mosaicLayout     = [];   // positions/sizes for overview mosaic
 
 // Mobile logo scaling - more robust
 function applyMobileLogoScaling() {
@@ -270,11 +271,14 @@ coverflowEl.addEventListener('touchmove', e => {
     const dy = e.touches[0].clientY - e.touches[1].clientY;
     const dist = Math.hypot(dx, dy);
     const ratio = dist / pinchStartDist;
-    // If user pinches out (ratio < 0.9), enter overview; pinch in (ratio > 1.1) leave overview
-    if (!isOverviewMode && ratio < 0.9) {
+    // Enter overview on pinch-out; while in overview, scale smoothly
+    if (!isOverviewMode && ratio < 0.96) {
       toggleOverview(true);
-    } else if (isOverviewMode && ratio > 1.1) {
-      toggleOverview(false);
+      document.body.style.setProperty('--overview-scale', '0.9');
+    }
+    if (isOverviewMode) {
+      const clamped = Math.max(0.75, Math.min(1.0, ratio));
+      document.body.style.setProperty('--overview-scale', String(clamped));
     }
   }
 }, { passive: true });
@@ -535,6 +539,18 @@ function renderCovers() {
   
   // Set up lazy loading for background images
   setupLazyLoading();
+
+  // Prepare initial mosaic metadata (size/shape variety) for mobile overview
+  if (window.innerWidth <= 768) {
+    mosaicLayout = covers.map((_, idx) => ({
+      size: idx % 7 === 0 ? 'size-l' : idx % 3 === 0 ? 'size-m' : 'size-s',
+      shape: idx % 5 === 0 ? 'shape-hex' : idx % 2 === 0 ? 'shape-rounded' : 'shape-circle'
+    }));
+    document.querySelectorAll('.cover').forEach((el, i) => {
+      const meta = mosaicLayout[i];
+      el.classList.add(meta.size, meta.shape);
+    });
+  }
 }
 
 // Lazy loading implementation for background images
@@ -599,14 +615,11 @@ function renderCoverFlow() {
         cover.style.zIndex = '1';
       }
     } else if (isCurrentlyMobile && isOverviewMode) {
-      // Overview grid - no transforms per item
-      cover.style.position = '';
-      cover.style.left = '';
-      cover.style.top = '';
-      cover.style.transform = '';
+      // Overview mosaic - absolute positions calculated after loop
+      cover.style.position = 'absolute';
       cover.style.opacity = '1';
       cover.style.filter = 'none';
-      cover.style.zIndex = '';
+      cover.style.zIndex = '1';
     } else {
       // Desktop coverflow positioning
       const eff    = Math.sign(offset) * Math.log2(Math.abs(offset) + 1);
@@ -665,6 +678,49 @@ function renderCoverFlow() {
   }
   
   updateAmbient();
+
+  // Layout overview mosaic positions
+  if (isCurrentlyMobile && isOverviewMode) {
+    const padding = 10;
+    let cursorX = padding;
+    let cursorY = padding + 10;
+    let rowHeight = 0;
+
+    const containerWidth = coverflowEl.clientWidth;
+    const coversEls = Array.from(document.querySelectorAll('.cover'));
+    coversEls.forEach((el, i) => {
+      const meta = mosaicLayout[i] || { size: 'size-s' };
+      // Measure using computed size from CSS classes
+      const rect = el.getBoundingClientRect();
+      let w = rect.width;
+      if (!w || w === 0) {
+        // Fallback approximate sizes
+        w = meta.size === 'size-l' ? Math.min(window.innerWidth * 0.4, 240)
+          : meta.size === 'size-m' ? Math.min(window.innerWidth * 0.34, 200)
+          : Math.min(window.innerWidth * 0.28, 160);
+      }
+      const h = w;
+      if (cursorX + w + padding > containerWidth) {
+        cursorX = padding;
+        cursorY += rowHeight + padding;
+        rowHeight = 0;
+      }
+      const cx = cursorX + w / 2;
+      const cy = cursorY + h / 2;
+      el.style.left = `${cx}px`;
+      el.style.top  = `${cy}px`;
+      el.style.transform = 'translate(-50%, -50%)';
+      cursorX += w + padding;
+      rowHeight = Math.max(rowHeight, h);
+    });
+    // Subtle organic jitter/rotation
+    coversEls.forEach((el, idx) => {
+      const jitter = (n) => (Math.random() - 0.5) * n;
+      el.style.left = `calc(${el.style.left} + ${jitter(10)}px)`;
+      el.style.top  = `calc(${el.style.top} + ${jitter(6)}px)`;
+      el.style.rotate = `${jitter(2)}deg`;
+    });
+  }
 }
 
 // 9) Keyboard & ESC
