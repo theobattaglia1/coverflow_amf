@@ -39,7 +39,14 @@ body {
 
 /* Centered viewport-anchored logo */
 .gg-center-logo { position: fixed; inset: 0; display: grid; place-items: center; pointer-events: none; z-index: 10; }
-.center-logo-frame { width: 56px; height: 56px; border: 0; opacity: 0.9; filter: drop-shadow(0 4px 16px rgba(0,0,0,0.4)); }
+.center-logo-frame {
+  /* Bigger internal viewport to avoid cropping, then scale down visually */
+  width: 180px; height: 180px; border: 0; background: transparent;
+  transform: scale(0.55);
+  transform-origin: center center;
+  opacity: 0.95;
+  filter: drop-shadow(0 4px 16px rgba(0,0,0,0.35));
+}
 
 .gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 0; overflow: hidden; cursor: pointer; box-shadow: 0 12px 40px rgba(0,0,0,0.5); }
 .gg-item .img { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .25s ease; }
