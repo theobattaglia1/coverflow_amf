@@ -98,11 +98,13 @@
         const title = document.createElement('p');
         title.className = 'title';
         title.textContent = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toUpperCase();
-        const number = document.createElement('p');
-        number.className = 'number';
-        number.textContent = `#${String(i+1).padStart(4,'0')}`;
+        const sub = document.createElement('p');
+        sub.className = 'sub';
+        // Prefer label from artistDetails.label, fallback to label field, or blank
+        const label = c.artistDetails?.label || c.label || '';
+        sub.textContent = label ? label.toUpperCase() : '';
         meta.appendChild(title);
-        meta.appendChild(number);
+        if (label) meta.appendChild(sub);
         item.appendChild(meta);
 
         let clickedOnce = false;
