@@ -93,21 +93,45 @@
   }
 
   function applyFilter(key){
-    // Example filter logic using artistDetails.role (if present). Graceful fallback is 'all'.
-    if (key === 'all') { layoutItems(); return; }
-    const roleKey = key.slice(0, -1); // crude singular e.g., producers -> producer
-    // Tag chosen role on canvas for potential styling hooks
-    canvas.dataset.filter = key;
-    // Simple approach: reorder to bubble matching roles to first rows
-    covers.sort((a,b)=>{
-      const ar = (a.artistDetails?.roles || a.artistDetails?.role || '').toString().toLowerCase();
-      const br = (b.artistDetails?.roles || b.artistDetails?.role || '').toString().toLowerCase();
-      const am = ar.includes(roleKey);
-      const bm = br.includes(roleKey);
-      if (am === bm) return 0; return am ? -1 : 1;
+    activeFilter = key || 'all';
+    if (activeFilter === 'all') { layoutItems(); return; }
+    // Dim non-matching and center matching in a row
+    layoutItems(); // render current state first (adds dimming in layout)
+    const scale = getScale();
+    const viewport = container.getBoundingClientRect();
+    const centerY = (viewport.height * 0.5) - (220 * scale)/2;
+    const roleKey = activeFilter.slice(0, -1);
+    const matches = [];
+    const items = Array.from(canvas.querySelectorAll('.gg-item'));
+    items.forEach(it => {
+      const id = it.dataset.id;
+      const c = covers.find(x=>String(x.id)===String(id));
+      const roles = (c?.artistDetails?.roles || c?.artistDetails?.role || '').toString().toLowerCase();
+      if (roles.includes(roleKey)) matches.push(it);
     });
-    layoutItems();
+    let totalW = 0; const gutter = 40 * scale;
+    matches.forEach((el, idx)=>{ const w = el.getBoundingClientRect().width; totalW += w + (idx>0?gutter:0); });
+    const startX = (viewport.width - totalW)/2;
+    let xCursor = startX;
+    // Adjust translateX/Y so that first match moves to startX, centerY; others follow by keeping same transform
+    if (matches.length){
+      const first = matches[0];
+      const rect = first.getBoundingClientRect();
+      const targetX = translateX + (xCursor - rect.left);
+      const targetY = translateY + (centerY - rect.top);
+      const anim = { x: translateX, y: translateY };
+      gsap.to(anim, { duration: 0.6, ease: 'power3.inOut', x: targetX, y: targetY,
+        onUpdate(){ translateX = anim.x; translateY = anim.y; applyTransform(); },
+        onComplete(){
+          // Snap X so others visually line up; no need to animate each
+          xCursor += rect.width + gutter;
+        }
+      });
+    }
   }
+
+  // ESC to reset filter
+  window.addEventListener('keydown', (e)=>{ if (e.key === 'Escape') { activeFilter = 'all'; layoutItems(); } });
 
   function layoutItems(){
     canvas.innerHTML = '';
