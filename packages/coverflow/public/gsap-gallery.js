@@ -4,6 +4,7 @@
   const canvas = document.getElementById('gg-canvas');
   const modal = document.getElementById('gg-modal');
   const overviewBtn = document.getElementById('gg-overview');
+  const overlays = document.getElementById('gg-overlays');
 
   let covers = [];
   let isDragging = false;
@@ -22,7 +23,7 @@
   // Load covers
   fetch(`/data/covers.json?cb=${Date.now()}`)
     .then(r=>r.json())
-    .then(data => { covers = data; buildNames(); layoutItems(); startLoop(); })
+    .then(data => { covers = data; buildNames(); layoutItems(); buildEditorialOverlays(); startLoop(); })
     .catch(err => console.error('Failed to load covers', err));
 
   function buildNames(){
@@ -41,20 +42,25 @@
 
   function layoutItems(){
     canvas.innerHTML = '';
-    const cols = 8; // wide grid; we scroll to explore
-    const gap = 40;
-    const base = 220;
+    const cols = 10; // denser grid, varying sizes
+    const gap = 36;
+    const baseW = 320;
+    const baseH = 220;
     const frag = document.createDocumentFragment();
     covers.forEach((c, i) => {
       const col = i % cols;
       const row = Math.floor(i / cols);
-      const x = col * (base + gap);
-      const y = row * (base + gap);
-      const size = base;
+      // vary sizes in a repeating pattern for editorial rhythm
+      const variant = i % 6;
+      const w = (variant === 0 ? baseW * 1.2 : variant === 1 ? baseW : variant === 2 ? baseW * 0.9 : variant === 3 ? baseW * 1.4 : variant === 4 ? baseW : baseW * 1.1);
+      const h = (variant === 0 ? baseH * 1.0 : variant === 1 ? baseH * 0.9 : variant === 2 ? baseH * 1.1 : variant === 3 ? baseH * 1.0 : variant === 4 ? baseH * 1.2 : baseH * 0.95);
+      const x = col * (baseW + gap);
+      const y = row * (baseH + gap);
 
       const item = document.createElement('div');
       item.className = 'gg-item';
-      item.style.setProperty('--size', size + 'px');
+      item.style.setProperty('--w', w + 'px');
+      item.style.setProperty('--h', h + 'px');
       item.style.left = x + 'px';
       item.style.top = y + 'px';
       item.dataset.id = c.id;
@@ -91,8 +97,8 @@
 
     // Expand canvas virtual size
     const totalRows = Math.ceil(covers.length / cols);
-    canvas.style.width = cols * (base + gap) + 'px';
-    canvas.style.height = totalRows * (base + gap) + 'px';
+    canvas.style.width = cols * (baseW + gap) + 'px';
+    canvas.style.height = totalRows * (baseH + gap) + 'px';
   }
 
   // Drag with momentum
@@ -132,6 +138,7 @@
 
   function applyTransform(){
     canvas.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
+    overlays.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
   }
 
   function findItemElById(id){ return canvas.querySelector(`.gg-item[data-id="${CSS.escape(String(id))}"]`); }
@@ -170,6 +177,29 @@
     window.addEventListener('keydown', esc);
   }
   function closeModal(){ modal.classList.remove('show'); setTimeout(()=> modal.classList.add('hidden'), 240); }
+
+  function buildEditorialOverlays(){
+    if (!overlays) return;
+    overlays.innerHTML = '';
+    const blocks = [
+      { x: 360, y: 60, title: '+Menu', lines: ['Clarity','Simplicity','Creativity','Authenticity','Connect'] },
+      { x: 1220, y: 40, title: '+Location', lines: ['6357 Selma Ave','Los Angeles','CA 90028'] },
+      { x: 1520, y: 40, title: '+Get In Touch', lines: ['(310) 456-7890','hi@amf.inc'] },
+      { x: 1600, y: 720, title: 'Est. 2025 • Summer Days', lines: [] }
+    ];
+    const frag = document.createDocumentFragment();
+    blocks.forEach(b => {
+      const el = document.createElement('section');
+      el.className = 'gg-block';
+      el.style.left = b.x + 'px';
+      el.style.top = b.y + 'px';
+      const h = document.createElement('h4');
+      h.textContent = b.title; el.appendChild(h);
+      b.lines.forEach(t => { const p = document.createElement('p'); p.textContent = t; el.appendChild(p); });
+      frag.appendChild(el);
+    });
+    overlays.appendChild(frag);
+  }
 })();
 
 
