@@ -146,9 +146,9 @@
     const mobile = window.innerWidth <= 768;
     const rowPatterns = mobile
       ? [
-          [ { w: 520, h: 340 }, { w: 480, h: 320 } ],
-          [ { w: 560, h: 360 }, { w: 520, h: 340 } ],
-          [ { w: 520, h: 340 }, { w: 480, h: 320 }, { w: 520, h: 340 } ]
+          [ { w: 420, h: 280 }, { w: 380, h: 260 }, { w: 420, h: 280 } ],
+          [ { w: 440, h: 300 }, { w: 400, h: 280 } ],
+          [ { w: 420, h: 280 }, { w: 380, h: 260 }, { w: 420, h: 280 } ]
         ]
       : [
           [ { w: 640, h: 420 }, { w: 520, h: 360 }, { w: 700, h: 440 } ],
@@ -229,7 +229,7 @@
       }
       rowIndex++;
       // move to next row with sufficient space beneath tallest card plus organic gap
-      const gapY = (mobile ? 100 : 80) * scale + seededRand(rowIndex, 10 * scale, 60 * scale);
+      const gapY = (mobile ? 80 : 80) * scale + seededRand(rowIndex, 8 * scale, 40 * scale);
       rowY += rowTall + gapY;
     }
 
@@ -259,7 +259,12 @@
   });
   container.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
-    translateX = e.clientX - startX; translateY = e.clientY - startY;
+    // Add easing to finger follow on mobile to reduce jumpiness
+    const followEase = window.innerWidth <= 768 ? 0.2 : 1;
+    const targetTX = e.clientX - startX;
+    const targetTY = e.clientY - startY;
+    translateX += (targetTX - translateX) * followEase;
+    translateY += (targetTY - translateY) * followEase;
     const now = performance.now();
     const dt = Math.max(1, now - lastT);
     velocityX = (e.clientX - lastX) / dt * 16;
