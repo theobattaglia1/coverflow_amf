@@ -28,6 +28,15 @@ body {
 .gg-names button { background: transparent; color: var(--muted); border: none; padding: 6px 8px; cursor: pointer; white-space: nowrap; }
 .gg-names button:hover, .gg-names button.active { color: var(--ink); }
 
+/* Left sticky alphabetical name list */
+.gg-name-list { position: fixed; top: 72px; left: 12px; bottom: 20px; width: 220px; overflow: auto; z-index: 9; padding-right: 8px; }
+.gg-name-list::-webkit-scrollbar{ width: 6px; }
+.gg-name-list::-webkit-scrollbar-thumb{ background: rgba(255,255,255,0.12); border-radius: 3px; }
+.gg-name-list .name { display: block; color: var(--muted); font-size: 13px; padding: 6px 2px; cursor: pointer; }
+.gg-name-list .name:hover, .gg-name-list .name.active { color: var(--ink); }
+
+@media (max-width: 1024px){ .gg-name-list { display: none; } }
+
 .gg-main { position: relative; padding-top: 60px; height: 100vh; }
 .gg-container { position: relative; width: 100%; height: calc(100vh - 60px); overflow: hidden; }
 .gg-canvas { position: absolute; top: 0; left: 0; will-change: transform; width: 100%; height: 100%; }

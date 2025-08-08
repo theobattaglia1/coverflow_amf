@@ -5,6 +5,7 @@
   const modal = document.getElementById('gg-modal');
   const overviewBtn = document.getElementById('gg-overview');
   const overlays = document.getElementById('gg-overlays');
+  const nameList = document.getElementById('gg-name-list');
 
   let covers = [];
   let isDragging = false;
@@ -43,6 +44,20 @@
     contactBtn.textContent = 'contact';
     contactBtn.addEventListener('click', () => { window.location.href = 'mailto:hi@allmyfriendsinc.com'; });
     frag.appendChild(contactBtn);
+
+    // Broad filters
+    const filters = [
+      { key: 'all', label: 'All' },
+      { key: 'artists', label: 'Artists' },
+      { key: 'writers', label: 'Writers' },
+      { key: 'producers', label: 'Producers' }
+    ];
+    filters.forEach(f => {
+      const btn = document.createElement('button');
+      btn.textContent = f.label;
+      btn.addEventListener('click', () => applyFilter(f.key));
+      frag.appendChild(btn);
+    });
     const reserved = new Set(['about us.', 'about us', 'contact']);
     const seen = new Set();
     covers
@@ -62,6 +77,41 @@
         frag.appendChild(btn);
       });
     namesEl.appendChild(frag);
+
+    // Build left sticky alphabetical list
+    if (nameList) {
+      nameList.innerHTML = '';
+      const listFrag = document.createDocumentFragment();
+      covers
+        .map(c => ({ id: c.id, name: c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled' }))
+        .sort((a,b)=>a.name.localeCompare(b.name))
+        .forEach(item => {
+          const a = document.createElement('a');
+          a.className = 'name';
+          a.textContent = item.name;
+          a.href = '#';
+          a.addEventListener('click', (e)=>{ e.preventDefault(); glideTo(item.id); centeredId = item.id; });
+          listFrag.appendChild(a);
+        });
+      nameList.appendChild(listFrag);
+    }
+  }
+
+  function applyFilter(key){
+    // Example filter logic using artistDetails.role (if present). Graceful fallback is 'all'.
+    if (key === 'all') { layoutItems(); return; }
+    const roleKey = key.slice(0, -1); // crude singular e.g., producers -> producer
+    // Tag chosen role on canvas for potential styling hooks
+    canvas.dataset.filter = key;
+    // Simple approach: reorder to bubble matching roles to first rows
+    covers.sort((a,b)=>{
+      const ar = (a.artistDetails?.roles || a.artistDetails?.role || '').toString().toLowerCase();
+      const br = (b.artistDetails?.roles || b.artistDetails?.role || '').toString().toLowerCase();
+      const am = ar.includes(roleKey);
+      const bm = br.includes(roleKey);
+      if (am === bm) return 0; return am ? -1 : 1;
+    });
+    layoutItems();
   }
 
   function layoutItems(){
