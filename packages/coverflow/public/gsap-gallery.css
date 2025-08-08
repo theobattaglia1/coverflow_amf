@@ -99,7 +99,7 @@ body {
   .gg-filters button:hover, .gg-filters button.active { color: var(--ink); }
 
   /* Mobile: Names list bottom-left */
-  .gg-name-list { display: block; position: fixed; left: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); top: auto; height: 30vh; width: 180px; background: transparent; border: none; padding: 0; }
+  .gg-name-list { display: block; position: fixed; left: 10px; bottom: 0; padding-bottom: env(safe-area-inset-bottom, 0px); top: auto; height: 30vh; width: 180px; background: transparent; border: none; }
   .gg-name-list .name { padding: 2px 0; line-height: 0.95; }
 }
 
