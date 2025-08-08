@@ -20,6 +20,9 @@
   let pointerDown = false;
   let didDrag = false;
   let downX = 0, downY = 0;
+  let currentScale = 1;
+  let pinchStartDist = 0;
+  let pinchStartScale = 1;
 
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
@@ -257,6 +260,26 @@
     lastT = performance.now(); lastX = e.clientX; lastY = e.clientY;
     pointerDown = true; didDrag = false; downX = e.clientX; downY = e.clientY;
   });
+  // Touch: pinch zoom
+  container.addEventListener('touchstart', (e)=>{
+    if (e.touches.length === 2){
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchStartDist = Math.hypot(dx, dy);
+      pinchStartScale = currentScale;
+    }
+  }, { passive: true });
+  container.addEventListener('touchmove', (e)=>{
+    if (e.touches.length === 2 && pinchStartDist){
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.hypot(dx, dy);
+      const ratio = dist / pinchStartDist;
+      currentScale = Math.min(1.4, Math.max(0.6, pinchStartScale * ratio));
+      applyTransform();
+    }
+  }, { passive: true });
+  container.addEventListener('touchend', (e)=>{ if (e.touches.length < 2) pinchStartDist = 0; }, { passive: true });
   container.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
     // Add easing to finger follow on mobile to reduce jumpiness
@@ -279,7 +302,7 @@
       }
     }
   });
-  window.addEventListener('pointerup', () => { isDragging = false; pointerDown = false; });
+  window.addEventListener('pointerup', () => { isDragging = false; pointerDown = false; velocityX = 0; velocityY = 0; });
   window.addEventListener('pointercancel', () => { isDragging = false; });
 
   // Wheel pan
@@ -308,7 +331,7 @@
   }
 
   function applyTransform(){
-    canvas.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
+    canvas.style.transform = `translate3d(${translateX}px, ${translateY}px, 0) scale(${currentScale})`;
     overlays.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`;
   }
 

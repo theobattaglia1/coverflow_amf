@@ -38,7 +38,7 @@ body {
 @media (max-width: 1024px){ .gg-name-list { display: none; } }
 
 .gg-main { position: relative; padding-top: 60px; height: 100vh; }
-.gg-container { position: relative; width: 100%; height: calc(100vh - 60px); overflow: hidden; }
+.gg-container { position: relative; width: 100%; height: calc(100vh - 60px); overflow: hidden; touch-action: none; }
 .gg-canvas { position: absolute; top: 0; left: 0; will-change: transform; width: 100%; height: 100%; }
 .gg-vignette { pointer-events: none; position: absolute; inset: 0; background: radial-gradient(ellipse at center, transparent 35%, rgba(0,0,0,0.55) 100%); mix-blend-mode: multiply; }
 .gg-noise { pointer-events: none; position: absolute; inset: 0; background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="140" height="140" viewBox="0 0 140 140"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(%23n)" opacity="0.06"/></svg>'); background-size: 140px 140px; mix-blend-mode: overlay; }
@@ -99,7 +99,7 @@ body {
   .gg-filters button:hover, .gg-filters button.active { color: var(--ink); }
 
   /* Mobile: Names list bottom-left */
-  .gg-name-list { display: block; position: fixed; left: 10px; bottom: 20px; top: auto; height: 30vh; width: 180px; background: transparent; border: none; padding: 0; }
+  .gg-name-list { display: block; position: fixed; left: 10px; bottom: calc(8px + env(safe-area-inset-bottom)); top: auto; height: 30vh; width: 180px; background: transparent; border: none; padding: 0; }
   .gg-name-list .name { padding: 2px 0; line-height: 0.95; }
 }
 
