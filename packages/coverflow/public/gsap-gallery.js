@@ -309,6 +309,10 @@
 
   // Wheel pan
   container.addEventListener('wheel', (e) => {
+    // Also allow wheel panning of the grid overlay
+    if (!gridEl.classList.contains('hidden')) {
+      translateX -= e.deltaX; translateY -= e.deltaY; gridEl.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`; return;
+    }
     translateX -= e.deltaX; translateY -= e.deltaY; applyTransform();
   }, { passive: true });
 
@@ -366,6 +370,8 @@
       });
       gridEl.classList.remove('hidden');
       viewToggleBtn.textContent = 'ORIGINAL VIEW';
+      // Reset grid transform so it’s fully visible, smaller tiles leave breathing room
+      translateX = 0; translateY = 0; gridEl.style.transform = 'translate3d(0,0,0)';
     } else {
       gridEl.classList.add('hidden');
       viewToggleBtn.textContent = 'GRID';
