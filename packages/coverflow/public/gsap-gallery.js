@@ -39,11 +39,17 @@
       layoutItems(); 
       // Center the canvas content on initial load
       setTimeout(() => {
-        const canvasRect = canvas.getBoundingClientRect();
         const containerRect = container.getBoundingClientRect();
-        // Calculate centering offsets
-        translateX = (containerRect.width - canvasRect.width * currentScale) / 2;
-        translateY = (containerRect.height - canvasRect.height * currentScale) / 2;
+        // Get actual canvas dimensions from style
+        const canvasWidth = parseInt(canvas.style.width) || 2000;
+        const canvasHeight = parseInt(canvas.style.height) || 1000;
+        
+        // Calculate centering offsets - we want to center the scaled content
+        const scaledWidth = canvasWidth * currentScale;
+        const scaledHeight = canvasHeight * currentScale;
+        
+        translateX = (containerRect.width - scaledWidth) / 2;
+        translateY = Math.max(20, (containerRect.height - scaledHeight) / 2); // Keep some top margin
         applyTransform();
       }, 100);
       buildEditorialOverlays(); 
@@ -57,7 +63,23 @@
     // Static: About Us and contact first
     const aboutBtn = document.createElement('button');
     aboutBtn.textContent = 'About Us.';
-    aboutBtn.addEventListener('click', () => { window.location.href = '/AMF_Overview.html'; });
+    aboutBtn.addEventListener('click', () => { 
+      // Open about modal instead of navigating
+      const modal = document.createElement('div');
+      modal.className = 'artist-modal show';
+      modal.innerHTML = `
+        <div class="modal-content">
+          <h2 style="font-size: 28px; margin-bottom: 16px;">About All My Friends Inc</h2>
+          <p style="line-height: 1.6; margin-bottom: 12px;">All My Friends Inc is a creative collective and management company representing emerging and established artists across music, visual arts, and culture.</p>
+          <p style="line-height: 1.6; margin-bottom: 12px;">Founded on the principle of authentic collaboration, we work closely with our artists to develop their unique voices and connect them with meaningful opportunities.</p>
+          <p style="line-height: 1.6;">Our approach combines traditional artist development with innovative digital strategies, creating sustainable careers in today's evolving creative landscape.</p>
+        </div>
+      `;
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.remove();
+      });
+      document.body.appendChild(modal);
+    });
     frag.appendChild(aboutBtn);
 
     const contactBtn = document.createElement('button');
