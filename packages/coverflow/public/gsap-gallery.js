@@ -37,20 +37,11 @@
       covers = data; 
       buildNames(); 
       layoutItems(); 
-      // Center the canvas content on initial load
+      // Position for edge-to-edge feel with some covers off-screen
       setTimeout(() => {
-        const containerRect = container.getBoundingClientRect();
-        // Get actual canvas dimensions from style
-        const canvasWidth = parseInt(canvas.style.width) || 2000;
-        const canvasHeight = parseInt(canvas.style.height) || 1000;
-        
-        // Calculate centering offsets - we want to center the scaled content
-        const scaledWidth = canvasWidth * currentScale;
-        const scaledHeight = canvasHeight * currentScale;
-        
-        // Center the canvas content on initial load
-        translateX = (containerRect.width - scaledWidth) / 2;
-        translateY = (containerRect.height - scaledHeight) / 2;
+        // Start with covers filling the viewport, some partially off-screen
+        translateX = -100;
+        translateY = -50;
         applyTransform();
       }, 100);
       buildEditorialOverlays(); 
