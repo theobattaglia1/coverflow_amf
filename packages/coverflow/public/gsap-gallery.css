@@ -26,7 +26,7 @@ body {
 
 .gg-names { display: flex; gap: 10px; overflow-x: auto; padding: 6px 8px; -webkit-overflow-scrolling: touch; }
 .gg-names::-webkit-scrollbar{ display: none; }
-.gg-names button { background: transparent; color: var(--muted); border: none; padding: 4px 2px; cursor: pointer; white-space: nowrap; line-height: 0.9; }
+.gg-names button { background: transparent; color: var(--muted); border: none; padding: 4px 2px; cursor: pointer; white-space: nowrap; line-height: 0.45; }
 .gg-names button:hover, .gg-names button.active { color: var(--ink); }
 
 /* Left sticky alphabetical name list */
@@ -99,7 +99,7 @@ body {
 
   /* Mobile: Filters as vertical overlay under header */
   .gg-filters { position: fixed; top: 56px; left: 12px; right: auto; bottom: auto; z-index: 12; display: flex; flex-direction: column; gap: 4px; background: transparent; padding: 0; border: none; }
-  .gg-filters button { text-align: left; padding: 3px 2px; font-size: 13px; line-height: .95; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; }
+  .gg-filters button { text-align: left; padding: 3px 2px; font-size: 13px; line-height: .475; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; }
   .gg-filters button:hover, .gg-filters button.active { color: var(--ink); }
 
   /* Mobile: Names list bottom-left */

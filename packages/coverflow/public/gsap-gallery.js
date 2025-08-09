@@ -48,8 +48,9 @@
         const scaledWidth = canvasWidth * currentScale;
         const scaledHeight = canvasHeight * currentScale;
         
-        translateX = (containerRect.width - scaledWidth) / 2;
-        translateY = Math.max(20, (containerRect.height - scaledHeight) / 2); // Keep some top margin
+        // Adjust left and up to show more content
+        translateX = (containerRect.width - scaledWidth) / 2 - 200; // Move left
+        translateY = Math.max(20, (containerRect.height - scaledHeight) / 2) - 100; // Move up
         applyTransform();
       }, 100);
       buildEditorialOverlays(); 
