@@ -21,7 +21,7 @@
   let pointerDown = false;
   let didDrag = false;
   let downX = 0, downY = 0;
-  let currentScale = 0.6; // Start zoomed out to max
+  let currentScale = 0.6; // Will be adjusted on init for desktop via getScale()
   let pinchStartDist = 0;
   let pinchStartScale = 1;
 
@@ -37,11 +37,23 @@
       covers = data; 
       buildNames(); 
       layoutItems(); 
-      // Position for edge-to-edge feel with some covers off-screen
+      // Initialize transform for edge-to-edge feel; responsive to viewport
       setTimeout(() => {
-        // Start with covers filling the viewport, some partially off-screen
-        translateX = -100;
-        translateY = -50;
+        const isMobile = window.innerWidth <= 768;
+        // For desktop, pick a responsive starting scale based on viewport; mobile keeps 0.6
+        if (!isMobile) currentScale = getScale();
+
+        const containerRect = container.getBoundingClientRect();
+        const canvasWidth = parseInt(canvas.style.width) || 2000;
+        const canvasHeight = parseInt(canvas.style.height) || 1000;
+        const scaledWidth = canvasWidth * currentScale;
+        const scaledHeight = canvasHeight * currentScale;
+
+        // Center, then bias slightly left/up so some covers are partially off-screen
+        const biasX = isMobile ? 0 : -(containerRect.width * 0.12);
+        const biasY = isMobile ? 0 : -(containerRect.height * 0.08);
+        translateX = (containerRect.width - scaledWidth) / 2 + biasX;
+        translateY = (containerRect.height - scaledHeight) / 2 + biasY;
         applyTransform();
       }, 100);
       buildEditorialOverlays(); 
