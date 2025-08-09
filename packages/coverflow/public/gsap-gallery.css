@@ -94,7 +94,7 @@ body {
   .gg-header { grid-template-columns: auto 1fr auto; height: 52px; padding: 0 10px; }
   .gg-main { padding-top: 52px; }
   .gg-logo { font-size: 14px; }
-  .center-logo-frame { transform: scale(0.525); /* 25% larger than 0.42 */ }
+  .center-logo-frame { transform: scale(0.65625); /* 25% larger than 0.525 */ }
   .gg-names { gap: 6px; }
 
   /* Mobile: Filters as vertical overlay under header */
