@@ -24,6 +24,7 @@
   let currentScale = 0.55; // Midpoint between 0.6 and earlier zoom-out
   let pinchStartDist = 0;
   let pinchStartScale = 1;
+  let activeFilter = 'all';
 
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
@@ -44,6 +45,24 @@
       img.onerror = () => { c._aspect = 1.5; resolve(); };
       img.src = url;
     })));
+  }
+
+  function matchesRole(cover, roleKey){
+    if (!roleKey || roleKey === 'all') return true;
+    const synonyms = {
+      artist: ['artist', 'artists'],
+      writer: ['writer', 'writers', 'songwriter', 'songwriters'],
+      producer: ['producer', 'producers']
+    };
+    // Normalize requested role
+    let norm = roleKey.toLowerCase();
+    if (norm.endsWith('s')) norm = norm.slice(0, -1);
+    if (norm === 'songwriter' || norm === 'songwriters') norm = 'writer';
+    const acceptable = new Set(synonyms[norm] || [norm]);
+    const rolesRaw = (cover?.artistDetails?.roles || cover?.artistDetails?.role || '').toString().toLowerCase();
+    // Simple contains check for any acceptable token
+    for (const token of acceptable){ if (rolesRaw.includes(token)) return true; }
+    return false;
   }
 
   // Load covers
@@ -154,9 +173,10 @@
     if (nameList) {
       nameList.innerHTML = '';
       const listFrag = document.createDocumentFragment();
+      const reserved = new Set(['about us', 'about us.', 'contact']);
       covers
         .map(c => ({ id: c.id, name: (c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled'), label: (c.artistDetails?.label || '') }))
-        .filter(item => item.name !== 'ABOUT US.' && item.name !== 'CONTACT')
+        .filter(item => !reserved.has((item.name || '').toLowerCase().trim()))
         .sort((a,b)=>a.name.localeCompare(b.name))
         .forEach(item => {
           const a = document.createElement('a');
@@ -180,42 +200,53 @@
   }
 
   function applyFilter(key){
-    activeFilter = key || 'all';
+    activeFilter = (key || 'all').toLowerCase();
     if (resetChip) resetChip.hidden = activeFilter === 'all';
-    if (activeFilter === 'all') { layoutItems(); return; }
-    // Dim non-matching and center matching in a row
-    layoutItems(); // render current state first (adds dimming in layout)
-    const scale = getScale();
-    const viewport = container.getBoundingClientRect();
-    const centerY = (viewport.height * 0.5) - (220 * scale)/2;
-    const roleKey = activeFilter.slice(0, -1);
-    const matches = [];
-    const items = Array.from(canvas.querySelectorAll('.gg-item'));
-    items.forEach(it => {
-      const id = it.dataset.id;
-      const c = covers.find(x=>String(x.id)===String(id));
-      const roles = (c?.artistDetails?.roles || c?.artistDetails?.role || '').toString().toLowerCase();
-      if (roles.includes(roleKey)) matches.push(it);
-    });
-    let totalW = 0; const gutter = 40 * scale;
-    matches.forEach((el, idx)=>{ const w = el.getBoundingClientRect().width; totalW += w + (idx>0?gutter:0); });
-    const startX = (viewport.width - totalW)/2;
-    let xCursor = startX;
-    // Adjust translateX/Y so that first match moves to startX, centerY; others follow by keeping same transform
-    if (matches.length){
-      const first = matches[0];
-      const rect = first.getBoundingClientRect();
-      const targetX = translateX + (xCursor - rect.left);
-      const targetY = translateY + (centerY - rect.top);
-      const anim = { x: translateX, y: translateY };
-      gsap.to(anim, { duration: 0.6, ease: 'power3.inOut', x: targetX, y: targetY,
-        onUpdate(){ translateX = anim.x; translateY = anim.y; applyTransform(); },
-        onComplete(){
-          // Snap X so others visually line up; no need to animate each
-          xCursor += rect.width + gutter;
-        }
+    // First, update dimming state by rebuilding items
+    layoutItems();
+
+    // If resetting to all, animate items back to their original coordinates
+    if (activeFilter === 'all') {
+      const items = Array.from(canvas.querySelectorAll('.gg-item'));
+      items.forEach(it => {
+        const ox = parseFloat(it.dataset.ox || '0');
+        const oy = parseFloat(it.dataset.oy || '0');
+        gsap.to(it, { duration: 0.6, ease: 'power3.inOut', left: ox, top: oy });
       });
-    }
+        return;
+      }
+      
+    // Compute a centered row position in CANVAS coordinates
+    const viewport = container.getBoundingClientRect();
+    const scale = currentScale; // use current transform scale
+    const canvasCenterX = (-translateX + viewport.width / 2) / scale;
+    const canvasCenterY = (-translateY + viewport.height / 2) / scale;
+
+    // Collect matching items
+    const items = Array.from(canvas.querySelectorAll('.gg-item'));
+    const matches = items.filter(it => {
+      const id = it.dataset.id;
+      const c = covers.find(x => String(x.id) === String(id));
+      const keyNorm = activeFilter.replace(/s$/, '');
+      return matchesRole(c, keyNorm);
+    });
+
+    if (matches.length === 0) return; // nothing to arrange
+
+    const gutter = 40 * getScale();
+    // total width in canvas units
+    let totalWidth = 0;
+    const widths = matches.map(el => el.getBoundingClientRect().width / scale);
+    widths.forEach((w, idx) => { totalWidth += w + (idx > 0 ? gutter : 0); });
+    let cursorX = canvasCenterX - totalWidth / 2;
+    const targetY = canvasCenterY - (matches[0].getBoundingClientRect().height / scale) / 2;
+
+    // Animate each matching item to its spot in the row
+    matches.forEach((el, idx) => {
+      const w = widths[idx];
+      gsap.to(el, { duration: 0.6, ease: 'power3.inOut', left: cursorX, top: targetY });
+      cursorX += w + gutter;
+    });
   }
 
   // ESC to reset filter
@@ -271,7 +302,10 @@
         item.style.setProperty('--h', heightPx + 'px');
         item.style.left = x + 'px';
         item.style.top = y + 'px';
+        item.dataset.ox = x; // remember original position for reset
+        item.dataset.oy = y;
         item.dataset.id = c.id;
+        item.style.transform = ''; // ensure no leftover per-item transforms
 
         const imgUrl = resolveImageUrl(c);
         const img = document.createElement('div');
@@ -303,6 +337,12 @@
             glideTo(c.id);
           }
         });
+
+        // Dimming logic for non-matching when a filter is active
+        if (activeFilter !== 'all') {
+          const roleKey = activeFilter.replace(/s$/, '');
+          if (!matchesRole(c, roleKey)) item.classList.add('dimmed');
+        }
 
         frag.appendChild(item);
         cursorX += (widthPx / scale) + gapX;
@@ -347,7 +387,7 @@
       pinchStartDist = Math.hypot(dx, dy);
       pinchStartScale = currentScale;
     }
-  }, { passive: true });
+}, { passive: true });
   container.addEventListener('touchmove', (e)=>{
     if (e.touches.length === 2 && pinchStartDist){
       const dx = e.touches[0].clientX - e.touches[1].clientX;
@@ -357,7 +397,7 @@
       currentScale = Math.min(1.4, Math.max(0.6, pinchStartScale * ratio));
       applyTransform();
     }
-  }, { passive: true });
+}, { passive: true });
   container.addEventListener('touchend', (e)=>{ if (e.touches.length < 2) pinchStartDist = 0; }, { passive: true });
   container.addEventListener('pointermove', (e) => {
     if (!isDragging) return;
@@ -449,7 +489,7 @@
       viewToggleBtn.textContent = 'ORIGINAL VIEW';
       // Reset grid transform so it’s fully visible, smaller tiles leave breathing room
       translateX = 0; translateY = 0; gridEl.style.transform = 'translate3d(0,0,0)';
-    } else {
+      } else {
       gridEl.classList.add('hidden');
       viewToggleBtn.textContent = 'GRID';
     }
