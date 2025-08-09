@@ -21,7 +21,7 @@
   let pointerDown = false;
   let didDrag = false;
   let downX = 0, downY = 0;
-  let currentScale = window.innerWidth <= 768 ? 0.6 : 0.45; // Desktop more zoomed out
+  let currentScale = 0.6; // Start zoomed out to max
   let pinchStartDist = 0;
   let pinchStartScale = 1;
 
@@ -48,10 +48,9 @@
         const scaledWidth = canvasWidth * currentScale;
         const scaledHeight = canvasHeight * currentScale;
         
-        // Adjust left and up to show more content
-        const isMobile = window.innerWidth <= 768;
-        translateX = (containerRect.width - scaledWidth) / 2 - (isMobile ? 200 : 200);
-        translateY = Math.max(20, (containerRect.height - scaledHeight) / 2) - (isMobile ? 100 : 200); // More up on desktop
+        // Center the canvas content on initial load
+        translateX = (containerRect.width - scaledWidth) / 2;
+        translateY = (containerRect.height - scaledHeight) / 2;
         applyTransform();
       }, 100);
       buildEditorialOverlays(); 
@@ -316,7 +315,7 @@
       const dy = e.touches[0].clientY - e.touches[1].clientY;
       const dist = Math.hypot(dx, dy);
       const ratio = dist / pinchStartDist;
-      currentScale = Math.min(1.4, Math.max(0.45, pinchStartScale * ratio));
+      currentScale = Math.min(1.4, Math.max(0.6, pinchStartScale * ratio));
       applyTransform();
     }
   }, { passive: true });
