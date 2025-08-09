@@ -26,7 +26,7 @@ body {
 
 .gg-names { display: flex; gap: 10px; overflow-x: auto; padding: 6px 8px; -webkit-overflow-scrolling: touch; }
 .gg-names::-webkit-scrollbar{ display: none; }
-.gg-names button { background: transparent; color: var(--muted); border: none; padding: 6px 8px; cursor: pointer; white-space: nowrap; }
+.gg-names button { background: transparent; color: var(--muted); border: none; padding: 4px 2px; cursor: pointer; white-space: nowrap; line-height: 0.9; }
 .gg-names button:hover, .gg-names button.active { color: var(--ink); }
 
 /* Left sticky alphabetical name list */

@@ -21,7 +21,7 @@
   let pointerDown = false;
   let didDrag = false;
   let downX = 0, downY = 0;
-  let currentScale = 1;
+  let currentScale = 0.6; // Start zoomed out to max
   let pinchStartDist = 0;
   let pinchStartScale = 1;
 
