@@ -205,11 +205,13 @@
 
     const scale = getScale();
 
-    // Width recipes per row; heights will be derived from each image's native aspect ratio
+    // All tiles share the same height initially; widths are derived from each image's native aspect ratio
     const mobile = window.innerWidth <= 768;
     const rowPatterns = mobile
-      ? [ [420, 380, 420], [440, 400], [420, 380, 420] ]
-      : [ [640, 520, 700], [560, 740], [720, 520, 480, 620] ];
+      ? [ [1,1,1], [1,1], [1,1,1] ] // only lengths matter (3,2,3)
+      : [ [1,1,1], [1,1], [1,1,1,1] ]; // (3,2,4)
+    const baseHeight = mobile ? 280 : 420; // initial shared height in design pixels
+    const tileHeightPx = baseHeight * scale;
 
     const startXBase = 80 * scale; // left margin
     let rowY = 0;          // start flush with top edge
@@ -226,14 +228,14 @@
     let maxRight = 0;
     while (i < covers.length) {
       const pattern = rowPatterns[rowIndex % rowPatterns.length];
-      let rowTall = 0;
+      let rowTall = tileHeightPx;
       let cursorX = startXBase + (rowIndex % 2 === 1 ? 140 * scale : 0);
 
       for (let k = 0; k < pattern.length && i < covers.length; k++, i++) {
         const c = covers[i];
-        const widthPx = pattern[k] * scale;
         const aspect = Math.max(0.3, Math.min(3, c._aspect || 1.5));
-        const heightPx = widthPx / aspect;
+        const heightPx = tileHeightPx;
+        const widthPx = heightPx * aspect;
         const jitterY = seededRand(i, -12, 12) * scale;      // small vertical wiggle without overlap
         const gapX = (120 * scale) + seededRand(i * 3, 20 * scale, 100 * scale); // variable horizontal gutter
 
@@ -281,7 +283,7 @@
 
         frag.appendChild(item);
         cursorX += (widthPx / scale) + gapX;
-        rowTall = Math.max(rowTall, heightPx);
+        // rowTall is constant (uniform heights)
         maxRight = Math.max(maxRight, cursorX);
       }
       rowIndex++;
