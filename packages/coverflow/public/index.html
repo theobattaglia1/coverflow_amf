@@ -1,119 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- Page Title -->
-  <title>ALL MY FRIENDS INC.</title>
-  
-  <!-- Meta Tags (for link sharing) -->
-  <meta property="og:title" content="ALL MY FRIENDS INC.">
-  <meta property="og:description" content="Not your copy and paste artist managers. LA / Nashville / NYC.">
-  <meta property="og:image" content="https://allmyfriendsinc.com/uploads/upload-1748127948620-71428737.png">
-  <meta property="og:url" content="https://allmyfriendsinc.com">
-  <meta property="og:type" content="website">
-  
-  <!-- Standard Meta Description -->
-  <meta name="description" content="Not your copy and paste artist managers. LA / Nashville / NYC.">
-  
-  <!-- Your existing CSS -->
-  <link rel="stylesheet" href="/index.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ALL MY FRIENDS — Gallery (GSAP)</title>
+  <link rel="stylesheet" href="/gsap-gallery.css" />
   <style id="global-styles"></style>
+  <script src="https://unpkg.com/gsap@3/dist/gsap.min.js"></script>
 </head>
 <body>
-  <div class="app-container">
-    <!-- Logo backdrop glass strip -->
-    <!-- Logo -->
-    <div class="top-logo">
-      <div class="logo-glow"></div>
-      <iframe
-        class="logo-frame"
-        src="/assets/logo.html"
-        frameborder="0"
-        scrolling="no"
-      ></iframe>
+  <header class="gg-header">
+    <div class="gg-left">
+      <div class="gg-logo">ALL MY FRIENDS INC</div>
     </div>
-
-    <!-- Elegant filter navigation -->
-    <nav class="filter-nav" role="navigation" aria-label="Filter options">
-      <div class="filter-container">
-        <button class="filter-label active" data-filter="all" aria-pressed="true">
-          <span class="filter-text">ALL</span>
-          <span class="filter-count" data-count="all"></span>
-        </button>
-        <button class="filter-label" data-filter="artist" aria-pressed="false">
-          <span class="filter-text">ARTISTS</span>
-          <span class="filter-count" data-count="artist"></span>
-        </button>
-        <button class="filter-label" data-filter="songwriter" aria-pressed="false">
-          <span class="filter-text">SONGWRITERS</span>
-          <span class="filter-count" data-count="songwriter"></span>
-        </button>
-        <button class="filter-label" data-filter="producer" aria-pressed="false">
-          <span class="filter-text">PRODUCERS</span>
-          <span class="filter-count" data-count="producer"></span>
-        </button>
-        <button class="filter-label" data-filter="about us" aria-pressed="false">
-          <span class="filter-text">ABOUT AMF</span>
-        </button>
-        <button class="filter-label" data-filter="about us" aria-pressed="false">
-          <span class="filter-text">CONTACT US</span>
-        </button>
-      </div>
-      <div class="filter-indicator"></div>
-    </nav>
-
-    <!-- Coverflow -->
-    <div class="coverflow-container" id="coverflow-container">
-      <div id="ambient-light"></div>
-      <canvas id="trail-canvas"></canvas>
-      <div class="coverflow-content" id="coverflow"></div>
+    <nav class="gg-names gg-filters" id="gg-names" aria-label="Filters"></nav>
+    <div class="gg-right">
+      <button id="gg-view-toggle" class="gg-chip square" aria-label="Toggle grid">GRID</button>
     </div>
+  </header>
 
-    <!-- Hover credits (optional) -->
-    <div id="hover-credits" class="hover-credits-container"></div>
-    
-    <!-- Mobile mode toggle (Flow ↔︎ Overview Grid) -->
-    <button id="mode-toggle" class="mode-toggle" aria-label="Switch to overview" title="Overview">
-      ▥
-    </button>
+  <main class="gg-main">
+    <div class="gg-container" id="gg-container">
+      <div class="gg-canvas" id="gg-canvas" role="grid" aria-live="polite"></div>
+      <div class="gg-vignette"></div>
+      <div class="gg-noise"></div>
+      <div class="gg-coords">34.0522° N, 118.2437° W</div>
+      <div class="gg-hint">Press <span>H</span> to toggle panel</div>
+      <div class="gg-overlays" id="gg-overlays" aria-hidden="true"></div>
+      <aside class="gg-name-list" id="gg-name-list" aria-label="Artist list"></aside>
+      <div id="gg-grid" class="gg-grid hidden" aria-live="polite"></div>
+      <button class="gg-reset-chip" id="gg-reset" hidden>Reset</button>
+    </div>
+  </main>
+
+  <!-- Centered viewport-anchored logo -->
+  <div class="gg-center-logo" aria-hidden="true">
+    <iframe class="center-logo-frame" src="/assets/logo.html#noPadding" frameborder="0" scrolling="no" title="AMF Center Logo"></iframe>
   </div>
 
-  <!-- Artist detail modal -->
-  <div class="artist-modal hidden">
-    <div class="modal-content">
-      <img class="artist-photo" src="ARTIST IMAGE URL" />
-      <button class="close-btn">✕</button>
-      <div class="artist-info">
-        <h1 class="artist-name">Artist Name</h1>
-        <div class="artist-location">Artist Location</div>
-        <div class="artist-bio">Artist Bio here...</div>
-        <a
-          class="spotify-button spotify-link"
-          href="SPOTIFY LINK"
-          target="_blank"
-          >Open in Spotify</a
-        >
-        <iframe
-          class="spotify-player"
-          src="SPOTIFY EMBED URL"
-          allowfullscreen
-        ></iframe>
-      </div>
-    </div>
+  <div class="artist-modal hidden" id="gg-modal">
+    <div class="modal-content"></div>
   </div>
 
-  <!-- Filter dropdown -->
-  <div id="filter-dropdown" class="filter-dropdown"></div>
-  
-  <!-- Artist Modal -->
-  <div class="artist-modal hidden">
-    <div class="modal-content">
-      <!-- Content will be dynamically inserted -->
-    </div>
-  </div>
-  
-  <script src="index.js"></script>
-</body>
-</html>
+  <script src="/gsap-gallery.js"></script>
+  </body>
+  </html>
+
+
