@@ -30,12 +30,29 @@
     document.getElementById('global-styles').innerHTML = `body{font-family:'${style.fontFamily||'Inter'}',sans-serif;}`;
   }).catch(()=>{});
 
+  // Image helpers
+  function resolveImageUrl(c){
+    return c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
+  }
+  function preloadAspects(list){
+    return Promise.all(list.map(c => new Promise(resolve => {
+      if (c._aspect && c._aspect > 0) { resolve(); return; }
+      const url = resolveImageUrl(c);
+      if (!url) { c._aspect = 1.5; resolve(); return; }
+      const img = new Image();
+      img.onload = () => { c._aspect = img.naturalWidth && img.naturalHeight ? (img.naturalWidth / img.naturalHeight) : 1.5; resolve(); };
+      img.onerror = () => { c._aspect = 1.5; resolve(); };
+      img.src = url;
+    })));
+  }
+
   // Load covers
   fetch(`/data/covers.json?cb=${Date.now()}`)
     .then(r=>r.json())
-    .then(data => { 
+    .then(async data => { 
       covers = data; 
       buildNames(); 
+      await preloadAspects(covers);
       layoutItems(); 
       // Initialize transform for edge-to-edge feel; responsive to viewport
       setTimeout(() => {
@@ -188,19 +205,11 @@
 
     const scale = getScale();
 
-    // Width/height recipes per row (no absolute deltas)
+    // Width recipes per row; heights will be derived from each image's native aspect ratio
     const mobile = window.innerWidth <= 768;
     const rowPatterns = mobile
-      ? [
-          [ { w: 420, h: 280 }, { w: 380, h: 260 }, { w: 420, h: 280 } ],
-          [ { w: 440, h: 300 }, { w: 400, h: 280 } ],
-          [ { w: 420, h: 280 }, { w: 380, h: 260 }, { w: 420, h: 280 } ]
-        ]
-      : [
-          [ { w: 640, h: 420 }, { w: 520, h: 360 }, { w: 700, h: 440 } ],
-          [ { w: 560, h: 380 }, { w: 740, h: 460 } ],
-          [ { w: 720, h: 460 }, { w: 520, h: 360 }, { w: 480, h: 340 }, { w: 620, h: 420 } ]
-        ];
+      ? [ [420, 380, 420], [440, 400], [420, 380, 420] ]
+      : [ [640, 520, 700], [560, 740], [720, 520, 480, 620] ];
 
     const startXBase = 80 * scale; // left margin
     let rowY = 0;          // start flush with top edge
@@ -217,13 +226,14 @@
     let maxRight = 0;
     while (i < covers.length) {
       const pattern = rowPatterns[rowIndex % rowPatterns.length];
-      // compute tallest in row to prevent vertical overlap
-      const rowTall = Math.max(...pattern.map(p => p.h)) * scale;
+      let rowTall = 0;
       let cursorX = startXBase + (rowIndex % 2 === 1 ? 140 * scale : 0);
 
       for (let k = 0; k < pattern.length && i < covers.length; k++, i++) {
         const c = covers[i];
-        const recipe = pattern[k];
+        const widthPx = pattern[k] * scale;
+        const aspect = Math.max(0.3, Math.min(3, c._aspect || 1.5));
+        const heightPx = widthPx / aspect;
         const jitterY = seededRand(i, -12, 12) * scale;      // small vertical wiggle without overlap
         const gapX = (120 * scale) + seededRand(i * 3, 20 * scale, 100 * scale); // variable horizontal gutter
 
@@ -232,13 +242,13 @@
 
         const item = document.createElement('div');
         item.className = 'gg-item';
-        item.style.setProperty('--w', (recipe.w * scale) + 'px');
-        item.style.setProperty('--h', (recipe.h * scale) + 'px');
+        item.style.setProperty('--w', widthPx + 'px');
+        item.style.setProperty('--h', heightPx + 'px');
         item.style.left = x + 'px';
         item.style.top = y + 'px';
         item.dataset.id = c.id;
 
-        const imgUrl = c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
+        const imgUrl = resolveImageUrl(c);
         const img = document.createElement('div');
         img.className = 'img';
         if (imgUrl) img.style.backgroundImage = `url('${imgUrl}')`;
@@ -270,7 +280,8 @@
         });
 
         frag.appendChild(item);
-        cursorX += recipe.w + gapX;
+        cursorX += (widthPx / scale) + gapX;
+        rowTall = Math.max(rowTall, heightPx);
         maxRight = Math.max(maxRight, cursorX);
       }
       rowIndex++;
