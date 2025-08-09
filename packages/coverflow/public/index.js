@@ -90,7 +90,7 @@
       // Initialize transform for edge-to-edge feel; responsive to viewport
       setTimeout(() => {
         const isMobile = window.innerWidth <= 768;
-        // For desktop, pick a responsive starting scale based on viewport; mobile keeps 0.6
+        // For desktop, pick a responsive starting scale based on viewport; mobile keeps currentScale
         if (!isMobile) currentScale = Math.max(0.55, Math.min(1.1, getScale()));
 
         const containerRect = container.getBoundingClientRect();
@@ -99,9 +99,11 @@
         const scaledWidth = canvasWidth * currentScale;
         const scaledHeight = canvasHeight * currentScale;
 
-        // Center, then bias slightly left/up so some covers are partially off-screen
-        const biasX = isMobile ? 0 : -(containerRect.width * 0.12);
-        const biasY = isMobile ? 0 : -(containerRect.height * 0.08);
+        // Center, then bias differently for desktop vs mobile
+        // Desktop: move slightly down and to the right
+        // Mobile: move up and to the left quite a bit to reveal more covers
+        const biasX = isMobile ? -(containerRect.width * 0.28) : (containerRect.width * 0.06);
+        const biasY = isMobile ? -(containerRect.height * 0.22) : (containerRect.height * 0.06);
         translateX = (containerRect.width - scaledWidth) / 2 + biasX;
         translateY = (containerRect.height - scaledHeight) / 2 + biasY;
         applyTransform();
@@ -118,20 +120,16 @@
     const aboutBtn = document.createElement('button');
     aboutBtn.textContent = 'About Us.';
     aboutBtn.addEventListener('click', () => { 
-      // Open about modal instead of navigating
+      // Open updated about modal instead of navigating
       const modal = document.createElement('div');
       modal.className = 'artist-modal show';
       modal.innerHTML = `
         <div class="modal-content">
-          <h2 style="font-size: 28px; margin-bottom: 16px;">About All My Friends Inc</h2>
-          <p style="line-height: 1.6; margin-bottom: 12px;">All My Friends Inc is a creative collective and management company representing emerging and established artists across music, visual arts, and culture.</p>
-          <p style="line-height: 1.6; margin-bottom: 12px;">Founded on the principle of authentic collaboration, we work closely with our artists to develop their unique voices and connect them with meaningful opportunities.</p>
-          <p style="line-height: 1.6;">Our approach combines traditional artist development with innovative digital strategies, creating sustainable careers in today's evolving creative landscape.</p>
+          <h2 style="font-size: 28px; margin-bottom: 16px;">About All My Friends</h2>
+          <p style="line-height: 1.6;">All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.</p>
         </div>
       `;
-      modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.remove();
-      });
+      modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
       document.body.appendChild(modal);
     });
     frag.appendChild(aboutBtn);
