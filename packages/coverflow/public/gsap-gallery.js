@@ -52,6 +52,20 @@
     .then(async data => { 
       covers = data; 
       buildNames(); 
+      // Swap placement of Jack Schrepferman and Hudson Ingram in the initial order
+      try {
+        const findByName = (needle) => covers.findIndex(c => {
+          const n = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toLowerCase();
+          return n.includes(needle);
+        });
+        const idxJack = findByName('jack schrepferman');
+        const idxHudson = findByName('hudson ingram');
+        if (idxJack >= 0 && idxHudson >= 0) {
+          const tmp = covers[idxJack];
+          covers[idxJack] = covers[idxHudson];
+          covers[idxHudson] = tmp;
+        }
+      } catch(e) { /* no-op */ }
       await preloadAspects(covers);
       layoutItems(); 
       // Initialize transform for edge-to-edge feel; responsive to viewport
