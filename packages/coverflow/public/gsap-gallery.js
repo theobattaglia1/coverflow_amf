@@ -21,7 +21,7 @@
   let pointerDown = false;
   let didDrag = false;
   let downX = 0, downY = 0;
-  let currentScale = 0.6; // Will be adjusted on init for desktop via getScale()
+  let currentScale = 0.55; // Midpoint between 0.6 and earlier zoom-out
   let pinchStartDist = 0;
   let pinchStartScale = 1;
 
@@ -41,7 +41,7 @@
       setTimeout(() => {
         const isMobile = window.innerWidth <= 768;
         // For desktop, pick a responsive starting scale based on viewport; mobile keeps 0.6
-        if (!isMobile) currentScale = getScale();
+        if (!isMobile) currentScale = Math.max(0.55, Math.min(1.1, getScale()));
 
         const containerRect = container.getBoundingClientRect();
         const canvasWidth = parseInt(canvas.style.width) || 2000;
