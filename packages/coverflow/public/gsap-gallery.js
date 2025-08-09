@@ -33,7 +33,22 @@
   // Load covers
   fetch(`/data/covers.json?cb=${Date.now()}`)
     .then(r=>r.json())
-    .then(data => { covers = data; buildNames(); layoutItems(); buildEditorialOverlays(); startLoop(); })
+    .then(data => { 
+      covers = data; 
+      buildNames(); 
+      layoutItems(); 
+      // Center the canvas content on initial load
+      setTimeout(() => {
+        const canvasRect = canvas.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        // Calculate centering offsets
+        translateX = (containerRect.width - canvasRect.width * currentScale) / 2;
+        translateY = (containerRect.height - canvasRect.height * currentScale) / 2;
+        applyTransform();
+      }, 100);
+      buildEditorialOverlays(); 
+      startLoop(); 
+    })
     .catch(err => console.error('Failed to load covers', err));
 
   function buildNames(){
