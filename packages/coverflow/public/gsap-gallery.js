@@ -155,13 +155,22 @@
       nameList.innerHTML = '';
       const listFrag = document.createDocumentFragment();
       covers
-        .map(c => ({ id: c.id, name: (c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled').toUpperCase() }))
+        .map(c => ({ id: c.id, name: (c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled'), label: (c.artistDetails?.label || '') }))
         .filter(item => item.name !== 'ABOUT US.' && item.name !== 'CONTACT')
         .sort((a,b)=>a.name.localeCompare(b.name))
         .forEach(item => {
           const a = document.createElement('a');
           a.className = 'name';
-          a.textContent = item.name;
+          const title = document.createElement('span');
+          title.className = 'title';
+          title.textContent = item.name;
+          a.appendChild(title);
+          if (item.label) {
+            const sub = document.createElement('span');
+            sub.className = 'label';
+            sub.textContent = item.label;
+            a.appendChild(sub);
+          }
           a.href = '#';
           a.addEventListener('click', (e)=>{ e.preventDefault(); glideTo(item.id); centeredId = item.id; });
           listFrag.appendChild(a);
