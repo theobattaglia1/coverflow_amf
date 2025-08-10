@@ -26,6 +26,36 @@
   let pinchStartScale = 1;
   let activeFilter = 'all';
 
+  // Canonical socials from investors_220220.html
+  const CANON_SOCIALS = {
+    'hudson ingram': {
+      instagram: 'https://www.instagram.com/hudson.ingram/',
+      tiktok: 'https://www.tiktok.com/@hudson.ingram'
+    },
+    'jack schrepferman': {
+      instagram: 'https://www.instagram.com/jackschrepferman/'
+    },
+    'ruby plume': {
+      instagram: 'https://www.instagram.com/rubytplume/',
+      tiktok: 'https://www.tiktok.com/@rubytplume'
+    },
+    'tom siletto': {
+      instagram: 'https://www.instagram.com/tomsiletto/',
+      tiktok: 'https://www.tiktok.com/@tomsilettomusic'
+    },
+    'conall cafferty': {
+      instagram: 'https://www.instagram.com/conallcafferty/',
+      tiktok: 'https://www.tiktok.com/@conallcafferty'
+    },
+    'kate stephenson': {
+      instagram: 'https://www.instagram.com/kate_stephenson/',
+      tiktok: 'https://www.tiktok.com/@katestephensonmusic'
+    },
+    'leon sharplin': {
+      instagram: 'https://www.instagram.com/leonsharplin/'
+    }
+  };
+
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
     document.getElementById('global-styles').innerHTML = `body{font-family:'${style.fontFamily||'Inter'}',sans-serif;}`;
@@ -532,8 +562,10 @@
 
   function buildSocialLinks(cover){
     const links = [];
-    const ig = cover.artistDetails?.instagram || cover.artistDetails?.ig || null;
-    const tiktok = cover.artistDetails?.tiktok || null;
+    const key = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
+    const canon = CANON_SOCIALS[key] || {};
+    const ig = canon.instagram || cover.artistDetails?.instagram || cover.artistDetails?.ig || null;
+    const tiktok = canon.tiktok || cover.artistDetails?.tiktok || null;
     const spotify = cover.artistDetails?.spotifyLink || cover.music?.url || null;
     if (ig) links.push({ href: ig, label: 'Instagram', icon: '📸' });
     if (tiktok) links.push({ href: tiktok, label: 'TikTok', icon: '🎵' });
