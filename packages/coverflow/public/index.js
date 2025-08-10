@@ -56,6 +56,17 @@
     }
   };
 
+  // Canonical Spotify playlists for embeds (override any per-cover links)
+  const CANON_SPOTIFY = {
+    'jack schrepferman': 'https://open.spotify.com/playlist/5iX6HkjhclKatZdIqDQFzB?si=351d307c22664c88',
+    'leon sharplin': 'https://open.spotify.com/playlist/4e8uKKol31jGXrcsb6v1Af?si=07cf9895d54e4560',
+    'ruby plume': 'https://open.spotify.com/playlist/6ymQ0s5DAq64L7zmnWhFjh?si=b00be9755c324c59',
+    'kate stephenson': 'https://open.spotify.com/playlist/49fc2CryqdBsw4WJluu7OE?si=1298210750704225',
+    'conall cafferty': 'https://open.spotify.com/playlist/7HK7bHA4HITa1Jy66GlOco?si=e59522b608604ec5',
+    'hudson ingram': 'https://open.spotify.com/playlist/0mkH1SbhZyoHL85DDrEYka?si=25293648a556457d',
+    'tom siletto': 'https://open.spotify.com/playlist/4gYEzXxLB9ZZcPMY4aJNQ3?si=3fd16009a45a4cba'
+  };
+
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
     document.getElementById('global-styles').innerHTML = `body{font-family:'${style.fontFamily||'Inter'}',sans-serif;}`;
@@ -157,6 +168,10 @@
         <div class="modal-content">
           <h2 style="font-size: 28px; margin-bottom: 16px;">About All My Friends</h2>
           <p style="line-height: 1.6;">All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.</p>
+          <div class="modal-music-section" style="background:#0b0b0b; color:#fff;">
+            <h3 class="modal-section-title" style="color:#fff;">All My Friends – Playlist</h3>
+            <iframe style="border-radius: 12px" src="https://open.spotify.com/embed/playlist/1WELZ2XjcMzHGNg5zAUUq9" width="100%" height="460" allow="encrypted-media" frameborder="0" loading="lazy"></iframe>
+          </div>
         </div>
       `;
       modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
@@ -532,7 +547,8 @@
       if (!roles) return '';
       return roles;
     })();
-    const spotify = cover.artistDetails?.spotifyLink || cover.music?.url || '';
+    const keyForSpotify = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
+    const spotify = CANON_SPOTIFY[keyForSpotify] || cover.artistDetails?.spotifyLink || cover.music?.url || '';
     const spotifyEmbed = spotify ? spotify.replace('open.spotify.com/', 'open.spotify.com/embed/') : '';
     const safeSpotify = spotifyEmbed.includes('open.spotify.com/embed/') ? spotifyEmbed : '';
 
