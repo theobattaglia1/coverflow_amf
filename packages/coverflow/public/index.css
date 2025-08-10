@@ -82,15 +82,25 @@ body {
 .gg-block p { margin: 2px 0; font-size: 12px; font-weight: 600; }
 
 
-/* Modal reuse */
-.artist-modal { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(0,0,0,0.6); opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility .25s ease; z-index: 30; }
-.artist-modal.show { opacity: 1; visibility: visible; }
-.artist-modal .modal-content { width: min(880px, 92vw); max-height: 86vh; overflow: auto; background: #111; color: #fff; border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 20px; }
-.artist-photo { width: 100%; max-height: 420px; object-fit: cover; border-radius: 10px; }
-.artist-name { margin: 12px 0 6px; font-size: 28px; }
-.artist-location { margin: 0 0 12px; color: var(--muted); }
-.artist-bio { line-height: 1.5; }
-.spotify-button { display: inline-block; margin-top: 12px; padding: 10px 14px; border-radius: 8px; background: #1DB954; color: #000; text-decoration: none; }
+/* Modal – match investors_220220.html style */
+.artist-modal{ position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.95); backdrop-filter:blur(10px); z-index:2000; display:flex; align-items:center; justify-content:center; opacity:0; visibility:hidden; transition:all .3s ease; }
+.artist-modal.show{ opacity:1; visibility:visible; }
+.artist-modal .modal-content{ background:#fff; max-width:1200px; width:90%; max-height:90vh; overflow-y:auto; position:relative; box-shadow:0 20px 40px rgba(0,0,0,0.1); transform:scale(0.96) translateY(12px); opacity:0; transition:all .3s cubic-bezier(0.22,1,0.36,1); color:#000; border:none; border-radius:0; padding:0; }
+.artist-modal.show .modal-content{ transform:scale(1) translateY(0); opacity:1; }
+.modal-close{ position:absolute; top:16px; right:16px; width:40px; height:40px; background:#000; color:#fff; border:none; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:1.5rem; z-index:10; }
+.modal-close:hover{ background:#000; opacity:.85; }
+.modal-artist-header{ display:grid; grid-template-columns:400px 1fr; gap:4rem; padding:4rem; }
+.modal-artist-image{ width:400px; height:400px; overflow:hidden; }
+.modal-artist-image img{ width:100%; height:100%; object-fit:cover; filter:saturate(70%) contrast(1.1); }
+.modal-artist-info h2{ font-size:2rem; margin-bottom:.5rem; color:#000; }
+.modal-artist-role{ font-size:1rem; color:#0000FF; text-transform:uppercase; letter-spacing:.1em; margin-bottom:2rem; }
+.artist-bio{ font-size:1rem; line-height:1.6; margin-bottom:2rem; color:#111; }
+.modal-music-section{ background:#FAFAFA; padding:3rem 4rem; }
+@media(max-width:768px){
+  .artist-modal .modal-content{ width:100%; max-width:100%; height:90vh; border-radius:1.5rem 1.5rem 0 0; }
+  .modal-artist-header{ grid-template-columns:1fr; padding:2rem 1rem; gap:2rem; }
+  .modal-artist-image{ width:100%; height:50vh; border-radius:1rem; }
+}
 
 @media (max-width: 768px) {
   .gg-header { grid-template-columns: auto 1fr auto; height: 52px; padding: 0 10px; }

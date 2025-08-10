@@ -496,16 +496,34 @@
   function openModal(cover){
     const content = modal.querySelector('.modal-content');
     const banner = cover.frontImage || cover.artistDetails?.image || '';
+    const name = cover.artistDetails?.name || cover.albumTitle || 'Artist';
+    const roleText = (()=>{
+      const roles = (cover?.artistDetails?.roles || cover?.artistDetails?.role || cover?.category || []).toString();
+      if (!roles) return '';
+      return roles;
+    })();
+    const spotify = cover.artistDetails?.spotifyLink || cover.music?.url || '';
+    const spotifyEmbed = spotify ? spotify.replace('open.spotify.com/', 'open.spotify.com/embed/') : '';
+    const safeSpotify = spotifyEmbed.includes('open.spotify.com/embed/') ? spotifyEmbed : '';
+
     content.innerHTML = `
-      ${banner ? `<img class="artist-photo" src="${banner}" alt="${cover.artistDetails?.name||''}"/>` : ''}
-      <div class="artist-info">
-        <h2 class="artist-name">${cover.artistDetails?.name || cover.albumTitle || 'Artist'}</h2>
-        ${cover.artistDetails?.location ? `<p class="artist-location">${cover.artistDetails.location}</p>` : ''}
-        ${cover.artistDetails?.bio ? `<p class="artist-bio">${cover.artistDetails.bio}</p>` : ''}
-        ${cover.artistDetails?.spotifyLink ? `<a href="${cover.artistDetails.spotifyLink}" target="_blank" class="spotify-button">Listen on Spotify</a>` : ''}
-      </div>`;
+      <button class="modal-close" aria-label="Close">×</button>
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          ${banner ? `<img src="${banner}" alt="${name}">` : ''}
+        </div>
+        <div class="modal-artist-info">
+          <h2>${name}</h2>
+          ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
+          ${cover.artistDetails?.bio ? `<p class="artist-bio">${cover.artistDetails.bio}</p>` : ''}
+        </div>
+      </div>
+      ${safeSpotify ? `<div class="modal-music-section"><h3 class="modal-section-title">Music</h3><iframe style="border-radius: 24px" src="${safeSpotify}" width="100%" height="344" allow="encrypted-media" allowfullscreen frameborder="0" loading="lazy"></iframe></div>` : ''}
+    `;
     modal.classList.remove('hidden');
     modal.classList.add('show');
+    const closeBtn = content.querySelector('.modal-close');
+    closeBtn?.addEventListener('click', ()=> closeModal());
     modal.onclick = (e)=>{ if(e.target===modal) closeModal(); };
     const esc = (e)=>{ if(e.key==='Escape'){ closeModal(); window.removeEventListener('keydown', esc);} };
     window.addEventListener('keydown', esc);
