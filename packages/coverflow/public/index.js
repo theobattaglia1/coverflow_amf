@@ -64,7 +64,9 @@
     'kate stephenson': 'https://open.spotify.com/playlist/49fc2CryqdBsw4WJluu7OE?si=1298210750704225',
     'conall cafferty': 'https://open.spotify.com/playlist/7HK7bHA4HITa1Jy66GlOco?si=e59522b608604ec5',
     'hudson ingram': 'https://open.spotify.com/playlist/0mkH1SbhZyoHL85DDrEYka?si=25293648a556457d',
-    'tom siletto': 'https://open.spotify.com/playlist/4gYEzXxLB9ZZcPMY4aJNQ3?si=3fd16009a45a4cba'
+    'tom siletto': 'https://open.spotify.com/playlist/4gYEzXxLB9ZZcPMY4aJNQ3?si=3fd16009a45a4cba',
+    'about amf': 'https://open.spotify.com/playlist/1WELZ2XjcMzHGNg5zAUUq9?si=1efd9eeb9a3448d6',
+    'about all my friends': 'https://open.spotify.com/playlist/1WELZ2XjcMzHGNg5zAUUq9?si=1efd9eeb9a3448d6'
   };
 
   // Load fonts/styles from styles.json (light touch)
@@ -161,21 +163,19 @@
     const aboutBtn = document.createElement('button');
     aboutBtn.textContent = 'About Us.';
     aboutBtn.addEventListener('click', () => { 
-      // Open updated about modal instead of navigating
-      const modal = document.createElement('div');
-      modal.className = 'artist-modal show';
-      modal.innerHTML = `
-        <div class="modal-content">
-          <h2 style="font-size: 28px; margin-bottom: 16px;">About All My Friends</h2>
-          <p style="line-height: 1.6;">All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.</p>
-          <div class="modal-music-section" style="background:#0b0b0b; color:#fff;">
-            <h3 class="modal-section-title" style="color:#fff;">All My Friends – Playlist</h3>
-            <iframe style="border-radius: 12px" src="https://open.spotify.com/embed/playlist/1WELZ2XjcMzHGNg5zAUUq9" width="100%" height="460" allow="encrypted-media" frameborder="0" loading="lazy"></iframe>
-          </div>
-        </div>
-      `;
-      modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
-      document.body.appendChild(modal);
+      // Build a cover-like object and reuse openModal for identical layout/behavior
+      const aboutCover = {
+        artistDetails: {
+          name: 'About AMF',
+          role: 'About',
+          bio: 'All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.',
+          spotifyLink: CANON_SPOTIFY['about amf']
+        },
+        albumTitle: 'About AMF',
+        frontImage: 'https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot%202025-07-31%20at%204.08.45%E2%80%AFPM.png',
+        music: { url: CANON_SPOTIFY['about amf'] }
+      };
+      openModal(aboutCover);
     });
     frag.appendChild(aboutBtn);
 
