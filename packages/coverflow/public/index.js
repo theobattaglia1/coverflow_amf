@@ -516,9 +516,10 @@
           <h2>${name}</h2>
           ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
           ${cover.artistDetails?.bio ? `<p class="artist-bio">${cover.artistDetails.bio}</p>` : ''}
+          ${buildSocialLinks(cover)}
         </div>
       </div>
-      ${safeSpotify ? `<div class="modal-music-section"><h3 class="modal-section-title">Music</h3><iframe style="border-radius: 24px" src="${safeSpotify}" width="100%" height="344" allow="encrypted-media" allowfullscreen frameborder="0" loading="lazy"></iframe></div>` : ''}
+      ${safeSpotify ? `<div class=\"modal-music-section\"><h3 class=\"modal-section-title\">Music</h3><iframe style=\"border-radius: 12px\" src=\"${safeSpotify}\" width=\"100%\" height=\"460\" allow=\"encrypted-media\" allowfullscreen frameborder=\"0\" loading=\"lazy\"></iframe></div>` : ''}
     `;
     modal.classList.remove('hidden');
     modal.classList.add('show');
@@ -527,6 +528,18 @@
     modal.onclick = (e)=>{ if(e.target===modal) closeModal(); };
     const esc = (e)=>{ if(e.key==='Escape'){ closeModal(); window.removeEventListener('keydown', esc);} };
     window.addEventListener('keydown', esc);
+  }
+
+  function buildSocialLinks(cover){
+    const links = [];
+    const ig = cover.artistDetails?.instagram || cover.artistDetails?.ig || null;
+    const tiktok = cover.artistDetails?.tiktok || null;
+    const spotify = cover.artistDetails?.spotifyLink || cover.music?.url || null;
+    if (ig) links.push({ href: ig, label: 'Instagram', icon: '📸' });
+    if (tiktok) links.push({ href: tiktok, label: 'TikTok', icon: '🎵' });
+    if (spotify) links.push({ href: spotify, label: 'Spotify', icon: '▶︎' });
+    if (!links.length) return '';
+    return `<div class="social-links">${links.map(l=>`<a class="social-link" target="_blank" rel="noopener" href="${l.href}"><span>${l.icon}</span>${l.label}</a>`).join('')}</div>`;
   }
   function closeModal(){ modal.classList.remove('show'); setTimeout(()=> modal.classList.add('hidden'), 240); }
 
