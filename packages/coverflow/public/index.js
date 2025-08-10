@@ -69,6 +69,8 @@
     'about all my friends': 'https://open.spotify.com/playlist/1WELZ2XjcMzHGNg5zAUUq9?si=1efd9eeb9a3448d6'
   };
 
+  const ABOUT_TEXT = 'All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.';
+
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
     document.getElementById('global-styles').innerHTML = `body{font-family:'${style.fontFamily||'Inter'}',sans-serif;}`;
@@ -561,7 +563,11 @@
         <div class="modal-artist-info">
           <h2>${name}</h2>
           ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
-          ${cover.artistDetails?.bio ? `<p class="artist-bio">${cover.artistDetails.bio}</p>` : ''}
+          ${(() => {
+            const isAbout = /about/i.test(name);
+            const bio = isAbout ? ABOUT_TEXT : (cover.artistDetails?.bio || '');
+            return bio ? `<p class=\"artist-bio\">${bio}</p>` : '';
+          })()}
           ${buildSocialLinks(cover)}
         </div>
       </div>
