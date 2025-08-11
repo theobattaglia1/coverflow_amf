@@ -553,6 +553,13 @@
         div.className = 'gg-grid-item';
         const imgUrl = c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
         if (imgUrl) div.style.backgroundImage = `url('${imgUrl}')`;
+        // Add title/label overlay to grid items
+        const meta = document.createElement('div');
+        meta.className = 'grid-meta';
+        const t = document.createElement('div'); t.className = 'title'; t.textContent = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toUpperCase();
+        const s = document.createElement('div'); s.className = 'sub'; const lbl = c.artistDetails?.label || c.label || c.coverLabel || ''; s.textContent = lbl;
+        meta.appendChild(t); if (lbl) meta.appendChild(s);
+        div.appendChild(meta);
         div.addEventListener('click', ()=>{ gridEl.classList.add('hidden'); viewToggleBtn.textContent = 'GRID'; glideTo(c.id); });
         gridEl.appendChild(div);
       });
