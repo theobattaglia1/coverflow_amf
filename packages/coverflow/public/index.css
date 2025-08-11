@@ -133,20 +133,3 @@ body {
 
 
 
-  .gg-center-logo { transform: translateY(-80px); }
-  
-  /* Mobile: Names list centered below logo */
-  .gg-name-list { display: block; position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 100px)); max-height: 200px; width: 260px; text-align: center; pointer-events: all; }
-  .gg-name-list .name { display: block; padding: 1px 6px; font-size: 12px; margin: 2px auto; }
-}
-
-
-
-  .gg-center-logo { transform: translateY(-80px); }
-  
-  /* Mobile: Names list centered below logo */
-  .gg-name-list { display: block; position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 100px)); max-height: 200px; width: 260px; text-align: center; pointer-events: all; }
-  .gg-name-list .name { display: block; padding: 1px 6px; font-size: 12px; margin: 2px auto; }
-}
-
-
