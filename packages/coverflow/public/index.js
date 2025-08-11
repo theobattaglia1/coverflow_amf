@@ -635,6 +635,7 @@
   }
 })();
 
+/* orphaned duplicate from earlier merges removed below (kept for reference)
       firstNine.forEach(c => {
         const div = document.createElement('div');
         div.className = 'gg-grid-item';
@@ -729,6 +730,6 @@
     });
     overlays.appendChild(frag);
   }
-})();
+*/
 
 
