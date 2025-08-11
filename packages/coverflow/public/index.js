@@ -228,7 +228,7 @@
       const listFrag = document.createDocumentFragment();
       const reserved = new Set(['about us', 'about us.', 'contact']);
       covers
-        .map(c => ({ id: c.id, name: (c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled'), label: (c.artistDetails?.label || '') }))
+        .map(c => ({ id: c.id, name: (c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled'), label: (c.artistDetails?.label || c.label || c.coverLabel || '') }))
         .filter(item => !reserved.has((item.name || '').toLowerCase().trim()))
         .sort((a,b)=>a.name.localeCompare(b.name))
         .forEach(item => {
@@ -375,7 +375,7 @@
         const sub = document.createElement('p');
         sub.className = 'sub';
         // Prefer label from artistDetails.label, fallback to label field, or blank
-        const label = c.artistDetails?.label || c.label || '';
+        const label = c.artistDetails?.label || c.label || c.coverLabel || '';
         sub.textContent = label || '';
         meta.appendChild(title);
         if (label) meta.appendChild(sub);
