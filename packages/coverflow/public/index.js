@@ -238,12 +238,7 @@
           title.className = 'title';
           title.textContent = item.name;
           a.appendChild(title);
-          if (item.label) {
-            const sub = document.createElement('span');
-            sub.className = 'label';
-            sub.textContent = item.label;
-            a.appendChild(sub);
-          }
+          // Do not render label in the names list; keep it only on the covers
           a.href = '#';
           // Clicking a name centers the corresponding cover
           a.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); centeredId = item.id; glideTo(item.id); });
