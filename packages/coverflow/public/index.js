@@ -149,7 +149,7 @@
         // Desktop: move slightly down and to the right
         // Mobile: move up and to the left quite a bit to reveal more covers
         // Nudge initial view slightly to the left for a better first impression
-        const biasX = isMobile ? -(containerRect.width * 0.30) : -(containerRect.width * 0.02);
+        const biasX = isMobile ? -(containerRect.width * 0.35) : -(containerRect.width * 0.02);
         const biasY = isMobile ? -(containerRect.height * 0.22) : (containerRect.height * 0.06);
         translateX = (containerRect.width - scaledWidth) / 2 + biasX;
         translateY = (containerRect.height - scaledHeight) / 2 + biasY;
