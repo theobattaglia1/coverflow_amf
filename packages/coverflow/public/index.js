@@ -163,7 +163,7 @@
     const frag = document.createDocumentFragment();
     // Static: About Us and contact first
     const aboutBtn = document.createElement('button');
-    aboutBtn.textContent = 'About Us.';
+    aboutBtn.textContent = 'About Us';
     aboutBtn.addEventListener('click', () => { 
       // Build a cover-like object and reuse openModal for identical layout/behavior
       const aboutCover = {
@@ -182,7 +182,7 @@
     frag.appendChild(aboutBtn);
 
     const contactBtn = document.createElement('button');
-    contactBtn.textContent = 'contact';
+    contactBtn.textContent = 'Contact';
     contactBtn.addEventListener('click', () => { window.location.href = 'mailto:hi@allmyfriendsinc.com'; });
     frag.appendChild(contactBtn);
 
@@ -199,7 +199,7 @@
       btn.addEventListener('click', () => applyFilter(f.key));
       frag.appendChild(btn);
     });
-    const reserved = new Set(['about us.', 'about us', 'contact']);
+    const reserved = new Set(['about us.', 'about us', 'contact', 'contact us']);
     const seen = new Set();
     covers
       .map(c => ({ id: c.id, name: c.artistDetails?.name || c.coverLabel || c.albumTitle || 'Untitled' }))
@@ -237,6 +237,7 @@
             a.appendChild(sub);
           }
           a.href = '#';
+          // Clicking a name centers the corresponding cover
           a.addEventListener('click', (e)=>{ e.preventDefault(); glideTo(item.id); centeredId = item.id; });
           listFrag.appendChild(a);
         });
@@ -278,7 +279,7 @@
 
     if (matches.length === 0) return; // nothing to arrange
 
-    const gutter = 40 * getScale();
+    const gutter = 24 * getScale();
     // total width in canvas units
     let totalWidth = 0;
     const widths = matches.map(el => el.getBoundingClientRect().width / scale);
@@ -375,6 +376,9 @@
         item.addEventListener('click', (ev) => {
           // If a drag was detected between pointerdown and pointerup, treat as navigation only
           if (didDrag) return;
+          // Special case: Contact cover should open email immediately
+          const nm = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toLowerCase();
+          if (nm.includes('contact')) { window.location.href = 'mailto:hi@allmyfriendsinc.com'; return; }
           if (centeredId === c.id) {
             openModal(c);
           } else {

@@ -66,6 +66,11 @@ body {
 
 .gg-reset-chip { position: fixed; right: 14px; bottom: 18px; z-index: 12; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; }
 
+/* Floating contact block */
+.gg-contact-float{ position:fixed; right:24px; top:20%; z-index:12; color:#fff; text-align:right; pointer-events:auto; }
+.gg-contact-float .label{ font-weight:700; font-size:18px; letter-spacing:.02em; }
+.gg-contact-float a{ color:#fff; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.4); }
+
 .gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 0; overflow: hidden; cursor: pointer; box-shadow: none; }
 .gg-item .img { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .25s ease; }
 .gg-item:hover .img { transform: scale(1.04); }
