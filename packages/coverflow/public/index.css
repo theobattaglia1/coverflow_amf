@@ -74,7 +74,7 @@ body {
 .gg-contact-float .label{ font-weight:700; font-size:14px; letter-spacing:.02em; text-transform:uppercase; }
 .gg-contact-float a{ color:#fff; text-decoration:none; border-bottom:1px solid rgba(255,255,255,0.4); font-size:14px; }
 
-.gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 0; overflow: hidden; cursor: pointer; box-shadow: none; }
+.gg-item { position: absolute; width: var(--w, 320px); height: var(--h, 220px); border-radius: 0; overflow: hidden; cursor: pointer; box-shadow: none; will-change: transform, left, top; transform: translateZ(0); }
 .gg-item, .gg-item * { pointer-events: auto; }
 .gg-item .img { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform .25s ease; }
 .gg-item:hover .img { transform: scale(1.04); }

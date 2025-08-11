@@ -26,6 +26,7 @@
   let pinchStartDist = 0;
   let pinchStartScale = 1;
   let activeFilter = 'all';
+  let spotlightId = null; // mobile-only: highlighted single cover from names list
 
   // Canonical socials from investors_220220.html
   const CANON_SOCIALS = {
@@ -252,7 +253,18 @@
           // Do not render label in the names list; keep it only on the covers
           a.href = '#';
           // Clicking a name centers the corresponding cover
-          a.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); centeredId = item.id; glideTo(item.id); });
+          a.addEventListener('click', (e)=>{
+            e.preventDefault(); e.stopPropagation();
+            centeredId = item.id;
+            if (window.innerWidth <= 768) {
+              if (spotlightId && spotlightId !== item.id) clearSpotlight();
+              spotlightId = item.id;
+              if (resetChip) resetChip.hidden = false;
+              glideTo(item.id, () => { applySpotlightVisuals(); });
+            } else {
+              glideTo(item.id);
+            }
+          });
           listFrag.appendChild(a);
         });
       nameList.appendChild(listFrag);
@@ -261,6 +273,8 @@
 
   function applyFilter(key){
     activeFilter = (key || 'all').toLowerCase();
+    // Spotlight conflicts with filters; clear it when applying any specific filter
+    if (activeFilter !== 'all') clearSpotlight();
     if (resetChip) resetChip.hidden = activeFilter === 'all';
     // First, update dimming state by rebuilding items
     layoutItems();
@@ -273,7 +287,9 @@
         const oy = parseFloat(it.dataset.oy || '0');
         gsap.to(it, { duration: 0.6, ease: 'power3.inOut', left: ox, top: oy });
       });
-        return;
+      // Reapply spotlight visuals if any, since layoutItems() rebuilt DOM
+      applySpotlightVisuals();
+      return;
       }
       
     // Compute a centered row position within the true visible area (accounting for safe-area)
@@ -455,6 +471,8 @@
     if (e.target.closest('.gg-name-list') || e.target.closest('.gg-filters') || e.target.closest('#gg-contact-float') || e.target.closest('.gg-header')) {
       isDragging = false; pointerDown = false; return;
     }
+    // Any pointer drag should exit spotlight mode on mobile
+    if (window.innerWidth <= 768) clearSpotlight();
     isDragging = true; container.setPointerCapture?.(e.pointerId);
     startX = e.clientX - translateX; startY = e.clientY - translateY;
     lastT = performance.now(); lastX = e.clientX; lastY = e.clientY;
@@ -568,7 +586,32 @@
 
   function findItemElById(id){ return canvas.querySelector(`.gg-item[data-id="${CSS.escape(String(id))}"]`); }
 
-  function glideTo(id){
+  function applySpotlightVisuals(){
+    if (!(window.innerWidth <= 768)) return; // mobile-only
+    const items = Array.from(canvas.querySelectorAll('.gg-item'));
+    items.forEach(el => {
+      if (spotlightId && String(el.dataset.id) === String(spotlightId)) {
+        el.classList.remove('dimmed');
+        gsap.to(el, { duration: 0.4, ease: 'power3.out', scale: 1.25, transformOrigin: 'center center' });
+      } else {
+        el.classList.add('dimmed');
+        gsap.to(el, { duration: 0.3, ease: 'power2.out', scale: 1.0 });
+      }
+    });
+  }
+
+  function clearSpotlight(){
+    if (!(window.innerWidth <= 768)) { spotlightId = null; return; }
+    const items = Array.from(canvas.querySelectorAll('.gg-item'));
+    items.forEach(el => {
+      el.classList.remove('dimmed');
+      gsap.to(el, { duration: 0.25, ease: 'power2.out', scale: 1.0 });
+    });
+    spotlightId = null;
+    if (resetChip && activeFilter === 'all') resetChip.hidden = true;
+  }
+
+  function glideTo(id, onDone){
     const el = findItemElById(id);
     if (!el) return;
     const rect = el.getBoundingClientRect();
@@ -576,7 +619,7 @@
     const targetX = translateX + (viewport.width/2 - (rect.left + rect.width/2));
     const targetY = translateY + (viewport.height/2 - (rect.top + rect.height/2));
     const anim = { x: translateX, y: translateY };
-    gsap.to(anim, { duration: 0.8, ease: 'power3.inOut', x: targetX, y: targetY, onUpdate(){ translateX = anim.x; translateY = anim.y; applyTransform(); } });
+    gsap.to(anim, { duration: 0.8, ease: 'power3.inOut', x: targetX, y: targetY, onUpdate(){ translateX = anim.x; translateY = anim.y; applyTransform(); }, onComplete(){ if (typeof onDone === 'function') onDone(); } });
   }
 
   // Grid toggle
