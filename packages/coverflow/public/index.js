@@ -299,7 +299,14 @@
     const widths = matches.map(el => el.getBoundingClientRect().width / scale);
     widths.forEach((w, idx) => { totalWidth += w + (idx > 0 ? gutter : 0); });
     let cursorX = canvasCenterX - totalWidth / 2;
-    const targetY = canvasCenterY - (matches[0].getBoundingClientRect().height / scale) / 2;
+    const rowH = (matches[0].getBoundingClientRect().height / scale);
+    let targetY = canvasCenterY - rowH / 2;
+    // On mobile Safari/Chrome, visual center tends to sit lower due to browser chrome.
+    // Nudge the row upward a bit so it appears centered.
+    if (window.innerWidth <= 768) {
+      const nudge = (viewport.height * 0.10) / scale; // ~10% viewport upward nudge
+      targetY -= nudge;
+    }
 
     // Animate each matching item to its spot in the row
     matches.forEach((el, idx) => {
