@@ -77,7 +77,7 @@ body {
 .gg-item:hover .img { transform: scale(1.04); }
 .gg-item .meta { position: absolute; left: 12px; bottom: 10px; right: 12px; color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.75); }
 .gg-item .meta .title { font-size: 13px; font-weight: 700; letter-spacing: 0.02em; margin: 0; }
-.gg-item .meta .sub { font-size: 11px; opacity: 0.75; margin-top: 2px; letter-spacing: 0.04em; }
+.gg-item .meta .sub { font-size: 11px; opacity: 0.8; margin-top: 2px; letter-spacing: 0.02em; font-style: italic; font-weight: 400; text-transform: none; }
 /* Dimmed non-matching state */
 .gg-item.dimmed { opacity: 0.25; filter: grayscale(60%); transition: opacity .25s ease, filter .25s ease; }
 
@@ -124,6 +124,24 @@ body {
   .gg-filters button:hover, .gg-filters button.active { color: var(--ink); }
 
   /* Mobile: Move logo up above names */
+  .gg-center-logo { transform: translateY(-80px); }
+  
+  /* Mobile: Names list centered below logo */
+  .gg-name-list { display: block; position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 100px)); max-height: 200px; width: 260px; text-align: center; pointer-events: all; }
+  .gg-name-list .name { display: block; padding: 1px 6px; font-size: 12px; margin: 2px auto; }
+}
+
+
+
+  .gg-center-logo { transform: translateY(-80px); }
+  
+  /* Mobile: Names list centered below logo */
+  .gg-name-list { display: block; position: fixed; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 100px)); max-height: 200px; width: 260px; text-align: center; pointer-events: all; }
+  .gg-name-list .name { display: block; padding: 1px 6px; font-size: 12px; margin: 2px auto; }
+}
+
+
+
   .gg-center-logo { transform: translateY(-80px); }
   
   /* Mobile: Names list centered below logo */

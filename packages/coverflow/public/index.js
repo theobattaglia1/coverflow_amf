@@ -177,7 +177,7 @@
         aboutCover.artistDetails.bio = ABOUT_TEXT;
         aboutCover.artistDetails.spotifyLink = CANON_SPOTIFY['about amf'];
         openModal(aboutCover);
-      } else {
+    } else {
         // Fallback
         openModal({
           artistDetails: { name: 'About AMF', role: 'About', bio: ABOUT_TEXT, spotifyLink: CANON_SPOTIFY['about amf'] },
@@ -376,7 +376,7 @@
         sub.className = 'sub';
         // Prefer label from artistDetails.label, fallback to label field, or blank
         const label = c.artistDetails?.label || c.label || '';
-        sub.textContent = label ? label.toUpperCase() : '';
+        sub.textContent = label || '';
         meta.appendChild(title);
         if (label) meta.appendChild(sub);
         item.appendChild(meta);
@@ -445,7 +445,7 @@
       const ratio = dist / pinchStartDist;
       currentScale = Math.min(1.4, Math.max(0.6, pinchStartScale * ratio));
       applyTransform();
-    }
+  }
 }, { passive: true });
   container.addEventListener('touchend', (e)=>{ if (e.touches.length < 2) pinchStartDist = 0; }, { passive: true });
   container.addEventListener('pointermove', (e) => {
@@ -467,14 +467,14 @@
       const dy = Math.abs(e.clientY - downY);
       if (dx > 6 || dy > 6) { // slightly higher threshold for Chromium precision
         didDrag = true; centeredId = null;
+        }
       }
-    }
-  });
+    });
   window.addEventListener('pointerup', () => {
     isDragging = false; pointerDown = false; velocityX = 0; velocityY = 0;
     if (didDrag) {
       suppressClicksUntil = performance.now() + 180; // suppress synthetic click after drag only
-    } else {
+          } else {
       suppressClicksUntil = 0;
     }
   });
@@ -507,7 +507,7 @@
       translateX -= e.deltaX; translateY -= e.deltaY; gridEl.style.transform = `translate3d(${translateX}px, ${translateY}px, 0)`; return;
     }
     translateX -= e.deltaX; translateY -= e.deltaY; applyTransform();
-  }, { passive: true });
+}, { passive: true });
 
   // Re-layout on resize (debounced)
   let resizeTimer = null;
@@ -553,6 +553,188 @@
     if (gridEl.classList.contains('hidden')) {
       gridEl.innerHTML = '';
       const firstNine = covers.slice(0, 9);
+      firstNine.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'gg-grid-item';
+        const imgUrl = c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
+        if (imgUrl) div.style.backgroundImage = `url('${imgUrl}')`;
+        div.addEventListener('click', ()=>{ gridEl.classList.add('hidden'); viewToggleBtn.textContent = 'GRID'; glideTo(c.id); });
+        gridEl.appendChild(div);
+      });
+      gridEl.classList.remove('hidden');
+      viewToggleBtn.textContent = 'ORIGINAL VIEW';
+      // Reset grid transform so it’s fully visible, smaller tiles leave breathing room
+      translateX = 0; translateY = 0; gridEl.style.transform = 'translate3d(0,0,0)';
+      } else {
+      gridEl.classList.add('hidden');
+      viewToggleBtn.textContent = 'GRID';
+    }
+  });
+
+  function openModal(cover){
+    const content = modal.querySelector('.modal-content');
+    const banner = cover.frontImage || cover.artistDetails?.image || '';
+    const name = cover.artistDetails?.name || cover.albumTitle || 'Artist';
+    const roleText = (()=>{
+      const roles = (cover?.artistDetails?.roles || cover?.artistDetails?.role || cover?.category || []).toString();
+      if (!roles) return '';
+      return roles;
+    })();
+    const keyForSpotify = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
+    const spotify = CANON_SPOTIFY[keyForSpotify] || cover.artistDetails?.spotifyLink || cover.music?.url || '';
+    const spotifyEmbed = spotify ? spotify.replace('open.spotify.com/', 'open.spotify.com/embed/') : '';
+    const safeSpotify = spotifyEmbed.includes('open.spotify.com/embed/') ? spotifyEmbed : '';
+
+    content.innerHTML = `
+      <button class="modal-close" aria-label="Close">×</button>
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          ${banner ? `<img src="${banner}" alt="${name}">` : ''}
+    </div>
+        <div class="modal-artist-info">
+          <h2>${name}</h2>
+          ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
+          ${(() => {
+            const isAbout = /about/i.test(name);
+            const bio = isAbout ? ABOUT_TEXT : (cover.artistDetails?.bio || '');
+            return bio ? `<p class=\"artist-bio\">${bio}</p>` : '';
+          })()}
+          ${buildSocialLinks(cover)}
+        </div>
+      </div>
+      ${safeSpotify ? `<div class=\"modal-music-section\"><h3 class=\"modal-section-title\">Music</h3><iframe style=\"border-radius: 12px\" src=\"${safeSpotify}\" width=\"100%\" height=\"460\" allow=\"encrypted-media\" allowfullscreen frameborder=\"0\" loading=\"lazy\"></iframe></div>` : ''}
+    `;
+  modal.classList.remove('hidden');
+  modal.classList.add('show');
+    const closeBtn = content.querySelector('.modal-close');
+    closeBtn?.addEventListener('click', ()=> closeModal());
+    modal.onclick = (e)=>{ if(e.target===modal) closeModal(); };
+    const esc = (e)=>{ if(e.key==='Escape'){ closeModal(); window.removeEventListener('keydown', esc);} };
+    window.addEventListener('keydown', esc);
+  }
+
+  function buildSocialLinks(cover){
+    const links = [];
+    const key = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
+    const canon = CANON_SOCIALS[key] || {};
+    const ig = canon.instagram || cover.artistDetails?.instagram || cover.artistDetails?.ig || null;
+    const tiktok = canon.tiktok || cover.artistDetails?.tiktok || null;
+    const spotify = cover.artistDetails?.spotifyLink || cover.music?.url || null;
+    if (ig) links.push({ href: ig, label: 'Instagram', icon: '📸' });
+    if (tiktok) links.push({ href: tiktok, label: 'TikTok', icon: '🎵' });
+    if (spotify) links.push({ href: spotify, label: 'Spotify', icon: '▶︎' });
+    if (!links.length) return '';
+    return `<div class="social-links">${links.map(l=>`<a class="social-link" target="_blank" rel="noopener" href="${l.href}"><span>${l.icon}</span>${l.label}</a>`).join('')}</div>`;
+  }
+  function closeModal(){ modal.classList.remove('show'); setTimeout(()=> modal.classList.add('hidden'), 240); }
+
+  function buildEditorialOverlays(){
+    // Deprecated: remove legacy canvas-anchored overlay so it doesn't stick to any cover
+    if (!overlays) return;
+    overlays.innerHTML = '';
+  }
+})();
+
+
+
+      firstNine.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'gg-grid-item';
+        const imgUrl = c.frontImage?.startsWith('/uploads/') ? `https://allmyfriendsinc.com${c.frontImage}` : (c.frontImage || '');
+        if (imgUrl) div.style.backgroundImage = `url('${imgUrl}')`;
+        div.addEventListener('click', ()=>{ gridEl.classList.add('hidden'); viewToggleBtn.textContent = 'GRID'; glideTo(c.id); });
+        gridEl.appendChild(div);
+      });
+      gridEl.classList.remove('hidden');
+      viewToggleBtn.textContent = 'ORIGINAL VIEW';
+      // Reset grid transform so it’s fully visible, smaller tiles leave breathing room
+      translateX = 0; translateY = 0; gridEl.style.transform = 'translate3d(0,0,0)';
+          } else {
+      gridEl.classList.add('hidden');
+      viewToggleBtn.textContent = 'GRID';
+    }
+  });
+
+  function openModal(cover){
+    const content = modal.querySelector('.modal-content');
+    const banner = cover.frontImage || cover.artistDetails?.image || '';
+    const name = cover.artistDetails?.name || cover.albumTitle || 'Artist';
+    const roleText = (()=>{
+      const roles = (cover?.artistDetails?.roles || cover?.artistDetails?.role || cover?.category || []).toString();
+      if (!roles) return '';
+      return roles;
+    })();
+    const keyForSpotify = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
+    const spotify = CANON_SPOTIFY[keyForSpotify] || cover.artistDetails?.spotifyLink || cover.music?.url || '';
+    const spotifyEmbed = spotify ? spotify.replace('open.spotify.com/', 'open.spotify.com/embed/') : '';
+    const safeSpotify = spotifyEmbed.includes('open.spotify.com/embed/') ? spotifyEmbed : '';
+
+    content.innerHTML = `
+      <button class="modal-close" aria-label="Close">×</button>
+      <div class="modal-artist-header">
+        <div class="modal-artist-image">
+          ${banner ? `<img src="${banner}" alt="${name}">` : ''}
+        </div>
+        <div class="modal-artist-info">
+          <h2>${name}</h2>
+          ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
+          ${(() => {
+            const isAbout = /about/i.test(name);
+            const bio = isAbout ? ABOUT_TEXT : (cover.artistDetails?.bio || '');
+            return bio ? `<p class=\"artist-bio\">${bio}</p>` : '';
+          })()}
+          ${buildSocialLinks(cover)}
+        </div>
+      </div>
+      ${safeSpotify ? `<div class=\"modal-music-section\"><h3 class=\"modal-section-title\">Music</h3><iframe style=\"border-radius: 12px\" src=\"${safeSpotify}\" width=\"100%\" height=\"460\" allow=\"encrypted-media\" allowfullscreen frameborder=\"0\" loading=\"lazy\"></iframe></div>` : ''}
+    `;
+    modal.classList.remove('hidden');
+    modal.classList.add('show');
+    const closeBtn = content.querySelector('.modal-close');
+    closeBtn?.addEventListener('click', ()=> closeModal());
+    modal.onclick = (e)=>{ if(e.target===modal) closeModal(); };
+    const esc = (e)=>{ if(e.key==='Escape'){ closeModal(); window.removeEventListener('keydown', esc);} };
+    window.addEventListener('keydown', esc);
+  }
+
+  function buildSocialLinks(cover){
+    const links = [];
+    const key = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
+    const canon = CANON_SOCIALS[key] || {};
+    const ig = canon.instagram || cover.artistDetails?.instagram || cover.artistDetails?.ig || null;
+    const tiktok = canon.tiktok || cover.artistDetails?.tiktok || null;
+    const spotify = cover.artistDetails?.spotifyLink || cover.music?.url || null;
+    if (ig) links.push({ href: ig, label: 'Instagram', icon: '📸' });
+    if (tiktok) links.push({ href: tiktok, label: 'TikTok', icon: '🎵' });
+    if (spotify) links.push({ href: spotify, label: 'Spotify', icon: '▶︎' });
+    if (!links.length) return '';
+    return `<div class="social-links">${links.map(l=>`<a class="social-link" target="_blank" rel="noopener" href="${l.href}"><span>${l.icon}</span>${l.label}</a>`).join('')}</div>`;
+  }
+  function closeModal(){ modal.classList.remove('show'); setTimeout(()=> modal.classList.add('hidden'), 240); }
+
+  function buildEditorialOverlays(){
+    if (!overlays) return;
+    overlays.innerHTML = '';
+    const blocks = [
+      { x: 1480, y: 40, title: '+Get In Touch', lines: ['hi@allmyfriendsinc.com'] }
+    ];
+    const frag = document.createDocumentFragment();
+    blocks.forEach(b => {
+      const el = document.createElement('section');
+      el.className = 'gg-block';
+      el.style.left = b.x + 'px';
+      el.style.top = b.y + 'px';
+      const h = document.createElement('h4');
+      h.textContent = b.title; el.appendChild(h);
+      b.lines.forEach(t => { const p = document.createElement('p'); p.textContent = t; el.appendChild(p); });
+      frag.appendChild(el);
+    });
+    overlays.appendChild(frag);
+  }
+})();
+
+
+
       firstNine.forEach(c => {
         const div = document.createElement('div');
         div.className = 'gg-grid-item';
