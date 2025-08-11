@@ -21,8 +21,7 @@
   let pointerDown = false;
   let didDrag = false;
   let downX = 0, downY = 0;
-  let dragEndAt = 0;
-  let draggedFar = false;
+  let suppressClicksUntil = 0;
   let currentScale = 0.55; // Midpoint between 0.6 and earlier zoom-out
   let pinchStartDist = 0;
   let pinchStartScale = 1;
@@ -383,6 +382,7 @@
         item.appendChild(meta);
 
         item.addEventListener('click', (ev) => {
+          if (performance.now() < suppressClicksUntil) { ev.preventDefault(); return; }
           // If a drag was detected between pointerdown and pointerup, treat as navigation only
           if (didDrag) return;
           // Special case: Contact cover should open email immediately
@@ -475,18 +475,24 @@
       const dx = Math.abs(e.clientX - downX);
       const dy = Math.abs(e.clientY - downY);
       if (dx > 6 || dy > 6) { // slightly higher threshold for Chromium precision
-        didDrag = true; centeredId = null; draggedFar = true;
+        didDrag = true; centeredId = null;
       }
     }
   });
-  window.addEventListener('pointerup', () => { isDragging = false; pointerDown = false; velocityX = 0; velocityY = 0; dragEndAt = performance.now(); });
+  window.addEventListener('pointerup', () => {
+    isDragging = false; pointerDown = false; velocityX = 0; velocityY = 0;
+    if (didDrag) {
+      suppressClicksUntil = performance.now() + 180; // suppress synthetic click after drag only
+    } else {
+      suppressClicksUntil = 0;
+    }
+  });
   container.addEventListener('click', (e)=>{
     // Prevent click-through on draggable canvas after a drag in Chromium
-    if (draggedFar || (performance.now() - dragEndAt) < 120) {
+    if (performance.now() < suppressClicksUntil) {
       e.stopPropagation();
       e.preventDefault();
     }
-    draggedFar = false;
   }, true);
   window.addEventListener('pointercancel', () => { isDragging = false; });
 
