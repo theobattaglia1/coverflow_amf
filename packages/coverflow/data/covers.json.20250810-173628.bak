@@ -1,0 +1,234 @@
+[
+  {
+    "id": "1743757227077",
+    "category": [
+      "about us"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Contact.png",
+    "albumTitle": "contact",
+    "coverLabel": "contact",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": ""
+    },
+    "artistDetails": {
+      "name": "",
+      "location": "",
+      "bio": "",
+      "spotifyLink": "",
+      "image": ""
+    },
+    "index": 0,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Contact.png",
+    "backText": "<h3>About All My Friends</h3><p>We are a creative management company dedicated to nurturing and developing exceptional talent in music and arts.</p><p>Our mission is to build meaningful, long-lasting careers for our artists through strategic partnerships and innovative approaches.</p><p><a href='mailto:hi@allmyfriendsinc.com'>Get in touch →</a></p>"
+  },
+  {
+    "id": "1743756368892",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png",
+    "albumTitle": "Tom Siletto",
+    "coverLabel": " (TEST EDIT)",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": "https://open.spotify.com/track/5LlRJdKv3lU4NmYOQrnNm4?si=b5f5e0b903884eca"
+    },
+    "artistDetails": {
+      "name": "Tom Siletto",
+      "location": "Los Angeles, CA",
+      "bio": "Tom Siletto is an emerging artist in the indie folk/pop scene whose introspective, candid songwriting draws listeners in as if in conversation with a close friend. He seamlessly blends strong lyricism and haunting instrumentation, evoking the gloomy cliffs of Northern California where he grew up. \n\nSiletto is also part of the duo Darling, which has amassed devoted listeners after just two released songs. Their first single, ‘couldn’t i,’ garnered about 200k streams on Spotify alone in the first month, without help from editorial playlists. ",
+      "spotifyLink": "https://open.spotify.com/track/5LlRJdKv3lU4NmYOQrnNm4?si=b5f5e0b903884eca",
+      "image": "https://allmyfriendsinc.com/uploads/bd34a93201c51e17c2699f51c522cee0"
+    },
+    "index": 1,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png"
+  },
+  {
+    "id": "1743755620790",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png",
+    "albumTitle": "Ruby Plume",
+    "coverLabel": "Mututal Friends / AWAL",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": "https://open.spotify.com/track/2BeBp0IazmkqGVc0PxxDye?si=95799ccf1a97435f"
+    },
+    "artistDetails": {
+      "name": "Ruby Plume",
+      "location": "",
+      "bio": "Ruby Plume is an alt-folk-pop artist from Boston whose intricate storytelling and lush guitar melodies form a liminal, daydreamy musical canvas. Her vocals carry a quiet intensity, layering youthful clarity over emotional depth reminiscent of artists who defined alt-pop for a new generation.\nRuby’s songs are subtly prismatic—shifting effortlessly between vivid emotion and elusive mystery, warmth and introspection.\nBeyond her standout singer-songwriter talent, Ruby is a poly-artistic force, incorporating guitar finesse, imaginative illustration, and mixed-media art into her creative arsenal. These visual explorations deepen the vivid daydream that is her developing world—rounding out a creative universe that feels both tangible and dreamlike.",
+      "spotifyLink": "https://open.spotify.com/track/2BeBp0IazmkqGVc0PxxDye?si=95799ccf1a97435f",
+      "image": "https://allmyfriendsinc.com/uploads/b7d5aec19b44b906b6e79ede9b380850"
+    },
+    "index": 2,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png"
+  },
+  {
+    "id": "1",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png",
+    "albumTitle": "Hudson Ingram",
+    "coverLabel": "Interscope / Aaron Dessner",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": "https://open.spotify.com/playlist/5ey2AEb1NXYUlsBgjxPVl3?si=df022033c9334cf1"
+    },
+    "artistDetails": {
+      "name": "Hudson Ingram",
+      "location": "Nashville, TN",
+      "bio": "Hudson Ingram, an 18-year-old Nashville-based artist from Texas, makes music that feels as big as commercial pop but is built on a foundation of sharp songwriting and real musicianship. The son of country artist Jack Ingram, he grew up immersed in storytelling, developing a style that merges intimate, deeply felt lyrics with hooks that hit on first listen. Obsessed with the craft, self-taught in production, and relentless in his pursuit of mastery, Hudson is carving his own lane—one that feels classic, yet completely his own.",
+      "spotifyLink": "https://open.spotify.com/playlist/5ey2AEb1NXYUlsBgjxPVl3?si=df022033c9334cf1",
+      "image": "https://allmyfriendsinc.com/uploads/444a59dfe2a66aa5224c7038f7539b15"
+    },
+    "index": 3,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png"
+  },
+  {
+    "id": "1743755607527",
+    "category": [
+      "producer",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png",
+    "albumTitle": "Jack Schrepferman",
+    "coverLabel": "100 Publishing / Kobalt",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": "https://open.spotify.com/playlist/0Yli4gIVDEyxG5XQAKkgkV?si=4447905899154961"
+    },
+    "artistDetails": {
+      "name": "Jack Schrepferman",
+      "location": "Nashville TN | Los Angeles, CA",
+      "bio": "Jack Schrepferman is a Nashville-based multi genre songwriter, producer, and multi-instrumentalist known for crafting song-centered music that seamlessly blends pop sensibility with bold, innovative production. At just 21, his catalogue has amassed over 70 million streams across all genres, with recent singles cut by Dasha (Warner), Dhruv (RCA), Steinza (Santa Ana), Midwxst (Geffen), and Astrid S (Island).\n\nJack spent his formative years working closely with Grammy-nominated, multi-platinum producer JT Daly, contributing to projects for artists such as Benson Boone, Tai Verdes, Bully, and PVRIS at MMK Studios. This experience laid the foundation for Jack’s adaptable and artist-first approach, regardless of musical style.\n\nJack’s work has also included placements for brands like Michael Kors and Amazon. He is actively collaborating with both emerging and established artists / writers, including Jensen McRae, Johnny Orlando, M-Phazes, Geoff Warburton alongside developing sounds with rising independent talents such as Hudson Ingram, Ryman, Conall Cafferty, Kenzie Cait, and Casper Sage.",
+      "spotifyLink": "https://open.spotify.com/playlist/0Yli4gIVDEyxG5XQAKkgkV?si=4447905899154961",
+      "image": "https://allmyfriendsinc.com/uploads/26141c34120831f1c15f6b66fac2e9cc"
+    },
+    "index": 4,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png"
+  },
+  {
+    "id": "1748123180827",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png",
+    "albumTitle": "Conall Cafferty",
+    "coverLabel": "Capitol Records",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": "https://open.spotify.com/album/5rRR9yqNS9chVPDktzNyUI?si=xpaJaMrdQfCwAaVfrpWUng"
+    },
+    "artistDetails": {
+      "name": "Conall Cafferty",
+      "location": "Nashville, TN",
+      "bio": "",
+      "spotifyLink": "https://open.spotify.com/album/5rRR9yqNS9chVPDktzNyUI?si=xpaJaMrdQfCwAaVfrpWUng",
+      "image": "/uploads/upload-1748123456690-945730077.png"
+    },
+    "index": 5,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png"
+  },
+  {
+    "id": "1748120863760",
+    "category": [
+      "artist",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg",
+    "albumTitle": "Kate Stephenson",
+    "coverLabel": "Independent",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": "https://open.spotify.com/playlist/37i9dQZF1DZ06evO3siDPZ?si=140d783cd51348b8"
+    },
+    "artistDetails": {
+      "name": "Kate Stephenson",
+      "location": "Nashville, TN",
+      "bio": "",
+      "spotifyLink": "https://open.spotify.com/playlist/37i9dQZF1DZ06evO3siDPZ?si=140d783cd51348b8",
+      "image": "/uploads/upload-1748120863747-270939313.jpg"
+    },
+    "index": 6,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg"
+  },
+  {
+    "id": "1751664621537",
+    "category": [
+      "producer",
+      "songwriter"
+    ],
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png",
+    "albumTitle": "Leon Sharplin",
+    "coverLabel": "Producer",
+    "fontFamily": "",
+    "fontSize": "",
+    "music": {
+      "type": "embed",
+      "url": "https://open.spotify.com/track/0lIcZEJMNWL1wkjaXZnOjr?si=313db60af9cc41db"
+    },
+    "artistDetails": {
+      "name": "Leon Sharplin",
+      "location": "",
+      "bio": "",
+      "spotifyLink": "https://open.spotify.com/track/0lIcZEJMNWL1wkjaXZnOjr?si=313db60af9cc41db",
+      "image": "https://allmyfriendsinc.com/uploads/upload-1751664621430-139857834.png"
+    },
+    "createArtistFolder": false,
+    "artistId": "leon-sharplin",
+    "index": 7,
+    "spotifyEmbed": "",
+    "contactEmail": "",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png"
+  },
+  {
+    "id": 1754015904078,
+    "index": 8,
+    "albumTitle": "About AMF",
+    "coverLabel": "About Us.",
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot 2025-07-31 at 4.08.45â¯PM.png",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot 2025-07-31 at 4.08.45â¯PM.png",
+    "category": [
+      "about us"
+    ],
+    "spotifyEmbed": "",
+    "backText": "All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.\n",
+    "contactEmail": "hi@allmyfriendsinc.com"
+  }
+]
