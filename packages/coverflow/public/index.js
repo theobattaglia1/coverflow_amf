@@ -477,7 +477,13 @@
   // Delegated click handler: works even when Chromium retargets click to container after pointer capture
   container.addEventListener('click', (e)=>{
     if (performance.now() < suppressClicksUntil) { e.preventDefault(); return; }
-    const item = e.target.closest?.('.gg-item');
+    let item = e.target.closest?.('.gg-item');
+    if (!item) {
+      // Chromium retargets click to container after pointer capture; recover item using hit-test
+      const hit = (document.elementsFromPoint?.(e.clientX, e.clientY) || [document.elementFromPoint?.(e.clientX, e.clientY)])
+        .find(el => el && el.classList && el.classList.contains('gg-item'));
+      if (hit) item = hit;
+    }
     if (!item || !canvas.contains(item)) return;
     const id = item.dataset.id;
     const c = covers.find(x => String(x.id) === String(id));
