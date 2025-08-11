@@ -304,7 +304,7 @@
     // On mobile Safari/Chrome, visual center tends to sit lower due to browser chrome.
     // Nudge the row upward a bit so it appears centered.
     if (window.innerWidth <= 768) {
-      const nudge = (viewport.height * 0.10) / scale; // ~10% viewport upward nudge
+      const nudge = (viewport.height * 0.40) / scale; // ~40% viewport upward nudge
       targetY -= nudge;
     }
 
