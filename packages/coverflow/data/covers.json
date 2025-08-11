@@ -2,11 +2,11 @@
   {
     "id": "1743757227077",
     "category": [
-      "about us"
+      "contact"
     ],
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Contact.png",
-    "albumTitle": "contact",
-    "coverLabel": "contact",
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/ALL MY FRIENDS/CONTACT US.png",
+    "albumTitle": "Contact Us",
+    "coverLabel": "Contact Us",
     "fontFamily": "",
     "fontSize": "",
     "music": {
@@ -22,9 +22,9 @@
     },
     "index": 0,
     "spotifyEmbed": "",
-    "contactEmail": "",
-    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Contact.png",
-    "backText": "<h3>About All My Friends</h3><p>We are a creative management company dedicated to nurturing and developing exceptional talent in music and arts.</p><p>Our mission is to build meaningful, long-lasting careers for our artists through strategic partnerships and innovative approaches.</p><p><a href='mailto:hi@allmyfriendsinc.com'>Get in touch →</a></p>"
+    "contactEmail": "hi@allmyfriendsinc.com",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/ALL MY FRIENDS/CONTACT US.png",
+    "backText": ""
   },
   {
     "id": "1743756368892",
@@ -222,8 +222,8 @@
     "index": 8,
     "albumTitle": "About AMF",
     "coverLabel": "About Us.",
-    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot 2025-07-31 at 4.08.45â¯PM.png",
-    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot 2025-07-31 at 4.08.45â¯PM.png",
+    "frontImage": "https://storage.googleapis.com/allmyfriends-assets-2025/ALL MY FRIENDS/All My Friends + About Us + Mosaic.png",
+    "backImage": "https://storage.googleapis.com/allmyfriends-assets-2025/ALL MY FRIENDS/thumbnails/All My Friends + About Us + Mosaic_thumb.jpg",
     "category": [
       "about us"
     ],
