@@ -56,7 +56,7 @@ body {
 .gg-center-logo { position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: none; z-index: 10; }
 .center-logo-frame {
   /* Bigger internal viewport to avoid cropping, then scale down visually */
-  width: 216px; height: 216px; /* 20% larger */
+  width: 256px; height: 256px; /* expand to prevent any cropping */
   border: 0; background: transparent;
   transform: scale(0.55);
   transform-origin: center center;
@@ -123,15 +123,15 @@ body {
   .gg-filters button { text-align: left; padding: 3px 2px; font-size: 13px; line-height: .475; color: var(--muted); text-transform: uppercase; letter-spacing: .02em; }
   .gg-filters button:hover, .gg-filters button.active { color: var(--ink); }
 
-  /* Mobile: Move logo up above names */
-  .gg-center-logo { transform: translateY(-80px); }
+  /* Mobile: Keep logo centered */
+  .gg-center-logo { transform: none; }
 
   /* Mobile: Names list anchored bottom-left (replaces coords) rising upward */
   .gg-coords { display: none; }
   .gg-name-list {
     position: absolute;
     left: 12px;
-    bottom: 8px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
     top: auto;
     transform: none;
     width: auto;
@@ -142,6 +142,7 @@ body {
     flex-direction: column-reverse;
     align-items: flex-start;
     gap: 0;
+    padding-bottom: env(safe-area-inset-bottom);
   }
   .gg-name-list .name { display: block; padding: 1px 2px; font-size: 12px; margin: 0; line-height: 1.05; }
 }
