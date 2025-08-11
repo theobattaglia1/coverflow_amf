@@ -105,8 +105,18 @@
     if (norm.endsWith('s')) norm = norm.slice(0, -1);
     if (norm === 'songwriter' || norm === 'songwriters') norm = 'writer';
     const acceptable = new Set(synonyms[norm] || [norm]);
-    const rolesRaw = (cover?.artistDetails?.roles || cover?.artistDetails?.role || '').toString().toLowerCase();
-    // Simple contains check for any acceptable token
+
+    // Build a lowercase string of all role/category hints on the cover
+    const rolesField = cover?.artistDetails?.roles;
+    const roleField = cover?.artistDetails?.role;
+    const categories = Array.isArray(cover?.category) ? cover.category : [];
+    const parts = [];
+    if (Array.isArray(rolesField)) parts.push(...rolesField.map(x=>String(x).toLowerCase()));
+    else if (rolesField) parts.push(String(rolesField).toLowerCase());
+    if (roleField) parts.push(String(roleField).toLowerCase());
+    if (categories.length) parts.push(...categories.map(x=>String(x).toLowerCase()));
+    const rolesRaw = parts.join(' ');
+
     for (const token of acceptable){ if (rolesRaw.includes(token)) return true; }
     return false;
   }
