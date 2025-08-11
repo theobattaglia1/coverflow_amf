@@ -21,6 +21,8 @@
   let pointerDown = false;
   let didDrag = false;
   let downX = 0, downY = 0;
+  let dragEndAt = 0;
+  let draggedFar = false;
   let currentScale = 0.55; // Midpoint between 0.6 and earlier zoom-out
   let pinchStartDist = 0;
   let pinchStartScale = 1;
@@ -165,19 +167,26 @@
     const aboutBtn = document.createElement('button');
     aboutBtn.textContent = 'About Us';
     aboutBtn.addEventListener('click', () => { 
-      // Build a cover-like object and reuse openModal for identical layout/behavior
-      const aboutCover = {
-        artistDetails: {
-          name: 'About AMF',
-          role: 'About',
-          bio: 'All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.',
-          spotifyLink: CANON_SPOTIFY['about amf']
-        },
-        albumTitle: 'About AMF',
-        frontImage: 'https://storage.googleapis.com/allmyfriends-assets-2025/Screenshot%202025-07-31%20at%204.08.45%E2%80%AFPM.png',
-        music: { url: CANON_SPOTIFY['about amf'] }
-      };
-      openModal(aboutCover);
+      // Use the real About cover so image matches, then inject the canonical text/playlist
+      const aboutCover = covers.find(c => {
+        const n = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toLowerCase();
+        const cat = (c.category || []).map(x=>String(x).toLowerCase());
+        return n.includes('about') || cat.includes('about us') || cat.includes('about');
+      });
+      if (aboutCover) {
+        aboutCover.artistDetails = aboutCover.artistDetails || {};
+        aboutCover.artistDetails.bio = ABOUT_TEXT;
+        aboutCover.artistDetails.spotifyLink = CANON_SPOTIFY['about amf'];
+        openModal(aboutCover);
+      } else {
+        // Fallback
+        openModal({
+          artistDetails: { name: 'About AMF', role: 'About', bio: ABOUT_TEXT, spotifyLink: CANON_SPOTIFY['about amf'] },
+          albumTitle: 'About AMF',
+          frontImage: '',
+          music: { url: CANON_SPOTIFY['about amf'] }
+        });
+      }
     });
     frag.appendChild(aboutBtn);
 
@@ -465,12 +474,20 @@
     if (pointerDown && !didDrag) {
       const dx = Math.abs(e.clientX - downX);
       const dy = Math.abs(e.clientY - downY);
-      if (dx > 4 || dy > 4) {
-        didDrag = true; centeredId = null;
+      if (dx > 6 || dy > 6) { // slightly higher threshold for Chromium precision
+        didDrag = true; centeredId = null; draggedFar = true;
       }
     }
   });
-  window.addEventListener('pointerup', () => { isDragging = false; pointerDown = false; velocityX = 0; velocityY = 0; });
+  window.addEventListener('pointerup', () => { isDragging = false; pointerDown = false; velocityX = 0; velocityY = 0; dragEndAt = performance.now(); });
+  container.addEventListener('click', (e)=>{
+    // Prevent click-through on draggable canvas after a drag in Chromium
+    if (draggedFar || (performance.now() - dragEndAt) < 120) {
+      e.stopPropagation();
+      e.preventDefault();
+    }
+    draggedFar = false;
+  }, true);
   window.addEventListener('pointercancel', () => { isDragging = false; });
 
   // Wheel pan
