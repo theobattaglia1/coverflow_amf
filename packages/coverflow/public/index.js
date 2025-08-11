@@ -276,11 +276,14 @@
         return;
       }
       
-    // Compute a centered row position in CANVAS coordinates
+    // Compute a centered row position within the true visible area (accounting for safe-area)
     const viewport = container.getBoundingClientRect();
     const scale = currentScale; // use current transform scale
+    const safeBottom = window.innerWidth <= 768 ? getSafeAreaInset('bottom') : 0;
+    const visibleTopCanvas = (-translateY + 0) / scale;
+    const visibleBottomCanvas = (-translateY + (viewport.height - safeBottom)) / scale;
     const canvasCenterX = (-translateX + viewport.width / 2) / scale;
-    const canvasCenterY = (-translateY + viewport.height / 2) / scale;
+    const canvasCenterY = (visibleTopCanvas + visibleBottomCanvas) / 2;
 
     // Collect matching items
     const items = Array.from(canvas.querySelectorAll('.gg-item'));
@@ -301,12 +304,10 @@
     let cursorX = canvasCenterX - totalWidth / 2;
     const rowH = (matches[0].getBoundingClientRect().height / scale);
     let targetY = canvasCenterY - rowH / 2;
-    // On mobile Safari/Chrome, visual center tends to sit lower due to browser chrome.
-    // Nudge the row upward a bit so it appears centered.
-    if (window.innerWidth <= 768) {
-      const nudge = (viewport.height * 0.40) / scale; // ~40% viewport upward nudge
-      targetY -= nudge;
-    }
+    // Clamp so the row is fully within visible bounds even if very short
+    const margin = 12 / scale;
+    if (targetY < visibleTopCanvas + margin) targetY = visibleTopCanvas + margin;
+    if (targetY + rowH > visibleBottomCanvas - margin) targetY = Math.max(visibleTopCanvas + margin, visibleBottomCanvas - margin - rowH);
 
     // Animate each matching item to its spot in the row
     matches.forEach((el, idx) => {
@@ -428,6 +429,24 @@
     const s = Math.min(sW, sH);
     const min = window.innerWidth <= 768 ? 0.8 : 0.6;
     return Math.max(min, Math.min(1.25, s));
+  }
+
+  // Read safe-area insets from CSS env() so we can compute true visible bounds
+  function getSafeAreaInset(side){
+    try {
+      const probe = document.createElement('div');
+      probe.style.cssText = 'position:fixed;top:0;left:0;visibility:hidden;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);';
+      document.body.appendChild(probe);
+      const cs = getComputedStyle(probe);
+      const map = {
+        top: parseFloat(cs.paddingTop) || 0,
+        right: parseFloat(cs.paddingRight) || 0,
+        bottom: parseFloat(cs.paddingBottom) || 0,
+        left: parseFloat(cs.paddingLeft) || 0
+      };
+      document.body.removeChild(probe);
+      return map[side] || 0;
+    } catch { return 0; }
   }
 
   // Drag with momentum
