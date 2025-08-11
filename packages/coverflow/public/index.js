@@ -246,7 +246,7 @@
           }
           a.href = '#';
           // Clicking a name centers the corresponding cover
-          a.addEventListener('click', (e)=>{ e.preventDefault(); glideTo(item.id); centeredId = item.id; });
+          a.addEventListener('click', (e)=>{ e.preventDefault(); e.stopPropagation(); centeredId = item.id; glideTo(item.id); });
           listFrag.appendChild(a);
         });
       nameList.appendChild(listFrag);
@@ -419,7 +419,11 @@
 
   // Drag with momentum
   container.addEventListener('pointerdown', (e) => {
-    isDragging = true; container.setPointerCapture(e.pointerId);
+    // Ignore pointer capture for UI controls so their clicks work (names list, filters, etc.)
+    if (e.target.closest('.gg-name-list') || e.target.closest('.gg-filters') || e.target.closest('#gg-contact-float') || e.target.closest('.gg-header')) {
+      isDragging = false; pointerDown = false; return;
+    }
+    isDragging = true; container.setPointerCapture?.(e.pointerId);
     startX = e.clientX - translateX; startY = e.clientY - translateY;
     lastT = performance.now(); lastX = e.clientX; lastY = e.clientY;
     pointerDown = true; didDrag = false; downX = e.clientX; downY = e.clientY;
