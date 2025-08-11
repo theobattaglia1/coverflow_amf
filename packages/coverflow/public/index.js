@@ -381,20 +381,7 @@
         if (label) meta.appendChild(sub);
         item.appendChild(meta);
 
-        item.addEventListener('click', (ev) => {
-          if (performance.now() < suppressClicksUntil) { ev.preventDefault(); return; }
-          // If a drag was detected between pointerdown and pointerup, treat as navigation only
-          if (didDrag) return;
-          // Special case: Contact cover should open email immediately
-          const nm = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toLowerCase();
-          if (nm.includes('contact')) { window.location.href = 'mailto:hi@allmyfriendsinc.com'; return; }
-          if (centeredId === c.id) {
-            openModal(c);
-          } else {
-            centeredId = c.id;
-            glideTo(c.id);
-          }
-        });
+        // Remove per-item click handler; container delegates clicks to handle Chromium retargeting reliably
 
         // Dimming logic for non-matching when a filter is active
         if (activeFilter !== 'all') {
@@ -487,13 +474,20 @@
       suppressClicksUntil = 0;
     }
   });
+  // Delegated click handler: works even when Chromium retargets click to container after pointer capture
   container.addEventListener('click', (e)=>{
-    // Prevent click-through on draggable canvas after a drag in Chromium
-    if (performance.now() < suppressClicksUntil) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
-  }, true);
+    if (performance.now() < suppressClicksUntil) { e.preventDefault(); return; }
+    const item = e.target.closest?.('.gg-item');
+    if (!item || !canvas.contains(item)) return;
+    const id = item.dataset.id;
+    const c = covers.find(x => String(x.id) === String(id));
+    if (!c) return;
+    // Special case: Contact cover should open email immediately
+    const nm = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toLowerCase();
+    if (nm.includes('contact')) { e.preventDefault(); window.location.href = 'mailto:hi@allmyfriendsinc.com'; return; }
+    if (centeredId === c.id) { e.preventDefault(); openModal(c); }
+    else { e.preventDefault(); centeredId = c.id; glideTo(c.id); }
+  });
   window.addEventListener('pointercancel', () => { isDragging = false; });
 
   // Wheel pan
