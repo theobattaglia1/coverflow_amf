@@ -104,6 +104,7 @@ body {
 .modal-artist-info h2{ font-size:2rem; margin-bottom:.5rem; color:#fff; }
 .modal-artist-role{ font-size:1rem; color:var(--muted); text-transform:uppercase; letter-spacing:.1em; margin-bottom:1.25rem; }
 .artist-bio{ font-size:1rem; line-height:1.6; margin-bottom:1.25rem; color:#fff; opacity:.9; }
+.modal-artist-bio{ padding: 0 4rem; }
 .social-links{ display:flex; gap:1rem; margin-top:1rem; margin-bottom:.5rem; }
 .social-link{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border:2px solid rgba(255,255,255,0.7); border-radius:8px; color:#fff; text-decoration:none; transition:all .2s ease; }
 .social-link { line-height: 0; position: relative; overflow: hidden; }
@@ -129,7 +130,7 @@ body {
   .modal-artist-info h2{ font-size:1.15rem; line-height:1.15; margin:0 0 .15rem; }
   .modal-artist-role{ font-size:.72rem; line-height:1.2; margin:0 0 .3rem; letter-spacing:.08em; }
   .modal-artist-label{ font-size:.72rem; color:var(--muted); margin:0 0 .5rem; }
-  .modal-artist-bio{ padding: 0 1rem; }
+  .modal-artist-bio{ padding: 0 1.5rem; }
   .artist-bio{ font-size:.8rem; line-height:1.08; margin:0 0 .6rem; display:-webkit-box; -webkit-line-clamp:9; -webkit-box-orient:vertical; overflow:hidden; }
   /* Wider, fuller-width embed with tighter padding */
   .modal-music-section{ padding: 1rem; margin-top: .5rem; }
