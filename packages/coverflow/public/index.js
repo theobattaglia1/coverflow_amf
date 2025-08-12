@@ -643,7 +643,19 @@
         const s = document.createElement('div'); s.className = 'sub'; const lbl = c.artistDetails?.label || c.label || c.coverLabel || ''; s.textContent = lbl;
         meta.appendChild(t); if (lbl) meta.appendChild(s);
         div.appendChild(meta);
-        div.addEventListener('click', ()=>{ gridEl.classList.add('hidden'); viewToggleBtn.textContent = 'GRID'; glideTo(c.id); });
+        div.addEventListener('click', ()=>{
+          gridEl.classList.add('hidden');
+          viewToggleBtn.textContent = 'GRID';
+          centeredId = c.id;
+          if (window.innerWidth <= 768) {
+            if (spotlightId && spotlightId !== c.id) clearSpotlight();
+            spotlightId = c.id;
+            if (resetChip) resetChip.hidden = false;
+            glideTo(c.id, () => { applySpotlightVisuals(); });
+          } else {
+            glideTo(c.id);
+          }
+        });
         gridEl.appendChild(div);
       });
       gridEl.classList.remove('hidden');
