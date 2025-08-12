@@ -8,6 +8,7 @@
   const nameList = document.getElementById('gg-name-list');
   const resetChip = document.getElementById('gg-reset');
   const gridEl = document.getElementById('gg-grid');
+  const centerLogoFrame = document.querySelector('.gg-center-logo .center-logo-frame');
 
   let covers = [];
   let isDragging = false;
@@ -598,6 +599,7 @@
         gsap.to(el, { duration: 0.3, ease: 'power2.out', scale: 1.0 });
       }
     });
+    if (centerLogoFrame) centerLogoFrame.style.opacity = '0.5';
   }
 
   function clearSpotlight(){
@@ -609,6 +611,7 @@
     });
     spotlightId = null;
     if (resetChip && activeFilter === 'all') resetChip.hidden = true;
+    if (centerLogoFrame) centerLogoFrame.style.opacity = '';
   }
 
   function glideTo(id, onDone){
