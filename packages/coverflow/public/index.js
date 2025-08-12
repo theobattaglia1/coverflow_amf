@@ -547,7 +547,18 @@
     const nm = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toLowerCase();
     if (nm.includes('contact')) { e.preventDefault(); window.location.href = 'mailto:hi@allmyfriendsinc.com'; return; }
     if (centeredId === c.id) { e.preventDefault(); openModal(c); }
-    else { e.preventDefault(); centeredId = c.id; glideTo(c.id); }
+    else {
+      e.preventDefault();
+      centeredId = c.id;
+      if (window.innerWidth <= 768) {
+        // Enter spotlight on mobile when a cover is centered by click
+        if (spotlightId && spotlightId !== c.id) clearSpotlight();
+        spotlightId = c.id; if (resetChip) resetChip.hidden = false;
+        glideTo(c.id, () => { applySpotlightVisuals(); });
+      } else {
+        glideTo(c.id);
+      }
+    }
   });
   window.addEventListener('pointercancel', () => { isDragging = false; });
 
@@ -687,19 +698,20 @@
       <div class="modal-artist-header">
         <div class="modal-artist-image">
           ${banner ? `<img src="${banner}" alt="${name}">` : ''}
-    </div>
+        </div>
         <div class="modal-artist-info">
           <h2>${name}</h2>
           ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
-           ${(() => {
-            const isAbout = /about/i.test(name);
-            const bio = isAbout ? ABOUT_TEXT : (cover.artistDetails?.bio || '');
-            // Shorten excessively long bios on mobile by slicing; CSS also clamps lines
-            const short = (window.innerWidth <= 768 && bio && bio.length > 600) ? bio.slice(0, 600) + '…' : bio;
-            return short ? `<p class=\"artist-bio\">${short}</p>` : '';
-           })()}
           ${buildSocialLinks(cover)}
         </div>
+      </div>
+      <div class="modal-artist-bio">
+        ${(() => {
+          const isAbout = /about/i.test(name);
+          const bio = isAbout ? ABOUT_TEXT : (cover.artistDetails?.bio || '');
+          const short = (window.innerWidth <= 768 && bio && bio.length > 600) ? bio.slice(0, 600) + '…' : bio;
+          return short ? `<p class=\"artist-bio\">${short}</p>` : '';
+        })()}
       </div>
       ${safeSpotify ? `<div class=\"modal-music-section\"><h3 class=\"modal-section-title\">Music</h3><iframe style=\"border-radius: 12px\" src=\"${safeSpotify}\" width=\"100%\" height=\"460\" allow=\"encrypted-media\" allowfullscreen frameborder=\"0\" loading=\"lazy\"></iframe></div>` : ''}
     `;
