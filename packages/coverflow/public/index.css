@@ -107,6 +107,10 @@ body {
 .social-links{ display:flex; gap:1rem; margin-top:1rem; margin-bottom:.5rem; }
 .social-link{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border:2px solid rgba(255,255,255,0.7); border-radius:8px; color:#fff; text-decoration:none; transition:all .2s ease; }
 .social-link svg{ width:20px; height:20px; display:block; }
+/* Force equal visual size regardless of internal viewBox content */
+.social-link.social-ig svg{ viewBox: 0 0 64 64; }
+.social-link.social-tt svg{ viewBox: 0 0 256 256; }
+.social-link.social-sp svg{ viewBox: 0 0 256 256; }
 .social-link svg path, .social-link svg g { vector-effect: non-scaling-stroke; }
 .social-link { line-height: 0; }
 /* Normalize viewBox scales so icons render consistent size */
