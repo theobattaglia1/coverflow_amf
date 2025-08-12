@@ -713,7 +713,7 @@
           return short ? `<p class=\"artist-bio\">${short}</p>` : '';
         })()}
       </div>
-      ${safeSpotify ? `<div class=\"modal-music-section\"><h3 class=\"modal-section-title\">Music</h3><iframe style=\"border-radius: 12px\" src=\"${safeSpotify}\" width=\"100%\" height=\"460\" allow=\"encrypted-media\" allowfullscreen frameborder=\"0\" loading=\"lazy\"></iframe></div>` : ''}
+      ${safeSpotify ? `<div class=\"modal-music-section\"><h3 class=\"modal-section-title\">Music</h3><iframe style=\"border-radius: 12px\" src=\"${safeSpotify}\" width=\"100%\" height=\"520\" allow=\"encrypted-media\" allowfullscreen frameborder=\"0\" loading=\"lazy\"></iframe></div>` : ''}
     `;
   modal.classList.remove('hidden');
   modal.classList.add('show');

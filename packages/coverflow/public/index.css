@@ -117,11 +117,11 @@ body {
   .modal-artist-info h2{ font-size:1.15rem; line-height:1.15; margin:0 0 .15rem; }
   .modal-artist-role{ font-size:.72rem; line-height:1.2; margin:0 0 .5rem; letter-spacing:.08em; }
   .modal-artist-bio{ padding: 0 1rem; }
-  .artist-bio{ font-size:.8rem; line-height:1.08; margin:0 0 .6rem; display:-webkit-box; -webkit-line-clamp:6; -webkit-box-orient:vertical; overflow:hidden; }
+  .artist-bio{ font-size:.8rem; line-height:1.08; margin:0 0 .6rem; display:-webkit-box; -webkit-line-clamp:9; -webkit-box-orient:vertical; overflow:hidden; }
   /* Wider, fuller-width embed with tighter padding */
-  .modal-music-section{ padding: 1rem; }
+  .modal-music-section{ padding: 1rem; margin-top: .5rem; }
   .modal-section-title{ font-size:1rem; margin:.25rem 0 .5rem; }
-  .modal-music-section iframe{ width:100% !important; height:380px !important; }
+  .modal-music-section iframe{ width:100% !important; height:520px !important; }
 }
 
 @media (max-width: 768px) {
