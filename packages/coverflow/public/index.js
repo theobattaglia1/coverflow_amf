@@ -691,11 +691,13 @@
         <div class="modal-artist-info">
           <h2>${name}</h2>
           ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
-          ${(() => {
+           ${(() => {
             const isAbout = /about/i.test(name);
             const bio = isAbout ? ABOUT_TEXT : (cover.artistDetails?.bio || '');
-            return bio ? `<p class=\"artist-bio\">${bio}</p>` : '';
-          })()}
+            // Shorten excessively long bios on mobile by slicing; CSS also clamps lines
+            const short = (window.innerWidth <= 768 && bio && bio.length > 600) ? bio.slice(0, 600) + '…' : bio;
+            return short ? `<p class=\"artist-bio\">${short}</p>` : '';
+           })()}
           ${buildSocialLinks(cover)}
         </div>
       </div>
