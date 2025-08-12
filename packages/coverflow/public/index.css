@@ -107,6 +107,10 @@ body {
 .social-links{ display:flex; gap:1rem; margin-top:1rem; margin-bottom:.5rem; }
 .social-link{ display:inline-flex; align-items:center; justify-content:center; width:40px; height:40px; border:2px solid rgba(255,255,255,0.7); border-radius:8px; color:#fff; text-decoration:none; transition:all .2s ease; }
 .social-link svg{ width:20px; height:20px; display:block; }
+/* Normalize viewBox scales so icons render consistent size */
+.social-link.icon-ig svg{ width:20px; height:20px; }
+.social-link.icon-tt svg{ width:20px; height:20px; }
+.social-link.icon-sp svg{ width:20px; height:20px; }
 .social-link:hover{ background:#fff; color:#000; text-decoration:none; }
 .modal-music-section{ background:#0b0b0b; padding:3rem 4rem; border-top:1px solid rgba(255,255,255,0.08); }
 @media(max-width:768px){
