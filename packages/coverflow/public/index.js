@@ -525,7 +525,7 @@
     isDragging = false; pointerDown = false; velocityX = 0; velocityY = 0;
     if (didDrag) {
       suppressClicksUntil = performance.now() + 180; // suppress synthetic click after drag only
-          } else {
+      } else {
       suppressClicksUntil = 0;
     }
   });
