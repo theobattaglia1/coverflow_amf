@@ -704,7 +704,7 @@
           <h2>${name}</h2>
           ${roleText ? `<div class="modal-artist-role">${roleText}</div>` : ''}
           ${labelText ? `<div class=\"modal-artist-label\">${labelText}</div>` : ''}
-          ${buildSocialLinks(cover)}
+          ${buildSocialLinksLegacy(cover)}
         </div>
       </div>
       <div class="modal-artist-bio">
@@ -726,7 +726,7 @@
     window.addEventListener('keydown', esc);
   }
 
-  function buildSocialLinks(cover){
+  function buildSocialLinksLegacy(cover){
     const links = [];
     const key = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
     const canon = CANON_SOCIALS[key] || {};
@@ -740,7 +740,7 @@
     if (tiktok) links.push({ href: tiktok, aria: 'TikTok', svg: ICON_TT, cls: 'social-tt' });
     if (spotify) links.push({ href: spotify, aria: 'Spotify', svg: ICON_SP, cls: 'social-sp' });
     if (!links.length) return '';
-    return `<div class="social-links">${links.map(l=>`<a class="social-link ${l.cls||''}" target="_blank" rel="noopener" aria-label="${l.aria}" href="${l.href}">${l.svg}</a>`).join('')}</div>`;
+    return `<div class=\"social-links\">${links.map(l=>`<a class=\"social-link ${l.cls||''}\" target=\"_blank\" rel=\"noopener\" aria-label=\"${l.aria}\" href=\"${l.href}\"></a>`).join('')}</div>`;
   }
   function closeModal(){ modal.classList.remove('show'); setTimeout(()=> modal.classList.add('hidden'), 240); }
 

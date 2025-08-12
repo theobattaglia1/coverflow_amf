@@ -112,6 +112,7 @@ body {
   position:absolute; top:50%; left:50%;
   width:20px; height:20px;
   transform: translate(-50%, -50%);
+  filter: brightness(0) invert(1);
   background-repeat:no-repeat; background-position:center; background-size:18px 18px;
 }
 .social-link.social-ig::before{ background-image:url('https://storage.googleapis.com/allmyfriends-assets-2025/ICONS/instagram-svgrepo-com.svg'); }
