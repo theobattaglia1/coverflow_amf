@@ -114,9 +114,9 @@ body {
   transform: translate(-50%, -50%);
   background-repeat:no-repeat; background-position:center; background-size:18px 18px;
 }
-.social-link.social-ig::before{ background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect x="8" y="8" width="48" height="48" rx="12" fill="%23ffffff"/><circle cx="44" cy="20" r="3" fill="%23000000"/><circle cx="32" cy="32" r="10" fill="%23000000"/></svg>'); }
-.social-link.social-tt::before{ background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="%23ffffff" d="M44 12h8v20c0 4.418-3.582 8-8 8h-7v-7c2.5 1.8 5.2 2.7 7 2.7V30c-3.6-0.1-6.8-2.3-7-7h-7v20c0 4.418-3.582 8-8 8s-8-3.582-8-8 3.582-8 8-8c1.2 0 2 .2 3 .5V29c-8.5-0.8-13 6-13 12 0 7.2 5.8 13 13 13 7.2 0 13-5.8 13-13V28.5c2 1.2 4.8 2.3 7 2.5V12z"/></svg>'); }
-.social-link.social-sp::before{ background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><circle cx="32" cy="32" r="24" fill="%23ffffff"/></svg>'); }
+.social-link.social-ig::before{ background-image:url('https://storage.googleapis.com/allmyfriends-assets-2025/ICONS/instagram-svgrepo-com.svg'); }
+.social-link.social-tt::before{ background-image:url('https://storage.googleapis.com/allmyfriends-assets-2025/ICONS/tiktok-svgrepo-com.svg'); }
+.social-link.social-sp::before{ background-image:url('https://storage.googleapis.com/allmyfriends-assets-2025/ICONS/spotify-svgrepo-com.svg'); }
 .social-link:hover{ background:#fff; color:#000; text-decoration:none; }
 .modal-music-section{ background:#0b0b0b; padding:3rem 4rem; border-top:1px solid rgba(255,255,255,0.08); }
 @media(max-width:768px){
