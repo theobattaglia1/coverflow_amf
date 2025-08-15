@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>tom siletto — brand presentation</title>
+    <meta name="description" content="Truth-telling coastal romantic with a golden retriever heart.">
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="tom siletto — brand presentation">
+    <meta property="og:description" content="Truth-telling coastal romantic with a golden retriever heart.">
+    <meta property="og:image" content="https://storage.googleapis.com/allmyfriends-assets-2025/Tom/uuid=7C272ACA-0935-4722-979E-B2B6656AFAA4&code=001&library=3&type=1&mode=1&loc=true&cap=true.png">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500&display=swap');
+
+        :root {
+            /* Coastal + natural palette */
+            --seafoam: #8FBFBA;
+            --moss: #496B55;
+            --surf-blue: #375A66;
+            --driftwood: #BBA995;
+            --clay: #A16A4B;
+            --fog: #E9F1EE;
+            --ink: #162224;
+            --paper: #F7F8F6;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-weight: 300;
+            font-size: 16px;
+            line-height: 1.65;
+            color: var(--ink);
+            background: var(--paper);
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Fraunces', serif;
+            font-weight: 400;
+            line-height: 1.2;
+            text-transform: lowercase;
+        }
+
+        h1 { font-size: clamp(2.6rem, 8vw, 5rem); letter-spacing: -0.01em; }
+        h2 { font-size: clamp(2rem, 6vw, 3.6rem); margin-bottom: 1rem; }
+        h3 { font-size: clamp(1.5rem, 4vw, 2.2rem); margin-bottom: 0.8rem; }
+        h4 { font-size: clamp(1.2rem, 3vw, 1.6rem); margin-bottom: 0.6rem; }
+
+        .container { max-width: 1300px; margin: 0 auto; padding: 0 22px; }
+        .section { padding: 96px 0; position: relative; }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 1000;
+            background: rgba(247, 248, 246, 0.86);
+            backdrop-filter: saturate(140%) blur(8px);
+            padding: 16px 10px;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: opacity 0.35s ease, transform 0.35s ease;
+            border-bottom: 1px solid rgba(22, 34, 36, 0.06);
+        }
+        nav.visible { opacity: 1; transform: translateY(0); }
+        nav ul { list-style: none; display: flex; justify-content: center; gap: 22px; font-size: 14px; flex-wrap: wrap; }
+        nav a { color: var(--ink); text-decoration: none; opacity: 0.8; padding: 6px 10px; border-radius: 999px; transition: background 0.2s ease, opacity 0.2s ease; }
+        nav a:hover { opacity: 1; background: rgba(143, 191, 186, 0.2); }
+
+        /* Hero Cover Spread */
+        .hero {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            position: relative;
+            overflow: hidden;
+            background: var(--fog);
+        }
+        .hero-media {
+            position: absolute; inset: 0;
+            background-image: url('https://storage.googleapis.com/allmyfriends-assets-2025/Tom/uuid=7C272ACA-0935-4722-979E-B2B6656AFAA4&code=001&library=3&type=1&mode=1&loc=true&cap=true.png');
+            background-size: cover; background-position: center; background-repeat: no-repeat;
+            filter: saturate(95%) contrast(102%);
+            transform: scale(1.02);
+        }
+        .hero-tint {
+            position: absolute; inset: 0;
+            background: radial-gradient(1200px 600px at 70% 20%, rgba(143,191,186,0.22), rgba(55,90,102,0.12) 50%, rgba(22,34,36,0.25) 80%),
+                        linear-gradient(180deg, rgba(247,248,246,0.15), rgba(22,34,36,0.25));
+            mix-blend-mode: multiply;
+        }
+        .hero-content { position: relative; z-index: 5; text-align: center; color: #fff; padding: 20px; }
+        .hero h1 { text-shadow: 0 10px 30px rgba(0,0,0,0.35); letter-spacing: -0.02em; }
+        .tagline-corner {
+            position: absolute; right: 18px; bottom: 18px; z-index: 6;
+            font-family: 'Fraunces', serif; font-size: 0.95rem; color: #f7fffb; opacity: 0.9;
+            background: rgba(55,90,102,0.25); padding: 10px 12px; border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.28);
+        }
+
+        /* Content Layout */
+        .content-area { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 72px; align-items: start; }
+        .content-area.center { grid-template-columns: 1fr; max-width: 920px; margin: 0 auto; text-align: center; }
+        .content p { margin-bottom: 1rem; }
+
+        /* Media blocks */
+        .media-card { position: relative; border-radius: 8px; overflow: hidden; background: var(--fog); }
+        .media-card img { width: 100%; height: 100%; object-fit: cover; display: block; filter: saturate(94%) contrast(98%); }
+        .media-caption { position: absolute; left: 10px; bottom: 10px; background: rgba(247,248,246,0.75); padding: 6px 10px; font-size: 12px; border-radius: 6px; border: 1px solid rgba(22,34,36,0.08); }
+
+        /* Cards / Tables */
+        .pillars-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+        .pillar { background: var(--fog); border: 1px solid rgba(22,34,36,0.08); border-radius: 10px; padding: 18px; }
+        .pillar h4 { color: var(--moss); }
+
+        table { width: 100%; border-collapse: collapse; font-size: 0.95rem; margin: 1.6rem 0; }
+        th, td { padding: 0.9rem 0.8rem; text-align: left; border-bottom: 1px solid rgba(22,34,36,0.1); }
+        th { background: rgba(143,191,186,0.18); font-family: 'Fraunces', serif; }
+
+        /* Image Grids + Placeholders for reference sets */
+        .image-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 1.2rem; }
+        .image-grid img { width: 100%; height: 280px; object-fit: cover; border-radius: 8px; transition: transform 0.35s ease, filter 0.35s ease; filter: grayscale(10%); }
+        .image-grid img:hover { transform: scale(1.02); filter: grayscale(0%); }
+
+        .placeholder { display: grid; place-items: center; height: 220px; background: repeating-linear-gradient(135deg, rgba(143,191,186,0.18) 0px, rgba(143,191,186,0.18) 12px, rgba(187,169,149,0.15) 12px, rgba(187,169,149,0.15) 24px); color: rgba(22,34,36,0.7); border: 1px dashed rgba(22,34,36,0.18); border-radius: 8px; font-size: 0.9rem; }
+
+        /* Mood spectrum */
+        .spectrum { height: 16px; border-radius: 999px; background: linear-gradient(90deg, rgba(55,90,102,0.85), rgba(143,191,186,0.85), rgba(187,169,149,0.9)); position: relative; margin: 14px 0 8px; }
+        .spectrum-labels { display: flex; justify-content: space-between; font-size: 12px; opacity: 0.8; }
+
+        /* Whitespace map (SVG container) */
+        .map { background: var(--fog); border: 1px solid rgba(22,34,36,0.08); border-radius: 12px; padding: 16px; }
+        .map svg { width: 100%; height: 360px; display: block; }
+
+        /* Footer */
+        footer { padding: 80px 0; text-align: center; font-family: 'Fraunces', serif; color: var(--moss); font-size: 1.1rem; }
+
+        /* Animation */
+        .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.8s ease, transform 0.8s ease; }
+        .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+        /* Responsive */
+        @media (max-width: 960px) {
+            .content-area { grid-template-columns: 1fr; gap: 40px; }
+            .image-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (max-width: 768px) {
+            .hero { min-height: 70vh; }
+            .tagline-corner { font-size: 0.8rem; right: 10px; bottom: 10px; }
+            nav ul { gap: 10px; }
+            nav a { font-size: 0.8rem; padding: 4px 8px; }
+            .section { padding: 64px 0; }
+        }
+    </style>
+</head>
+<body>
+    <nav id="navigation">
+        <ul>
+            <li><a href="#cover">home</a></li>
+            <li><a href="#who">who he is</a></li>
+            <li><a href="#dna">brand dna</a></li>
+            <li><a href="#visual">visual world</a></li>
+            <li><a href="#sound">sound</a></li>
+            <li><a href="#mood">mood</a></li>
+            <li><a href="#film">film</a></li>
+            <li><a href="#audience">audience</a></li>
+            <li><a href="#whitespace">whitespace</a></li>
+            <li><a href="#rollout">rollout</a></li>
+            <li><a href="#references">references</a></li>
+        </ul>
+    </nav>
+
+    <!-- 1. COVER SPREAD -->
+    <section class="hero" id="cover">
+        <div class="hero-media" aria-hidden="true"></div>
+        <div class="hero-tint" aria-hidden="true"></div>
+        <div class="hero-content fade-in">
+            <h1>tom siletto</h1>
+        </div>
+        <div class="tagline-corner">truth-telling coastal romantic with a golden retriever heart</div>
+    </section>
+
+    <!-- 2. OPENING STATEMENT -->
+    <section class="section" id="who">
+        <div class="container">
+            <div class="content-area">
+                <div class="content fade-in">
+                    <h2>who he is</h2>
+                    <h3>poet heart. farm kid hands. best-friend warmth.</h3>
+                    <p>Tom Siletto writes like a poet, lives like a farm kid, and carries the warmth of a best friend you grew up with. Raised on the Northern California coast between surf breaks and family farmland, his music blends folk-pop intimacy with lyrical honesty. It’s Big Sur in a rainstorm — cinematic, nostalgic, and always with room for a laugh.</p>
+                </div>
+                <div class="visual fade-in">
+                    <div class="media-card" style="height: 560px;">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom/Tom Siletto.jpg" alt="Tom Siletto portrait">
+                        <div class="media-caption">opening statement</div>
+                    </div>
+                    <div class="image-grid" style="margin-top: 16px;">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom/images.jpeg" alt="Tom casual portrait">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom/uuid=817EBBF5-D73A-410F-9FF5-7CB9294CC6F0&code=001&library=3&type=1&mode=2&loc=true&cap=true.jpeg" alt="Tom coastal image">
+                        <img src="https://i.pinimg.com/originals/8c/f4/43/8cf443b8cd0376ceb849cda7f9315643.jpg" alt="creative reference 1">
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Music Embed -->
+        <div style="text-align: center; margin: 3rem auto; max-width: 600px;">
+            <iframe style="border-radius: 24px" src="https://untitled.stream/embed/ZMRanfvQj8BR" width="100%" height="344" allowFullScreen="" allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+        </div>
+    </section>
+
+    <!-- 3. BRAND DNA PILLARS -->
+    <section class="section" id="dna">
+        <div class="container">
+            <div class="content-area">
+                <div class="content fade-in">
+                    <h2>the brand dna</h2>
+                    <div class="pillars-grid" style="margin-top: 12px;">
+                        <div class="pillar">
+                            <h4>core essence</h4>
+                            <p>Truth-telling coastal romantic — Jeff Buckley-level emotional depth, NorCal surfer warmth, farm-kid authenticity.</p>
+                        </div>
+                        <div class="pillar">
+                            <h4>emotional & conceptual territory</h4>
+                            <p>Nostalgic cinematic coastal intimacy; joyful/goofy exterior with an emotional core.</p>
+                        </div>
+                        <div class="pillar">
+                            <h4>archetypal personality</h4>
+                            <p>Lover / Innocent / Creator — emotionally open, hopeful, and creatively driven.</p>
+                        </div>
+                        <div class="pillar">
+                            <h4>recurring themes</h4>
+                            <p>Vast landscapes with intimate moments; nature as character; impermanence; humor as counterweight to vulnerability.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="visual fade-in">
+                    <div class="media-card" style="height: 420px; margin-bottom: 16px;">
+                        <img src="https://i.pinimg.com/originals/1d/1e/51/1d1e5193f80ba62cc758038e3f7e0c73.jpg" alt="coastal pastoral reference">
+                        <div class="media-caption">coastal • pastoral mood</div>
+                    </div>
+                    <div class="image-grid">
+                        <img src="https://i.pinimg.com/originals/d0/00/bc/d000bcbb628d9de8a04edf6a00357520.jpg" alt="creative reference 2">
+                        <img src="https://i.pinimg.com/originals/04/16/6c/04166c44f79cc3b8c1f91bdcd5c01559.jpg" alt="creative reference 3">
+                        <img src="https://i.pinimg.com/originals/7b/d7/56/7bd756baa2d1347bbc088c7ac0ee312e.jpg" alt="creative reference 4">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. VISUAL WORLD -->
+    <section class="section" id="visual">
+        <div class="container">
+            <div class="content-area">
+                <div class="content fade-in">
+                    <h2>the visual world</h2>
+                    <p>The Tom Siletto visual palette is organic, textural, and cinematic — greens, seafoam blues, warm earth tones. Film grain, wool coats, wet stone, corduroy. Photography should feel lived-in and timeless, as if pulled from a box of perfectly aged prints.</p>
+
+                    <div style="margin-top: 18px;">
+                        <h4>pastoral imagery</h4>
+                        <ul>
+                            <li>Horses, fields, garden textures</li>
+                        </ul>
+                        <div class="image-grid">
+                            <img src="https://i.pinimg.com/originals/d4/c0/24/d4c024b587adadbf05020d8761a3b8e1.jpg" alt="pastoral ref 1">
+                            <img src="https://i.pinimg.com/originals/30/7f/27/307f27dd3a71d633ab43bb4d49de1ad7.jpg" alt="pastoral ref 2">
+                            <img src="https://i.pinimg.com/originals/4b/87/bd/4b87bdc3eb0c1ccd5a0fbb13e90ae228.jpg" alt="pastoral ref 3">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 22px;">
+                        <h4>coastal references</h4>
+                        <ul>
+                            <li>Overcast beaches, Big Sur cliffs, surf breaks</li>
+                        </ul>
+                        <div class="image-grid">
+                            <img src="https://i.pinimg.com/originals/f9/c0/01/f9c001e0873392f0d17f373d788ad304.jpg" alt="coastal ref 1">
+                            <img src="https://i.pinimg.com/originals/1d/1e/51/1d1e5193f80ba62cc758038e3f7e0c73.jpg" alt="coastal ref 2">
+                            <img src="https://i.pinimg.com/originals/76/d0/4d/76d04d420ac2908ccd2b981e5d9a2e51.jpg" alt="coastal ref 3">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 22px;">
+                        <h4>texture palette</h4>
+                        <ul>
+                            <li>Wool, corduroy, weathered wood</li>
+                        </ul>
+                        <div class="image-grid">
+                            <img src="https://i.pinimg.com/originals/1a/dd/3c/1add3c3f868070de3476aeaa94553c7c.jpg" alt="texture ref 1">
+                            <img src="https://i.pinimg.com/originals/74/50/6e/74506e62fd82d3f24f4262a3badd44c7.jpg" alt="texture ref 2">
+                            <img src="https://i.pinimg.com/originals/c5/ce/46/c5ce469654c5e44a1d0abc215f184836.jpg" alt="texture ref 3">
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 22px;">
+                        <h4>color palette</h4>
+                        <div class="image-grid" style="grid-template-columns: repeat(5, 1fr);">
+                            <div class="media-card no-parallax" style="height: 120px; background: var(--seafoam);"></div>
+                            <div class="media-card no-parallax" style="height: 120px; background: var(--moss);"></div>
+                            <div class="media-card no-parallax" style="height: 120px; background: var(--surf-blue);"></div>
+                            <div class="media-card no-parallax" style="height: 120px; background: var(--driftwood);"></div>
+                            <div class="media-card no-parallax" style="height: 120px; background: var(--clay);"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="visual fade-in">
+                    <div class="media-card" style="height: 620px; background: linear-gradient(180deg, rgba(143,191,186,0.25), rgba(55,90,102,0.35)); display: grid; place-items: end; padding: 12px;">
+                        <img src="https://i.pinimg.com/originals/f9/c0/01/f9c001e0873392f0d17f373d788ad304.jpg" alt="coastal visual reference">
+                        <div class="media-caption">organic • textural • cinematic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. MUSICAL POSITIONING -->
+    <section class="section" id="sound">
+        <div class="container">
+            <div class="content-area">
+                <div class="content fade-in">
+                    <h2>the sound in context</h2>
+                    <p>Folk-pop intimacy with coastal Americana atmosphere.</p>
+                    <h4 style="margin-top: 10px;">for fans of</h4>
+                    <ul>
+                        <li>Gracie Abrams</li>
+                        <li>Jeff Buckley</li>
+                        <li>Noah Kahan</li>
+                        <li>early Ben Howard</li>
+                        <li>Hozier’s softer side</li>
+                    </ul>
+                    <h4 style="margin-top: 16px;">what sets him apart</h4>
+                    <p>The NorCal surfer + farm-kid blend, balancing depth with warmth.</p>
+                </div>
+                <div class="visual fade-in">
+                    <div class="media-card" style="height: 420px;">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/8253717267bd3da263d35a42a4950e49.jpg" alt="Jeff Buckley reference">
+                        <div class="media-caption">reference: jeff buckley</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. EMOTIONAL & SONIC MOOD -->
+    <section class="section" id="mood">
+        <div class="container">
+            <div class="content-area center">
+                <div class="content fade-in">
+                    <h2>how it feels</h2>
+                    <p>Tom’s world exists on a spectrum: from windswept melancholy to sun-lit joy.</p>
+                    <div class="spectrum" aria-hidden="true"></div>
+                    <div class="spectrum-labels">
+                        <span>melancholy</span>
+                        <span>joy</span>
+                    </div>
+                    <p style="margin-top: 10px;">Keywords: Transportive, bittersweet, grounded, warm, cinematic, sincere.</p>
+                    <div class="image-grid" style="margin-top: 18px;">
+                        <img src="https://i.pinimg.com/originals/18/25/87/18258785e8494d1c422a5dd2e3d24818.jpg" alt="mood ref 1">
+                        <img src="https://i.pinimg.com/originals/32/1c/66/321c6661f2da8ce3bbd34d36f8e20b10.jpg" alt="mood ref 2">
+                        <img src="https://i.pinimg.com/originals/b9/7e/28/b97e28c29f81ea326254440d13361eb0.jpg" alt="mood ref 3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. FILM REFERENCES -->
+    <section class="section" id="film">
+        <div class="container">
+            <div class="content-area">
+                <div class="content fade-in">
+                    <h2>filmic language</h2>
+                    <p>The pacing, color, and tone of Tom’s visuals should nod to films that balance atmosphere with emotional intimacy.</p>
+                    <table style="margin-top: 14px;">
+                        <tr>
+                            <th>film</th>
+                            <th>why it matters</th>
+                        </tr>
+                        <tr>
+                            <td>Call Me By Your Name</td>
+                            <td>sun-drenched intimacy, seasonal nostalgia</td>
+                        </tr>
+                        <tr>
+                            <td>Bright Star</td>
+                            <td>poetic quiet, tactile nature</td>
+                        </tr>
+                        <tr>
+                            <td>Amélie</td>
+                            <td>whimsy with heart, color-forward storytelling</td>
+                        </tr>
+                        <tr>
+                            <td>Stand By Me</td>
+                            <td>friendship, coming-of-age landscapes</td>
+                        </tr>
+                        <tr>
+                            <td>A River Runs Through It</td>
+                            <td>river as character, spiritual outdoors</td>
+                        </tr>
+                        <tr>
+                            <td>Hunt for the Wilderpeople</td>
+                            <td>humor as counterweight, wild-yet-warm</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="visual fade-in">
+                    <div class="image-grid">
+                        <img src="https://i.pinimg.com/originals/85/e4/a2/85e4a2cc14008c518b5a6aba19324a66.jpg" alt="film ref 1">
+                        <img src="https://i.pinimg.com/originals/17/ed/56/17ed563b6309e7edf725f9ce8be9e769.jpg" alt="film ref 2">
+                        <img src="https://i.pinimg.com/originals/93/0e/f4/930ef4732aa321e6e1afdd2b2b9445b4.jpg" alt="film ref 3">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 8. AUDIENCE PROFILE -->
+    <section class="section" id="audience">
+        <div class="container">
+            <div class="content-area">
+                <div class="content fade-in">
+                    <h2>who he speaks to</h2>
+                    <div class="pillars-grid" style="margin-top: 12px;">
+                        <div class="pillar">
+                            <h4>core fans</h4>
+                            <p>Gen Z & millennials seeking sincerity without pretension.</p>
+                        </div>
+                        <div class="pillar">
+                            <h4>adjacent audience</h4>
+                            <p>Folk/Americana-leaning older listeners.</p>
+                        </div>
+                        <div class="pillar">
+                            <h4>psychographic</h4>
+                            <p>Sentimental optimists, emotionally literate, nature-connected.</p>
+                        </div>
+                        <div class="pillar">
+                            <h4>tone notes</h4>
+                            <p>open, grounded, warm — always human-scale.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="visual fade-in">
+                    <div class="image-grid">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom/Tom Siletto.jpg" alt="Tom casual portrait">
+                        <img src="https://i.pinimg.com/originals/4e/07/e1/4e07e1edf5461a0355871f1a7fd2c2e6.jpg" alt="audience ref 1">
+                        <img src="https://i.pinimg.com/originals/88/4b/ff/884bff0423853d7974c7cb42c0cf72bb.jpg" alt="audience ref 2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 9. CULTURAL WHITESPACE MAP -->
+    <section class="section" id="whitespace">
+        <div class="container">
+            <div class="content-area center">
+                <div class="content fade-in">
+                    <h2>where he sits</h2>
+                    <p>Tom occupies a sweet spot between the intimate pop-folk of Gracie Abrams and the rugged authenticity of Americana storytellers — but with a uniquely NorCal coastal lens.</p>
+                    <div class="map" style="margin-top: 16px;">
+                        <svg viewBox="0 0 800 360" role="img" aria-label="cultural whitespace map">
+                            <defs>
+                                <linearGradient id="gridTint" x1="0" y1="0" x2="0" y2="1">
+                                    <stop offset="0%" stop-color="#8FBFBA" stop-opacity="0.12"/>
+                                    <stop offset="100%" stop-color="#BBA995" stop-opacity="0.12"/>
+                                </linearGradient>
+                            </defs>
+                            <rect x="0" y="0" width="800" height="360" fill="url(#gridTint)"/>
+                            <!-- axes -->
+                            <line x1="40" y1="320" x2="760" y2="320" stroke="rgba(22,34,36,0.3)" stroke-width="1"/>
+                            <line x1="40" y1="40" x2="40" y2="320" stroke="rgba(22,34,36,0.3)" stroke-width="1"/>
+                            <text x="760" y="340" text-anchor="end" font-size="12" fill="rgba(22,34,36,0.8)">intimate pop-folk</text>
+                            <text x="40" y="28" text-anchor="start" font-size="12" fill="rgba(22,34,36,0.8)">americana authenticity</text>
+
+                            <!-- points -->
+                            <g fill="#375A66">
+                                <circle cx="610" cy="250" r="6"/>
+                                <text x="620" y="254" font-size="12" fill="#375A66">Gracie Abrams</text>
+                                <circle cx="220" cy="120" r="6"/>
+                                <text x="230" y="124" font-size="12" fill="#375A66">Zach Bryan</text>
+                                <circle cx="300" cy="160" r="6"/>
+                                <text x="310" y="164" font-size="12" fill="#375A66">Tyler Childers</text>
+                            </g>
+                            <!-- tom -->
+                            <g>
+                                <circle cx="460" cy="180" r="8" fill="#A16A4B"/>
+                                <text x="472" y="184" font-size="13" fill="#A16A4B">Tom Siletto</text>
+                            </g>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. ROLLOUT TONE & MESSAGING -->
+    <section class="section" id="rollout">
+        <div class="container">
+            <div class="content-area">
+                <div class="content fade-in">
+                    <h2>how he shows up</h2>
+                    <h4>social</h4>
+                    <p>Playful, self-aware, nature-rooted. Slightly cheeky captions with moments of heartfelt sincerity.</p>
+                    <h4 style="margin-top: 12px;">visuals</h4>
+                    <p>Filmic, candid, warm — intentional imperfections encouraged.</p>
+                </div>
+                <div class="visual fade-in">
+                    <div class="image-grid">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom/uuid=817EBBF5-D73A-410F-9FF5-7CB9294CC6F0&code=001&library=3&type=1&mode=2&loc=true&cap=true.jpeg" alt="Tom rollout image">
+                        <img src="https://i.pinimg.com/originals/ac/63/09/ac63095ed31d415232569a4a31dbf818.jpg" alt="rollout candid ref">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom/Tom Siletto.jpg" alt="Tom portrait alt">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Creative Reference Set (remaining images) -->
+    <section class="section" id="creative-set">
+        <div class="container">
+            <h2 class="fade-in" style="text-align: center; margin-bottom: 24px;">creative reference set</h2>
+            <div class="image-grid fade-in">
+                <img src="https://i.pinimg.com/originals/52/df/cd/52dfcd9940c2fa004a33dacd65335b05.jpg" alt="creative reference 23">
+                <img src="https://i.pinimg.com/originals/e0/ff/8c/e0ff8ca2d21da43775b8e07e8e4cec68.jpg" alt="creative reference 24">
+                <img src="https://i.pinimg.com/originals/e6/47/40/e647400fedb230fe94ea9c875a84dad3.jpg" alt="creative reference 25">
+                <img src="https://i.pinimg.com/originals/7c/76/8c/7c768c73b47af846b4e64e5386b1fa12.jpg" alt="creative reference 26">
+                <img src="https://i.pinimg.com/originals/b1/62/49/b16249584db02e9eac0e1b50ab8a280b.jpg" alt="creative reference 27">
+                <img src="https://i.pinimg.com/originals/f1/85/a4/f185a4f0a557e7cd247ace9c95aa96c8.jpg" alt="creative reference 28">
+                <img src="https://i.pinimg.com/originals/3f/cc/0a/3fcc0a7b72b08bdecb389e9e82cd8afc.jpg" alt="creative reference 29">
+                <img src="https://i.pinimg.com/originals/dd/bd/29/ddbd29ea0e1070de8c854eb6ec9a945d.jpg" alt="creative reference 30">
+                <img src="https://i.pinimg.com/originals/df/a3/88/dfa388bbfdb546fcb5b835d483b15021.jpg" alt="creative reference 31">
+            </div>
+        </div>
+    </section>
+
+    <!-- 11. REFERENCE ARTIST VISUALS -->
+    <section class="section" id="references">
+        <div class="container">
+            <h2 class="fade-in" style="text-align: center; margin-bottom: 24px;">reference artist visuals</h2>
+            <div class="image-grid fade-in">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/8253717267bd3da263d35a42a4950e49.jpg" alt="Jeff Buckley">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/d000055ce38437e84eaa01ce1a2684a3.jpg" alt="Gracie Abrams">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/c99d7d288653c79263c55819c3baa30c.jpg" alt="Ben Howard">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/aa5f120c8d83af9a847bd8923a4b6bba.jpg" alt="Noah Kahan">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/9c50d6414020930b745804e26969d93f.jpg" alt="Hozier">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/d1a401ce9422df7a25007ceedba0cdd8.jpg" alt="Vance Joy">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/5d20910449a44399b80c35091aa25dda.jpg" alt="Lord Huron">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/27eff69765f908a1a201146f1667ad5b.jpg" alt="Caamp">
+                <img src="https://storage.googleapis.com/allmyfriends-assets-2025/TOM%20REFERENCES/783c6b8caffa69568904d6734a20c792%20(1).jpg" alt="Conan Gray">
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>north coast, still warm.</p>
+    </footer>
+
+    <script>
+        // Navigation visibility
+        window.addEventListener('scroll', function() {
+            const nav = document.getElementById('navigation');
+            if (window.scrollY > 100) {
+                nav.classList.add('visible');
+            } else {
+                nav.classList.remove('visible');
+            }
+        });
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+        });
+
+        // Fade in animation on viewport
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Subtle parallax on media cards
+        const parallaxTargets = Array.from(document.querySelectorAll('.media-card:not(.no-parallax)'));
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            parallaxTargets.forEach(el => {
+                const speed = 0.05;
+                el.style.transform = `translateY(${-(scrolled * speed)}px)`;
+            });
+        }, { passive: true });
+    </script>
+</body>
+</html>
+
