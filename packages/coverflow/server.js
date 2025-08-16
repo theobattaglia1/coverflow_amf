@@ -213,22 +213,36 @@ function gitAutoSyncDataFiles() {
     return;
   }
   try {
-    const coversPath = path.join(DATA_DIR, 'covers.json');
-    const assetsPath = path.join(DATA_DIR, 'assets.json');
-    execSync(`git add "${coversPath}" "${assetsPath}"`, { stdio: 'inherit' });
+    // Collect all JSON files in DATA_DIR except backups
+    const allFiles = fs.readdirSync(DATA_DIR)
+      .filter(f => f.endsWith('.json') && !f.includes('-backup'))
+      .map(f => path.join(DATA_DIR, f));
+
+    if (allFiles.length === 0) {
+      console.log('[GIT SYNC] No data files found to add');
+      return;
+    }
+
+    const addCmd = `git add ${allFiles.map(p => `"${p}"`).join(' ')}`;
+    execSync(addCmd, { stdio: 'inherit' });
+
+    // Ensure identity is set (works even if already configured)
     execSync('git config user.name "AMF Admin Bot"', { stdio: 'inherit' });
     execSync('git config user.email "admin-bot@allmyfriendsinc.com"', { stdio: 'inherit' });
-    execSync('git commit -m "Auto-sync covers and assets after push live"', { stdio: 'inherit' });
+
+    // Commit; if nothing changed, this will throw and be handled below
+    execSync('git commit -m "Auto-sync data after Push Live"', { stdio: 'inherit' });
+
+    const branch = process.env.GIT_BRANCH || 'main';
     let pushCmd = 'git push';
     if (process.env.GIT_TOKEN) {
-      // Use HTTPS with token for authentication
       const repo = process.env.GIT_REPO_URL || 'https://github.com/theobattaglia1/coverflow_amf.git';
-      pushCmd = `git push https://${process.env.GIT_TOKEN}@${repo.replace(/^https:\/\//, '')} main`;
+      pushCmd = `git push https://${process.env.GIT_TOKEN}@${repo.replace(/^https:\/\//, '')} ${branch}`;
     }
     execSync(pushCmd, { stdio: 'inherit' });
-    console.log('[GIT SYNC] Successfully committed and pushed covers.json and assets.json');
+    console.log(`[GIT SYNC] Successfully committed and pushed ${allFiles.length} data file(s)`);
   } catch (err) {
-    if (err.message && err.message.includes('nothing to commit')) {
+    if (String(err?.message || '').includes('nothing to commit')) {
       console.log('[GIT SYNC] No changes to commit');
     } else {
       console.error('[GIT SYNC] Failed to commit and push:', err);
