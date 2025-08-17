@@ -2142,9 +2142,34 @@
                 height:40vh;
             }
         }
+        
+        /* ———————————— 20. Mobile-only Enhancements */
+        .reading-progress{
+            position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:1100;transform-origin:left center;opacity:0;transition:opacity .2s;
+        }
+        @media(max-width:768px){
+            .reading-progress{opacity:1;}
+            .mobile-quick-nav{
+                position:sticky;top:56px;z-index:999;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);display:flex;gap:.75rem;overflow-x:auto;padding:.5rem var(--gutter);border-bottom:1px solid rgba(0,0,0,.06);
+            }
+            .mobile-quick-nav .mqn-link{
+                white-space:nowrap;font-size:var(--step--1);padding:.5rem .75rem;border:1px solid rgba(0,0,0,.12);border-radius:999px;text-decoration:none;color:var(--ink);
+            }
+            .mobile-quick-nav .mqn-link.active{background:var(--ink);color:var(--bg);}
+            .back-to-top{
+                position:fixed;right:1rem;bottom:1rem;z-index:1000;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);color:#fff;border:none;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;box-shadow:0 4px 12px rgba(0,0,0,.2);
+            }
+            .back-to-top.visible{opacity:1;pointer-events:auto;}
+            .mobile-synergy-list{margin-top:1rem;padding:1rem;border:1px solid rgba(0,0,0,.08);border-radius:12px;background:#fff;}
+            .mobile-synergy-list ul{padding-left:1rem;}
+            .mobile-synergy-list li{margin:.5rem 0;}
+        }
     </style>
+<head>
+    
 </head>
 <body>
+    <div class="reading-progress"></div>
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-inner container">
@@ -2165,6 +2190,16 @@
             </ul>
         </div>
     </nav>
+    <!-- Mobile Quick Nav -->
+    <div class="mobile-quick-nav">
+        <a href="#intro" class="mqn-link">Intro</a>
+        <a href="#artists" class="mqn-link">Artists</a>
+        <a href="#timeline" class="mqn-link">Timeline</a>
+        <a href="#cases" class="mqn-link">Cases</a>
+        <a href="#synergy" class="mqn-link">Synergy</a>
+        <a href="#future" class="mqn-link">Future</a>
+        <a href="#financials" class="mqn-link">Financials</a>
+    </div>
     
     <!-- Hero / Intro -->
     <section id="intro" class="hero">
@@ -2466,7 +2501,7 @@
                          class="album-cover">
                     <div class="artist-info">
                         <div class="artist-name">Ruby Plume</div>
-                        <div class="artist-role">Artist/Songwriter</div>
+                        <div class="artist-role">Artist/Songwriter • PULSE Publishing</div>
                     </div>
                 </div>
                 
@@ -2584,7 +2619,7 @@ Jack's work has also included placements for brands like Michael Kors and Amazon
         </div>
         <div class="modal-artist-info">
           <h2>Ruby Plume</h2>
-          <div class="modal-artist-role">Artist/Songwriter</div>
+          <div class="modal-artist-role">Artist/Songwriter • PULSE Publishing</div>
           <p class="artist-bio">Ruby Plume is an alt-folk-pop artist from Boston whose intricate storytelling and lush guitar melodies form a liminal, daydreamy musical canvas. Her vocals carry a quiet intensity, layering youthful clarity over emotional depth reminiscent of artists who defined alt-pop for a new generation.
 
 Ruby's songs are subtly prismatic—shifting effortlessly between vivid emotion and elusive mystery, warmth and introspection.
@@ -2767,6 +2802,7 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
                         <h4 class="timeline-year" style="color:var(--accent);">2025 (Present)</h4>
                         <p><strong>April:</strong> Hudson signs to Interscope/Dessner JV<br>
                         <strong>June:</strong> 7 artists, all with deals<br>
+                        <strong>August:</strong> Ruby Plume signs PULSE publishing ($300K upfront + six-figure bonuses over first 3 years; option for $1M two-year extension)<br>
                         <strong>Projected:</strong> $251K revenue</p>
                     </div>
                     
@@ -2923,6 +2959,17 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
                 <div class="multiplier-callout">
                     Every collaboration = +40% revenue impact
                 </div>
+                <!-- Mobile-friendly Key Connections list -->
+                <div class="mobile-synergy-list">
+                    <h5 style="text-align:center;margin-bottom:1rem;">Key Connections</h5>
+                    <ul>
+                        <li><strong>Jack ↔ Hudson</strong>: Production and co-writing pipeline</li>
+                        <li><strong>Hudson ↔ Ruby</strong>: Co-writes and audience crossover</li>
+                        <li><strong>Leon ↔ Kate/Tom</strong>: Sound design + arrangement</li>
+                        <li><strong>Jack ↔ Conall</strong>: Development sessions</li>
+                        <li><strong>Roster-wide</strong>: Shared teams, shared audiences</li>
+                    </ul>
+                </div>
             </div>
             
             <div class="spacer-lg"></div>
@@ -3034,7 +3081,7 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
                     <div class="timeline-item">
                         <span class="timeline-marker"></span>
                         <h5>Q3 2025</h5>
-                        <p><strong>Ruby Plume:</strong> Publishing deal ($200-300K)<br>
+                        <p><strong>Ruby Plume:</strong> Publishing deal signed with PULSE ($300K upfront + six-figure bonuses over first 3 years; option for $1M two-year extension)<br>
                         <strong>Tom Siletto:</strong> Label deal ($200K)<br>
                         <strong>Conall Cafferty:</strong> Publishing ($200-300K)<br>
                         <strong>Leon Sharplin:</strong> Publishing ($150-200K)<br>
@@ -3136,7 +3183,7 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
                     <h4 class="year-label">2025 (Projected)</h4>
                     <table>
                         <tr><td><strong>Revenue</strong></td><td><strong>$251,000</strong></td></tr>
-                        <tr><td style="font-size:var(--step--2);opacity:0.7;">YTD: $53,600 + Next 6mo: $197,400</td><td></td></tr>
+                        <tr><td style="font-size:var(--step--2);opacity:0.7;">YTD: $98,600 + Next 6mo: $152,400</td><td></td></tr>
                         <tr style="border-bottom:1px solid rgba(0,0,0,0.2);"><td colspan="2" style="padding-top:1rem;"><strong>Expenses:</strong></td></tr>
                         <tr><td>YTD Expenses</td><td>$59,000</td></tr>
                         <tr><td>Next 6mo Expenses</td><td>$59,000</td></tr>
@@ -3225,6 +3272,7 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
                     </tr>
                 </tbody>
             </table>
+            
             
             <!-- Strategic Hires Timeline -->
             <div class="grid">
@@ -3351,6 +3399,7 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
             <p class="opacity-50">© 2025 All My Friends Inc.</p>
         </div>
     </footer>
+    <button class="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
     
     <!-- Minimal JS -->
 <script>
@@ -3384,6 +3433,18 @@ window.addEventListener('scroll', () => {
   navLinks.forEach(link => {
     link.classList.toggle('active', link.getAttribute('href') === '#' + current);
   });
+  // Update quick nav active state and reading progress (mobile)
+  const quickLinks = document.querySelectorAll('.mobile-quick-nav .mqn-link');
+  quickLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+  const progressEl = document.querySelector('.reading-progress');
+  if (progressEl) {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressEl.style.width = progress + '%';
+  }
 });
 
 navLinks.forEach(link => {
@@ -3492,6 +3553,26 @@ document.addEventListener('DOMContentLoaded', () => {
       downloadPDF();
     });
   }
+  // Mobile quick nav smooth scroll
+  document.querySelectorAll('.mobile-quick-nav .mqn-link').forEach(link => {
+    link.addEventListener('click', e => {
+      const href = link.getAttribute('href');
+      const target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth' });
+        closeMobileNav();
+      }
+    });
+  });
+  // Back to top visibility
+  const backToTop = document.querySelector('.back-to-top');
+  const toggleBackToTop = () => {
+    if (!backToTop) return;
+    backToTop.classList.toggle('visible', window.scrollY > window.innerHeight * 0.8);
+  };
+  toggleBackToTop();
+  window.addEventListener('scroll', toggleBackToTop);
   const modalContent = document.querySelector('.modal-content');
   if (modalContent) {
     modalContent.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
