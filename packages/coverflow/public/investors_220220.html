@@ -1976,6 +1976,11 @@
             .capital-uses-mobile{
                 display:block;
             }
+            
+            /* Hide original capital items on mobile */
+            .capital-item{
+                display:none;
+            }
         }
         
         /* ———————————— 12. Financials */
@@ -2416,6 +2421,32 @@
             margin:0 auto;
         }
         
+        @media(max-width:768px){
+            .case-study-content{
+                grid-template-columns:1fr;
+                gap:2rem;
+            }
+            
+            .value-chart{
+                order:1;
+            }
+            
+            .case-study-text{
+                order:2;
+            }
+            
+            .roster-image{
+                order:3;
+                margin-top:2rem;
+            }
+            
+            .roster-image img{
+                width:100%;
+                height:auto;
+                border-radius:8px;
+            }
+        }
+        
         .value-chart h5{
             font-size:var(--step-0);
             margin-bottom:2rem;
@@ -2635,6 +2666,28 @@
             border:2px solid var(--ink);
             position:relative;
             transition:all 0.3s ease;
+        }
+        
+        @media(max-width:768px){
+            .timeline-year{
+                padding:1rem;
+                margin-bottom:0.5rem;
+            }
+            
+            .timeline-year h5{
+                font-size:var(--step-1);
+                margin-bottom:0.5rem;
+            }
+            
+            .timeline-year p{
+                font-size:var(--step--1);
+                line-height:1.3;
+                margin:0;
+            }
+            
+            .timeline-grid{
+                gap:0.5rem;
+            }
         }
         
         .timeline-year:hover{
