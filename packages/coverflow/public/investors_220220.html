@@ -44,8 +44,8 @@
             
             /* Grid & Spacing */
             --gutter:1.5rem;
-            --max-width:1280px;
-            --section-space:10rem;
+            --max-width:1000px;
+            --section-space:6rem;
         }
         
         /* ———————————— 2. Base Typography */
@@ -58,6 +58,9 @@
             color:var(--ink);
             background:var(--bg);
             letter-spacing:-.01em;
+            overflow-x:hidden;
+            margin:0;
+            padding-top:100px;
         }
         
         h1,h2,h3,h4,h5,h6{
@@ -66,6 +69,21 @@
             letter-spacing:-.04em;
             margin:0;
             position:relative;
+        }
+        
+        /* Section header watermark effect */
+        h2::before{
+            content:attr(data-watermark);
+            position:absolute;
+            top:0.2em;
+            left:0.1em;
+            font-size:inherit;
+            font-weight:inherit;
+            color:var(--accent);
+            opacity:0.15;
+            z-index:-1;
+            white-space:nowrap;
+            pointer-events:none;
         }
         
         h1{font-size:var(--step-6);letter-spacing:-.06em;}
@@ -85,13 +103,16 @@
         p{
             margin-bottom:1.5rem;
             max-width:65ch;
+            text-align:justify;
+            line-height:1.4;
         }
         
         .lead{
             font-size:var(--step-1);
-            line-height:1.5;
+            line-height:1.4;
             font-weight:400;
             letter-spacing:-.02em;
+            text-align:justify;
         }
         
         a{
@@ -124,6 +145,8 @@
             max-width:var(--max-width);
             margin-inline:auto;
             padding-inline:var(--gutter);
+            width:100%;
+            box-sizing:border-box;
         }
         
         .grid{
@@ -152,12 +175,12 @@
             display:grid;
             grid-template-columns:1fr 1fr;
             gap:3rem;
-            margin-top:4rem;
+            margin-top:2rem;
             position:relative;
         }
         
         .concept-card{
-            padding:3rem;
+            padding:2rem;
             position:relative;
             overflow:hidden;
             border:2px solid var(--ink);
@@ -230,56 +253,257 @@
             z-index:-1;
         }
         
+        /* Management Comparison Styles */
+        .management-comparison{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:3rem;
+            margin-top:4rem;
+            position:relative;
+        }
+        
+        .comparison-column{
+            padding:3rem;
+            position:relative;
+            overflow:hidden;
+            border:2px solid var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .comparison-column.average-manager{
+            border-color:#DC2626;
+            background:linear-gradient(135deg, rgba(220,38,38,0.02) 0%, transparent 50%);
+        }
+        
+        .comparison-column.all-my-friends{
+            border-color:#16A34A;
+            background:linear-gradient(135deg, rgba(22,163,74,0.02) 0%, transparent 50%);
+        }
+        
+        .comparison-header{
+            font-size:var(--step-3);
+            font-weight:900;
+            margin-bottom:3rem;
+            text-align:left;
+            letter-spacing:-0.05em;
+            text-transform:uppercase;
+            position:relative;
+            padding-bottom:1.5rem;
+        }
+        
+        .comparison-header::after{
+            content:'';
+            position:absolute;
+            bottom:0;
+            left:0;
+            width:60%;
+            height:2px;
+            background:currentColor;
+            opacity:0.2;
+        }
+        
+        .comparison-column.average-manager .comparison-header{
+            color:#DC2626;
+        }
+        
+        .comparison-column.all-my-friends .comparison-header{
+            color:#16A34A;
+        }
+        
+        .comparison-section{
+            margin-bottom:2rem;
+        }
+        
+        .comparison-section:last-child{
+            margin-bottom:0;
+        }
+        
+        .phase-header{
+            font-size:var(--step-1);
+            font-weight:700;
+            margin-bottom:1rem;
+            letter-spacing:-0.02em;
+        }
+        
+        .phase-header.chase,
+        .phase-header.cash,
+        .phase-header.collapse{
+            color:#DC2626;
+        }
+        
+        .phase-header.discover,
+        .phase-header.develop,
+        .phase-header.deliver{
+            color:#16A34A;
+        }
+        
+        .comparison-column ul{
+            list-style:none;
+            padding:0;
+        }
+        
+        .comparison-column li{
+            position:relative;
+            padding-left:1.5rem;
+            margin-bottom:0.5rem;
+            font-size:var(--step--1);
+            line-height:0.9;
+            text-align:justify;
+        }
+        
+        .comparison-column li::before{
+            content:'•';
+            position:absolute;
+            left:0;
+            font-weight:700;
+        }
+        
+        .comparison-column.average-manager li::before{
+            color:#DC2626;
+        }
+        
+        .comparison-column.all-my-friends li::before{
+            color:#16A34A;
+        }
+        
+        @media(max-width:768px){
+            .management-comparison{
+                gap:1.5rem;
+            }
+            .comparison-column{
+                padding:1.5rem;
+            }
+            .comparison-header{
+                font-size:var(--step-2);
+                margin-bottom:2rem;
+                padding-bottom:1rem;
+            }
+            .comparison-header::after{
+                width:80%;
+            }
+            .phase-header{
+                font-size:var(--step-0);
+                margin-bottom:0.75rem;
+            }
+            .comparison-section{
+                margin-bottom:1.5rem;
+            }
+            .comparison-column li{
+                font-size:0.7rem;
+                padding-left:1rem;
+            }
+        }
+        
         /* Founder section with image */
         .founder-section{
-            position:relative;
+            padding:6rem 0;
+            background:var(--bg);
         }
         
         .founder-content{
             display:grid;
-            grid-template-columns:1fr 300px;
+            grid-template-columns:1fr 1fr;
             gap:4rem;
             align-items:start;
+            margin-top:4rem;
         }
         
         .founder-image{
             position:relative;
-            width:300px;
-            height:400px;
+            width:100%;
+            height:600px;
             overflow:hidden;
-            transform:rotate(2deg);
-            margin-top:2rem;
+            border-radius:0;
         }
         
         .founder-image img{
             width:100%;
             height:100%;
             object-fit:cover;
-            filter:grayscale(100%) contrast(1.1);
-            transition:all 0.3s ease;
         }
         
-        .founder-image:hover img{
-            filter:grayscale(50%) contrast(1);
-        }
-        
-        .founder-image::before{
-            content:'';
+        .founder-overlay{
             position:absolute;
-            inset:0;
-            border:3px solid var(--ink);
-            transform:translate(-8px, -8px);
-            z-index:-1;
+            bottom:2rem;
+            left:2rem;
+            color:white;
+            z-index:2;
+        }
+        
+        .founder-title{
+            font-size:var(--step-0);
+            font-weight:600;
+            margin-bottom:0.5rem;
+            opacity:0.9;
+        }
+        
+        .founder-name{
+            font-size:var(--step-4);
+            font-weight:900;
+            letter-spacing:-0.02em;
+            line-height:0.9;
+        }
+        
+        .founder-details{
+            display:flex;
+            flex-direction:column;
+            gap:3rem;
+        }
+        
+        .founder-info{
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        }
+        
+        .info-item{
+            font-size:var(--step-0);
+            font-weight:600;
+        }
+        
+        .founder-experience{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+        }
+        
+        .experience-section h4{
+            font-size:var(--step-1);
+            font-weight:700;
+            margin-bottom:1rem;
+            text-decoration:underline;
+            text-underline-offset:4px;
+        }
+        
+        .experience-section ul{
+            list-style:none;
+            padding:0;
+            margin:0;
+        }
+        
+        .experience-section li{
+            font-size:var(--step-0);
+            margin-bottom:0.5rem;
+            line-height:1.4;
         }
         
         @media(max-width:768px){
             .founder-content{
                 grid-template-columns:1fr;
+                gap:3rem;
             }
+            
             .founder-image{
-                width:100%;
-                max-width:300px;
-                margin:2rem auto;
+                height:400px;
+            }
+            
+            .founder-overlay{
+                bottom:1.5rem;
+                left:1.5rem;
+            }
+            
+            .founder-name{
+                font-size:var(--step-3);
             }
         }
 
@@ -416,12 +640,12 @@
             .grid{grid-template-columns:repeat(4,1fr);}
             [class*="col-"]{grid-column:span 4;}
             [class*="offset-"]{grid-column-start:1;}
-            .concept-cards{grid-template-columns:1fr;}
+            .concept-cards{grid-template-columns:1fr 1fr;}
         }
         
         /* ———————————— 4. Section Architecture */
         section{
-            padding-block:var(--section-space);
+            padding-block:calc(var(--section-space) * 0.6);
             position:relative;
         }
         
@@ -437,20 +661,72 @@
         
         /* ———————————— 5. Navigation */
         .nav{
-            position:fixed;
-            top:0;
-            left:0;
-            right:0;
+            position:fixed !important;
+            top:0 !important;
+            left:0 !important;
+            right:0 !important;
             z-index:1000;
             padding:1.5rem 0;
-            background:rgba(255,255,255,.95);
+            background:rgba(255,255,255,.8);
             backdrop-filter:blur(10px);
+            min-height:60px;
+            border-bottom:1px solid rgba(0,0,0,0.1);
+            transition:background 0.3s ease, backdrop-filter 0.3s ease;
+            transform:none !important;
+        }
+        
+        .nav:hover,
+        .nav.scrolled{
+            background:rgba(255,255,255,.95);
+            backdrop-filter:blur(15px);
+        }
+        
+        /* Ensure navigation is always visible */
+        .nav{
+            display:block !important;
+            visibility:visible !important;
+            opacity:1 !important;
         }
         
         .nav-inner{
             display:flex;
             align-items:center;
             justify-content:space-between;
+        }
+        
+        .nav-toggle{
+            display:none;
+            flex-direction:column;
+            justify-content:space-around;
+            width:30px;
+            height:25px;
+            background:transparent;
+            border:none;
+            cursor:pointer;
+            padding:0;
+            z-index:1001;
+        }
+        
+        .nav-toggle span{
+            width:100%;
+            height:3px;
+            background:var(--ink);
+            border-radius:10px;
+            transition:all 0.3s linear;
+            position:relative;
+            transform-origin:1px;
+        }
+        
+        .nav-toggle.active span:first-child{
+            transform:rotate(45deg);
+        }
+        
+        .nav-toggle.active span:nth-child(2){
+            opacity:0;
+        }
+        
+        .nav-toggle.active span:nth-child(3){
+            transform:rotate(-45deg);
         }
         
         .nav-logo{
@@ -463,6 +739,8 @@
             display:flex;
             gap:3rem;
             list-style:none;
+            margin:0;
+            padding:0;
         }
         
         .nav-link{
@@ -471,6 +749,85 @@
             letter-spacing:-.02em;
             opacity:.5;
             transition:opacity .2s;
+            color:var(--ink);
+            text-decoration:none;
+            display:block;
+        }
+        
+        @media(max-width:768px){
+            .container{
+                padding-inline:1rem;
+            }
+            
+            .nav-toggle{
+                display:flex;
+            }
+            
+            .nav-links{
+                position:fixed;
+                top:0;
+                right:0;
+                bottom:0;
+                width:300px;
+                background:rgba(255,255,255,0.95);
+                backdrop-filter:blur(10px);
+                display:flex;
+                flex-direction:column;
+                justify-content:flex-start;
+                align-items:flex-end;
+                padding:6rem 2rem 2rem 2rem;
+                gap:1.5rem;
+                transform:translateX(100%);
+                transition:transform 0.3s ease-in-out;
+                z-index:1000;
+                border-left:1px solid rgba(0,0,0,0.1);
+                visibility:hidden;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+                visibility:visible;
+            }
+            
+            .nav-link{
+                font-size:var(--step-1);
+                font-weight:500;
+                opacity:0.7;
+                transition:opacity 0.2s;
+            }
+            
+            .nav-link:hover,
+            .nav-link.active{
+                opacity:1;
+            }
+            
+            .nav-logo{
+                font-size:1.25rem;
+            }
+        }
+        
+        @media(max-width:480px){
+            .container{
+                padding-inline:0.75rem;
+            }
+            
+            .nav-links{
+                width:280px;
+                padding:5rem 1.5rem 2rem 1.5rem;
+                gap:1.25rem;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+            }
+            
+            .nav-link{
+                font-size:var(--step-0);
+            }
+            
+            .nav-logo{
+                font-size:1rem;
+            }
         }
         
         .nav-link:hover,
@@ -486,6 +843,7 @@
             align-items:center;
             position:relative;
             overflow:hidden;
+            padding-top:80px;
         }
         
         .hero-content{
@@ -494,7 +852,7 @@
         }
         
         .hero-title{
-            margin-bottom:2rem;
+            margin-bottom:1.5rem;
         }
         
         /* CHAOS: Off-kilter hero image */
@@ -583,6 +941,7 @@
             margin-block:6rem;
             padding-left:2rem;
             border-left:4px solid var(--ink);
+            text-align:justify;
         }
         
         /* ———————————— 8. Metrics Grid */
@@ -617,7 +976,8 @@
         
         @media(max-width:768px){
             .metrics-grid{
-                grid-template-columns:repeat(2,1fr);
+                grid-template-columns:repeat(4,1fr);
+                gap:2rem;
             }
         }
         
@@ -693,16 +1053,31 @@
         
         @media(max-width:768px){
             .timeline-items{
-                grid-template-columns:1fr;
+                grid-template-columns:repeat(2,1fr);
+                gap:2rem;
             }
         }
         
         /* ———————————— 10. Artist Grid */
         .artist-grid{
             display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+            grid-template-columns:repeat(3,1fr);
             gap:3rem;
             margin:4rem 0;
+        }
+        
+        @media(max-width:768px){
+            .artist-grid{
+                grid-template-columns:repeat(3,1fr);
+                gap:2rem;
+            }
+        }
+        
+        @media(max-width:480px){
+            .artist-grid{
+                grid-template-columns:repeat(3,1fr);
+                gap:1.5rem;
+            }
         }
         
         /* Artist Cards */
@@ -735,7 +1110,7 @@
 
         .album-cover{
             width:100%;
-            height:300px;
+            height:clamp(200px, 25vw, 300px);
             object-fit:cover;
             filter:saturate(70%) contrast(1.1);
             transition:all 0.3s ease;
@@ -751,7 +1126,7 @@
             bottom:0;
             left:0;
             right:0;
-            padding:var(--gutter);
+            padding:clamp(0.75rem, 2vw, var(--gutter));
             background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,transparent 100%);
             color:var(--bg);
             transform:translateY(100%);
@@ -764,18 +1139,20 @@
         }
 
         .artist-name{
-            font-size:var(--step-1);
+            font-size:clamp(0.625rem, 1.5vw, var(--step-0));
             font-weight:700;
             text-transform:uppercase;
-            letter-spacing:0.05em;
-            margin-bottom:0.25rem;
+            letter-spacing:0.02em;
+            margin-bottom:0.15rem;
+            line-height:1.1;
         }
 
         .artist-role{
-            font-size:var(--step--1);
+            font-size:clamp(0.5rem, 1.2vw, var(--step--1));
             opacity:0.8;
             text-transform:uppercase;
-            letter-spacing:0.1em;
+            letter-spacing:0.05em;
+            line-height:1.1;
         }
 
         /* Modal Styles */
@@ -898,6 +1275,7 @@
             line-height:1.6;
             margin-bottom:2rem;
             max-width:600px;
+            text-align:justify;
         }
 
         .social-links{
@@ -958,12 +1336,13 @@
 
         @media(max-width:768px){
             .modal-artist-header{
-                grid-template-columns:1fr;
+                grid-template-columns:300px 1fr;
+                gap:2rem;
                 padding:2rem;
             }
             
             .modal-artist-image{
-                width:100%;
+                width:300px;
                 height:300px;
             }
             
@@ -1176,6 +1555,11 @@
             transform:rotate(-1deg);
         }
         
+        .case-image{
+            position:relative;
+            overflow:hidden;
+        }
+        
         .case-image img{
             width:100%;
             height:100%;
@@ -1186,6 +1570,148 @@
         
         .case-image:hover img{
             filter:saturate(100%) contrast(1);
+        }
+        
+        /* Refined Case Study Styles */
+        .case-header-refined{
+            margin-bottom:3rem;
+        }
+        
+        .case-image-refined{
+            position:relative;
+            width:100%;
+            height:45vh;
+            overflow:hidden;
+            border-radius:12px;
+        }
+        
+        .case-image-refined img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:grayscale(20%) contrast(1.1);
+        }
+        
+        .artist-name-overlay-refined{
+            position:absolute;
+            bottom:0;
+            left:0;
+            right:0;
+            background:linear-gradient(transparent, rgba(0,0,0,0.8));
+            color:white;
+            font-size:var(--step-5);
+            font-weight:900;
+            letter-spacing:-0.05em;
+            line-height:0.8;
+            padding:2rem 2rem 1.5rem;
+            z-index:2;
+        }
+        
+
+        
+
+        
+        .case-content-refined{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            margin-top:3rem;
+            align-items:start;
+        }
+        
+        .case-main-content{
+            position:relative;
+        }
+        
+        .stats-line{
+            font-size:var(--step--1);
+            font-weight:600;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            margin-bottom:2rem;
+            padding-bottom:1rem;
+            border-bottom:2px solid var(--ink);
+            opacity:0.6;
+        }
+        
+        .intro-paragraph{
+            font-size:var(--step-1);
+            line-height:1.4;
+            margin-bottom:2rem;
+            color:var(--ink);
+            font-weight:400;
+            text-align:justify;
+        }
+        
+        .section-title{
+            font-size:var(--step-2);
+            font-weight:700;
+            margin-bottom:1rem;
+            color:var(--ink);
+            letter-spacing:-0.02em;
+        }
+        
+        .main-bio{
+            font-size:var(--step-0);
+            line-height:1.5;
+            color:var(--ink);
+            font-weight:400;
+            text-align:justify;
+        }
+        
+        .case-deal-section{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+        }
+        
+        .deal-card{
+            background:var(--bg);
+            border:2px solid var(--ink);
+            padding:2rem;
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .deal-card:hover{
+            transform:translateY(-2px);
+            box-shadow:0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .deal-card::before{
+            content:'';
+            position:absolute;
+            top:-1px;
+            left:-1px;
+            right:-1px;
+            bottom:-1px;
+            background:var(--accent);
+            opacity:0;
+            transition:opacity 0.3s ease;
+            z-index:-1;
+        }
+        
+        .deal-card:hover::before{
+            opacity:0.05;
+        }
+        
+        .deal-title{
+            font-size:var(--step-0);
+            font-weight:700;
+            margin-bottom:1rem;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .deal-details{
+            font-size:var(--step--1);
+            line-height:1.4;
+            color:var(--ink);
+            font-weight:400;
+            opacity:0.8;
+            text-align:justify;
         }
         
         /* Enhanced Case Study Text Layout */
@@ -1249,16 +1775,20 @@
         
         @media(max-width:768px){
             .case-header{
-                grid-template-columns:1fr;
+                grid-template-columns:200px 1fr;
+                gap:2rem;
             }
             .case-image{
-                margin:0 auto;
+                width:200px;
+                height:200px;
+                margin:0;
             }
             .case-content{
-                grid-template-columns:1fr;
+                grid-template-columns:1fr 1fr;
+                gap:2rem;
             }
             .case-deal{
-                grid-column:span 1;
+                grid-column:span 2;
             }
         }
         
@@ -1388,11 +1918,11 @@
         }
         
         /* ———————————— 15. Utilities */
-        .spacer-xs{height:2rem;}
-        .spacer-sm{height:4rem;}
-        .spacer-md{height:6rem;}
-        .spacer-lg{height:8rem;}
-        .spacer-xl{height:12rem;}
+        .spacer-xs{height:1rem;}
+        .spacer-sm{height:2rem;}
+        .spacer-md{height:3rem;}
+        .spacer-lg{height:4rem;}
+        .spacer-xl{height:6rem;}
         
         .text-center{text-align:center;}
         .opacity-50{opacity:.5;}
@@ -1470,91 +2000,578 @@
             color:var(--accent);
         }
         
-        /* ———————————— 17. Roster Synergy Network */
-        .synergy-visual{
-            position:relative;
-            padding:6rem 0;
+        /* ———————————— 17. Cross-Roster Compounding */
+        .cross-roster-content{
             margin:4rem 0;
         }
         
-        .synergy-intro{
+        .cross-roster-intro{
             text-align:center;
-            margin-bottom:4rem;
+            margin-bottom:6rem;
         }
         
-        .synergy-intro p{
+        .cross-roster-intro p{
             font-size:var(--step-1);
-            max-width:50ch;
+            max-width:60ch;
             margin:0 auto;
             line-height:1.6;
+            text-align:justify;
         }
         
-        .synergy-network{
+        .revenue-multiplier-chart{
             position:relative;
-            height:600px;
-            margin:4rem 0;
-            overflow:hidden;
+            max-width:600px;
+            margin:0 auto;
         }
         
-        .synergy-node{
+        .multiplier-arc{
+            position:relative;
+            height:60px;
+            margin-bottom:2rem;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        
+        .multiplier-arc::before{
+            content:'';
             position:absolute;
-            background:var(--bg);
-            border:3px solid var(--ink);
-            padding:1.5rem 2rem;
+            top:0;
+            left:0;
+            right:0;
+            height:100%;
+            background:linear-gradient(90deg, transparent 0%, #FFD700 50%, transparent 100%);
+            border-radius:50px;
+            opacity:0.3;
+        }
+        
+        .multiplier-arc span{
+            position:relative;
+            z-index:2;
+            font-size:var(--step--1);
             font-weight:700;
-            transition:all 0.3s ease;
-            cursor:pointer;
-            z-index:10;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            color:var(--ink);
         }
         
-        .synergy-node:hover{
+        .multiplier-stack{
+            display:flex;
+            flex-direction:column;
+            gap:0.4rem;
+            position:relative;
+        }
+        
+        .multiplier-scale{
+            position:absolute;
+            right:-60px;
+            top:0;
+            width:50px;
+            height:350px;
             background:var(--ink);
-            color:var(--bg);
-            transform:scale(1.1);
-            z-index:20;
+            border:2px solid var(--ink);
+            border-radius:0;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            padding:0.75rem 0.5rem;
         }
         
-        .synergy-node.producer{
-            border-color:var(--accent);
-        }
-        
-        .synergy-node.artist{
-            border-style:dashed;
-        }
-        
-        /* Node positions */
-        .synergy-node:nth-child(1){top:20%;left:45%;} /* Jack - Center */
-        .synergy-node:nth-child(2){top:10%;left:20%;} /* Hudson - Top Left */
-        .synergy-node:nth-child(3){top:10%;right:20%;} /* Ruby - Top Right */
-        .synergy-node:nth-child(4){top:50%;left:10%;} /* Kate - Mid Left */
-        .synergy-node:nth-child(5){top:50%;right:10%;} /* Tom - Mid Right */
-        .synergy-node:nth-child(6){bottom:20%;left:25%;} /* Leon - Bottom Left */
-        .synergy-node:nth-child(7){bottom:20%;right:25%;} /* Conall - Bottom Right */
-        
-        .synergy-lines{
+        .multiplier-scale::after{
+            content:'';
             position:absolute;
-            inset:0;
-            pointer-events:none;
-        }
-        
-        .synergy-line{
-            position:absolute;
-            height:1px;
-            background:var(--ink);
-            opacity:0.2;
-            transform-origin:left center;
-        }
-        
-        /* Multiplier text */
-        .multiplier-callout{
-            position:absolute;
-            bottom:-4rem;
+            bottom:-15px;
             left:50%;
             transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:8px solid transparent;
+            border-right:8px solid transparent;
+            border-top:12px solid #696969;
+        }
+        
+        .multiplier-scale::before{
+            content:'';
+            position:absolute;
+            bottom:-15px;
+            left:50%;
+            transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:8px solid transparent;
+            border-right:8px solid transparent;
+            border-top:12px solid var(--ink);
+            z-index:-1;
+        }
+        
+        .scale-label{
+            position:absolute;
+            right:-100px;
+            top:50%;
+            transform:translateY(-50%) rotate(-90deg);
+            font-size:var(--step--1);
+            font-weight:700;
+            color:var(--ink);
+            white-space:nowrap;
+            text-transform:uppercase;
+            letter-spacing:-0.01em;
+        }
+        
+        .scale-markers{
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            height:100%;
+            color:white;
+            font-weight:900;
+            font-size:var(--step--1);
+            letter-spacing:-0.02em;
+        }
+        
+        .multiplier-block{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:1.5rem 2rem;
+            border-radius:0;
+            color:white;
+            font-weight:700;
+            position:relative;
+            overflow:hidden;
+            text-transform:uppercase;
+            letter-spacing:-0.02em;
+            border-left:4px solid rgba(255,255,255,0.3);
+        }
+        
+        .multiplier-block::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background:currentColor;
+            opacity:0.9;
+        }
+        
+        .multiplier-label{
+            position:relative;
+            z-index:2;
+            font-size:var(--step-0);
+            color:white;
+            font-weight:600;
+            letter-spacing:-0.01em;
+        }
+        
+        .multiplier-value{
+            position:relative;
+            z-index:2;
+            font-size:var(--step-1);
+            font-weight:900;
+            color:white;
+            letter-spacing:-0.03em;
+        }
+        
+        .multiplier-block.teal{
+            color:#20B2AA;
+        }
+        
+        .multiplier-block.purple{
+            color:#9370DB;
+        }
+        
+        .multiplier-block.green{
+            color:#32CD32;
+        }
+        
+        .multiplier-block.red{
+            color:#DC143C;
+        }
+        
+        .multiplier-block.blue{
+            color:#4169E1;
+        }
+        
+        /* Synergy Case Study */
+        .synergy-case-study{
+            background:#F5F5F5;
+            margin-inline:calc(var(--gutter) * -2);
+            padding:4rem calc(var(--gutter) * 2);
+        }
+        
+        .case-study-header{
             text-align:center;
+            margin-bottom:3rem;
+        }
+        
+        .case-study-header h3{
+            font-size:var(--step-3);
+            margin-bottom:1.5rem;
+            font-weight:700;
+            letter-spacing:-0.02em;
+        }
+        
+        .case-study-intro{
+            font-size:var(--step-0);
+            max-width:50ch;
+            margin:0 auto;
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+            opacity:0.7;
+        }
+        
+        .case-study-content{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            align-items:start;
+            max-width:900px;
+            margin:0 auto;
+        }
+        
+        .value-chart h5{
+            font-size:var(--step-0);
+            margin-bottom:2rem;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            color:var(--ink);
+        }
+        
+        .chart-bars{
+            display:flex;
+            flex-direction:column;
+            gap:1.5rem;
+        }
+        
+        .chart-bar{
+            display:flex;
+            align-items:center;
+            gap:1.5rem;
+        }
+        
+        .bar-fill{
+            width:100px;
+            height:32px;
+            background:#D3D3D3;
+            border-radius:4px;
+            position:relative;
+        }
+        
+        .chart-bar.hudson-individual .bar-fill{
+            width:70px;
+            background:#A9A9A9;
+        }
+        
+        .chart-bar.jack-individual .bar-fill{
+            width:50px;
+            background:#696969;
+        }
+        
+        .chart-bar.multiplier-effect .bar-fill{
+            width:160px;
+            background:var(--ink);
+        }
+        
+        .bar-label{
+            font-size:var(--step--1);
+            font-weight:600;
+            color:var(--ink);
+            flex:1;
+        }
+        
+        .case-study-text h5{
+            font-size:var(--step-1);
+            margin-bottom:1.5rem;
+            font-weight:700;
+            color:var(--ink);
+            letter-spacing:-0.01em;
+        }
+        
+        .case-study-text p{
+            font-size:var(--step-0);
+            line-height:1.4;
+            margin-bottom:2rem;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        .roster-image{
+            margin-top:2rem;
+        }
+        
+        .roster-image img{
+            width:100%;
+            height:auto;
+            border-radius:8px;
+        }
+        
+        /* ———————————— 18. Vision Section Styles */
+        .vision-principles{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:3rem;
+            margin:4rem 0;
+        }
+        
+        .principle{
+            padding:2rem;
+            border:2px solid var(--ink);
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .principle:hover{
+            transform:translateY(-4px);
+            box-shadow:0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .principle h4{
+            font-size:var(--step-1);
+            margin-bottom:1rem;
+            font-weight:700;
+            color:var(--ink);
+        }
+        
+        .principle p{
+            font-size:var(--step-0);
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        .vision-layout{
+            display:grid;
+            grid-template-columns:2fr 1fr;
+            gap:4rem;
+            align-items:start;
+        }
+        
+        .vision-content h4{
             font-size:var(--step-2);
+            margin-bottom:1rem;
+            font-weight:700;
+            color:var(--ink);
+        }
+        
+        .vision-content p{
+            font-size:var(--step-0);
+            margin-bottom:3rem;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        .capital-uses{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+        }
+        
+        .capital-item{
+            padding:1.5rem;
+            border-left:4px solid var(--accent);
+            background:rgba(0,0,255,0.02);
+            transition:all 0.3s ease;
+        }
+        
+        .capital-item:hover{
+            background:rgba(0,0,255,0.05);
+            transform:translateX(4px);
+        }
+        
+        .capital-item h5{
+            font-size:var(--step-0);
+            margin-bottom:0.5rem;
+            font-weight:700;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .capital-item p{
+            font-size:var(--step--1);
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+            margin-bottom:0;
+        }
+        
+        .vision-highlight{
+            background:var(--accent);
+            color:var(--bg);
+            padding:3rem;
+            border-radius:12px;
+            position:sticky;
+            top:2rem;
+        }
+        
+        .vision-highlight h3{
+            font-size:var(--step-2);
+            margin-bottom:2rem;
+            font-weight:700;
+            color:var(--bg);
+        }
+        
+        .vision-highlight ul{
+            list-style:none;
+            padding:0;
+        }
+        
+        .vision-highlight li{
+            font-size:var(--step-0);
+            line-height:1.4;
+            margin-bottom:1rem;
+            padding-left:1.5rem;
+            position:relative;
+        }
+        
+        .vision-highlight li::before{
+            content:'•';
+            position:absolute;
+            left:0;
+            color:var(--bg);
+            font-weight:700;
+        }
+        
+        .vision-timeline{
+            margin-top:4rem;
+        }
+        
+        .timeline-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:2rem;
+        }
+        
+        .timeline-year{
+            padding:2rem;
+            border:2px solid var(--ink);
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .timeline-year:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-year h5{
+            font-size:var(--step-2);
+            margin-bottom:1rem;
+            font-weight:700;
+            color:var(--ink);
+        }
+        
+        .timeline-year p{
+            font-size:var(--step--1);
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        @media(max-width:768px){
+            .vision-principles{
+                grid-template-columns:1fr;
+                gap:2rem;
+            }
+            
+            .vision-layout{
+                grid-template-columns:1fr;
+                gap:3rem;
+            }
+            
+            .vision-highlight{
+                position:static;
+            }
+            
+            .timeline-grid{
+                grid-template-columns:repeat(2,1fr);
+                gap:1.5rem;
+            }
+        }
+        
+        @media(max-width:480px){
+            .timeline-grid{
+                grid-template-columns:1fr;
+            }
+        }
+        
+        /* ———————————— 19. Investment Section Styles */
+        .investment-section{
+            background:var(--ink);
+            color:var(--bg);
+            padding:6rem 0;
+        }
+        
+        .investment-layout{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:3rem;
+            align-items:center;
+            margin-top:2rem;
+            max-width:1000px;
+            margin-left:auto;
+            margin-right:auto;
+        }
+        
+        .investment-terms{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+            align-items:center;
+        }
+        
+        .term-item{
+            display:flex;
+            flex-direction:column;
+            gap:0.25rem;
+            text-align:center;
+        }
+        
+        .term-value{
+            font-size:var(--step-4);
             font-weight:700;
             color:var(--accent);
+            line-height:1;
+        }
+        
+        .term-label{
+            font-size:var(--step-0);
+            font-weight:400;
+            color:var(--bg);
+            opacity:0.8;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .investment-description ul{
+            list-style:none;
+            padding:0;
+            margin:0;
+        }
+        
+        .investment-description li{
+            font-size:var(--step-0);
+            line-height:1.4;
+            margin-bottom:1rem;
+            color:var(--bg);
+            font-weight:400;
+        }
+        
+        @media(max-width:768px){
+            .investment-layout{
+                grid-template-columns:1fr 1fr;
+                gap:2rem;
+            }
+            
+            .investment-terms{
+                gap:1.5rem;
+            }
+            
+            .term-value{
+                font-size:var(--step-3);
+            }
         }
         
         @keyframes shimmer{
@@ -1739,10 +2756,7 @@
                 --section-space:5rem;
             }
             
-            /* Mobile Navigation */
-            .nav{
-                padding:1rem 0;
-            }
+
             
             .nav-burger{
                 display:flex;
@@ -1831,7 +2845,7 @@
             
             /* Enhanced Mobile Artist Grid */
             .artist-grid{
-                gap:2rem;
+                gap:1.5rem;
                 padding:0 0.5rem;
             }
             
@@ -1954,14 +2968,13 @@
             
             /* Mobile Case Studies */
             .case-image{
-                width:100%;
-                max-width:none;
-                height:50vh;
-                margin-bottom:2rem;
+                width:200px;
+                height:200px;
+                margin-bottom:0;
             }
             
             .case-section{
-                margin-bottom:1.5rem;
+                margin-bottom:1rem;
             }
             
             .case-deal{
@@ -1976,15 +2989,16 @@
             }
             
             .synergy-node{
-                position:relative !important;
-                width:100%;
-                margin-bottom:1rem;
+                position:absolute !important;
+                width:150px;
+                margin-bottom:0;
                 text-align:center;
-                padding:1.5rem;
+                padding:1rem;
+                font-size:var(--step--1);
             }
             
             .synergy-lines{
-                display:none;
+                display:block;
             }
             
             .multiplier-callout{
@@ -1995,7 +3009,6 @@
             
             /* Mobile Financial Tables */
             .financial-year{
-                margin-bottom:2rem;
                 overflow-x:auto;
             }
             
@@ -2015,14 +3028,14 @@
             }
             
             .investment-grid{
-                grid-template-columns:1fr;
-                gap:3rem;
+                grid-template-columns:repeat(3,1fr);
+                gap:2rem;
                 text-align:center;
             }
             
             .investment-terms-grid{
-                grid-template-columns:repeat(2,1fr) !important;
-                gap:2rem !important;
+                grid-template-columns:repeat(3,1fr) !important;
+                gap:1.5rem !important;
             }
             
             /* Mobile Footer */
@@ -2078,10 +3091,7 @@
                 transform:scale(0.98);
             }
             
-            /* iOS Safe Areas */
-            .nav{
-                padding-top:max(1rem, env(safe-area-inset-top));
-            }
+
             
             .footer{
                 padding-bottom:max(4rem, env(safe-area-inset-bottom));
@@ -2121,8 +3131,8 @@
             }
             
             .investment-terms-grid{
-                grid-template-columns:1fr !important;
-                gap:2rem !important;
+                grid-template-columns:repeat(3,1fr) !important;
+                gap:1rem !important;
             }
         }
         
@@ -2149,13 +3159,6 @@
         }
         @media(max-width:768px){
             .reading-progress{opacity:1;}
-            .mobile-quick-nav{
-                position:sticky;top:56px;z-index:999;background:rgba(255,255,255,.95);backdrop-filter:blur(10px);display:flex;gap:.75rem;overflow-x:auto;padding:.5rem var(--gutter);border-bottom:1px solid rgba(0,0,0,.06);
-            }
-            .mobile-quick-nav .mqn-link{
-                white-space:nowrap;font-size:var(--step--1);padding:.5rem .75rem;border:1px solid rgba(0,0,0,.12);border-radius:999px;text-decoration:none;color:var(--ink);
-            }
-            .mobile-quick-nav .mqn-link.active{background:var(--ink);color:var(--bg);}
             .back-to-top{
                 position:fixed;right:1rem;bottom:1rem;z-index:1000;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);color:#fff;border:none;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;box-shadow:0 4px 12px rgba(0,0,0,.2);
             }
@@ -2174,32 +3177,25 @@
     <nav class="nav">
         <div class="nav-inner container">
             <div class="nav-logo">ALL MY FRIENDS</div>
-            <div class="nav-burger" onclick="toggleMobileNav()">
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
                 <span></span>
                 <span></span>
                 <span></span>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#intro" class="nav-link active" onclick="closeMobileNav()">Intro</a></li>
-                <li><a href="#artists" class="nav-link" onclick="closeMobileNav()">Artists</a></li>
-                <li><a href="#timeline" class="nav-link" onclick="closeMobileNav()">Timeline</a></li>
-                <li><a href="#cases" class="nav-link" onclick="closeMobileNav()">Case Studies</a></li>
-                <li><a href="#synergy" class="nav-link" onclick="closeMobileNav()">Synergy</a></li>
-                <li><a href="#future" class="nav-link" onclick="closeMobileNav()">Future</a></li>
-                <li><a href="#financials" class="nav-link" onclick="closeMobileNav()">Financials</a></li>
+            </button>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#intro" class="nav-link active">Intro</a></li>
+                <li><a href="#artists" class="nav-link">Artists</a></li>
+                <li><a href="#timeline" class="nav-link">Timeline</a></li>
+                <li><a href="#cases" class="nav-link">Case Studies</a></li>
+                <li><a href="#synergy" class="nav-link">Synergy</a></li>
+                <li><a href="#future" class="nav-link">Future</a></li>
+                <li><a href="#financials" class="nav-link">Financials</a></li>
             </ul>
         </div>
     </nav>
-    <!-- Mobile Quick Nav -->
-    <div class="mobile-quick-nav">
-        <a href="#intro" class="mqn-link">Intro</a>
-        <a href="#artists" class="mqn-link">Artists</a>
-        <a href="#timeline" class="mqn-link">Timeline</a>
-        <a href="#cases" class="mqn-link">Cases</a>
-        <a href="#synergy" class="mqn-link">Synergy</a>
-        <a href="#future" class="mqn-link">Future</a>
-        <a href="#financials" class="mqn-link">Financials</a>
-    </div>
+
     
     <!-- Hero / Intro -->
     <section id="intro" class="hero">
@@ -2284,6 +3280,9 @@
                             bottom: 0;
                             left: 50%;
                             transform: translateX(-50%);
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
                         }
 
                         .amf-bar-m .amf-letter {
@@ -2319,34 +3318,30 @@
                             margin-left: calc(var(--bar-width) * 2 + var(--gap));
                             transform: translateX(-100%);
                             font-family: var(--font-family);
-                            font-size: calc(var(--logo-unit) / 3.4);
+                            font-size: calc(var(--logo-unit) / 2.8);
                             text-transform: uppercase;
                             letter-spacing: -0.5px;
                             color: var(--black);
-                            line-height: 0.8;
+                            line-height: 1;
                             font-weight: bold;
                         }
 
-                        .amf-logo-text div:first-child {
-                            margin: 0;
-                        }
-
-                        .amf-logo-text div:last-child {
-                            margin: 0;
-                            display: block;
-                            text-align: right;
-                        }
-
-                        @media (max-height: 560px), (max-width: 500px) {
-                            .amf-logo-wrapper { transform: scale(0.7); }
-                        }
-                        @media (max-height: 440px), (max-width: 400px) {
-                            .amf-logo-wrapper { transform: scale(0.6); }
+                        @media (max-width: 768px) {
+                            .amf-logo {
+                                --logo-unit: 80px;
+                                --bar-width: 60px;
+                            }
                         }
                         @media (max-width: 500px) {
                             .amf-logo {
-                                --logo-unit: 80px;
-                                --bar-width: 64px;
+                                --logo-unit: 65px;
+                                --bar-width: 50px;
+                            }
+                        }
+                        @media (max-width: 400px) {
+                            .amf-logo {
+                                --logo-unit: 55px;
+                                --bar-width: 42px;
                             }
                         }
                     </style>
@@ -2365,10 +3360,7 @@
                                         <div class="amf-letter">F</div>
                                     </div>
                                 </div>
-                                <div class="amf-logo-text">
-                                    <div>ALL MY FRIENDS</div>
-                                    <div>INC</div>
-                                </div>
+                                <div class="amf-logo-text">ALL MY FRIENDS</div>
                             </div>
                         </div>
                     </div>
@@ -2381,19 +3373,19 @@
         <div class="hero-image"></div>
     </section>
     
-    <!-- Who We Are -->
+    <!-- Overview -->
     <section style="position:relative;">
         <div class="abstract-corner"></div>
         
         <div class="container">
-            <p class="section-marker">01 — WHO WE ARE</p>
+            <p class="section-marker">01 — OVERVIEW</p>
             
             <div class="grid">
-                <div class="col-8">
-                    <h2 data-misreg="THE EVOLVED">THE EVOLVED<br>MANAGEMENT<br>COMPANY</h2>
+                <div class="col-10">
+                    <h2 data-watermark="MANAGEMENT" data-misreg="THE EVOLVED">THE EVOLVED<br>MANAGEMENT<br>COMPANY</h2>
                     <div class="spacer-md"></div>
                     <p class="lead">
-                        All My Friends Inc. is a bootstrapped venture built on the conviction that real, 
+                        All My Friends Inc. is a music management venture built on the conviction that real, 
                         lasting artist development isn't a temporary highway to a destination—it's an 
                         evolving journey that grows alongside the artist.
                     </p>
@@ -2402,56 +3394,73 @@
             
             <div class="spacer-lg"></div>
             
-            <div class="concept-cards">
-                <div class="concept-card problem">
-                    <h5>The Problem</h5>
-                    <p>• Profit-extraction mindset: Artists seen merely as revenue channels<br>
-                    • Misaligned incentives: Agencies push short-term wins over long-term growth<br>
-                    • Limited equity participation: Upfront cash but no meaningful ownership<br>
-                    • Reactivity over strategy: Ad-hoc decisions miss trend anticipation</p>
+            <div class="management-comparison">
+                <div class="comparison-column average-manager">
+                    <h4 class="comparison-header">THE AVERAGE MANAGER</h4>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header chase">CHASE</h5>
+                        <ul>
+                            <li>Follows trends instead of setting them</li>
+                            <li>Reacts to what's already working</li>
+                            <li>Signs artists based on viral moments</li>
+                            <li>Prioritizes quick wins over lasting careers</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header cash">CASH</h5>
+                        <ul>
+                            <li>Treats artists as short-term profit channels</li>
+                            <li>Pushes for immediate revenue</li>
+                            <li>Takes commission without building value</li>
+                            <li>No equity alignment or long-term vision</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header collapse">COLLAPSE</h5>
+                        <ul>
+                            <li>Burns out artists with unsustainable pace</li>
+                            <li>Abandons when momentum slows</li>
+                            <li>No infrastructure for career longevity</li>
+                            <li>Leaves artists worse than they found them</li>
+                        </ul>
+                    </div>
                 </div>
-                <div class="concept-card solution">
-                    <h5>Our Solution</h5>
-                    <p>• Vision-focused investment: Each artist as dynamic talent with compounding value<br>
-                    • Equity alignment: Artists become true partners, not just clients<br>
-                    • Game-theoretic insight: Anticipate industry shifts before mainstream<br>
-                    • Long-horizon partnership: Sustained development and creative runway</p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="quote">
-                We don't treat our artists like product.<br>
-                We treat them like partners.<br>
-                It's not just what we do—it's who we are.
-            </div>
-        </div>
-    </section>
-    
-    <!-- Meet Theo -->
-    <section style="background:#FAFAFA;" class="founder-section">
-        <div class="container">
-            <p class="section-marker">02 — MEET THE FOUNDER</p>
-            
-            <div class="founder-content">
-                <div>
-                    <h2>THEO<br>BATTAGLIA</h2>
-                    <p class="lead">Founder</p>
-                    <div class="spacer-md"></div>
-                    <p>
-                        With a background spanning major labels (<strong>10K Projects</strong>), entertainment studios 
-                        (<strong>HBO</strong>, <strong>Warner Bros</strong>), and tech innovators (<strong>Apple</strong>), I've witnessed firsthand how 
-                        traditional management commodifies talent rather than cultivating it.
-                    </p>
-                    <p>
-                        I launched All My Friends Inc. in 2022 to prove that real, lasting artist 
-                        development—rooted in visionary strategy and genuine partnership—can yield 
-                        stellar commercial results while nurturing creative evolution.
-                    </p>
-                </div>
-                <div class="founder-image">
-                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Theo/Screenshot 2025-07-30 at 5.54.44â¯PM.png" alt="Theo Battaglia">
+                
+                <div class="comparison-column all-my-friends">
+                    <h4 class="comparison-header">ALL MY FRIENDS</h4>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header discover">DISCOVER</h5>
+                        <ul>
+                            <li>Identifies talent before the market catches up</li>
+                            <li>Sees potential others miss</li>
+                            <li>Builds from authentic artistry, not algorithms</li>
+                            <li>Invests in vision over virality</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header develop">DEVELOP</h5>
+                        <ul>
+                            <li>Partners with artists as co-owners</li>
+                            <li>Builds sustainable, compounding careers</li>
+                            <li>Creates ecosystem value through collaboration</li>
+                            <li>Aligns incentives for long-term growth</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header deliver">DELIVER</h5>
+                        <ul>
+                            <li>Achieves institutional validation</li>
+                            <li>Compounds success across the roster</li>
+                            <li>Creates generational artists, not one-hit wonders</li>
+                            <li>Builds lasting value for all stakeholders</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
@@ -2460,7 +3469,7 @@
     <!-- Artist Showcase -->
     <section id="artists">
         <div class="container">
-            <p class="section-marker">03 — OUR ARTISTS</p>
+            <p class="section-marker">02 — OUR ARTISTS</p>
             
             <div class="grid">
                 <div class="col-10">
@@ -2551,330 +3560,46 @@
             </div>
             <p class="swipe-hint">Tap to explore</p>
         </div>
-        
-<!-- ARTIST MODALS WITH EMBEDS - FULL REPLACEMENT -->
-
-<div class="artist-modal" id="artist-modal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="closeModal()">×</button>
-
-    <!-- HUDSON INGRAM -->
-    <div id="hudson-modal">
-      <div class="modal-artist-header">
-        <div class="modal-artist-image">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png" alt="Hudson Ingram">
-        </div>
-        <div class="modal-artist-info">
-          <h2>Hudson Ingram</h2>
-          <div class="modal-artist-role">Artist • Interscope/Dessner JV</div>
-          <p class="artist-bio">Hudson Ingram, an 18-year-old Nashville-based artist from Texas, makes music that feels as big as commercial pop but is built on a foundation of sharp songwriting and real musicianship. The son of country artist Jack Ingram, he grew up immersed in storytelling, developing a style that merges intimate, deeply felt lyrics with hooks that hit on first listen. Obsessed with the craft, self-taught in production, and relentless in his pursuit of mastery, Hudson is carving his own lane—one that feels classic, yet completely his own.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/hudson.ingram/" class="social-link" target="_blank">
-              <span>📸</span> Instagram
-            </a>
-            <a href="https://www.tiktok.com/@hudson.ingram" class="social-link" target="_blank">
-              <span>🎵</span> TikTok
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="modal-music-section">
-        <h3 class="modal-section-title">Music</h3>
-        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TEoWLLmvBCMx" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
-      </div>
-    </div>
-
-    <!-- JACK SCHREPFERMAN -->
-    <div id="jack-modal">
-      <div class="modal-artist-header">
-        <div class="modal-artist-image">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png" alt="Jack Schrepferman">
-        </div>
-        <div class="modal-artist-info">
-          <h2>Jack Schrepferman</h2>
-          <div class="modal-artist-role">Producer • Kobalt</div>
-          <p class="artist-bio">Jack Schrepferman is a Nashville-based multi genre songwriter, producer, and multi-instrumentalist known for crafting song-centered music that seamlessly blends pop sensibility with bold, innovative production. At just 21, his catalogue has amassed over 70 million streams across all genres, with recent singles cut by Dasha (Warner), Dhruv (RCA), Steinza (Santa Ana), Midwxst (Geffen), and Astrid S (Island).
-
-Jack spent his formative years working closely with Grammy-nominated, multi-platinum producer JT Daly, contributing to projects for artists such as Benson Boone, Tai Verdes, Bully, and PVRIS at MMK Studios. This experience laid the foundation for Jack's adaptable and artist-first approach, regardless of musical style.
-
-Jack's work has also included placements for brands like Michael Kors and Amazon. He is actively collaborating with both emerging and established artists / writers, including Jensen McRae, Johnny Orlando, M-Phazes, Geoff Warburton alongside developing sounds with rising independent talents such as Hudson Ingram, Ryman, Conall Cafferty, Kenzie Cait, and Casper Sage.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/jackschrepferman/" class="social-link" target="_blank">
-              <span>📸</span> Instagram
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="modal-music-section">
-        <h3 class="modal-section-title">Music</h3>
-        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/WNFeGYKaapgk" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
-      </div>
-    </div>
-
-    <!-- RUBY PLUME -->
-    <div id="ruby-modal">
-      <div class="modal-artist-header">
-        <div class="modal-artist-image">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png" alt="Ruby Plume">
-        </div>
-        <div class="modal-artist-info">
-          <h2>Ruby Plume</h2>
-          <div class="modal-artist-role">Artist/Songwriter • PULSE Publishing</div>
-          <p class="artist-bio">Ruby Plume is an alt-folk-pop artist from Boston whose intricate storytelling and lush guitar melodies form a liminal, daydreamy musical canvas. Her vocals carry a quiet intensity, layering youthful clarity over emotional depth reminiscent of artists who defined alt-pop for a new generation.
-
-Ruby's songs are subtly prismatic—shifting effortlessly between vivid emotion and elusive mystery, warmth and introspection.
-
-Beyond her standout singer-songwriter talent, Ruby is a poly-artistic force, incorporating guitar finesse, imaginative illustration, and mixed-media art into her creative arsenal. These visual explorations deepen the vivid daydream that is her developing world—rounding out a creative universe that feels both tangible and dreamlike.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/rubytplume/" class="social-link" target="_blank">
-              <span>📸</span> Instagram
-            </a>
-            <a href="https://www.tiktok.com/@rubytplume" class="social-link" target="_blank">
-              <span>🎵</span> TikTok
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="modal-music-section">
-        <h3 class="modal-section-title">Music</h3>
-        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TzHxY2K2S4gX" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
-      </div>
-    </div>
-
-    <!-- TOM SILETTO -->
-    <div id="tom-modal">
-      <div class="modal-artist-header">
-        <div class="modal-artist-image">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png" alt="Tom Siletto">
-        </div>
-        <div class="modal-artist-info">
-          <h2>Tom Siletto</h2>
-          <div class="modal-artist-role">Artist</div>
-          <p class="artist-bio">Tom Siletto is an emerging artist in the indie folk/pop scene whose introspective, candid songwriting draws listeners in as if in conversation with a close friend. He seamlessly blends strong lyricism and haunting instrumentation, evoking the gloomy cliffs of Northern California where he grew up. 
-
-Siletto is also part of the duo Darling, which has amassed devoted listeners after just two released songs. Their first single, 'couldn't i,' garnered about 200k streams on Spotify alone in the first month, without help from editorial playlists.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/tomsiletto/" class="social-link" target="_blank">
-              <span>📸</span> Instagram
-            </a>
-            <a href="https://www.tiktok.com/@tomsilettomusic" class="social-link" target="_blank">
-              <span>🎵</span> TikTok
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="modal-music-section">
-        <h3 class="modal-section-title">Music</h3>
-        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/LzuqcxQvWcrM" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
-      </div>
-    </div>
-
-    <!-- CONALL CAFFERTY -->
-    <div id="conall-modal">
-      <div class="modal-artist-header">
-        <div class="modal-artist-image">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png" alt="Conall Cafferty">
-        </div>
-        <div class="modal-artist-info">
-          <h2>Conall Cafferty</h2>
-          <div class="modal-artist-role">Artist/Songwriter</div>
-          <p class="artist-bio">Conall Cafferty—a 20-year-old singer-songwriter from Montclair, NJ now rooted in Nashville—pairs a self-taught, blues-bred guitar style and distinctive vocal tone with the sharp lyricism he honed during a stint at Belmont's songwriting program and a brief turn on American Idol. His songs fuse porch-born intimacy with the kind of hooks that can fill a room, reflecting influences that range from B.B. King to Damien Rice while never losing their raw, first-take authenticity. Recent co-writes with Jonas Connor, Jack Schrepferman, Jake Finch, and Collin Pastore show Conall carving a lane where indie-twinged Americana feels both deeply personal and ready for the biggest stages.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/conallcafferty/" class="social-link" target="_blank">
-              <span>📸</span> Instagram
-            </a>
-            <a href="https://www.tiktok.com/@conallcafferty" class="social-link" target="_blank">
-              <span>🎵</span> TikTok
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="modal-music-section">
-        <h3 class="modal-section-title">Music</h3>
-        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/auMykkLeigIV" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
-      </div>
-    </div>
-
-    <!-- KATE STEPHENSON -->
-    <div id="kate-modal">
-      <div class="modal-artist-header">
-        <div class="modal-artist-image">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg" alt="Kate Stephenson">
-        </div>
-        <div class="modal-artist-info">
-          <h2>Kate Stephenson</h2>
-          <div class="modal-artist-role">Artist/Creator</div>
-          <p class="artist-bio">Kate Stephenson is a Nashville-based folk-pop experimentalist from the Illinois suburbs. Raised backstage while her orchestral-musician parents rehearsed and classically trained from childhood, she carries that precision in her bones—then deliberately bends it into spellbinding shapes, using detuned guitars, off-kilter drum loops, and cinematic lyric lines to conjure something unmistakably her own.
-
-Her work lives where confessional storytelling meets sonic risk: finger-picked melodies collide with glitchy samples, strings swell into sudden dissonance, and off-the-cuff humor disarms before the next emotional gut punch lands. Recording, mixing, and mutating most tracks herself, Stephenson prizes autonomy over polish, chasing the imperfect take that feels undeniable. The result is a daring, true-artist catalogue that stretches folk honesty across pop's elastic edges while always keeping the listener within whispered reach.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/kate_stephenson/" class="social-link" target="_blank">
-              <span>📸</span> Instagram
-            </a>
-            <a href="https://www.tiktok.com/@katestephensonmusic" class="social-link" target="_blank">
-              <span>🎵</span> TikTok
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="modal-music-section">
-        <h3 class="modal-section-title">Music</h3>
-        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/DvbwudWvMBk1" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
-      </div>
-    </div>
-
-    <!-- LEON SHARPLIN -->
-    <div id="leon-modal">
-      <div class="modal-artist-header">
-        <div class="modal-artist-image">
-          <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png" alt="Leon Sharplin">
-        </div>
-        <div class="modal-artist-info">
-          <h2>Leon Sharplin</h2>
-          <div class="modal-artist-role">Producer/Artist</div>
-          <p class="artist-bio">Leon Sharplin is a Los Angeles–based producer, songwriter, and multi-instrumentalist from New Zealand whose Berklee-honed chops let him weave finger-picked guitars, chamber-ready strings, and surgically sculpted synths into one seamless folk-pop-R&B mosaic. His "special sauce" is intentional contrast: live instruments tracked with audiophile care, then bent through sleek electronic sound design until the familiar feels future-bound yet instantly cohesive.
-
-In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifying an artist's own voice—whether that means ghosting behind the console, layering harmony on a vintage bass, or deconstructing a beat until it breathes. A former metal guitarist who detoured through jazz and hip-hop, Sharplin now carries a genre-fluid toolkit and an obsessive attention to detail that turns half-formed sketches into fully realized worlds. The through-line is always the same: serve the song, push the edges, and make the atypical sound inevitable.</p>
-          <div class="social-links">
-            <a href="https://www.instagram.com/leonsharplin/" class="social-link" target="_blank">
-              <span>📸</span> Instagram
-            </a>
-          </div>
-        </div>
-      </div>
-      <div class="modal-music-section">
-        <h3 class="modal-section-title">Music</h3>
-        <iframe style="border-radius: 24px" src="https://untitled.stream/embed/ob42rf6hvgMB" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
-      </div>
-    </div>
-
-  </div>
-</div>
-
     </section>
-    
-    <!-- Timeline -->
-    <section id="timeline">
-        <div class="container">
-            <p class="section-marker">04 — COMPANY TIMELINE</p>
-            
-            <div class="grid">
-                <div class="col-10">
-                    <h2>PAST, PRESENT<br>& FUTURE</h2>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="timeline">
-                <div class="timeline-line"></div>
-                <div class="timeline-items">
-                    
-                    <!-- Past -->
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h4 class="timeline-year">2022</h4>
-                        <p><strong>February:</strong> Company founded<br>
-                        <strong>June:</strong> First client signed<br>
-                        <strong>December:</strong> Pivot to music focus</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h4 class="timeline-year">2023</h4>
-                        <p><strong>April:</strong> Discovered Hudson Ingram<br>
-                        <strong>June:</strong> "Rush" by Troye Sivan placed<br>
-                        <strong>Year:</strong> $208K revenue, $167K profit</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h4 class="timeline-year">2024</h4>
-                        <p><strong>January:</strong> Music-only pivot<br>
-                        <strong>June:</strong> Hudson's UMPG publishing deal<br>
-                        <strong>Q4:</strong> 5 new artists signed<br>
-                        <strong>December:</strong> Jack's Kobalt deal</p>
-                    </div>
-                    
-                    <!-- Present -->
-                    <div class="timeline-item">
-                        <span class="timeline-marker" style="background:var(--accent);"></span>
-                        <h4 class="timeline-year" style="color:var(--accent);">2025 (Present)</h4>
-                        <p><strong>April:</strong> Hudson signs to Interscope/Dessner JV<br>
-                        <strong>June:</strong> 7 artists, all with deals<br>
-                        <strong>August:</strong> Ruby Plume signs PULSE publishing ($300K upfront + six-figure bonuses over first 3 years; option for $1M two-year extension)<br>
-                        <strong>Projected:</strong> $251K revenue</p>
-                    </div>
-                    
-                    <!-- Future -->
-                    <div class="timeline-item">
-                        <span class="timeline-marker" style="background:var(--success);"></span>
-                        <h4 class="timeline-year" style="color:var(--success);">2026-2027</h4>
-                        <p><strong>Q1 2026:</strong> 10 artists<br>
-                        <strong>2026:</strong> First Gold certification<br>
-                        <strong>2027:</strong> 15 artists, festival headliner</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker" style="background:var(--success);"></span>
-                        <h4 class="timeline-year" style="color:var(--success);">2028-2030</h4>
-                        <p><strong>2028:</strong> 20 artists<br>
-                        <strong>2029:</strong> 25 artists<br>
-                        <strong>2030:</strong> 30 artists, multiple 1B+ streams</p>
-                    </div>
-                    
-                </div>
-            </div>
-        </div>
-    </section>
+
+
+
+
+   
     
     <!-- Case Study: Hudson -->
     <section id="cases" class="case-study">
         <div class="container">
-            <p class="section-marker">05 — CASE STUDY</p>
+            <p class="section-marker">03 — ARTIST CASE STUDY</p>
             
-            <div class="case-header">
-                <div class="case-image">
+            <div class="case-header-refined">
+                <div class="case-image-refined">
                     <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png" alt="Hudson Ingram">
-                </div>
-                <div>
-                    <h2>HUDSON<br>INGRAM</h2>
-                    <p class="lead">From TikTok discovery to Interscope/Aaron Dessner signing</p>
+                    <div class="artist-name-overlay-refined">HUDSON<br>INGRAM</div>
                 </div>
             </div>
             
-            <div class="case-content">
-                <div class="case-section">
-                    <h5>The Timeline</h5>
-                    <p><strong>April 2023:</strong> Discovered on TikTok at age 16<br>
-                    <strong>June 2023:</strong> First development sessions<br>
-                    <strong>June 2024:</strong> UMPG publishing deal<br>
-                    <strong>October 2024:</strong> ACL Festival performance<br>
-                    <strong>April 2025:</strong> Signs to Interscope/Aaron Dessner JV</p>
-                </div>
-                <div class="case-section">
-                    <h5>Why It's Working</h5>
-                    <p>• Authentic Texas roots with universal appeal<br>
-                    • 18-year-old voice capturing Gen Z experience<br>
-                    • Aaron Dessner production elevating indie to mainstream<br>
-                    • Strategic positioning between Taylor Swift's narrative and Noah Kahan's authenticity<br>
-                    • Joint venture structure ensures aligned creative vision</p>
+            <div class="case-content-refined">
+                <div class="case-main-content">
+                    <div class="stats-line">AGE: 19 YEARS OLD • GENRE: POP, SINGER-SONGWRITER • HOMETOWN: AUSTIN, TEXAS</div>
+                    
+                    <p class="intro-paragraph">With heavyweight backing from Interscope, Universal Music Publishing, and the architects behind Taylor Swift, Gracie Abrams, Role Model, Bruno Mars, and Pink, Hudson is positioned to define the next era of male pop.</p>
+                    
+                    <h5 class="section-title">THE ALL-AMERICAN BOY-NEXT-DOOR</h5>
+                    <p class="main-bio">Nashville-based artist from Texas makes music that feels as big as commercial pop but is built on a foundation of sharp songwriting and real musicianship. The son of country artist Jack Ingram, he grew up immersed in storytelling, developing a style that merges intimate, deeply felt lyrics with hooks that hit on first listen. Obsessed with the craft, self-taught in production, and relentless in his pursuit of mastery, Hudson is carving his own lane—one that feels classic, yet completely his own.</p>
                 </div>
                 
-                <div class="case-deal">
-                    <h5>The Deal</h5>
-                    <p><strong>Structure:</strong> Hudson is signed to a Joint Venture between Interscope Records and Aaron Dessner<br>
-                    <strong>Aaron Dessner:</strong> Producer/collaborator for The National, Bon Iver, Taylor Swift, Noah Kahan, Gracie Abrams<br>
-                    <strong>Terms:</strong> $225K initial advance, 1 album term + 3 option periods<br>
-                    <strong>Sessions:</strong> Justin Tranter, Noah Conrad, Adam Melchor<br>
-                    <strong>Rollout:</strong> September 2025 campaign planned</p>
+                <div class="case-deal-section">
+                    <div class="deal-card">
+                        <h5 class="deal-title">RECORD LABEL: INTERSCOPE</h5>
+                        <p class="deal-details">FIRST EVER JOINT VENTURE SIGNING WITH PROLIFIC PRODUCER AARON DESSNER</p>
+                    </div>
+                    
+                    <div class="deal-card">
+                        <h5 class="deal-title">PUBLISHING CO: UNIVERSAL MUSIC PUBLISHING GROUP</h5>
+                        <p class="deal-details">FIRST EVER SIGNING WITH PROLIFIC SONGWRITERS LIZ ROSE (TAYLOR SWIFT, LITTLE BIG TOWN) & KARA DIOGUARDI (MAROON 5, P!NK, CELINE DION, KELLY CLARKSON, BRUNO MARS, EMINEM, BRITNEY SPEARS)</p>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="spacer-md"></div>
-            
-            <div class="quote">
-                Industry buzzing despite no music released yet
             </div>
         </div>
     </section>
@@ -2882,124 +3607,153 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
     <!-- Case Study: Jack -->
     <section class="case-study">
         <div class="container">
-            <p class="section-marker">06 — CASE STUDY</p>
+            <p class="section-marker">04 — PRODUCER CASE STUDY</p>
             
-            <div class="case-header">
-                <div class="case-image">
+            <div class="case-header-refined">
+                <div class="case-image-refined">
                     <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png" alt="Jack Schrepferman">
-                </div>
-                <div>
-                    <h2>JACK<br>SCHREPFERMAN</h2>
-                    <p class="lead">Producer building the sound of tomorrow</p>
+                    <div class="artist-name-overlay-refined">JACK<br>SCHREPFERMAN</div>
                 </div>
             </div>
             
-            <div class="case-content">
-                <div class="case-section">
-                    <h5>The Success</h5>
-                    <p><strong>Credits:</strong> Midwxst "Car Seats", dhruv "Speed of Light"<br>
-                    <strong>December 2024:</strong> Kobalt/100 Publishing deal<br>
-                    <strong>Advance:</strong> Mid-six figures<br>
-                    <strong>Since signing:</strong> 15+ major label cuts secured</p>
-                </div>
-                <div class="case-section">
-                    <h5>Market Comps</h5>
-                    <p>• OZ (Drake, Travis Scott producer)<br>
-                    • Omer Fedi (Lil Nas X, The Kid LAROI)<br>
-                    • Blake Slatkin (Justin Bieber, Gracie Abrams)<br>
-                    All started with similar trajectory</p>
+            <div class="case-content-refined">
+                <div class="case-main-content">
+                    <div class="stats-line">AGE: 22 • GENRE: POP, FOLK, COUNTRY, ROCK • HOMETOWN: INDIANAPOLIS, IN</div>
+                    
+                    <p class="intro-paragraph">With heavyweight backing from Kobalt and 100 Publishing, and creative teams behind Cirkut, Alex Da Kid, Stargate, Dijon, Bon Iver, Childish Gambino, and FKA twigs, Jack is positioned as a versatile and commercially potent young producer.</p>
+                    
+                    <h5 class="section-title">THE ARCHITECT OF SOUND</h5>
+                    <p class="main-bio">Likened to Jack Antonoff and Dan Nigro for his ability to blend left-of-center artistry with chart-ready pop. Jack effortlessly moves between genres, bringing sharp, boundary-pushing production with undeniable commercial appeal. At 21 at the time of signing, his unique combination of taste and hitmaking ability has already secured him a place among the industry's most promising young producers.</p>
                 </div>
                 
-                <div class="case-deal">
-                    <h5>Ecosystem Synergy</h5>
-                    <p>Jack's production style perfectly complements our artist roster. He's worked extensively with Hudson 
-                    (including sessions with Aaron Dessner), creating a sound that bridges indie credibility with pop accessibility. 
-                    The Interscope/Dessner JV recognizes this synergy – Jack's productions fit seamlessly with Dessner's aesthetic 
-                    while adding contemporary edge. This internal collaboration model – where our producers and artists grow 
-                    together – creates compounding value for everyone involved.</p>
+                <div class="case-deal-section">
+                    <div class="deal-card">
+                        <h5 class="deal-title">COMPS</h5>
+                        <p class="deal-details">Jack Antonoff<br>Dan Nigro<br>Gabe Simon<br>Noah Conrad<br>Cirkut</p>
+                    </div>
+                    
+                    <div class="deal-card">
+                        <h5 class="deal-title">PUBLISHING: KOBALT / 100 PUBLISHING</h5>
+                        <p class="deal-details">Signed at 21, joining a roster that includes Cirkut, Alex Da Kid, Stargate, Dijon, Bon Iver, Childish Gambino, and FKA twigs.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
     
-    <!-- Roster Synergy Section -->
+    <!-- Cross-Roster Compounding Section -->
     <section id="synergy">
         <div class="container">
-            <p class="section-marker">07 — ROSTER SYNERGY</p>
+            <p class="section-marker">05 — ROSTER SYNERGY LIFT + ECOSYSTEM DESIGN</p>
             
             <div class="grid">
                 <div class="col-10">
-                    <h2 data-misreg="THE ECOSYSTEM">THE<br>ECOSYSTEM<br>AT WORK</h2>
+                    <h2 data-watermark="SYNERGY" data-misreg="CROSS-ROSTER">CROSS-ROSTER<br>COMPOUNDING</h2>
                 </div>
             </div>
             
             <div class="spacer-lg"></div>
             
-            <div class="synergy-intro">
-                <p>
-                    Our roster operates as a creative multiplier. When artists collaborate internally, 
-                    they share audiences, reduce costs, and create a self-reinforcing cycle of growth. 
-                    Every connection strengthens the whole—turning individual success into collective momentum.
-                </p>
-            </div>
-            
-            <div class="synergy-visual">
-                <div class="synergy-network">
-                    <div class="synergy-lines">
-                        <!-- Lines will be added with JS -->
-                    </div>
-                    <div class="synergy-node producer" style="width:200px;">Jack Schrepferman<br><span style="font-size:var(--step--1);font-weight:400;opacity:0.7;">Producer Hub</span></div>
-                    <div class="synergy-node artist">Hudson Ingram</div>
-                    <div class="synergy-node artist">Ruby Plume</div>
-                    <div class="synergy-node artist">Kate Stephenson</div>
-                    <div class="synergy-node artist">Tom Siletto</div>
-                    <div class="synergy-node producer">Leon Sharplin</div>
-                    <div class="synergy-node artist">Conall Cafferty</div>
-                </div>
-                <div class="multiplier-callout">
-                    Every collaboration = +40% revenue impact
-                </div>
-                <!-- Mobile-friendly Key Connections list -->
-                <div class="mobile-synergy-list">
-                    <h5 style="text-align:center;margin-bottom:1rem;">Key Connections</h5>
-                    <ul>
-                        <li><strong>Jack ↔ Hudson</strong>: Production and co-writing pipeline</li>
-                        <li><strong>Hudson ↔ Ruby</strong>: Co-writes and audience crossover</li>
-                        <li><strong>Leon ↔ Kate/Tom</strong>: Sound design + arrangement</li>
-                        <li><strong>Jack ↔ Conall</strong>: Development sessions</li>
-                        <li><strong>Roster-wide</strong>: Shared teams, shared audiences</li>
-                    </ul>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="grid">
-                <div class="col-12 text-center">
-                    <h5>The Multiplier Effect</h5>
-                    <p style="max-width:65ch;margin:2rem auto;">
-                        When Jack produces a hit for Hudson, it elevates both careers. 
-                        When Hudson writes with Ruby, both artists gain new audiences. 
-                        This isn't just management—it's ecosystem design.
+            <div class="cross-roster-content">
+                <div class="cross-roster-intro">
+                    <p class="lead">
+                        Our roster operates as a creative multiplier. When artists collaborate internally, 
+                        they share audiences, reduce costs, and create a self-reinforcing cycle of growth. 
+                        Every connection strengthens the whole—turning individual success into collective momentum.
                     </p>
                 </div>
+                
+                <div class="revenue-multiplier-chart">
+                    <div class="multiplier-arc">
+                        <span>AMF Consolidated Value Capture Exponential Growth</span>
+                    </div>
+                    <div class="multiplier-stack">
+                        <div class="multiplier-block blue">
+                            <span class="multiplier-label">Roster Synergy</span>
+                            <span class="multiplier-value">2x Base</span>
+                        </div>
+                        <div class="multiplier-block red">
+                            <span class="multiplier-label">Bigger Credits & Collaborations</span>
+                            <span class="multiplier-value">3x Revenue</span>
+                        </div>
+                        <div class="multiplier-block green">
+                            <span class="multiplier-label">Industry Attention & Validation</span>
+                            <span class="multiplier-value">4x Revenue</span>
+                        </div>
+                        <div class="multiplier-block purple">
+                            <span class="multiplier-label">Halo Effect</span>
+                            <span class="multiplier-value">5x Revenue</span>
+                        </div>
+                        <div class="multiplier-block teal">
+                            <span class="multiplier-label">Bigger Signings → AMF Growth</span>
+                            <span class="multiplier-value">6x Revenue</span>
+                        </div>
+                        <div class="multiplier-scale">
+                            <span class="scale-label">Illustrative Revenue Multiplier</span>
+                                                    <div class="scale-markers">
+                            <span>2x</span>
+                            <span>3x</span>
+                            <span>4x</span>
+                            <span>5x</span>
+                            <span>6x</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             
-            <div class="quote">
-                We're not managing separate careers.<br>
-                We're cultivating an ecosystem.
+            <div class="spacer-xl"></div>
+            
+            <!-- Synergy Case Study -->
+            <div class="synergy-case-study">
+                <div class="case-study-header">
+                    <h3>SYNERGY CASE STUDY Jack + Hudson</h3>
+                    <p class="case-study-intro">
+                        Individually, they already create value. Together, their synergy and output value compounds into exponential upside captured by AMF.
+                    </p>
+                </div>
+                
+                <div class="case-study-content">
+                    <div class="value-chart">
+                        <h5>Illustrative Future Annual Value (Commission $M)</h5>
+                        <div class="chart-bars">
+                            <div class="chart-bar hudson-individual">
+                                <div class="bar-fill"></div>
+                                <span class="bar-label">Hudson (Individually)</span>
+                            </div>
+                            <div class="chart-bar jack-individual">
+                                <div class="bar-fill"></div>
+                                <span class="bar-label">Jack (Individually)</span>
+                            </div>
+                            <div class="chart-bar multiplier-effect">
+                                <div class="bar-fill"></div>
+                                <span class="bar-label">Jack x Hudson Multiplier Effect</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="case-study-text">
+                        <h5>History Proves the Power of Artist-Producer Partnerships</h5>
+                        <p>
+                            Nearly every global superstar is built on a core artist-producer bond — partnerships that create not just hits, but cultural momentum, credibility, and a consistent identity that scales. We are structured and intend to capture both sides of that value: with Hudson x Jack as the model, we multiply returns across artist and producer lanes, creating a halo effect that compounds across the entire roster.
+                        </p>
+                        <div class="roster-image">
+                            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ALL%20MY%20FRIENDS/Untitled-1.png" alt="All My Friends Roster">
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
     
-    <!-- Future Plans -->
+    <!-- The Vision -->
     <section id="future">
         <div class="container">
-            <p class="section-marker">08 — FUTURE VISION</p>
+            <p class="section-marker">06 — THE VISION</p>
             
             <div class="grid">
                 <div class="col-10">
-                    <h2 data-misreg="30 ARTISTS BY 2030">30 ARTISTS<br>BY 2030</h2>
+                    <h2 data-watermark="VISION" data-misreg="30 ARTISTS $30M">30 ARTISTS<br>$30M<br><span style="font-size:var(--step-3);font-weight:400;opacity:0.6;">BY 2030</span></h2>
                 </div>
             </div>
             
@@ -3008,376 +3762,185 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
             <div class="grid">
                 <div class="col-8">
                     <p class="lead">
-                        Building a self-sustaining ecosystem where artists, producers, and songwriters 
-                        grow together – creating compounding value through genuine collaboration.
+                        Over the next five years, AMF will scale from a boutique roster into a diversified management ecosystem of 30 artists and producers by 2030. The model is simple:
                     </p>
                 </div>
             </div>
             
             <div class="spacer-lg"></div>
             
-            <h4>Roster Evolution</h4>
-            <div class="spacer-sm"></div>
-            
-            <div class="metrics-grid">
-                <div class="metric-item">
-                    <div class="metric-value" style="font-size:var(--step-3);">2025</div>
-                    <div class="metric-label">Current</div>
-                    <p style="font-size:var(--step--1);margin-top:0.5rem;">5 Artists<br>2 Producers/Writers<br>(71% / 29%)</p>
+            <div class="vision-principles">
+                <div class="principle">
+                    <h4>One superstar changes everything.</h4>
+                    <p>Even if just one artist breaks at scale, the business explodes — but we are not betting on one.</p>
                 </div>
-                <div class="metric-item">
-                    <div class="metric-value" style="font-size:var(--step-3);">2027</div>
-                    <div class="metric-label">Growing</div>
-                    <p style="font-size:var(--step--1);margin-top:0.5rem;">10 Artists<br>5 Producers/Writers<br>(67% / 33%)</p>
+                <div class="principle">
+                    <h4>Diversification is our advantage.</h4>
+                    <p>By balancing artists with producers, we smooth the natural ebbs and flows of careers while increasing hit probability.</p>
                 </div>
-                <div class="metric-item">
-                    <div class="metric-value" style="font-size:var(--step-3);">2029</div>
-                    <div class="metric-label">Balanced</div>
-                    <p style="font-size:var(--step--1);margin-top:0.5rem;">16 Artists<br>9 Producers/Writers<br>(64% / 36%)</p>
-                </div>
-                <div class="metric-item">
-                    <div class="metric-value" style="font-size:var(--step-3);">2030</div>
-                    <div class="metric-label">Target</div>
-                    <p style="font-size:var(--step--1);margin-top:0.5rem;">18 Artists<br>12 Producers/Writers<br>(60% / 40%)</p>
+                <div class="principle">
+                    <h4>The compounding flywheel.</h4>
+                    <p>Every signing strengthens the others: producers amplify artists, artists pull producers into new rooms, and the company captures the exponential value at the center.</p>
                 </div>
             </div>
             
-            <div class="spacer-lg"></div>
+            <div class="spacer-xl"></div>
             
-            <div class="grid">
-                <div class="col-12">
-                    <p><strong>Strategic Balance:</strong> As we scale, we're intentionally building a more balanced roster. 
-                    Producers provide consistent workflow and regular income streams, while artists deliver larger advances 
-                    and touring revenue. This 60/40 split creates financial stability and creative synergy.</p>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="quote">
-                Every artist becomes a node in our network,<br>
-                creating opportunities for others while building their own career
-            </div>
-        </div>
-    </section>
-    
-    <!-- Artist Development Forecast -->
-    <section style="background:#FAFAFA;">
-        <div class="container">
-            <p class="section-marker">09 — 12-18 MONTH FORECAST</p>
-            
-            <div class="grid">
-                <div class="col-10">
-                    <h2>ARTIST<br>DEVELOPMENT<br>PIPELINE</h2>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="timeline">
-                <div class="timeline-line"></div>
-                <div class="timeline-items">
+            <div class="vision-layout">
+                <div class="vision-content">
+                    <h4>How Capital Will Be Used (High-Level):</h4>
+                    <p>The $1M capital raise will be deployed to accelerate growth without diluting our strategic advantage:</p>
                     
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Q3 2025</h5>
-                        <p><strong>Ruby Plume:</strong> Publishing deal signed with PULSE ($300K upfront + six-figure bonuses over first 3 years; option for $1M two-year extension)<br>
-                        <strong>Tom Siletto:</strong> Label deal ($200K)<br>
-                        <strong>Conall Cafferty:</strong> Publishing ($200-300K)<br>
-                        <strong>Leon Sharplin:</strong> Publishing ($150-200K)<br>
-                        <strong>Kate Stephenson:</strong> Publishing + Label ($300K)</p>
+                    <div class="capital-uses">
+                        <div class="capital-item">
+                            <h5>Artist Development</h5>
+                            <p>Seeding projects, funding creative work, and supporting breakthrough campaigns that amplify label deal value by 5x (or, in unicorn cases, exponentially more).</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Travel & Entertainment</h5>
+                            <p>Opening doors globally, maintaining high-touch relationships with labels, publishers, and brands.</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Seed Funding for Artists</h5>
+                            <p>Providing upfront runway before label signings, ensuring leverage and outsized deal structures when labels enter the picture.</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Strategic Infrastructure</h5>
+                            <p>Building the systems and relationships that allow AMF to scale to 30 artists while maintaining quality control.</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Office & Creative Hub</h5>
+                            <p>Establishing a non-traditional loft-style space that functions as both headquarters and cultural hub — with workstations, a listening room, and open-plan areas that can double as showcase venue, meeting space, and creative studio.</p>
+                        </div>
                     </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Q4 2025</h5>
-                        <p><strong>Ruby Plume:</strong> Potential label renegotiation ($300-400K)<br>
-                        <strong>Hudson:</strong> September rollout begins, touring income<br>
-                        <strong>Jack:</strong> Additional producer advances</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Q1 2026</h5>
-                        <p><strong>Ruby Plume:</strong> New label deal ($300-400K)<br>
-                        <strong>All artists:</strong> PRO advances ($30K total)<br>
-                        <strong>New signings:</strong> 2-3 developing artists</p>
-                    </div>
-                    
-                    <div class="timeline-item">
-                        <span class="timeline-marker"></span>
-                        <h5>Q2 2026</h5>
-                        <p><strong>Conall Cafferty:</strong> Label upstream pending<br>
-                        <strong>Hudson:</strong> Festival circuit begins<br>
-                        <strong>New signings:</strong> Continue strategic growth<br>
-                        <strong>Portfolio:</strong> 10 active artists</p>
-                    </div>
-                    
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <h3 class="text-center">Total Pipeline: $225K - $277K</h3>
-            <p class="text-center opacity-50">15% commission on $1.5M - $1.85M in artist advances</p>
-        </div>
-    </section>
-    
-    <!-- Financials -->
-    <section id="financials">
-        <div class="container">
-            <p class="section-marker">10 — FINANCIAL OVERVIEW</p>
-            
-            <div class="grid">
-                <div class="col-10">
-                    <h2 data-misreg="THE NUMBERS">THE<br>NUMBERS</h2>
-                </div>
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <div class="financial-grid">
-                
-                <!-- 2023 -->
-                <div class="financial-year">
-                    <h4 class="year-label">2023</h4>
-                    <table>
-                        <tr><td><strong>Revenue</strong></td><td><strong>$208,136</strong></td></tr>
-                        <tr style="border-bottom:1px solid rgba(0,0,0,0.2);"><td colspan="2" style="padding-top:1rem;"><strong>Expenses:</strong></td></tr>
-                        <tr><td>Salary</td><td>$80,600</td></tr>
-                        <tr><td>Travel & Entertainment</td><td>$20,000</td></tr>
-                        <tr><td>Subscriptions</td><td>$12,000</td></tr>
-                        <tr><td>Healthcare</td><td>$12,000</td></tr>
-                        <tr><td>Equipment</td><td>$5,000</td></tr>
-                        <tr><td>Digital Marketing</td><td>$15,000</td></tr>
-                        <tr><td>Office Space</td><td>$12,000</td></tr>
-                        <tr><td>Transportation</td><td>$10,000</td></tr>
-                        <tr style="border-top:1px solid rgba(0,0,0,0.2);"><td><strong>Total Expenses</strong></td><td><strong>$127,400</strong></td></tr>
-                        <tr style="border-top:2px solid var(--ink);font-weight:700;">
-                            <td>Net Profit</td><td style="color:var(--success);">$80,736</td></tr>
-                    </table>
                 </div>
                 
-                <!-- 2024 -->
-                <div class="financial-year">
-                    <h4 class="year-label">2024</h4>
-                    <table>
-                        <tr><td><strong>Revenue</strong></td><td><strong>$214,696</strong></td></tr>
-                        <tr style="border-bottom:1px solid rgba(0,0,0,0.2);"><td colspan="2" style="padding-top:1rem;"><strong>Expenses:</strong></td></tr>
-                        <tr><td>Salary</td><td>$120,000</td></tr>
-                        <tr><td>Staff (Day-to-Day Manager)</td><td>$30,000</td></tr>
-                        <tr><td>Travel & Entertainment</td><td>$20,000</td></tr>
-                        <tr><td>Subscriptions</td><td>$12,000</td></tr>
-                        <tr><td>Healthcare</td><td>$12,000</td></tr>
-                        <tr><td>Equipment</td><td>$2,000</td></tr>
-                        <tr><td>Office Space</td><td>$12,000</td></tr>
-                        <tr><td>Transportation</td><td>$10,000</td></tr>
-                        <tr style="border-top:1px solid rgba(0,0,0,0.2);"><td><strong>Total Expenses</strong></td><td><strong>$98,000</strong></td></tr>
-                        <tr style="border-top:2px solid var(--ink);font-weight:700;">
-                            <td>Net Profit</td><td style="color:var(--success);">$116,696</td></tr>
-                    </table>
-                </div>
-                
-                <!-- 2025 YTD + Projection -->
-                <div class="financial-year highlight">
-                    <h4 class="year-label">2025 (Projected)</h4>
-                    <table>
-                        <tr><td><strong>Revenue</strong></td><td><strong>$251,000</strong></td></tr>
-                        <tr><td style="font-size:var(--step--2);opacity:0.7;">YTD: $98,600 + Next 6mo: $152,400</td><td></td></tr>
-                        <tr style="border-bottom:1px solid rgba(0,0,0,0.2);"><td colspan="2" style="padding-top:1rem;"><strong>Expenses:</strong></td></tr>
-                        <tr><td>YTD Expenses</td><td>$59,000</td></tr>
-                        <tr><td>Next 6mo Expenses</td><td>$59,000</td></tr>
-                        <tr style="border-top:1px solid rgba(0,0,0,0.2);"><td><strong>Total Expenses</strong></td><td><strong>$118,000</strong></td></tr>
-                        <tr style="border-top:2px solid var(--ink);font-weight:700;">
-                            <td>Net Profit</td><td style="color:var(--success);">$133,000</td></tr>
-                    </table>
-                </div>
-                
-            </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <!-- Extended Forecast with Strategic Notes & Cash Position -->
-            <div class="grid">
-                <div class="col-12">
-                    <h2 style="font-family: 'Space Grotesk', sans-serif; font-size: var(--step-3); text-transform: uppercase; margin-bottom: var(--space-lg);">
-                Extended Forecast with Strategic Notes & <span style="color: var(--c-accent);">Cash Position</span> (With Investment Factored In)
-            </h2>
-                    <p class="lead">How your $250K investment + our profits enable strategic scaling with detailed cash flow projections</p>
+                <div class="vision-highlight">
+                    <h3>THE ROAD TO $30M</h3>
+                    <ul>
+                        <li>Scale roster methodically to 30 artists/producers.</li>
+                        <li>Cultivate at least 3 superstars in the next 5 years.</li>
+                        <li>Diversify across genres and formats to increase stability.</li>
+                        <li>Build a portfolio where each artist's success multiplies opportunities for the others.</li>
+                    </ul>
                 </div>
             </div>
             
-            <div class="spacer-md"></div>
+            <div class="spacer-xl"></div>
             
-            <!-- Extended Forecast Table -->
-            <table style="width:100%;font-size:var(--step-0);margin-bottom:4rem;">
-                <thead>
-                    <tr style="border-bottom:2px solid var(--ink);">
-                        <th style="text-align:left;padding:1rem 0;">Year</th>
-                        <th style="text-align:center;">Revenue</th>
-                        <th style="text-align:left;padding-left:1rem;">Revenue Notes</th>
-                        <th style="text-align:center;">Operating Cost</th>
-                        <th style="text-align:left;padding-left:1rem;">Cost Notes</th>
-                        <th style="text-align:right;">Cash on Hand (EOY)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td style="padding:1rem 0;"><strong>2025</strong></td>
-                        <td style="text-align:center;"><strong>$301,000</strong></td>
-                        <td style="padding-left:1rem;">Foundational year: early deals closed, team remains lean</td>
-                        <td style="text-align:center;">$250,000</td>
-                        <td style="padding-left:1rem;">Lean ops: CEO + co-manager only</td>
-                        <td style="text-align:right;color:var(--success);"><strong>$301,000</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:1rem 0;"><strong>2026</strong></td>
-                        <td style="text-align:center;"><strong>$475,000</strong></td>
-                        <td style="padding-left:1rem;">Admin added, modest growth from maturing pipeline</td>
-                        <td style="text-align:center;">$325,000</td>
-                        <td style="padding-left:1rem;">CEO $200K, employee $50K, admin $25K + buffer</td>
-                        <td style="text-align:right;color:var(--success);"><strong>$451,000</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:1rem 0;"><strong>2027</strong></td>
-                        <td style="text-align:center;"><strong>$850,000</strong></td>
-                        <td style="padding-left:1rem;">Jr manager added, initial breakouts begin to drive topline</td>
-                        <td style="text-align:center;">$344,000</td>
-                        <td style="padding-left:1rem;">Jr mgr added; rising infra & marketing</td>
-                        <td style="text-align:right;color:var(--success);"><strong>$957,000</strong></td>
-                    </tr>
-                    <tr style="background:rgba(0,0,255,0.02);">
-                        <td style="padding:1rem 0;"><strong>2028</strong></td>
-                        <td style="text-align:center;"><strong>$1,600,000</strong></td>
-                        <td style="padding-left:1rem;">Manager added, breakout traction, ecosystem lift begins</td>
-                        <td style="text-align:center;">$465,000</td>
-                        <td style="padding-left:1rem;">FT manager added; scaled marketing and ops</td>
-                        <td style="text-align:right;color:var(--success);"><strong>$2,092,000</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:1rem 0;"><strong>2029</strong></td>
-                        <td style="text-align:center;"><strong>$2,400,000</strong></td>
-                        <td style="padding-left:1rem;">Expanded monetization: partnerships, touring, catalog growth</td>
-                        <td style="text-align:center;">$496,000</td>
-                        <td style="padding-left:1rem;">Ops stable at 5 total staff, no hiring</td>
-                        <td style="text-align:right;color:var(--success);"><strong>$3,996,000</strong></td>
-                    </tr>
-                    <tr>
-                        <td style="padding:1rem 0;"><strong>2030</strong></td>
-                        <td style="text-align:center;"><strong>$3,310,000</strong></td>
-                        <td style="padding-left:1rem;">Fully scaled model, compounding revenue from mature roster</td>
-                        <td style="text-align:center;">$506,000</td>
-                        <td style="padding-left:1rem;">No new staff, ops fully optimized</td>
-                        <td style="text-align:right;color:var(--success);"><strong>$6,800,000</strong></td>
-                    </tr>
-                </tbody>
-            </table>
-            
-            
-            <!-- Strategic Hires Timeline -->
-            <div class="grid">
-                <div class="col-6">
-                    <h5>Strategic Hiring Plan</h5>
-                    <p><strong>2026:</strong> Part-Time Admin + 1st Coordinator<br>
-                    <span class="opacity-50">$50K + $25K • Triggered by operations scaling / 10 active artists</span></p>
-                    
-                    <p><strong>2027:</strong> Junior Manager<br>
-                    <span class="opacity-50">$60K • Triggered by breakout traction / 15 artists</span></p>
-                    
-                    <p><strong>2028:</strong> Full-Time Manager #2<br>
-                    <span class="opacity-50">$80K • Triggered by national rollout / 20 artists</span></p>
-                    
-                    <p><strong>2029–30:</strong> No new hires<br>
-                    <span class="opacity-50">Ops stabilized: 5-person team incl. founder</span></p>
-                    
-                    <p style="font-style:italic;margin-top:1.5rem;font-size:var(--step--1);">
-                    We're focused on talent quality and margin preservation. Our model scales with minimal headcount — even at 30 artists, we operate with a lean 5-person team.
-                    </p>
-                </div>
-                <div class="col-6">
-                    <h5>How $250K Investment Will Be Used</h5>
-                    <p><strong>Immediate (Q3 2025–Q1 2026):</strong><br>
-                    • $100K payroll bridge (CEO salary + coordinator/admin support)<br>
-                    • $50K marketing and rollout prep (Hudson/Ruby + roster exposure)<br>
-                    • $40K travel, meetings, and key market scouting<br>
-                    • $30K infrastructure and legal (systems, contracts, AI tools)<br>
-                    • $30K growth opportunity buffer (emergent signing, production costs)</p>
-                    
-                    <p><strong>Year 1 (2026):</strong><br>
-                    • Strategic runway coverage during rollout-heavy period<br>
-                    • Early-stage margin preservation while building revenue base<br>
-                    • Protects velocity of hiring, signings, and content creation</p>
-                    
-                    <p><strong>Result:</strong><br>
-                    Provides critical flexibility to hire lean, seize breakout moments, and fund growth-driving activities without overextending. This capital ensures AMF can continue operating at a high strategic level while revenue compounds and breakout deals mature.</p>
+            <!-- Timeline Section -->
+            <div class="vision-timeline">
+                <div class="timeline-grid">
+                    <div class="timeline-year">
+                        <h5>2025</h5>
+                        <p><strong>Foundation year:</strong> roster validation, early revenue base; Label/publisher partnerships confirm market fit; Lean ops; focus on breakthrough setup.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2026</h5>
+                        <p><strong>Validation compounding:</strong> pipeline deepens; Producers stabilize income; artists expand upside; Runway for first breakout moments.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2027</h5>
+                        <p><strong>First superstar emerges:</strong> Network effects accelerate across roster; Touring and brand revenue ramp.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2028</h5>
+                        <p><strong>Two superstars scaling:</strong> catalogue value increases; Cross-collaboration compounds audience growth; Diversified revenue mix strengthens margins.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2029</h5>
+                        <p><strong>Three superstars compounding:</strong> Ecosystem flywheel humming; Scale without headcount sprawl.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2030</h5>
+                        <p><strong>Three+ sustained superstars</strong> anchor 30-artist roster; $30M annual revenue target; Enduring, compounding enterprise value.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
     
-    <!-- Investment Ask -->
+    <!-- Investment Opportunity -->
     <section class="investment-section">
         <div class="container">
-            <div class="text-center">
-                <h2 style="color:var(--bg);">INVESTMENT<br>OPPORTUNITY</h2>
-                <div class="spacer-md"></div>
-                <p class="lead" style="color:var(--bg);opacity:0.9;">
-                    We're seeking strategic investors who believe in compounding creative value and long-term alignment.
-                </p>
-            </div>
+            <p class="section-marker">07 — THE INVESTMENT OPPORTUNITY</p>
             
-            <div class="investment-grid">
-                <div class="text-center">
-                    <div class="investment-number">$250K</div>
-                    <div class="investment-label">Investment Ask</div>
-                </div>
-                <div class="text-center">
-                    <div class="investment-number">$3.5M</div>
-                    <div class="investment-label">Valuation Cap</div>
-                </div>
-                <div class="text-center">
-                    <div class="investment-number">SAFE</div>
-                    <div class="investment-label">Structure</div>
-                </div>
-            </div>
+            <h2 data-watermark="INVESTMENT">THE INVESTMENT OPPORTUNITY</h2>
             
-            <div class="spacer-md"></div>
-            
-            <div class="grid">
-                <div class="col-12 text-center">
-                    <p style="color:var(--bg);opacity:0.8;font-size:var(--step--1);">
-                        20% discount off next equity round • 2× profit cap if no raise (10% of profit until 2x return)
-                    </p>
+            <div class="investment-layout">
+                <div class="investment-terms">
+                    <div class="term-item">
+                        <div class="term-value">$1M</div>
+                        <div class="term-label">CAPITAL RAISE</div>
+                    </div>
+                    <div class="term-item">
+                        <div class="term-value">$5M</div>
+                        <div class="term-label">VALUATION</div>
+                    </div>
+                    <div class="term-item">
+                        <div class="term-value">SAFE</div>
+                        <div class="term-label">STRUCTURE</div>
+                    </div>
+                </div>
+                
+                <div class="investment-description">
+                    <ul>
+                        <li>ONE OPPORTUNITY TO JOIN BEFORE SCALE COMPOUNDS.</li>
+                        <li>FLEXIBLE, MODERN STRUCTURE — NO FORCED EQUITY NOW.</li>
+                        <li>ALIGNS INCENTIVES FOR LEAN GROWTH AND BREAKOUT SCALE.</li>
+                        <li>CLEAN GOVERNANCE, CLEAR UPSIDE.</li>
+                    </ul>
                 </div>
             </div>
+        </div>
+    </section>
+    
+    <!-- About The Founder -->
+    <section class="founder-section">
+        <div class="container">
+            <p class="section-marker">09 — THE FOUNDER</p>
             
-            <div class="spacer-lg"></div>
+            <h2 data-watermark="FOUNDER">ABOUT THE FOUNDER</h2>
             
-            <h3 class="text-center" style="color:var(--bg);">Why This Structure Makes Sense</h3>
-            <div class="spacer-md"></div>
-            
-            <div class="grid">
-                <div class="col-6">
-                    <p style="color:var(--bg);">
-                        • Early-stage terms with real upside if we raise again<br>
-                        • Guaranteed return floor if we don't<br>
-                        • Protects founder ownership while respecting early belief
-                    </p>
+            <div class="founder-content">
+                <div class="founder-image">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Theo/Screenshot%202025-07-30%20at%205.54.44%20PM.png" alt="Theo Battaglia">
+                    <div class="founder-overlay">
+                        <div class="founder-title">FOUNDER</div>
+                        <div class="founder-name">THEO BATTAGLIA</div>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <p style="color:var(--bg);">
-                        • Flexible, modern structure — no equity forced now<br>
-                        • Aligns incentives whether we grow lean or raise big<br>
-                        • Win-win for all parties involved
-                    </p>
+                
+                <div class="founder-details">
+                    <div class="founder-info">
+                        <div class="info-item">
+                            <strong>AGE:</strong> 32
+                        </div>
+                        <div class="info-item">
+                            <strong>HOMETOWN:</strong> LOS ANGELES, CA
+                        </div>
+                    </div>
+                    
+                    <div class="founder-experience">
+                        <div class="experience-section">
+                            <h4>PREVIOUSLY</h4>
+                            <ul>
+                                <li>10K PROJECTS (EXECUTIVE VICE PRESIDENT, CREATIVE)</li>
+                                <li>APPLE INC (SERVICES MARKETING & CREATIVE)</li>
+                                <li>HBO (CONTENT MARKETING)</li>
+                                <li>WARNER BROS. (CREATIVE DEVELOPMENT & PRODUCTION)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="experience-section">
+                            <h4>EDUCATION</h4>
+                            <ul>
+                                <li>NYU TISCH SCHOOL OF THE ARTS (GRADUATED 2014)</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
-            
-            <div class="spacer-lg"></div>
-            
-            <p class="lead text-center" style="color:var(--accent);">
-                Let's build the future of artist management — without needing to compromise control or returns.
-            </p>
         </div>
     </section>
     
@@ -3401,26 +3964,249 @@ In the studio, the 22-year-old leaves ego at the door and zeroes in on amplifyin
     </footer>
     <button class="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
     
+    <!-- Artist Modal -->
+    <div class="artist-modal" id="artist-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            
+            <!-- Hudson Modal -->
+            <div id="hudson-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png" alt="Hudson Ingram">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Hudson Ingram</h2>
+                        <p class="modal-artist-role">Artist • Interscope/Dessner JV</p>
+                        <p class="artist-bio">
+                            Hudson Ingram is a 18-year-old singer-songwriter from Texas whose authentic voice and storytelling 
+                            have captured the attention of the music industry. Discovered on TikTok in 2023, Hudson has quickly 
+                            risen from social media sensation to major label signing, with his debut project set for release 
+                            through Interscope Records and Aaron Dessner's joint venture.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">TikTok</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TEoWLLmvBCMx" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Jack Modal -->
+            <div id="jack-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png" alt="Jack Schrepferman">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Jack Schrepferman</h2>
+                        <p class="modal-artist-role">Producer • Kobalt</p>
+                        <p class="artist-bio">
+                            Jack Schrepferman is a rising producer whose innovative sound design and production techniques 
+                            have made him a sought-after collaborator in the pop and alternative music scenes. With credits 
+                            including Midwxst and dhruv, Jack's production style bridges the gap between indie credibility 
+                            and mainstream accessibility.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">SoundCloud</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/WNFeGYKaapgk" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Ruby Modal -->
+            <div id="ruby-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png" alt="Ruby Plume">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Ruby Plume</h2>
+                        <p class="modal-artist-role">Artist/Songwriter • PULSE Publishing</p>
+                        <p class="artist-bio">
+                            Ruby Plume is a dynamic artist and songwriter whose unique blend of pop sensibilities and 
+                            alternative edge has positioned her as one of the most exciting emerging voices in music. 
+                            With a publishing deal with PULSE and a growing catalog of hits, Ruby represents the future 
+                            of genre-blending pop music.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">YouTube</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TzHxY2K2S4gX" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Kate Modal -->
+            <div id="kate-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg" alt="Kate Stephenson">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Kate Stephenson</h2>
+                        <p class="modal-artist-role">Artist/Creator</p>
+                        <p class="artist-bio">
+                            Kate Stephenson is a multi-talented artist and creator whose work spans music, visual arts, 
+                            and digital content. With a unique perspective on modern creativity and a growing following 
+                            across multiple platforms, Kate represents the new generation of artists who build careers 
+                            through authentic connection and innovative content creation.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">TikTok</a>
+                            <a href="#" class="social-link">YouTube</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/DvbwudWvMBk1" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Leon Modal -->
+            <div id="leon-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png" alt="Leon Sharplin">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Leon Sharplin</h2>
+                        <p class="modal-artist-role">Producer/Artist</p>
+                        <p class="artist-bio">
+                            Leon Sharplin is a versatile producer and artist whose work spans multiple genres and 
+                            creative disciplines. With a background in sound design and electronic music production, 
+                            Leon brings a unique technical expertise to the roster while maintaining strong artistic vision.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">SoundCloud</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/ob42rf6hvgMB" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Tom Modal -->
+            <div id="tom-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png" alt="Tom Siletto">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Tom Siletto</h2>
+                        <p class="modal-artist-role">Artist</p>
+                        <p class="artist-bio">
+                            Tom Siletto is an emerging artist whose raw talent and authentic voice have quickly 
+                            captured attention in the music industry. With a focus on honest songwriting and 
+                            compelling performances, Tom represents the next generation of singer-songwriters 
+                            who connect through genuine emotion and storytelling.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">TikTok</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/LzuqcxQvWcrM" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Conall Modal -->
+            <div id="conall-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png" alt="Conall Cafferty">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Conall Cafferty</h2>
+                        <p class="modal-artist-role">Artist/Songwriter</p>
+                        <p class="artist-bio">
+                            Conall Cafferty is a talented artist and songwriter whose work combines thoughtful 
+                            lyricism with memorable melodies. With a growing catalog of songs and a unique 
+                            perspective on modern life, Conall is building a career through authentic 
+                            storytelling and genuine connection with listeners.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">YouTube</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/auMykkLeigIV" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Minimal JS -->
 <script>
-// Mobile Navigation
-function toggleMobileNav() {
-  const burger = document.querySelector('.nav-burger');
-  const navLinks = document.querySelector('.nav-links');
-  burger.classList.toggle('active');
-  navLinks.classList.toggle('active');
-}
 
-function closeMobileNav() {
-  const burger = document.querySelector('.nav-burger');
-  const navLinks = document.querySelector('.nav-links');
-  burger.classList.remove('active');
-  navLinks.classList.remove('active');
-}
+
+// Mobile Navigation Toggle
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.querySelectorAll('.nav-link');
+const navLinksContainer = document.getElementById('navLinks');
+
+navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('active');
+    navLinksContainer.classList.toggle('active');
+});
+
+// Close mobile nav when clicking on a link
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        navToggle.classList.remove('active');
+        navLinksContainer.classList.remove('active');
+    });
+});
+
+// Navigation scroll effects
+const nav = document.querySelector('.nav');
+let lastScrollY = window.scrollY;
+
+window.addEventListener('scroll', () => {
+  const currentScrollY = window.scrollY;
+  
+  // Add scrolled class for enhanced background
+  if (currentScrollY > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+  
+  lastScrollY = currentScrollY;
+});
 
 // Active nav highlighting
 const sections = document.querySelectorAll('section[id]');
-const navLinks = document.querySelectorAll('.nav-link');
 
 window.addEventListener('scroll', () => {
   let current = '';
@@ -3433,11 +4219,7 @@ window.addEventListener('scroll', () => {
   navLinks.forEach(link => {
     link.classList.toggle('active', link.getAttribute('href') === '#' + current);
   });
-  // Update quick nav active state and reading progress (mobile)
-  const quickLinks = document.querySelectorAll('.mobile-quick-nav .mqn-link');
-  quickLinks.forEach(link => {
-    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
-  });
+  // Update reading progress
   const progressEl = document.querySelector('.reading-progress');
   if (progressEl) {
     const scrollTop = window.scrollY || document.documentElement.scrollTop;
@@ -3553,18 +4335,7 @@ document.addEventListener('DOMContentLoaded', () => {
       downloadPDF();
     });
   }
-  // Mobile quick nav smooth scroll
-  document.querySelectorAll('.mobile-quick-nav .mqn-link').forEach(link => {
-    link.addEventListener('click', e => {
-      const href = link.getAttribute('href');
-      const target = document.querySelector(href);
-      if (target) {
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth' });
-        closeMobileNav();
-      }
-    });
-  });
+
   // Back to top visibility
   const backToTop = document.querySelector('.back-to-top');
   const toggleBackToTop = () => {
