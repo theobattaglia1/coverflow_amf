@@ -115,6 +115,22 @@
             text-align:justify;
         }
         
+        /* Mobile-specific text alignment for hero section */
+        @media(max-width:768px){
+            .hero .lead {
+                text-align: left !important;
+                text-align: justify !important;
+                hyphens: auto;
+                -webkit-hyphens: auto;
+                -moz-hyphens: auto;
+                -ms-hyphens: auto;
+            }
+            .hero .opacity-50 {
+                text-align: left !important;
+                text-align: justify !important;
+            }
+        }
+        
         a{
             color:var(--ink);
             text-decoration:none;
@@ -3599,13 +3615,6 @@
                         }
                         
                         @media (max-width: 768px) {
-                            .amf-logo-text {
-                                margin-left: calc(var(--bar-width) * 0.25);
-                                transform: translateX(-25%);
-                            }
-                        }
-
-                        @media (max-width: 768px) {
                             .amf-logo {
                                 --logo-unit: 60px;
                                 --bar-width: 45px;
@@ -3616,12 +3625,13 @@
                                 padding: 4rem 1rem 2rem 1rem;
                             }
                             .amf-logo-container {
-                                align-items: center;
+                                align-items: flex-start;
                             }
                             .amf-logo-text {
-                                margin-left: 0;
-                                transform: none;
-                                text-align: center;
+                                margin-left: calc(var(--bar-width) * 2 + var(--gap));
+                                transform: translateX(-100%);
+                                text-align: left;
+                                white-space: nowrap;
                             }
                         }
                         @media (max-width: 500px) {
@@ -3629,11 +3639,19 @@
                                 --logo-unit: 48px;
                                 --bar-width: 36px;
                             }
+                            .amf-logo-text {
+                                margin-left: calc(var(--bar-width) * 2 + var(--gap));
+                                transform: translateX(-100%);
+                            }
                         }
                         @media (max-width: 400px) {
                             .amf-logo {
                                 --logo-unit: 42px;
                                 --bar-width: 32px;
+                            }
+                            .amf-logo-text {
+                                margin-left: calc(var(--bar-width) * 2 + var(--gap));
+                                transform: translateX(-100%);
                             }
                         }
                     </style>
