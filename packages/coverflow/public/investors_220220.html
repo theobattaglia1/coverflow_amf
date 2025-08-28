@@ -1299,6 +1299,7 @@
             letter-spacing:0.05em;
             position:relative;
             overflow:hidden;
+            z-index:2;
         }
 
         .social-link::before{
@@ -2539,6 +2540,24 @@
             transition:all 0.3s ease;
         }
         
+        @media(max-width:768px){
+            .principle{
+                padding:1.5rem;
+                margin-bottom:1rem;
+            }
+            
+            .principle h4{
+                font-size:var(--step-0);
+                margin-bottom:0.75rem;
+            }
+            
+            .principle p{
+                font-size:var(--step--1);
+                line-height:1.3;
+                margin:0;
+            }
+        }
+        
         .principle:hover{
             transform:translateY(-4px);
             box-shadow:0 8px 24px rgba(0,0,0,0.1);
@@ -3578,6 +3597,13 @@
                             line-height: 1;
                             font-weight: bold;
                         }
+                        
+                        @media (max-width: 768px) {
+                            .amf-logo-text {
+                                margin-left: calc(var(--bar-width) * 1.5 + var(--gap));
+                                transform: translateX(-75%);
+                            }
+                        }
 
                         @media (max-width: 768px) {
                             .amf-logo {
@@ -4095,7 +4121,7 @@
                 </div>
             </div>
             
-            <div class="spacer-lg"></div>
+            <div class="spacer-md"></div>
             
             <div class="vision-principles">
                 <div class="principle">
