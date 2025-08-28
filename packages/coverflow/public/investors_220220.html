@@ -1639,6 +1639,77 @@
             border-top:1px solid rgba(0,0,0,0.1);
         }
         
+        /* Mobile capital uses grid */
+        .capital-uses-mobile{
+            display:none;
+        }
+        
+        .capital-grid{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:1rem;
+            margin-top:2rem;
+        }
+        
+        .capital-grid-item{
+            background:var(--bg);
+            border:2px solid var(--ink);
+            padding:1.5rem;
+            position:relative;
+            transition:all 0.3s ease;
+            min-height:200px;
+            display:flex;
+            flex-direction:column;
+        }
+        
+        .capital-grid-item:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .capital-grid-item.road-to-30m{
+            background:var(--accent);
+            color:var(--bg);
+            border-color:var(--accent);
+        }
+        
+        .capital-grid-item h5{
+            font-size:var(--step-0);
+            font-weight:700;
+            margin-bottom:1rem;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .capital-grid-item.road-to-30m h5{
+            color:var(--bg);
+        }
+        
+        .capital-grid-item p{
+            font-size:var(--step--1);
+            line-height:1.4;
+            margin:0;
+            flex:1;
+        }
+        
+        .capital-grid-item ul{
+            list-style:none;
+            padding:0;
+            margin:0;
+            flex:1;
+        }
+        
+        .capital-grid-item li{
+            font-size:var(--step--1);
+            line-height:1.4;
+            margin-bottom:0.5rem;
+            color:var(--bg);
+        }
+        
+        .capital-grid-item li:last-child{
+            margin-bottom:0;
+        }
+        
         .case-header{
             display:grid;
             grid-template-columns:300px 1fr;
@@ -1895,6 +1966,14 @@
                 display:none;
             }
             .case-content-mobile{
+                display:block;
+            }
+            
+            /* Show mobile capital grid, hide desktop layout */
+            .capital-uses{
+                display:none;
+            }
+            .capital-uses-mobile{
                 display:block;
             }
         }
@@ -4007,6 +4086,41 @@
                         <div class="capital-item">
                             <h5>Office & Creative Hub</h5>
                             <p>Establishing a non-traditional loft-style space that functions as both headquarters and cultural hub — with workstations, a listening room, and open-plan areas that can double as showcase venue, meeting space, and creative studio.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Mobile-only grid layout -->
+                    <div class="capital-uses-mobile">
+                        <div class="capital-grid">
+                            <div class="capital-grid-item road-to-30m">
+                                <h5>THE ROAD TO $30M</h5>
+                                <ul>
+                                    <li>Scale roster methodically to 30 artists/producers.</li>
+                                    <li>Cultivate at least 3 superstars in the next 5 years.</li>
+                                    <li>Diversify across genres and formats to increase stability.</li>
+                                    <li>Build a portfolio where each artist's success multiplies opportunities for the others.</li>
+                                </ul>
+                            </div>
+                            <div class="capital-grid-item">
+                                <h5>Artist Development</h5>
+                                <p>Seeding projects, funding creative work, and supporting breakthrough campaigns that amplify label deal value by 5x.</p>
+                            </div>
+                            <div class="capital-grid-item">
+                                <h5>Travel & Entertainment</h5>
+                                <p>Opening doors globally, maintaining high-touch relationships with labels, publishers, and brands.</p>
+                            </div>
+                            <div class="capital-grid-item">
+                                <h5>Seed Funding</h5>
+                                <p>Providing upfront runway before label signings, ensuring leverage and outsized deal structures.</p>
+                            </div>
+                            <div class="capital-grid-item">
+                                <h5>Strategic Infrastructure</h5>
+                                <p>Building the systems and relationships that allow AMF to scale to 30 artists while maintaining quality control.</p>
+                            </div>
+                            <div class="capital-grid-item">
+                                <h5>Office & Creative Hub</h5>
+                                <p>Establishing a non-traditional loft-style space that functions as both headquarters and cultural hub.</p>
+                            </div>
                         </div>
                     </div>
                 </div>
