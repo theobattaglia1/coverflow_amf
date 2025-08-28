@@ -1138,22 +1138,22 @@
             transform:translateY(0);
         }
 
-        .artist-name{
-            font-size:clamp(0.625rem, 1.5vw, var(--step-0));
-            font-weight:700;
-            text-transform:uppercase;
-            letter-spacing:0.02em;
-            margin-bottom:0.15rem;
-            line-height:1.1;
-        }
+                    .artist-name{
+                font-size:clamp(0.5rem, 1.2vw, var(--step-0));
+                font-weight:700;
+                text-transform:uppercase;
+                letter-spacing:0.02em;
+                margin-bottom:0.1rem;
+                line-height:1.1;
+            }
 
-        .artist-role{
-            font-size:clamp(0.5rem, 1.2vw, var(--step--1));
-            opacity:0.8;
-            text-transform:uppercase;
-            letter-spacing:0.05em;
-            line-height:1.1;
-        }
+            .artist-role{
+                font-size:clamp(0.4rem, 1vw, var(--step--1));
+                opacity:0.8;
+                text-transform:uppercase;
+                letter-spacing:0.05em;
+                line-height:1.1;
+            }
 
         /* Modal Styles */
         .artist-modal{
@@ -1540,6 +1540,74 @@
             padding-inline:calc(var(--gutter) * 2);
         }
         
+        /* Mobile-only case study content */
+        .case-content-mobile{
+            display:none;
+        }
+        
+        .mobile-case-summary{
+            padding:2rem 0;
+        }
+        
+        .mobile-stats{
+            font-size:var(--step--1);
+            font-weight:600;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            margin-bottom:2rem;
+            padding-bottom:1rem;
+            border-bottom:2px solid var(--ink);
+            opacity:0.6;
+        }
+        
+        .mobile-deal-cards{
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+            margin-bottom:2rem;
+        }
+        
+        .mobile-deal-card{
+            background:var(--bg);
+            border:2px solid var(--ink);
+            padding:1.5rem;
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .mobile-deal-card:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .mobile-deal-card h6{
+            font-size:var(--step-0);
+            font-weight:700;
+            margin-bottom:0.5rem;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .mobile-deal-card p{
+            font-size:var(--step--1);
+            line-height:1.4;
+            color:var(--ink);
+            font-weight:400;
+            opacity:0.8;
+            margin:0;
+        }
+        
+        .mobile-bio p{
+            font-size:var(--step-0);
+            line-height:1.4;
+            color:var(--ink);
+            font-weight:400;
+            text-align:justify;
+            margin:0;
+        }
+        
         .case-header{
             display:grid;
             grid-template-columns:300px 1fr;
@@ -1789,6 +1857,14 @@
             }
             .case-deal{
                 grid-column:span 2;
+            }
+            
+            /* Show mobile content, hide desktop content */
+            .case-content-refined{
+                display:none;
+            }
+            .case-content-mobile{
+                display:block;
             }
         }
         
@@ -2873,7 +2949,7 @@
                 position:absolute;
                 bottom:0;
                 background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.7) 70%,transparent 100%);
-                padding:2rem var(--gutter) var(--gutter);
+                padding:0.75rem 0.5rem 0.5rem;
             }
             
             /* Mobile Modal Enhancements */
@@ -3499,7 +3575,7 @@
                 </div>
             </div>
             
-            <div class="spacer-lg"></div>
+            <div class="spacer-md"></div>
             
             <div class="artist-grid">
                 <!-- Hudson Ingram -->
@@ -3578,6 +3654,8 @@
                         <div class="artist-role">Artist/Songwriter</div>
                     </div>
                 </div>
+                
+
             </div>
             <p class="swipe-hint">Tap to explore</p>
         </div>
@@ -3622,6 +3700,29 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Mobile-only simplified content -->
+            <div class="case-content-mobile">
+                <div class="mobile-case-summary">
+                    <div class="mobile-stats">19 YEARS OLD • POP, SINGER-SONGWRITER • AUSTIN, TEXAS</div>
+                    
+                    <div class="mobile-deal-cards">
+                        <div class="mobile-deal-card">
+                            <h6>RECORD LABEL</h6>
+                            <p>Interscope • Aaron Dessner JV</p>
+                        </div>
+                        
+                        <div class="mobile-deal-card">
+                            <h6>PUBLISHING</h6>
+                            <p>Universal Music Publishing Group</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-bio">
+                        <p>With heavyweight backing from Interscope and Universal Music Publishing, Hudson is positioned to define the next era of male pop.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
     
@@ -3656,6 +3757,29 @@
                     <div class="deal-card">
                         <h5 class="deal-title">PUBLISHING: KOBALT / 100 PUBLISHING</h5>
                         <p class="deal-details">Signed at 21, joining a roster that includes Cirkut, Alex Da Kid, Stargate, Dijon, Bon Iver, Childish Gambino, and FKA twigs.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile-only simplified content -->
+            <div class="case-content-mobile">
+                <div class="mobile-case-summary">
+                    <div class="mobile-stats">22 YEARS OLD • POP, FOLK, COUNTRY, ROCK • INDIANAPOLIS, IN</div>
+                    
+                    <div class="mobile-deal-cards">
+                        <div class="mobile-deal-card">
+                            <h6>PUBLISHING</h6>
+                            <p>Kobalt / 100 Publishing</p>
+                        </div>
+                        
+                        <div class="mobile-deal-card">
+                            <h6>COMPS</h6>
+                            <p>Jack Antonoff • Dan Nigro • Cirkut</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mobile-bio">
+                        <p>Likened to Jack Antonoff and Dan Nigro for his ability to blend left-of-center artistry with chart-ready pop.</p>
                     </div>
                 </div>
             </div>
