@@ -45,7 +45,7 @@
             /* Grid & Spacing */
             --gutter:1.5rem;
             --max-width:1000px;
-            --section-space:6rem;
+            --section-space:3rem;
         }
         
         /* ———————————— 2. Base Typography */
@@ -87,10 +87,10 @@
         }
         
         h1{font-size:var(--step-6);letter-spacing:-.06em;}
-        h2{font-size:var(--step-5);letter-spacing:-.05em;}
-        h3{font-size:var(--step-4);letter-spacing:-.04em;}
-        h4{font-size:var(--step-3);letter-spacing:-.03em;}
-        h5{font-size:var(--step-2);letter-spacing:-.02em;}
+        h2{font-size:var(--step-5);letter-spacing:-.05em;margin-bottom:1.5rem;}
+        h3{font-size:var(--step-4);letter-spacing:-.04em;margin-bottom:1.25rem;}
+        h4{font-size:var(--step-3);letter-spacing:-.03em;margin-bottom:1rem;}
+        h5{font-size:var(--step-2);letter-spacing:-.02em;margin-bottom:0.75rem;}
         
         .display{
             font-size:clamp(4rem,15vw,14rem);
@@ -101,7 +101,7 @@
         }
         
         p{
-            margin-bottom:1.5rem;
+            margin-bottom:1rem;
             max-width:65ch;
             text-align:justify;
             line-height:1.4;
@@ -196,7 +196,7 @@
         }
         
         .concept-card{
-            padding:2rem;
+            padding:1rem;
             position:relative;
             overflow:hidden;
             border:2px solid var(--ink);
@@ -234,7 +234,7 @@
         }
         
         .concept-card h5{
-            margin-bottom:1.5rem;
+            margin-bottom:1rem;
             font-size:var(--step-2);
             position:relative;
         }
@@ -279,7 +279,7 @@
         }
         
         .comparison-column{
-            padding:3rem;
+            padding:1.5rem;
             position:relative;
             overflow:hidden;
             border:2px solid var(--ink);
@@ -289,17 +289,44 @@
         .comparison-column.average-manager{
             border-color:#DC2626;
             background:linear-gradient(135deg, rgba(220,38,38,0.02) 0%, transparent 50%);
+            opacity:0.85;
+            border-style:dashed;
         }
         
         .comparison-column.all-my-friends{
             border-color:#16A34A;
-            background:linear-gradient(135deg, rgba(22,163,74,0.02) 0%, transparent 50%);
+            background:linear-gradient(135deg, rgba(22,163,74,0.05) 0%, transparent 50%);
+            border-width:3px;
+            transform:scale(1.02);
+            box-shadow:0 8px 24px rgba(22,163,74,0.1), 0 2px 8px rgba(0,0,0,0.05);
+            position:relative;
+            z-index:2;
+            animation:pulseGlow 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow:0 8px 24px rgba(22,163,74,0.1), 0 2px 8px rgba(0,0,0,0.05); }
+            50% { box-shadow:0 12px 32px rgba(22,163,74,0.2), 0 4px 16px rgba(0,0,0,0.08); }
+        }
+        
+        .comparison-column.all-my-friends::before{
+            content:'✓ BETTER APPROACH';
+            position:absolute;
+            top:-12px;
+            right:20px;
+            background:#16A34A;
+            color:white;
+            padding:4px 12px;
+            font-size:0.7rem;
+            font-weight:700;
+            letter-spacing:0.05em;
+            border-radius:4px;
         }
         
         .comparison-header{
             font-size:var(--step-3);
             font-weight:900;
-            margin-bottom:3rem;
+            margin-bottom:1.5rem;
             text-align:left;
             letter-spacing:-0.05em;
             text-transform:uppercase;
@@ -324,10 +351,12 @@
         
         .comparison-column.all-my-friends .comparison-header{
             color:#16A34A;
+            font-size:calc(var(--step-3) * 1.1);
+            position:relative;
         }
         
         .comparison-section{
-            margin-bottom:2rem;
+            margin-bottom:1.5rem;
         }
         
         .comparison-section:last-child{
@@ -376,10 +405,14 @@
         
         .comparison-column.average-manager li::before{
             color:#DC2626;
+            content:'×';
+            opacity:0.7;
         }
         
         .comparison-column.all-my-friends li::before{
             color:#16A34A;
+            content:'✓';
+            font-weight:900;
         }
         
         @media(max-width:768px){
@@ -387,11 +420,21 @@
                 gap:1.5rem;
             }
             .comparison-column{
-                padding:1.5rem;
+                padding:1rem;
+            }
+            .comparison-column.all-my-friends{
+                transform:scale(1);
+                margin-top:0.5rem;
+            }
+            .comparison-column.all-my-friends::before{
+                font-size:0.6rem;
+                padding:3px 8px;
+                top:-10px;
+                right:15px;
             }
             .comparison-header{
                 font-size:var(--step-2);
-                margin-bottom:2rem;
+                margin-bottom:1.25rem;
                 padding-bottom:1rem;
             }
             .comparison-header::after{
@@ -412,7 +455,7 @@
         
         /* Founder section with image */
         .founder-section{
-            padding:6rem 0;
+            padding:3rem 0;
             background:var(--bg);
         }
         
@@ -524,7 +567,7 @@
         }
 
         .modal-music-section .track-list{
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             max-height:300px;
             overflow-y:auto;
         }
@@ -661,7 +704,7 @@
         
         /* ———————————— 4. Section Architecture */
         section{
-            padding-block:calc(var(--section-space) * 0.6);
+            padding-block:calc(var(--section-space) * 0.8);
             position:relative;
         }
         
@@ -868,7 +911,7 @@
         }
         
         .hero-title{
-            margin-bottom:1.5rem;
+            margin-bottom:1rem;
         }
         
         /* CHAOS: Off-kilter hero image */
@@ -900,7 +943,7 @@
             font-size:var(--step--2);
             font-weight:700;
             letter-spacing:-.02em;
-            margin-bottom:4rem;
+            margin-bottom:1.25rem;
             opacity:.2;
         }
         
@@ -954,8 +997,8 @@
             font-weight:300;
             line-height:1.2;
             letter-spacing:-.03em;
-            margin-block:6rem;
-            padding-left:2rem;
+            margin-block:3rem;
+            padding-left:1.5rem;
             border-left:4px solid var(--ink);
             text-align:justify;
         }
@@ -964,8 +1007,8 @@
         .metrics-grid{
             display:grid;
             grid-template-columns:repeat(4,1fr);
-            gap:4rem;
-            margin-top:6rem;
+            gap:2.5rem;
+            margin-top:3rem;
         }
         
         .metric-item{
@@ -1041,7 +1084,7 @@
         }
         
         .timeline-item{
-            padding-top:2rem;
+            padding-top:1rem;
             position:relative;
         }
         
@@ -1256,8 +1299,8 @@
         .modal-artist-header{
             display:grid;
             grid-template-columns:400px 1fr;
-            gap:4rem;
-            padding:4rem;
+            gap:2rem;
+            padding:2rem;
         }
 
         .modal-artist-image{
@@ -1283,13 +1326,13 @@
             color:var(--accent);
             text-transform:uppercase;
             letter-spacing:0.1em;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
         }
 
         .artist-bio{
             font-size:var(--step-0);
             line-height:1.6;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             max-width:600px;
             text-align:justify;
         }
@@ -1297,7 +1340,7 @@
         .social-links{
             display:flex;
             gap:1rem;
-            margin-bottom:3rem;
+            margin-bottom:1.5rem;
         }
 
         .social-link{
@@ -1341,12 +1384,12 @@
 
         .modal-music-section{
             background:#FAFAFA;
-            padding:3rem 4rem;
+            padding:1.5rem 2rem;
         }
 
         .modal-section-title{
             font-size:var(--step-2);
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             text-transform:uppercase;
             letter-spacing:-0.02em;
         }
@@ -1355,7 +1398,7 @@
             .modal-artist-header{
                 grid-template-columns:1fr;
                 gap:1.5rem;
-                padding:1.5rem;
+                padding:1rem;
             }
             
             .modal-artist-image{
@@ -1588,7 +1631,7 @@
         }
         
         .mobile-case-summary{
-            padding:2rem 0;
+            padding:1.5rem 0;
         }
         
         .mobile-stats{
@@ -1597,7 +1640,7 @@
             color:var(--ink);
             text-transform:uppercase;
             letter-spacing:0.05em;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             padding-bottom:1rem;
             border-bottom:2px solid var(--ink);
             opacity:0.6;
@@ -1607,13 +1650,13 @@
             display:flex;
             flex-direction:column;
             gap:1rem;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
         }
         
         .mobile-deal-card{
             background:var(--bg);
             border:2px solid var(--ink);
-            padding:1.5rem;
+            padding:1rem;
             position:relative;
             transition:all 0.3s ease;
         }
@@ -1671,7 +1714,7 @@
         .capital-grid-item{
             background:var(--bg);
             border:2px solid var(--ink);
-            padding:1.5rem;
+            padding:1rem;
             position:relative;
             transition:all 0.3s ease;
             min-height:200px;
@@ -1761,7 +1804,7 @@
         
         /* Refined Case Study Styles */
         .case-header-refined{
-            margin-bottom:3rem;
+            margin-bottom:1.5rem;
         }
         
         .case-image-refined{
@@ -1816,7 +1859,7 @@
             color:var(--ink);
             text-transform:uppercase;
             letter-spacing:0.05em;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             padding-bottom:1rem;
             border-bottom:2px solid var(--ink);
             opacity:0.6;
@@ -1825,7 +1868,7 @@
         .intro-paragraph{
             font-size:var(--step-1);
             line-height:1.4;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             color:var(--ink);
             font-weight:400;
             text-align:justify;
@@ -1856,7 +1899,7 @@
         .deal-card{
             background:var(--bg);
             border:2px solid var(--ink);
-            padding:2rem;
+            padding:1.5rem;
             position:relative;
             transition:all 0.3s ease;
         }
@@ -1912,7 +1955,7 @@
         
         .case-section{
             position:relative;
-            padding:2rem;
+            padding:1.5rem;
             background:var(--bg);
             border:1px solid rgba(0,0,0,0.1);
             transition:all 0.3s ease;
@@ -2009,7 +2052,7 @@
         }
         
         .financial-year{
-            padding:2rem;
+            padding:1.5rem;
             border:2px solid var(--ink);
             position:relative;
             transition:all 0.3s ease;
@@ -2085,13 +2128,13 @@
         
         /* ———————————— 14. Footer */
         .footer{
-            padding-block:8rem;
+            padding-block:3rem;
             text-align:center;
         }
         
         .footer-title{
             font-size:var(--step-5);
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             letter-spacing:-.05em;
         }
         
@@ -2126,11 +2169,11 @@
         }
         
         /* ———————————— 15. Utilities */
-        .spacer-xs{height:1rem;}
-        .spacer-sm{height:2rem;}
-        .spacer-md{height:3rem;}
-        .spacer-lg{height:4rem;}
-        .spacer-xl{height:6rem;}
+        .spacer-xs{height:0.5rem;}
+        .spacer-sm{height:1rem;}
+        .spacer-md{height:1.5rem;}
+        .spacer-lg{height:2rem;}
+        .spacer-xl{height:3rem;}
         
         .text-center{text-align:center;}
         .opacity-50{opacity:.5;}
@@ -2150,7 +2193,7 @@
             align-items:flex-end;
             justify-content:space-between;
             height:400px;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             position:relative;
             z-index:1;
         }
@@ -2235,7 +2278,7 @@
         .multiplier-arc{
             position:relative;
             height:60px;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             display:flex;
             align-items:center;
             justify-content:center;
@@ -2409,7 +2452,7 @@
         
         .case-study-header{
             text-align:center;
-            margin-bottom:3rem;
+            margin-bottom:1.5rem;
         }
         
         .case-study-header h3{
@@ -2466,7 +2509,7 @@
         
         .value-chart h5{
             font-size:var(--step-0);
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             font-weight:700;
             text-transform:uppercase;
             letter-spacing:0.05em;
@@ -2526,7 +2569,7 @@
         .case-study-text p{
             font-size:var(--step-0);
             line-height:1.4;
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             text-align:justify;
             color:var(--ink);
         }
@@ -2550,7 +2593,7 @@
         }
         
         .principle{
-            padding:2rem;
+            padding:1.5rem;
             border:2px solid var(--ink);
             position:relative;
             transition:all 0.3s ease;
@@ -2558,7 +2601,7 @@
         
         @media(max-width:768px){
             .principle{
-                padding:1.5rem;
+                padding:1rem;
                 margin-bottom:1rem;
             }
             
@@ -2609,7 +2652,7 @@
         
         .vision-content p{
             font-size:var(--step-0);
-            margin-bottom:3rem;
+            margin-bottom:1.5rem;
             text-align:justify;
             color:var(--ink);
         }
@@ -2621,7 +2664,7 @@
         }
         
         .capital-item{
-            padding:1.5rem;
+            padding:1rem;
             border-left:4px solid var(--accent);
             background:rgba(0,0,255,0.02);
             transition:all 0.3s ease;
@@ -2660,7 +2703,7 @@
         
         .vision-highlight h3{
             font-size:var(--step-2);
-            margin-bottom:2rem;
+            margin-bottom:1.25rem;
             font-weight:700;
             color:var(--bg);
         }
@@ -2697,7 +2740,7 @@
         }
         
         .timeline-year{
-            padding:2rem;
+            padding:1.5rem;
             border:2px solid var(--ink);
             position:relative;
             transition:all 0.3s ease;
@@ -3086,7 +3129,7 @@
             
             /* Enhanced Mobile Cards */
             .concept-card{
-                padding:2rem;
+                padding:1.5rem;
                 margin-bottom:1.5rem;
                 background:var(--bg);
                 position:relative;
@@ -3246,7 +3289,7 @@
             .timeline-item{
                 padding-left:2rem;
                 padding-top:0;
-                margin-bottom:3rem;
+                margin-bottom:1.5rem;
             }
             
             .timeline-marker{
@@ -3676,7 +3719,7 @@
                     </div>
                 </div>
                 <p class="lead" style="text-align: center; max-width: 90%; margin: 0 auto 1rem auto;">Building the future of artist development through vision-focused investment and genuine partnership</p>
-                <p class="opacity-50" style="text-align: center; max-width: 90%; margin: 0 auto;">Founded February 2022 by Theo Battaglia<br>3+ years operating lean • 7 strategic artists • 100% partner mentality</p>
+                <p class="opacity-50" style="text-align: center; max-width: 90%; margin: 0 auto;">Founded February 2022 by Theo Battaglia</p>
             </div>
         </div>
         <div class="hero-image"></div>
