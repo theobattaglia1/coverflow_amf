@@ -402,82 +402,75 @@
         
         /* Responsive */
         @media (max-width: 768px) {
-            /* Minimal hero section on mobile */
+            /* Container adjustments for mobile */
+            .container {
+                padding: 0 15px;
+            }
+            
+            /* Hero section - better mobile experience */
             .hero {
-                height: auto !important;
-                min-height: unset !important;
-                padding: 5px 10px 5px !important;
+                height: 70vh;
+                min-height: 500px;
+                padding: 20px;
             }
             
             .hero-content {
-                padding: 0 !important;
+                padding: 20px 0;
             }
             
-            /* Tiny logo/title on mobile */
+            /* Better mobile typography for hero */
             .hero h1 {
-                font-size: 1rem !important;
-                margin: 0 !important;
-                line-height: 1 !important;
+                font-size: clamp(2.5rem, 12vw, 4rem) !important;
+                margin-bottom: 1rem !important;
+                line-height: 1.1 !important;
             }
             
             .hero .tagline {
-                font-size: 0.65rem !important;
-                margin: 0 !important;
-                line-height: 1.2 !important;
+                font-size: clamp(1rem, 4vw, 1.4rem) !important;
+                margin-bottom: 1.5rem !important;
+                line-height: 1.3 !important;
             }
             
             .hero .subheading {
-                font-size: 0.6rem !important;
-                padding: 0 !important;
-                line-height: 1.2 !important;
-                margin: 0 !important;
+                font-size: clamp(0.9rem, 3vw, 1.1rem) !important;
+                line-height: 1.6 !important;
+                margin: 0 auto !important;
                 max-width: 100% !important;
             }
             
-            /* Hide or minimize video background on mobile */
+            /* Keep video background but make it subtle */
             .hero-video-bg {
-                display: none !important;
+                opacity: 0.3;
             }
             
             .hero-overlay {
-                background: rgba(245, 240, 232, 0.95) !important;
+                background: rgba(245, 240, 232, 0.85) !important;
             }
             
-            /* Force navigation to be more compact on mobile */
+            /* Improved mobile navigation */
             nav {
-                padding: 5px 0 !important;
+                padding: 15px 0 !important;
             }
             
             nav ul {
-                gap: 5px !important;
-                padding: 0 5px !important;
+                gap: 8px !important;
+                padding: 0 10px !important;
+                flex-wrap: wrap;
+                justify-content: center;
             }
             
             nav a {
-                font-size: 0.7rem !important;
-                padding: 3px 5px !important;
+                font-size: 0.8rem !important;
+                padding: 6px 10px !important;
+                white-space: nowrap;
             }
             
-            /* Reduce section padding on mobile */
+            /* Better section spacing on mobile */
             .section {
                 padding: 60px 0;
             }
             
-            /* Navigation adjustments for mobile */
-            nav {
-                padding: 10px 0;
-            }
-            
-            nav ul {
-                gap: 10px;
-                padding: 0 10px;
-            }
-            
-            nav a {
-                font-size: 0.85rem;
-                padding: 5px 8px;
-            }
-            
+            /* Content area improvements */
             .content-area {
                 grid-template-columns: 1fr;
                 gap: 40px;
@@ -493,12 +486,219 @@
                 order: 2;
             }
             
+            /* Typography adjustments for mobile */
+            h2 {
+                font-size: clamp(1.8rem, 8vw, 2.5rem);
+                margin-bottom: 1.5rem;
+            }
+            
+            h3 {
+                font-size: clamp(1.3rem, 6vw, 1.8rem);
+                margin-bottom: 1rem;
+            }
+            
+            h4 {
+                font-size: clamp(1.1rem, 4vw, 1.4rem);
+                margin-bottom: 0.8rem;
+            }
+            
+            /* Mobile-friendly tables */
+            table {
+                font-size: 0.85rem;
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            th, td {
+                padding: 0.8rem 0.6rem;
+                min-width: 120px;
+            }
+            
+            /* Image grid improvements */
             .image-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .image-grid img {
+                height: 200px;
+            }
+            
+            /* Color grid for mobile */
+            .color-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+            }
+            
+            .color-box {
+                height: 80px;
+                font-size: 12px;
+            }
+            
+            /* Film strip improvements */
+            .film-strip {
+                gap: 15px;
+                padding: 15px 0;
+            }
+            
+            .film-strip img {
+                height: 150px;
+            }
+            
+            /* Persona cards mobile optimization */
+            .persona {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            /* Mood images mobile sizing */
+            .mood-image {
+                margin: 1rem 0;
+            }
+            
+            /* Better spacing for lists */
+            ul li {
+                margin-bottom: 0.6rem;
+                padding-left: 1.2rem;
+            }
+            
+            /* Footer mobile */
+            footer {
+                padding: 60px 0;
+                font-size: 1rem;
+            }
+        }
+        
+        /* Extra small mobile devices */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .hero {
+                height: 60vh;
+                min-height: 400px;
+                padding: 15px;
+            }
+            
+            .hero h1 {
+                font-size: clamp(2rem, 10vw, 3rem) !important;
+            }
+            
+            .hero .tagline {
+                font-size: clamp(0.9rem, 3.5vw, 1.2rem) !important;
+            }
+            
+            .hero .subheading {
+                font-size: clamp(0.8rem, 2.5vw, 1rem) !important;
+            }
+            
+            nav ul {
+                gap: 6px !important;
+            }
+            
+            nav a {
+                font-size: 0.75rem !important;
+                padding: 4px 8px !important;
+            }
+            
+            .section {
+                padding: 40px 0;
+            }
+            
+            .image-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
             
             .color-grid {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .film-strip img {
+                height: 120px;
+            }
+            
+            .persona {
+                padding: 1rem;
+            }
+            
+            table {
+                font-size: 0.8rem;
+            }
+            
+            th, td {
+                padding: 0.6rem 0.4rem;
+                min-width: 100px;
+            }
+        }
+        
+        /* Mobile-specific improvements */
+        @media (max-width: 768px) {
+            /* Touch-friendly interactions */
+            nav a, .mood-image, .accent-image, .image-grid img {
+                -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+            }
+            
+            /* Better touch targets */
+            nav a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Improved scroll behavior */
+            html {
+                scroll-behavior: smooth;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            /* Better text selection */
+            ::selection {
+                background: var(--oatmeal);
+                color: var(--typewriter-black);
+            }
+            
+            /* Optimize images for mobile */
+            img {
+                max-width: 100%;
+                height: auto;
+            }
+            
+            /* Better spacing for inline elements */
+            .mood-image, .accent-image {
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            
+            /* Improve readability of long text blocks */
+            .content p {
+                text-align: justify;
+                hyphens: auto;
+                -webkit-hyphens: auto;
+            }
+            
+            /* Better visual hierarchy for mobile */
+            .content-area.center .content {
+                text-align: left;
+            }
+            
+            /* Improve table readability on mobile */
+            table {
+                border: 1px solid var(--dusty-sage);
+                border-radius: 4px;
+            }
+            
+            th {
+                position: sticky;
+                left: 0;
+                background: var(--oatmeal);
+                z-index: 1;
             }
         }
         
@@ -1092,17 +1292,30 @@
             observer.observe(el);
         });
         
-        // Parallax effect for accent images
-        window.addEventListener('scroll', () => {
-            const scrolled = window.pageYOffset;
-            const parallaxElements = document.querySelectorAll('.accent-image');
-            
-            parallaxElements.forEach(el => {
-                const speed = 0.5;
-                const yPos = -(scrolled * speed);
-                el.style.transform = `translateY(${yPos}px) rotate(${el.style.transform.match(/rotate\((.+)\)/)[1]})`;
+        // Parallax effect for accent images (disabled on mobile for performance)
+        if (window.innerWidth > 768) {
+            window.addEventListener('scroll', () => {
+                const scrolled = window.pageYOffset;
+                const parallaxElements = document.querySelectorAll('.accent-image');
+                
+                parallaxElements.forEach(el => {
+                    const speed = 0.5;
+                    const yPos = -(scrolled * speed);
+                    el.style.transform = `translateY(${yPos}px)`;
+                });
             });
-        });
+        }
+        
+        // Mobile-specific optimizations
+        if (window.innerWidth <= 768) {
+            // Disable hover effects on mobile
+            document.querySelectorAll('.mood-image, .accent-image, .image-grid img').forEach(el => {
+                el.style.transition = 'none';
+            });
+            
+            // Improve touch scrolling
+            document.body.style.webkitOverflowScrolling = 'touch';
+        }
     </script>
 </body>
 </html>
