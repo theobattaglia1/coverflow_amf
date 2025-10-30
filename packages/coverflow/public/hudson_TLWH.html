@@ -572,14 +572,21 @@ img {
 }
 
 /* Off-kilter hero image like old version */
-.hero-image {
+.hero-image-wrap {
   position: absolute;
-  right: -10%;
-  top: 50%;
-  transform: translateY(-50%) rotate(-2deg);
-  width: 45vw;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  top: 0;
   height: auto;
+  overflow: hidden;
   z-index: 1;
+}
+
+.hero-image {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* ———————————— SIMPLE COMPONENTS ———————————— */
@@ -618,13 +625,12 @@ img {
     padding-top: 8rem;
   }
   
-  .hero-image {
-                width: 100%;
-    height: auto;
-    right: 0;
-    top: auto;
-    bottom: -5vh;
+  .hero-image-wrap {
+    position: static;
     transform: none;
+    width: 100%;
+    height: auto !important;
+    overflow: visible;
   }
   
   .hero-content {
@@ -2177,15 +2183,15 @@ img {
                 </div>
             </div>
             </div>
-        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson.jpeg" 
-             alt="Hudson Ingram" 
-             class="hero-image"/>
+        <div class="hero-image-wrap">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson Ingram/Screenshot 2025-10-30 at 3.30.45â¯PM.png" 
+                 alt="Hudson Ingram" 
+                 class="hero-image"/>
+        </div>
     </section>
 
     <section class="video-moment" id="videoMoment">
-        <video class="video-background" autoplay loop muted playsinline>
-            <source src="https://storage.googleapis.com/allmyfriends-assets-2025/video/Hudson/Hudson%20Ingram%20Super-8%20(uncolored).mov" type="video/mp4">
-        </video>
+        <img class="video-background" src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson%20Ingram/Real%20Life%20CLip%20For%20Gif.gif" alt="Hudson Ingram clip" />
         <div class="parallax-text-container">
             <h2 class="parallax-text editable-text" id="parallaxText">Pretty On First Glance,<br>Haunted On Second.</h2>
         </div>
@@ -2204,7 +2210,7 @@ img {
             </div>
             
             <div class="release-player">
-                <iframe id="disco-playlist-24176665" name="disco-playlist-24176665" allowfullscreen frameborder="0" class="disco-embed" src="https://allmyfriendsinc.disco.ac/e/p/24176665?download=true&s=BoacTTK9BxfMm1nv1cmKC4TqlHE%3AoGiro13p&artwork=true&color=%233282C2&theme=white" width="100%" height="395" style="border-radius: 12px;"></iframe>
+                <iframe style="border-radius: 24px" src="https://untitled.stream/embed/tOeruCG6rrcI" width="100%" height="344" allowfullscreen="" allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
             </div>
             
             <!-- Horizontal Timeline Bar -->
@@ -2213,11 +2219,11 @@ img {
                     <h4>PT 1 — FALL '25</h4>
                     <div class="timeline-phase">The departure.</div>
                     <div class="timeline-details">
-                        <div><strong>1 Oct:</strong> 'Til October</div>
+                        <div><strong>8 Oct:</strong> Real Life</div>
                         <div><strong>14 Nov:</strong> Abigail</div>
                         <div><strong>9 Jan:</strong> Linger</div>
                         <div style="margin-top: 0.75rem; font-weight: 600;">15 Feb EP Release</div>
-                        <div style="font-size: var(--step--2); opacity: 0.7; margin-top: 0.25rem;">+ Real Life Feat. Sydney Rose (focus)</div>
+                        <div style="font-size: var(--step--2); opacity: 0.7; margin-top: 0.25rem;">+ Don't Get Me Started Feat. Sydney Rose (focus)</div>
                         <div style="font-size: var(--step--2); opacity: 0.7;">+ Baby Just Be</div>
                         <div style="font-size: var(--step--2); opacity: 0.7;">+ Wouldn't That Be Nice</div>
                     </div>
@@ -3154,6 +3160,32 @@ img {
           }
         });
       });
+
+      // Align hero image crop height to headline height
+      function updateHeroImageCrop() {
+        const hero = document.querySelector('.hero');
+        const wrap = hero && hero.querySelector('.hero-image-wrap');
+        const display = hero && hero.querySelector('.hero-content .display');
+        if (!hero || !wrap || !display) return;
+
+        if (window.innerWidth < 769) {
+          // let mobile fall back to natural flow
+          wrap.style.top = '';
+          wrap.style.height = '';
+          return;
+        }
+
+        const heroRect = hero.getBoundingClientRect();
+        const displayRect = display.getBoundingClientRect();
+        const top = displayRect.top - heroRect.top;
+        const height = displayRect.height;
+        wrap.style.top = top + 'px';
+        wrap.style.height = height + 'px';
+      }
+
+      updateHeroImageCrop();
+      window.addEventListener('resize', updateHeroImageCrop);
+      window.setTimeout(updateHeroImageCrop, 250);
     });
     </script>
 
