@@ -47,6 +47,15 @@ function ensureWritableDirectory(dirPath) {
 }
 
 const DATA_DIR = (() => {
+  // If GCS sync is enabled, always use bundled directory (GCS is the persistence layer)
+  const syncProvider = (process.env.DATA_SYNC_PROVIDER || '').toLowerCase();
+  if (syncProvider === 'gcs') {
+    ensureWritableDirectory(DEFAULT_DATA_DIR);
+    console.log(`[DATA] GCS sync enabled - using bundled data directory: ${DEFAULT_DATA_DIR}`);
+    return DEFAULT_DATA_DIR;
+  }
+  
+  // Otherwise, try override path if specified
   const overridePath = process.env.DATA_DIR_PATH?.trim();
   if (overridePath) {
     const resolved = path.resolve(overridePath);
@@ -54,7 +63,7 @@ const DATA_DIR = (() => {
       console.log(`[DATA] Using override data directory: ${resolved}`);
       return resolved;
     }
-    console.warn(`[DATA] Falling back to bundled data directory: ${DEFAULT_DATA_DIR}`);
+    console.warn(`[DATA] Override directory not writable, falling back to bundled: ${DEFAULT_DATA_DIR}`);
   } else {
     console.log(`[DATA] Using bundled data directory: ${DEFAULT_DATA_DIR}`);
   }
@@ -308,8 +317,9 @@ async function initializeDataSync() {
         console.warn(`[DATA SYNC] Remote copy for ${fileName} not found; keeping local version`);
       }
     } catch (err) {
-      console.error(`[DATA SYNC] Failed to synchronize ${fileName} on startup`, err);
-      throw err;
+      console.error(`[DATA SYNC] Failed to synchronize ${fileName} on startup:`, err.message);
+      console.warn(`[DATA SYNC] Continuing with local version of ${fileName}`);
+      // Don't throw - allow server to start even if sync fails
     }
   }
 }
@@ -378,14 +388,22 @@ async function downloadJsonFromGcs(fileName) {
   // Ensure the directory exists before writing
   try {
     await fs.promises.mkdir(DATA_DIR, { recursive: true });
-  } catch (mkdirErr) {
-    // If directory creation fails, try to write anyway (parent might exist)
-    console.warn(`[DATA SYNC] Could not ensure directory exists: ${mkdirErr.message}`);
+    // Verify we can actually write to it
+    await fs.promises.access(DATA_DIR, fs.constants.W_OK);
+  } catch (dirErr) {
+    // If we can't use DATA_DIR, this is a serious problem
+    console.error(`[DATA SYNC] Cannot write to DATA_DIR ${DATA_DIR}: ${dirErr.message}`);
+    throw new Error(`Data directory not writable: ${DATA_DIR}`);
   }
   
-  await fs.promises.writeFile(destinationPath, contents);
-  console.log(`[DATA SYNC] Downloaded ${fileName} from gs://${bucket.name}/${remoteKey}`);
-  return true;
+  try {
+    await fs.promises.writeFile(destinationPath, contents);
+    console.log(`[DATA SYNC] Downloaded ${fileName} from gs://${bucket.name}/${remoteKey} to ${destinationPath}`);
+    return true;
+  } catch (writeErr) {
+    console.error(`[DATA SYNC] Failed to write ${fileName} to ${destinationPath}: ${writeErr.message}`);
+    throw writeErr;
+  }
 }
 
 // Helper: Git commit and push automation
