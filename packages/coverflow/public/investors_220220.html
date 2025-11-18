@@ -927,6 +927,27 @@
             z-index:1;
         }
         
+        /* Editorial AMF Mosaic Image */
+        .hero-mosaic{
+            position:absolute;
+            left:-8%;
+            top:15%;
+            transform:rotate(1.5deg);
+            width:50vw;
+            max-width:600px;
+            height:auto;
+            z-index:1;
+            opacity:0.95;
+            mix-blend-mode:multiply;
+        }
+        
+        .hero-mosaic img{
+            width:100%;
+            height:auto;
+            display:block;
+            filter:grayscale(10%) contrast(1.05);
+        }
+        
         @media(max-width:768px){
             .hero-image{
                 width:100%;
@@ -935,6 +956,24 @@
                 top:auto;
                 bottom:0;
                 transform:none;
+            }
+            
+            .hero-mosaic{
+                left:-5%;
+                top:10%;
+                width:60vw;
+                max-width:400px;
+                transform:rotate(0.5deg);
+            }
+        }
+        
+        @media(max-width:480px){
+            .hero-mosaic{
+                left:-3%;
+                top:8%;
+                width:70vw;
+                max-width:300px;
+                transform:rotate(0deg);
             }
         }
         
@@ -3722,6 +3761,9 @@
                 <p class="lead" style="text-align: center; max-width: 90%; margin: 0 auto 1rem auto;">Building the future of artist development through vision-focused investment and genuine partnership</p>
                 <p class="opacity-50" style="text-align: center; max-width: 90%; margin: 0 auto;">Founded February 2022 by Theo Battaglia</p>
             </div>
+        </div>
+        <div class="hero-mosaic">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ALL%20MY%20FRIENDS/All%20My%20Friends%20+%20About%20Us%20+%20Mosaic.png" alt="All My Friends Mosaic">
         </div>
         <div class="hero-image"></div>
     </section>
