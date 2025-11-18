@@ -242,26 +242,43 @@ async function saveUsers(users) {
 }
 
 function prepareDataDirectory() {
+  const resolvedDataDir = path.resolve(DATA_DIR);
+  const resolvedDefaultDir = path.resolve(DEFAULT_DATA_DIR);
+
   try {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-
-    const resolvedDataDir = path.resolve(DATA_DIR);
-    const resolvedDefaultDir = path.resolve(DEFAULT_DATA_DIR);
-
-    // Seed files from repo copy if using an override directory
-    if (resolvedDataDir !== resolvedDefaultDir) {
-      const seedFiles = fs.readdirSync(DEFAULT_DATA_DIR).filter(file => file.endsWith('.json'));
-      for (const file of seedFiles) {
-        const targetPath = path.join(DATA_DIR, file);
-        if (!fs.existsSync(targetPath)) {
-          fs.copyFileSync(path.join(DEFAULT_DATA_DIR, file), targetPath);
-          console.log(`[DATA] Seeded ${file} into ${DATA_DIR}`);
-        }
-      }
+    if (!fs.existsSync(resolvedDataDir)) {
+      fs.mkdirSync(resolvedDataDir, { recursive: true });
+      console.log(`[DATA] Created data directory: ${resolvedDataDir}`);
+    } else {
+      console.log(`[DATA] Data directory already exists: ${resolvedDataDir}`);
     }
   } catch (err) {
-    console.error('[DATA] Failed to prepare data directory:', err);
+    if (err.code === 'EEXIST') {
+      console.log(`[DATA] Data directory already exists (race condition): ${resolvedDataDir}`);
+    } else if (err.code === 'EACCES') {
+      console.warn(`[DATA] Insufficient permission to create ${resolvedDataDir}, assuming pre-mounted disk`);
+    } else {
+      console.error('[DATA] Failed to prepare data directory:', err);
+      process.exit(1);
+    }
+  }
+
+  try {
+    fs.accessSync(resolvedDataDir, fs.constants.W_OK);
+  } catch (err) {
+    console.error(`[DATA] Data directory not writable: ${resolvedDataDir}`, err);
     process.exit(1);
+  }
+
+  if (resolvedDataDir !== resolvedDefaultDir) {
+    const seedFiles = fs.readdirSync(DEFAULT_DATA_DIR).filter(file => file.endsWith('.json'));
+    for (const file of seedFiles) {
+      const targetPath = path.join(DATA_DIR, file);
+      if (!fs.existsSync(targetPath)) {
+        fs.copyFileSync(path.join(DEFAULT_DATA_DIR, file), targetPath);
+        console.log(`[DATA] Seeded ${file} into ${DATA_DIR}`);
+      }
+    }
   }
 }
 
