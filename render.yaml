@@ -9,7 +9,7 @@ services:
     startCommand: cd packages/coverflow && npm start
     disk:
       name: coverflow-data
-      mountPath: /var/data
+      mountPath: /var/data/coverflow-data
       sizeGB: 1
     envVars:
       - key: NODE_ENV
