@@ -34,15 +34,32 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 const ADMIN_DIR = path.join(__dirname, 'admin');
 
 const DEFAULT_DATA_DIR = path.join(__dirname, 'data');
+
+function ensureWritableDirectory(dirPath) {
+  try {
+    fs.mkdirSync(dirPath, { recursive: true });
+    fs.accessSync(dirPath, fs.constants.W_OK);
+    return true;
+  } catch (err) {
+    console.warn(`[DATA] Directory ${dirPath} not usable (${err.code || err.message})`);
+    return false;
+  }
+}
+
 const DATA_DIR = (() => {
   const overridePath = process.env.DATA_DIR_PATH?.trim();
-  if (!overridePath) {
+  if (overridePath) {
+    const resolved = path.resolve(overridePath);
+    if (ensureWritableDirectory(resolved)) {
+      console.log(`[DATA] Using override data directory: ${resolved}`);
+      return resolved;
+    }
+    console.warn(`[DATA] Falling back to bundled data directory: ${DEFAULT_DATA_DIR}`);
+  } else {
     console.log(`[DATA] Using bundled data directory: ${DEFAULT_DATA_DIR}`);
-    return DEFAULT_DATA_DIR;
   }
-  const resolved = path.resolve(overridePath);
-  console.log(`[DATA] Using override data directory: ${resolved}`);
-  return resolved;
+  ensureWritableDirectory(DEFAULT_DATA_DIR);
+  return DEFAULT_DATA_DIR;
 })();
 prepareDataDirectory();
 
@@ -255,59 +272,7 @@ async function saveUsers(users) {
 function prepareDataDirectory() {
   const resolvedDataDir = path.resolve(DATA_DIR);
   const resolvedDefaultDir = path.resolve(DEFAULT_DATA_DIR);
-  
-  // Check if GCS sync is enabled (check env var directly since dataSyncEnabled isn't initialized yet)
-  const syncProvider = (process.env.DATA_SYNC_PROVIDER || '').toLowerCase();
-  const isGcsSyncEnabled = syncProvider === 'gcs';
 
-  // Try to ensure the data directory exists and is writable
-  try {
-    if (!fs.existsSync(resolvedDataDir)) {
-      try {
-        fs.mkdirSync(resolvedDataDir, { recursive: true });
-        console.log(`[DATA] Created data directory: ${resolvedDataDir}`);
-      } catch (mkdirErr) {
-        if (mkdirErr.code === 'EACCES' || mkdirErr.code === 'ENOENT') {
-          if (isGcsSyncEnabled) {
-            console.warn(`[DATA] Cannot create ${resolvedDataDir} (${mkdirErr.code}), but GCS sync is enabled - directory will be created on first write`);
-          } else {
-            console.error(`[DATA] Cannot create ${resolvedDataDir} (${mkdirErr.code}) and GCS sync is disabled`);
-            process.exit(1);
-          }
-          return; // Exit early, let GCS sync or first write handle directory creation
-        } else {
-          throw mkdirErr;
-        }
-      }
-    } else {
-      console.log(`[DATA] Data directory already exists: ${resolvedDataDir}`);
-    }
-
-    // Check if directory is writable (only if it exists)
-    if (fs.existsSync(resolvedDataDir)) {
-      try {
-        fs.accessSync(resolvedDataDir, fs.constants.W_OK);
-      } catch (accessErr) {
-        if (isGcsSyncEnabled) {
-          console.warn(`[DATA] Data directory ${resolvedDataDir} not accessible (${accessErr.code}), but GCS sync is enabled - continuing`);
-          return; // Exit early, let GCS sync handle it
-        } else {
-          console.error(`[DATA] Data directory not writable: ${resolvedDataDir}`, accessErr);
-          process.exit(1);
-        }
-      }
-    }
-  } catch (err) {
-    console.error('[DATA] Failed to prepare data directory:', err);
-    if (isGcsSyncEnabled) {
-      console.warn('[DATA] GCS sync enabled - continuing despite directory preparation failure');
-      return; // Don't exit, let GCS sync try to handle it
-    } else {
-      process.exit(1);
-    }
-  }
-
-  // Seed files from repo if using override directory (and it's different from default)
   if (resolvedDataDir !== resolvedDefaultDir && fs.existsSync(resolvedDefaultDir)) {
     try {
       const seedFiles = fs.readdirSync(DEFAULT_DATA_DIR).filter(file => file.endsWith('.json'));
