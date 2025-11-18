@@ -255,6 +255,10 @@ async function saveUsers(users) {
 function prepareDataDirectory() {
   const resolvedDataDir = path.resolve(DATA_DIR);
   const resolvedDefaultDir = path.resolve(DEFAULT_DATA_DIR);
+  
+  // Check if GCS sync is enabled (check env var directly since dataSyncEnabled isn't initialized yet)
+  const syncProvider = (process.env.DATA_SYNC_PROVIDER || '').toLowerCase();
+  const isGcsSyncEnabled = syncProvider === 'gcs';
 
   // Try to ensure the data directory exists and is writable
   try {
@@ -264,7 +268,7 @@ function prepareDataDirectory() {
         console.log(`[DATA] Created data directory: ${resolvedDataDir}`);
       } catch (mkdirErr) {
         if (mkdirErr.code === 'EACCES' || mkdirErr.code === 'ENOENT') {
-          if (dataSyncEnabled) {
+          if (isGcsSyncEnabled) {
             console.warn(`[DATA] Cannot create ${resolvedDataDir} (${mkdirErr.code}), but GCS sync is enabled - directory will be created on first write`);
           } else {
             console.error(`[DATA] Cannot create ${resolvedDataDir} (${mkdirErr.code}) and GCS sync is disabled`);
@@ -284,7 +288,7 @@ function prepareDataDirectory() {
       try {
         fs.accessSync(resolvedDataDir, fs.constants.W_OK);
       } catch (accessErr) {
-        if (dataSyncEnabled) {
+        if (isGcsSyncEnabled) {
           console.warn(`[DATA] Data directory ${resolvedDataDir} not accessible (${accessErr.code}), but GCS sync is enabled - continuing`);
           return; // Exit early, let GCS sync handle it
         } else {
@@ -295,7 +299,7 @@ function prepareDataDirectory() {
     }
   } catch (err) {
     console.error('[DATA] Failed to prepare data directory:', err);
-    if (dataSyncEnabled) {
+    if (isGcsSyncEnabled) {
       console.warn('[DATA] GCS sync enabled - continuing despite directory preparation failure');
       return; // Don't exit, let GCS sync try to handle it
     } else {
