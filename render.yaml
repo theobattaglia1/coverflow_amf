@@ -9,7 +9,7 @@ services:
     startCommand: cd packages/coverflow && npm start
     disk:
       name: coverflow-data
-      mountPath: /var/data/coverflow-data
+      mountPath: /var/data
       sizeGB: 1
     envVars:
       - key: NODE_ENV
@@ -17,7 +17,7 @@ services:
       - key: NODE_OPTIONS
         value: --max-old-space-size=2048
       - key: DATA_DIR_PATH
-        value: /var/data/coverflow-data
+        value: /var/data
       - key: DATA_SYNC_PROVIDER
         value: gcs
       - key: DATA_SYNC_PREFIX
