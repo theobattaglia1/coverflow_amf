@@ -208,6 +208,17 @@ async function safeWriteJson(filePath, data) {
   const serialized = JSON.stringify(data, null, 2);
   
   try {
+    // Ensure the directory exists before writing
+    const dirPath = path.dirname(filePath);
+    try {
+      await fs.promises.mkdir(dirPath, { recursive: true });
+    } catch (mkdirErr) {
+      // If directory creation fails, try to write anyway (parent might exist)
+      if (mkdirErr.code !== 'EEXIST') {
+        console.warn(`Could not ensure directory exists for ${filePath}: ${mkdirErr.message}`);
+      }
+    }
+    
     // Create backup if original file exists
     try {
       await fs.promises.access(filePath);
@@ -245,39 +256,66 @@ function prepareDataDirectory() {
   const resolvedDataDir = path.resolve(DATA_DIR);
   const resolvedDefaultDir = path.resolve(DEFAULT_DATA_DIR);
 
+  // Try to ensure the data directory exists and is writable
   try {
     if (!fs.existsSync(resolvedDataDir)) {
-      fs.mkdirSync(resolvedDataDir, { recursive: true });
-      console.log(`[DATA] Created data directory: ${resolvedDataDir}`);
+      try {
+        fs.mkdirSync(resolvedDataDir, { recursive: true });
+        console.log(`[DATA] Created data directory: ${resolvedDataDir}`);
+      } catch (mkdirErr) {
+        if (mkdirErr.code === 'EACCES' || mkdirErr.code === 'ENOENT') {
+          if (dataSyncEnabled) {
+            console.warn(`[DATA] Cannot create ${resolvedDataDir} (${mkdirErr.code}), but GCS sync is enabled - directory will be created on first write`);
+          } else {
+            console.error(`[DATA] Cannot create ${resolvedDataDir} (${mkdirErr.code}) and GCS sync is disabled`);
+            process.exit(1);
+          }
+          return; // Exit early, let GCS sync or first write handle directory creation
+        } else {
+          throw mkdirErr;
+        }
+      }
     } else {
       console.log(`[DATA] Data directory already exists: ${resolvedDataDir}`);
     }
+
+    // Check if directory is writable (only if it exists)
+    if (fs.existsSync(resolvedDataDir)) {
+      try {
+        fs.accessSync(resolvedDataDir, fs.constants.W_OK);
+      } catch (accessErr) {
+        if (dataSyncEnabled) {
+          console.warn(`[DATA] Data directory ${resolvedDataDir} not accessible (${accessErr.code}), but GCS sync is enabled - continuing`);
+          return; // Exit early, let GCS sync handle it
+        } else {
+          console.error(`[DATA] Data directory not writable: ${resolvedDataDir}`, accessErr);
+          process.exit(1);
+        }
+      }
+    }
   } catch (err) {
-    if (err.code === 'EEXIST') {
-      console.log(`[DATA] Data directory already exists (race condition): ${resolvedDataDir}`);
-    } else if (err.code === 'EACCES') {
-      console.warn(`[DATA] Insufficient permission to create ${resolvedDataDir}, assuming pre-mounted disk`);
+    console.error('[DATA] Failed to prepare data directory:', err);
+    if (dataSyncEnabled) {
+      console.warn('[DATA] GCS sync enabled - continuing despite directory preparation failure');
+      return; // Don't exit, let GCS sync try to handle it
     } else {
-      console.error('[DATA] Failed to prepare data directory:', err);
       process.exit(1);
     }
   }
 
-  try {
-    fs.accessSync(resolvedDataDir, fs.constants.W_OK);
-  } catch (err) {
-    console.error(`[DATA] Data directory not writable: ${resolvedDataDir}`, err);
-    process.exit(1);
-  }
-
-  if (resolvedDataDir !== resolvedDefaultDir) {
-    const seedFiles = fs.readdirSync(DEFAULT_DATA_DIR).filter(file => file.endsWith('.json'));
-    for (const file of seedFiles) {
-      const targetPath = path.join(DATA_DIR, file);
-      if (!fs.existsSync(targetPath)) {
-        fs.copyFileSync(path.join(DEFAULT_DATA_DIR, file), targetPath);
-        console.log(`[DATA] Seeded ${file} into ${DATA_DIR}`);
+  // Seed files from repo if using override directory (and it's different from default)
+  if (resolvedDataDir !== resolvedDefaultDir && fs.existsSync(resolvedDefaultDir)) {
+    try {
+      const seedFiles = fs.readdirSync(DEFAULT_DATA_DIR).filter(file => file.endsWith('.json'));
+      for (const file of seedFiles) {
+        const targetPath = path.join(DATA_DIR, file);
+        if (!fs.existsSync(targetPath)) {
+          fs.copyFileSync(path.join(DEFAULT_DATA_DIR, file), targetPath);
+          console.log(`[DATA] Seeded ${file} into ${DATA_DIR}`);
+        }
       }
+    } catch (err) {
+      console.warn(`[DATA] Could not seed files: ${err.message}`);
     }
   }
 }
@@ -367,6 +405,15 @@ async function downloadJsonFromGcs(fileName) {
   }
   const [contents] = await file.download();
   const destinationPath = path.join(DATA_DIR, fileName);
+  
+  // Ensure the directory exists before writing
+  try {
+    await fs.promises.mkdir(DATA_DIR, { recursive: true });
+  } catch (mkdirErr) {
+    // If directory creation fails, try to write anyway (parent might exist)
+    console.warn(`[DATA SYNC] Could not ensure directory exists: ${mkdirErr.message}`);
+  }
+  
   await fs.promises.writeFile(destinationPath, contents);
   console.log(`[DATA SYNC] Downloaded ${fileName} from gs://${bucket.name}/${remoteKey}`);
   return true;
