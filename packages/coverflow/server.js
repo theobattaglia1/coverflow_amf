@@ -32,7 +32,19 @@ const __dirname = path.dirname(__filename);
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const ADMIN_DIR = path.join(__dirname, 'admin');
-const DATA_DIR = path.join(__dirname, 'data');
+
+const DEFAULT_DATA_DIR = path.join(__dirname, 'data');
+const DATA_DIR = (() => {
+  const overridePath = process.env.DATA_DIR_PATH?.trim();
+  if (!overridePath) {
+    console.log(`[DATA] Using bundled data directory: ${DEFAULT_DATA_DIR}`);
+    return DEFAULT_DATA_DIR;
+  }
+  const resolved = path.resolve(overridePath);
+  console.log(`[DATA] Using override data directory: ${resolved}`);
+  return resolved;
+})();
+prepareDataDirectory();
 
 const app = express();
 const PORT = process.env.PORT || 10000; // Use Render's default port
@@ -45,6 +57,27 @@ const gcsStorage = new Storage({
     : path.join(__dirname, '../../gcp/service-account.json') // Local development path
 });
 const gcsBucketName = process.env.GCS_BUCKET_NAME || 'allmyfriends-assets-2025';
+
+const dataSyncConfig = (() => {
+  const files = (process.env.DATA_SYNC_FILES || 'covers.json,assets.json')
+    .split(',')
+    .map(f => f.trim())
+    .filter(Boolean);
+  return {
+    provider: (process.env.DATA_SYNC_PROVIDER || '').toLowerCase(),
+    bucket: process.env.DATA_SYNC_BUCKET || gcsBucketName,
+    prefix: process.env.DATA_SYNC_PREFIX || 'admin-data',
+    files,
+    enableStartupSync: process.env.DATA_SYNC_ON_START !== 'false',
+    enablePostWriteSync: process.env.DATA_SYNC_ON_SAVE !== 'false'
+  };
+})();
+const dataSyncEnabled = ['gcs'].includes(dataSyncConfig.provider);
+if (dataSyncEnabled) {
+  console.log(`[DATA SYNC] Enabled with provider=${dataSyncConfig.provider}, bucket=${dataSyncConfig.bucket}, prefix=${dataSyncConfig.prefix}, files=${dataSyncConfig.files.join(', ')}`);
+}
+
+await initializeDataSync();
 
 
 // --- Middleware Setup ---
@@ -172,6 +205,7 @@ async function loadUsers() {
 async function safeWriteJson(filePath, data) {
   const backupPath = filePath.replace('.json', '-backup.json');
   const tempPath = filePath + '.tmp';
+  const serialized = JSON.stringify(data, null, 2);
   
   try {
     // Create backup if original file exists
@@ -183,12 +217,13 @@ async function safeWriteJson(filePath, data) {
     }
     
     // Write to temporary file first
-    await fs.promises.writeFile(tempPath, JSON.stringify(data, null, 2));
+    await fs.promises.writeFile(tempPath, serialized);
     
     // Atomic move to final location
     await fs.promises.rename(tempPath, filePath);
     
     console.log(`Successfully saved ${filePath}`);
+    await syncFileToRemote(filePath, serialized);
   } catch (err) {
     // Clean up temp file if it exists
     try {
@@ -206,10 +241,132 @@ async function saveUsers(users) {
   userCache.invalidate('users');
 }
 
+function prepareDataDirectory() {
+  try {
+    fs.mkdirSync(DATA_DIR, { recursive: true });
+
+    const resolvedDataDir = path.resolve(DATA_DIR);
+    const resolvedDefaultDir = path.resolve(DEFAULT_DATA_DIR);
+
+    // Seed files from repo copy if using an override directory
+    if (resolvedDataDir !== resolvedDefaultDir) {
+      const seedFiles = fs.readdirSync(DEFAULT_DATA_DIR).filter(file => file.endsWith('.json'));
+      for (const file of seedFiles) {
+        const targetPath = path.join(DATA_DIR, file);
+        if (!fs.existsSync(targetPath)) {
+          fs.copyFileSync(path.join(DEFAULT_DATA_DIR, file), targetPath);
+          console.log(`[DATA] Seeded ${file} into ${DATA_DIR}`);
+        }
+      }
+    }
+  } catch (err) {
+    console.error('[DATA] Failed to prepare data directory:', err);
+    process.exit(1);
+  }
+}
+
+async function initializeDataSync() {
+  if (!dataSyncEnabled) {
+    return;
+  }
+  if (!dataSyncConfig.enableStartupSync) {
+    console.log('[DATA SYNC] Startup sync disabled via DATA_SYNC_ON_START=false');
+    return;
+  }
+
+  console.log(`[DATA SYNC] Starting startup sync for files: ${dataSyncConfig.files.join(', ')}`);
+  for (const fileName of dataSyncConfig.files) {
+    try {
+      const didSync = await syncFileFromRemote(fileName);
+      if (didSync) {
+        console.log(`[DATA SYNC] Synced ${fileName} from remote source`);
+      } else {
+        console.warn(`[DATA SYNC] Remote copy for ${fileName} not found; keeping local version`);
+      }
+    } catch (err) {
+      console.error(`[DATA SYNC] Failed to synchronize ${fileName} on startup`, err);
+      throw err;
+    }
+  }
+}
+
+async function syncFileFromRemote(fileName) {
+  if (!dataSyncEnabled) return false;
+  if (!dataSyncConfig.files.includes(fileName)) return false;
+
+  switch (dataSyncConfig.provider) {
+    case 'gcs':
+      return downloadJsonFromGcs(fileName);
+    default:
+      console.warn(`[DATA SYNC] Unsupported provider "${dataSyncConfig.provider}"`);
+      return false;
+  }
+}
+
+async function syncFileToRemote(filePath, serializedPayload) {
+  if (!dataSyncEnabled) return;
+  if (!dataSyncConfig.enablePostWriteSync) return;
+
+  const fileName = path.basename(filePath);
+  if (!dataSyncConfig.files.includes(fileName)) return;
+
+  switch (dataSyncConfig.provider) {
+    case 'gcs':
+      await uploadJsonToGcs(fileName, serializedPayload);
+      break;
+    default:
+      console.warn(`[DATA SYNC] Unsupported provider "${dataSyncConfig.provider}"`);
+  }
+}
+
+function getRemoteDataKey(fileName) {
+  const trimmedPrefix = (dataSyncConfig.prefix || '').replace(/^\/+|\/+$/g, '');
+  return trimmedPrefix ? `${trimmedPrefix}/${fileName}` : fileName;
+}
+
+async function uploadJsonToGcs(fileName, serializedPayload) {
+  if (!dataSyncConfig.bucket) {
+    throw new Error('DATA_SYNC_BUCKET is not configured');
+  }
+  const bucket = gcsStorage.bucket(dataSyncConfig.bucket);
+  const remoteKey = getRemoteDataKey(fileName);
+  console.log(`[DATA SYNC] Uploading ${fileName} to gs://${bucket.name}/${remoteKey}`);
+  await bucket
+    .file(remoteKey)
+    .save(serializedPayload, { contentType: 'application/json', resumable: false });
+}
+
+async function downloadJsonFromGcs(fileName) {
+  if (!dataSyncConfig.bucket) {
+    throw new Error('DATA_SYNC_BUCKET is not configured');
+  }
+  const bucket = gcsStorage.bucket(dataSyncConfig.bucket);
+  const remoteKey = getRemoteDataKey(fileName);
+  const file = bucket.file(remoteKey);
+  const [exists] = await file.exists();
+  if (!exists) {
+    console.warn(`[DATA SYNC] Remote file gs://${bucket.name}/${remoteKey} does not exist`);
+    return false;
+  }
+  const [contents] = await file.download();
+  const destinationPath = path.join(DATA_DIR, fileName);
+  await fs.promises.writeFile(destinationPath, contents);
+  console.log(`[DATA SYNC] Downloaded ${fileName} from gs://${bucket.name}/${remoteKey}`);
+  return true;
+}
+
 // Helper: Git commit and push automation
 function gitAutoSyncDataFiles() {
   if (process.env.ENABLE_GIT_SYNC !== 'true') {
     console.log('[GIT SYNC] Skipped: ENABLE_GIT_SYNC is not set to true');
+    return;
+  }
+
+  const resolvedDataDir = path.resolve(DATA_DIR);
+  const resolvedRepoDir = path.resolve(__dirname);
+
+  if (!resolvedDataDir.startsWith(resolvedRepoDir)) {
+    console.log('[GIT SYNC] Skipped: DATA_DIR_PATH points outside of repo');
     return;
   }
   try {
@@ -1145,7 +1302,7 @@ app.post('/delete-cover', requireAuth('editor'), async (req, res) => {
         const jsonPath = path.join(DATA_DIR, 'covers.json');
         let covers = await readJsonFile(jsonPath, 'covers') || [];
         covers = covers.filter(c => String(c.id) !== String(id));
-        await fs.promises.writeFile(jsonPath, JSON.stringify(covers, null, 2));
+        await safeWriteJson(jsonPath, covers);
         dataCache.invalidate('covers');
         res.json({ success: true });
     } catch (err) {
