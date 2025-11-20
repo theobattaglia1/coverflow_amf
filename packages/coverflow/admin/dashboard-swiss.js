@@ -1355,7 +1355,9 @@ async function handleModalImageUpload(file) {
       if (!assets.images) assets.images = [];
       assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
 
-      // Decide which image field to target: current crop target, or default to frontImage
+      // Decide which image field on the edit form to target:
+      // 1) If we're in the cropper, respect currentCropTargetField ('frontImage' or 'backImage')
+      // 2) Otherwise, default to 'frontImage'
       const targetField = currentCropTargetField || 'frontImage';
       const form = document.getElementById('editCoverForm');
       if (form) {
