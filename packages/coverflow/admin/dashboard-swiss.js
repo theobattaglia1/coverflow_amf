@@ -616,6 +616,20 @@ function editCover(cover) {
   const modalBodyElement = document.getElementById('modalBody');
   setupModalDropzone(modalBodyElement);
   
+  // Enable image cropping on preview click
+  const frontPreview = document.getElementById('frontImagePreview');
+  if (frontPreview) {
+    frontPreview.style.cursor = 'pointer';
+    frontPreview.title = 'Click to crop & zoom';
+    frontPreview.addEventListener('click', () => openImageCropper('frontImage'));
+  }
+  const backPreview = document.getElementById('backImagePreview');
+  if (backPreview) {
+    backPreview.style.cursor = 'pointer';
+    backPreview.title = 'Click to crop & zoom';
+    backPreview.addEventListener('click', () => openImageCropper('backImage'));
+  }
+  
   openModal();
 }
 
@@ -1373,6 +1387,154 @@ function setupModalDropzone(container) {
   function preventDefaults(e) {
     e.preventDefault();
     e.stopPropagation();
+  }
+}
+
+// --- Image Cropping Modal (uses Cropper.js) ---
+let currentImageCropper = null;
+let currentCropTargetField = null;
+
+window.openImageCropper = function(targetField) {
+  try {
+    const form = document.getElementById('editCoverForm');
+    if (!form) return;
+    const input = form.querySelector(`input[name='${targetField}']`);
+    const preview = document.getElementById(`${targetField}Preview`);
+    const imageUrl = (input && input.value) || (preview && preview.src);
+    if (!imageUrl) {
+      showToast('No image to crop yet. Please choose an image first.', 4000);
+      return;
+    }
+    
+    let modal = document.getElementById('imageCropperModal');
+    if (!modal) {
+      modal = document.createElement('div');
+      modal.id = 'imageCropperModal';
+      modal.style.position = 'fixed';
+      modal.style.inset = '0';
+      modal.style.background = 'rgba(0,0,0,0.85)';
+      modal.style.zIndex = '10000';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.innerHTML = `
+        <div style="background:#111; padding:24px; max-width:900px; width:90vw; max-height:90vh; border-radius:12px; position:relative; display:flex; flex-direction:column; gap:16px;">
+          <button type="button" id="closeImageCropper" style="position:absolute; top:12px; right:12px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;">×</button>
+          <h2 style="margin:0 0 8px 0; color:#fff; font-family:var(--font-mono); font-size:0.9rem; letter-spacing:0.2em;">CROP COVER IMAGE</h2>
+          <div style="flex:1; min-height:300px; max-height:60vh; overflow:hidden; background:#000;">
+            <img id="imageCropperImage" src="" style="max-width:100%; display:block; margin:0 auto;">
+          </div>
+          <div style="display:flex; justify-content:space-between; gap:12px; margin-top:8px;">
+            <div style="color:#aaa; font-size:0.8rem; font-family:var(--font-mono);">
+              Drag to reframe. Use pinch/scroll to zoom. Output is always a square cover.
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" id="resetImageCropper" class="btn">RESET</button>
+              <button type="button" id="saveImageCropper" class="btn btn-primary">SAVE CROP</button>
+            </div>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      document.getElementById('closeImageCropper').onclick = closeImageCropper;
+      document.getElementById('resetImageCropper').onclick = () => {
+        if (currentImageCropper) currentImageCropper.reset();
+      };
+      document.getElementById('saveImageCropper').onclick = saveImageCropper;
+    } else {
+      modal.style.display = 'flex';
+    }
+    
+    const imgEl = document.getElementById('imageCropperImage');
+    imgEl.src = imageUrl;
+    
+    if (currentImageCropper) {
+      currentImageCropper.destroy();
+      currentImageCropper = null;
+    }
+    if (window.Cropper) {
+      currentImageCropper = new Cropper(imgEl, {
+        aspectRatio: 1,
+        viewMode: 1,
+        background: false,
+        autoCropArea: 1,
+        movable: true,
+        zoomable: true,
+        scalable: false,
+        rotatable: false,
+        responsive: true,
+      });
+    } else {
+      showToast('Image cropper library not loaded.', 4000);
+      return;
+    }
+    
+    currentCropTargetField = targetField;
+  } catch (err) {
+    console.error('Error opening image cropper:', err);
+    showToast('Error opening image cropper.', 4000);
+  }
+};
+
+function closeImageCropper() {
+  const modal = document.getElementById('imageCropperModal');
+  if (modal) modal.style.display = 'none';
+  if (currentImageCropper) {
+    currentImageCropper.destroy();
+    currentImageCropper = null;
+  }
+  currentCropTargetField = null;
+}
+
+async function saveImageCropper() {
+  if (!currentImageCropper || !currentCropTargetField) {
+    closeImageCropper();
+    return;
+  }
+  try {
+    const canvas = currentImageCropper.getCroppedCanvas({ width: 1600, height: 1600 });
+    if (!canvas) {
+      showToast('Unable to crop image.', 4000);
+      return;
+    }
+    canvas.toBlob(async (blob) => {
+      if (!blob) {
+        showToast('Unable to export cropped image.', 4000);
+        return;
+      }
+      const formData = new FormData();
+      formData.append('file', blob, `${currentCropTargetField}-cover.jpg`);
+      formData.append('folder', 'covers');
+      try {
+        const res = await fetch('/upload-image', { method: 'POST', body: formData });
+        const data = await res.json();
+        if (res.ok && data.url) {
+          const form = document.getElementById('editCoverForm');
+          if (form) {
+            const input = form.querySelector(`input[name='${currentCropTargetField}']`);
+            if (input) {
+              input.value = data.url;
+            }
+          }
+          const preview = document.getElementById(`${currentCropTargetField}Preview`);
+          if (preview) {
+            preview.src = data.url;
+          }
+          showToast('COVER IMAGE CROPPED', 3000);
+        } else {
+          showToast('Failed to upload cropped image.', 5000);
+        }
+      } catch (err) {
+        console.error('Error uploading cropped image:', err);
+        showToast('Error uploading cropped image.', 5000);
+      } finally {
+        closeImageCropper();
+      }
+    }, 'image/jpeg', 0.9);
+  } catch (err) {
+    console.error('Error saving cropped image:', err);
+    showToast('Error saving cropped image.', 4000);
+    closeImageCropper();
   }
 }
 
