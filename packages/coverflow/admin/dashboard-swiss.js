@@ -958,51 +958,62 @@ async function pushLive() {
 // Asset management
 async function loadAssets() {
   try {
-    // Load structured folders from assets.json
-    const res = await fetch('/data/assets.json');
-    if (!res.ok) throw new Error(`Failed to load assets.json: ${res.status}`);
-    
-    const data = await res.json();
-    console.log('[FRONTEND] Loaded assets.json:', data);
-    assets = data;
-    
-    // Check for non-GCS URLs and warn
+    // Always start with a sane default
+    assets = { images: [], folders: [], children: [] };
+
+    // 1) Load structured folders + any pre-defined assets from assets.json
+    try {
+      const res = await fetch('/data/assets.json');
+      if (!res.ok) throw new Error(`Failed to load assets.json: ${res.status}`);
+      const data = await res.json();
+      console.log('[FRONTEND] Loaded assets.json:', data);
+      assets = data || assets;
+    } catch (err) {
+      console.error('Failed to load assets.json:', err);
+      showToast(`FAILED TO LOAD ASSETS.JSON: ${err.message}`, 5000);
+    }
+
+    // Warn if any non-GCS URLs snuck in
     checkForNonGCSUrls();
     renderFolders();
-    
-    // Load images from GCS
-    const gcsRes = await fetch('/api/list-gcs-assets');
-    if (gcsRes.status === 401) {
-      showToast('AUTHENTICATION REQUIRED FOR GCS ASSETS');
-      window.location.href = '/login.html';
-      return;
+
+    // 2) Best-effort: augment with live GCS listing (do not abort UI on failure)
+    try {
+      const gcsRes = await fetch('/api/list-gcs-assets');
+      if (gcsRes.status === 401) {
+        showToast('AUTHENTICATION REQUIRED FOR GCS ASSETS');
+        window.location.href = '/login.html';
+        return;
+      }
+      if (!gcsRes.ok) {
+        throw new Error(`Failed to load GCS assets: ${gcsRes.status}`);
+      }
+      const gcsData = await gcsRes.json();
+      if (gcsData.images) {
+        const mapped = gcsData.images.map(url => {
+          const filename = url.split('/').pop().toLowerCase();
+          const isVideo = filename.match(/\.(mov|mp4|webm|avi)$/i);
+          return {
+            url,
+            type: isVideo ? 'video' : 'image',
+            name: url.split('/').pop(),
+            source: 'gcs'
+          };
+        });
+        // Merge with any existing images instead of overwriting
+        const existing = Array.isArray(assets.images) ? assets.images : [];
+        assets.images = [...existing, ...mapped];
+      }
+    } catch (err) {
+      console.error('Failed to load GCS assets:', err);
+      // Don't toast loudly here; we've already loaded from assets.json
     }
-    
-    if (!gcsRes.ok) {
-      throw new Error(`Failed to load GCS assets: ${gcsRes.status}`);
-    }
-    
-    const gcsData = await gcsRes.json();
-    
-    // Merge GCS images with existing assets structure
-    if (gcsData.images) {
-      assets.images = gcsData.images.map(url => {
-        const filename = url.split('/').pop().toLowerCase();
-        const isVideo = filename.match(/\.(mov|mp4|webm|avi)$/i);
-        return { 
-          url, 
-          type: isVideo ? 'video' : 'image',
-          name: url.split('/').pop(),
-          source: 'gcs'
-        };
-      });
-    }
-    
+
+    // Render whatever we have
     renderAssetsWithView();
     renderRecentAssets();
-    
   } catch (err) {
-    console.error('Failed to load assets:', err);
+    console.error('Failed to load assets (outer):', err);
     showToast(`FAILED TO LOAD ASSETS: ${err.message}`, 5000);
   }
 }
@@ -1385,7 +1396,9 @@ async function uploadAndCreateCover(file) {
 // Modal image upload functionality for drag & drop in edit modal
 async function handleModalImageUpload(file) {
   const dropText = document.getElementById('modalDropzoneText');
-  dropText.textContent = 'Uploading...';
+  if (dropText) {
+    dropText.textContent = 'Uploading...';
+  }
   try {
     const formData = new FormData();
     formData.append('file', file);
@@ -1420,7 +1433,9 @@ async function handleModalImageUpload(file) {
   } catch (err) {
     showToast('UPLOAD FAILED: ' + err.message, 5000);
   } finally {
-    dropText.textContent = 'Drag & drop or click to upload';
+    if (dropText) {
+      dropText.textContent = 'Drag & drop or click to upload';
+    }
   }
 }
 
