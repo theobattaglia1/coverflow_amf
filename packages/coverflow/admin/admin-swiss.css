@@ -416,7 +416,7 @@ a:hover {
 /* Cover grid: Editorial layout */
 .covers-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: var(--space-xl);
   margin-bottom: var(--space-xl);
 }
@@ -1280,7 +1280,7 @@ a:hover {
 
 .image-selector-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: var(--space-md);
   margin-top: var(--space-lg);
 }
@@ -1692,8 +1692,8 @@ a:hover {
 /* Grid View (Enhanced) */
 .covers-view-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: var(--space-lg);
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-md);
 }
 
 .covers-view-grid .cover-item {
@@ -1981,7 +1981,7 @@ a:hover {
   }
   
   .covers-view-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     gap: var(--space-md);
   }
   
