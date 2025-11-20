@@ -16,6 +16,7 @@ window.isDraggingAssets = false;
 window.assetsPerPage = 24;
 window.currentPage = 0;
 window.sortBy = 'name';
+window.assetViewMode = 'grid';
 
 // Image cropper state
 window.dashboardImageLibraryTarget = null;
@@ -243,7 +244,8 @@ function getCurrentFolderItems() {
 
 // Render assets
 window.renderAssetsWithView = function() {
-  const assetGrid = document.getElementById('assetGrid');
+  // Main asset grid container in the Assets section
+  const assetGrid = document.getElementById('assetsContainer') || document.getElementById('assetGrid');
   if (!assetGrid) return;
 
   const { images, folders } = getCurrentFolderItems();
@@ -267,7 +269,7 @@ window.renderAssetsWithView = function() {
 
   // Clear and render
   assetGrid.innerHTML = '';
-  assetGrid.className = `asset-grid ${window.mediaLibraryExpanded ? 'expanded' : ''}`;
+  assetGrid.className = `asset-grid asset-view-${window.assetViewMode} ${window.mediaLibraryExpanded ? 'expanded' : ''}`;
 
   if (assetsToShow.length === 0) {
     assetGrid.innerHTML = '<div class="empty-state">No assets in this folder</div>';
@@ -284,6 +286,27 @@ window.renderAssetsWithView = function() {
       assetGrid.appendChild(assetDiv);
     }
   });
+};
+
+// View mode handling for Assets section
+window.setAssetViewMode = function(mode) {
+  window.assetViewMode = mode;
+  
+  // Persist preference
+  try {
+    localStorage.setItem('amfAdmin.assets.viewMode', mode);
+  } catch (err) {
+    console.warn('Could not persist assets view mode', err);
+  }
+  
+  // Update active button styles
+  document.querySelectorAll('.asset-view-modes .view-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+  
+  // Re-render with the new mode
+  renderAssetsWithView();
+  showToast(`ASSET VIEW: ${mode.toUpperCase()}`, 1500);
 };
 
 // Create folder element
@@ -936,6 +959,17 @@ window.setupModalDropzone = function(container) {
 // Initialize assets module
 window.initializeAssets = function() {
   console.log('🖼️ Assets Module Initialized');
+  
+  // Restore last used asset view mode first so initial render matches preference
+  try {
+    const saved = localStorage.getItem('amfAdmin.assets.viewMode');
+    if (saved) {
+      window.assetViewMode = saved;
+    }
+  } catch (err) {
+    console.warn('Could not read saved assets view mode', err);
+  }
+  
   loadAssets();
   setupEnhancedAssetSearch();
   setupAssetDragAndDrop();

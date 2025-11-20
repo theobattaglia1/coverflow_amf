@@ -1475,6 +1475,10 @@ a:hover {
   padding: var(--space-lg);
   border: 1px solid var(--grey-100);
   background: var(--grey-50);
+  /* Keep covers toolbar visible while scrolling */
+  position: sticky;
+  top: 96px; /* header (80px) + small offset */
+  z-index: 500;
 }
 
 .view-mode-toggles {
@@ -2013,6 +2017,10 @@ a:hover {
   padding: var(--space-lg);
   border: 1px solid var(--grey-100);
   background: var(--grey-50);
+  /* Keep asset toolbar visible while scrolling */
+  position: sticky;
+  top: 96px;
+  z-index: 500;
 }
 
 .asset-search-filter-container {
@@ -2135,6 +2143,10 @@ a:hover {
   padding: var(--space-lg);
   border: 1px solid var(--grey-100);
   background: var(--grey-50);
+  /* Keep audio toolbar visible while scrolling */
+  position: sticky;
+  top: 96px;
+  z-index: 500;
 }
 
 .audio-search-filter-container {

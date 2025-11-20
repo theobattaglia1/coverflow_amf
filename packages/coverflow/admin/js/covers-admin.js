@@ -659,6 +659,13 @@ window.setupViewModeToggles = function() {
 window.setViewMode = function(mode) {
   window.currentViewMode = mode;
   
+  // Persist preferred view mode for next visit
+  try {
+    localStorage.setItem('amfAdmin.covers.viewMode', mode);
+  } catch (err) {
+    console.warn('Could not persist covers view mode', err);
+  }
+  
   document.querySelectorAll('.view-toggle').forEach(btn => {
     btn.classList.toggle('active', btn.dataset.view === mode);
   });
@@ -672,6 +679,16 @@ window.initializeCovers = function() {
   loadCovers();
   setupSearchAndFilters();
   setupViewModeToggles();
+  
+  // Restore last used view mode (default to grid)
+  let initialMode = 'grid';
+  try {
+    const saved = localStorage.getItem('amfAdmin.covers.viewMode');
+    if (saved) initialMode = saved;
+  } catch (err) {
+    console.warn('Could not read saved covers view mode', err);
+  }
+  window.setViewMode(initialMode);
 };
 
 // Export for shared use
