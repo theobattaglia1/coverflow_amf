@@ -1282,14 +1282,22 @@ app.get('/api/list-gcs-assets', requireAuth('editor'), async (req, res) => {
   try {
     console.log(`Using bucket: ${gcsBucketName}`);
     const bucket = gcsStorage.bucket(gcsBucketName);
-    
     const [files] = await bucket.getFiles();
     console.log(`Successfully fetched ${files.length} files from GCS.`);
 
-    const assetFiles = files.filter(f => f.metadata.contentType && (f.metadata.contentType.startsWith('image/') || f.metadata.contentType.startsWith('video/')));
-    const urls = assetFiles.map(f => `https://storage.googleapis.com/${gcsBucketName}/${f.name}`);
+    // IMPORTANT:
+    // The File objects returned by getFiles() do NOT always have metadata.contentType
+    // populated unless we make an additional getMetadata() call, which would be
+    // very expensive for large buckets. Instead, we infer asset type from the
+    // filename extension, which is sufficient for our admin library.
+    const assetFiles = files.filter((f) => {
+      const name = (f.name || '').toLowerCase();
+      return /\.(jpe?g|png|gif|webp|heic|heif|tiff?|bmp|svg|mov|mp4|m4v|webm)$/i.test(name);
+    });
 
-    console.log(`Found ${urls.length} image/video assets. Sending response.`);
+    const urls = assetFiles.map((f) => `https://storage.googleapis.com/${gcsBucketName}/${f.name}`);
+
+    console.log(`Found ${urls.length} image/video assets by filename extension. Sending response.`);
     
     // Ensure the response format is exactly what the frontend expects
     res.json({ images: urls });
