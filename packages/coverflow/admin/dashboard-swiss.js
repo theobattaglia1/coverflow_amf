@@ -1422,7 +1422,7 @@ window.openImageCropper = function(targetField) {
           <button type="button" id="closeImageCropper" style="position:absolute; top:12px; right:12px; background:none; border:none; color:#fff; font-size:2rem; cursor:pointer;">×</button>
           <h2 style="margin:0 0 8px 0; color:#fff; font-family:var(--font-mono); font-size:0.9rem; letter-spacing:0.2em;">CROP COVER IMAGE</h2>
           <div style="flex:1; min-height:300px; max-height:60vh; overflow:hidden; background:#000;">
-            <img id="imageCropperImage" src="" style="max-width:100%; display:block; margin:0 auto;">
+            <img id="imageCropperImage" src="" style="max-width:100%; display:block; margin:0 auto; touch-action:none;">
           </div>
           <div style="display:flex; justify-content:space-between; gap:12px; margin-top:8px;">
             <div style="color:#aaa; font-size:0.8rem; font-family:var(--font-mono);">
@@ -1446,27 +1446,50 @@ window.openImageCropper = function(targetField) {
     }
     
     const imgEl = document.getElementById('imageCropperImage');
+    if (!imgEl) {
+      showToast('Cropper image element not found.', 4000);
+      return;
+    }
     imgEl.src = imageUrl;
     
+    // Destroy any existing instance
     if (currentImageCropper) {
       currentImageCropper.destroy();
       currentImageCropper = null;
     }
-    if (window.Cropper) {
-      currentImageCropper = new Cropper(imgEl, {
-        aspectRatio: 1,
-        viewMode: 1,
-        background: false,
-        autoCropArea: 1,
-        movable: true,
-        zoomable: true,
-        scalable: false,
-        rotatable: false,
-        responsive: true,
-      });
+    
+    const initCropper = () => {
+      if (!window.Cropper) {
+        showToast('Image cropper library not loaded.', 4000);
+        return;
+      }
+      try {
+        currentImageCropper = new Cropper(imgEl, {
+          aspectRatio: 1,
+          viewMode: 1,
+          background: false,
+          autoCropArea: 1,
+          movable: true,
+          zoomable: true,
+          scalable: false,
+          rotatable: false,
+          responsive: true,
+          zoomOnWheel: true,
+        });
+      } catch (err) {
+        console.error('Failed to initialize Cropper:', err);
+        showToast('Unable to initialize image cropper.', 4000);
+      }
+    };
+    
+    if (imgEl.complete && imgEl.naturalWidth > 0) {
+      // Image already loaded (from cache)
+      initCropper();
     } else {
-      showToast('Image cropper library not loaded.', 4000);
-      return;
+      imgEl.onload = () => {
+        imgEl.onload = null;
+        initCropper();
+      };
     }
     
     currentCropTargetField = targetField;
