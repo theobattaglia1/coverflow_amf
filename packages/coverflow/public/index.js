@@ -690,9 +690,12 @@
     })();
     const labelText = cover?.artistDetails?.label || cover?.label || cover?.coverLabel || '';
     const keyForSpotify = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
-    const spotify = CANON_SPOTIFY[keyForSpotify] || cover.artistDetails?.spotifyLink || cover.music?.url || '';
-    const spotifyEmbed = spotify ? spotify.replace('open.spotify.com/', 'open.spotify.com/embed/') : '';
-    const safeSpotify = spotifyEmbed.includes('open.spotify.com/embed/') ? spotifyEmbed : '';
+    // Prefer explicitly configured embed URL from admin, then fall back
+    let spotify = (cover.spotifyEmbed || '').trim() || CANON_SPOTIFY[keyForSpotify] || cover.artistDetails?.spotifyLink || cover.music?.url || '';
+    if (spotify.includes('open.spotify.com/') && !spotify.includes('/embed/')) {
+      spotify = spotify.replace('open.spotify.com/', 'open.spotify.com/embed/');
+    }
+    const safeSpotify = spotify || '';
 
     content.innerHTML = `
       <button class="modal-close" aria-label="Close">×</button>
@@ -780,9 +783,11 @@
       return roles;
     })();
     const keyForSpotify = (cover.artistDetails?.name || cover.albumTitle || '').toLowerCase().trim();
-    const spotify = CANON_SPOTIFY[keyForSpotify] || cover.artistDetails?.spotifyLink || cover.music?.url || '';
-    const spotifyEmbed = spotify ? spotify.replace('open.spotify.com/', 'open.spotify.com/embed/') : '';
-    const safeSpotify = spotifyEmbed.includes('open.spotify.com/embed/') ? spotifyEmbed : '';
+    let spotify = (cover.spotifyEmbed || '').trim() || CANON_SPOTIFY[keyForSpotify] || cover.artistDetails?.spotifyLink || cover.music?.url || '';
+    if (spotify.includes('open.spotify.com/') && !spotify.includes('/embed/')) {
+      spotify = spotify.replace('open.spotify.com/', 'open.spotify.com/embed/');
+    }
+    const safeSpotify = spotify || '';
 
     content.innerHTML = `
       <button class="modal-close" aria-label="Close">×</button>
