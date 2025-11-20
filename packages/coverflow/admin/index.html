@@ -552,8 +552,165 @@ document.addEventListener('keydown', (e) => {
 });
 </script>
 
-<!-- Load the main dashboard script -->
-<script src="dashboard-swiss.js"></script>
+<!-- Load modular admin scripts -->
+<script src="js/shared-admin.js"></script>
+<script src="js/covers-admin.js"></script>
+<script src="js/assets-admin.js"></script>
+<script src="js/audio-admin.js"></script>
+<script src="js/users-admin.js"></script>
+<script src="js/main-admin.js"></script>
+
+<!-- Initialize all modules -->
+<script>
+// Initialize admin modules after DOM is ready
+async function initializeAdminModules() {
+  console.log('🚀 Initializing Admin Dashboard...');
+  
+  // Check authentication first
+  const authenticated = await checkAuth();
+  if (!authenticated) return;
+  
+  // Initialize modules
+  await initializeCovers();
+  await initializeAssets();
+  await initializeAudio();
+  await initializeUsers();
+  
+  // Initialize main admin functionality
+  initializeMainAdmin();
+  
+  // Setup global search
+  setupGlobalSearch();
+  
+  // Make critical functions globally available
+  window.saveChanges = window.saveChanges || coversModule.saveChanges;
+  window.pushLive = window.pushLive || coversModule.pushLive;
+  window.editCover = window.editCover || coversModule.editCover;
+  
+  console.log('✅ Admin Dashboard Ready');
+}
+
+// Global search implementation
+function setupGlobalSearch() {
+  const globalSearchInput = document.getElementById('globalSearch');
+  const globalSearchResults = document.getElementById('globalSearchResults');
+  
+  if (!globalSearchInput || !globalSearchResults) return;
+  
+  let searchTimeout;
+  
+  globalSearchInput.addEventListener('input', (e) => {
+    clearTimeout(searchTimeout);
+    const query = e.target.value.trim();
+    
+    if (query.length === 0) {
+      globalSearchResults.style.display = 'none';
+      return;
+    }
+    
+    searchTimeout = setTimeout(() => {
+      performGlobalSearch(query);
+    }, 300);
+  });
+  
+  document.addEventListener('click', (e) => {
+    if (!globalSearchInput.contains(e.target) && !globalSearchResults.contains(e.target)) {
+      globalSearchResults.style.display = 'none';
+    }
+  });
+  
+  globalSearchInput.addEventListener('focus', () => {
+    if (globalSearchInput.value.trim().length > 0) {
+      globalSearchResults.style.display = 'block';
+    }
+  });
+}
+
+function performGlobalSearch(query) {
+  const searchQuery = query.toLowerCase();
+  const results = {
+    covers: searchCovers(searchQuery),
+    assets: searchAssets(searchQuery),
+    audio: searchAudio(searchQuery)
+  };
+  
+  displayGlobalSearchResults(results, query);
+}
+
+function searchCovers(query) {
+  if (!window.covers || !Array.isArray(window.covers)) return [];
+  
+  return window.covers.filter(cover => 
+    (cover.albumTitle && cover.albumTitle.toLowerCase().includes(query)) ||
+    (cover.coverLabel && cover.coverLabel.toLowerCase().includes(query)) ||
+    (cover.category && cover.category.some(cat => cat.toLowerCase().includes(query)))
+  ).slice(0, 5);
+}
+
+function searchAssets(query) {
+  if (!window.assets || !window.assets.images) return [];
+  
+  return window.assets.images.filter(asset => 
+    (asset.name && asset.name.toLowerCase().includes(query)) ||
+    (asset.url && asset.url.toLowerCase().includes(query))
+  ).slice(0, 5);
+}
+
+function displayGlobalSearchResults(results, query) {
+  const globalSearchResults = document.getElementById('globalSearchResults');
+  if (!globalSearchResults) return;
+  
+  const totalResults = results.covers.length + results.assets.length + results.audio.length;
+  
+  if (totalResults === 0) {
+    globalSearchResults.innerHTML = '<div class="global-search-empty">No results found</div>';
+    globalSearchResults.style.display = 'block';
+    return;
+  }
+  
+  let html = '';
+  
+  if (results.covers.length > 0) {
+    html += '<div class="global-search-section"><h4>COVERS</h4>';
+    results.covers.forEach(cover => {
+      html += `<div class="global-search-item" onclick="editCover(covers.find(c => c.id === '${cover.id}'))">
+        <strong>${cover.albumTitle || 'Untitled'}</strong> - ${cover.coverLabel || ''}
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  if (results.assets.length > 0) {
+    html += '<div class="global-search-section"><h4>ASSETS</h4>';
+    results.assets.forEach(asset => {
+      html += `<div class="global-search-item" onclick="copyAssetUrl('${asset.url}')">
+        ${asset.name || 'Unnamed Asset'}
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  if (results.audio.length > 0) {
+    html += '<div class="global-search-section"><h4>AUDIO</h4>';
+    results.audio.forEach(audio => {
+      html += `<div class="global-search-item" onclick="copyAudioUrl('${audio.url}')">
+        ${audio.filename || audio.name || 'Unnamed Audio'}
+      </div>`;
+    });
+    html += '</div>';
+  }
+  
+  globalSearchResults.innerHTML = html;
+  globalSearchResults.style.display = 'block';
+}
+
+// Start initialization when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeAdminModules);
+} else {
+  initializeAdminModules();
+}
+</script>
 
 </body>
 </html> 
