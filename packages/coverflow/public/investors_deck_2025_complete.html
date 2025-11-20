@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All My Friends — Investor Deck 2025</title>
+    <meta name="description" content="Building the future of artist development. $1M SAFE at $30M post-money valuation."/>
+    
+    <!-- Inter Font - Modern Deck Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================= 
+           INVESTOR DECK DESIGN SYSTEM
+           Exact match to PDF presentation aesthetics
+           ============================================= */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            /* Typography */
+            --font-primary: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            
+            /* Colors - Clean deck palette */
+            --color-black: #000000;
+            --color-white: #FFFFFF;
+            --color-gray-50: #FAFAFA;
+            --color-gray-100: #F5F5F5;
+            --color-gray-200: #E5E5E5;
+            --color-gray-300: #D4D4D4;
+            --color-gray-400: #A3A3A3;
+            --color-gray-500: #737373;
+            --color-gray-600: #525252;
+            --color-gray-700: #404040;
+            --color-gray-800: #262626;
+            --color-gray-900: #171717;
+            
+            /* Brand colors */
+            --color-primary: #000000;
+            --color-accent: #0066FF;
+            --color-success: #10B981;
+            --color-danger: #EF4444;
+            
+            /* Layout */
+            --max-width: 1200px;
+            --section-padding: 120px;
+            --content-padding: 80px;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            font-size: 16px;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        body {
+            font-family: var(--font-primary);
+            color: var(--color-black);
+            background: var(--color-white);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+        
+        /* ============================================= 
+           SLIDE SECTIONS - Full viewport like PDF pages
+           ============================================= */
+        
+        .slide {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 40px;
+            position: relative;
+        }
+        
+        .slide-content {
+            max-width: var(--max-width);
+            width: 100%;
+            margin: 0 auto;
+        }
+        
+        /* Page numbers like in deck */
+        .slide::after {
+            content: attr(data-page);
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            font-size: 12px;
+            color: var(--color-gray-400);
+            font-weight: 500;
+        }
+        
+        /* ============================================= 
+           TYPOGRAPHY - Deck style
+           ============================================= */
+        
+        h1 {
+            font-size: 72px;
+            font-weight: 800;
+            line-height: 1;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+        }
+        
+        h2 {
+            font-size: 48px;
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+            margin-bottom: 20px;
+        }
+        
+        h3 {
+            font-size: 32px;
+            font-weight: 600;
+            line-height: 1.2;
+            letter-spacing: -0.01em;
+            margin-bottom: 16px;
+        }
+        
+        h4 {
+            font-size: 24px;
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 12px;
+        }
+        
+        h5 {
+            font-size: 18px;
+            font-weight: 600;
+            line-height: 1.4;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        p {
+            font-size: 18px;
+            line-height: 1.7;
+            color: var(--color-gray-700);
+            margin-bottom: 20px;
+        }
+        
+        .lead {
+            font-size: 24px;
+            line-height: 1.5;
+            color: var(--color-gray-600);
+            font-weight: 400;
+        }
+        
+        .small-caps {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 600;
+            color: var(--color-gray-500);
+        }
+        
+        ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        
+        ul li {
+            position: relative;
+            padding-left: 24px;
+            margin-bottom: 12px;
+        }
+        
+        ul li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--color-gray-400);
+        }
+        
+        /* ============================================= 
+           NAVIGATION - Minimal deck style
+           ============================================= */
+        
+        .nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--color-gray-100);
+        }
+        
+        .nav-inner {
+            max-width: var(--max-width);
+            margin: 0 auto;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .nav-logo {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-link {
+            color: var(--color-gray-600);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: var(--color-black);
+        }
+        
+        /* ============================================= 
+           SLIDE 1: TITLE SLIDE
+           ============================================= */
+        
+        .title-slide {
+            background: var(--color-white);
+            text-align: center;
+        }
+        
+        .logo-container {
+            margin-bottom: 60px;
+        }
+        
+        .logo-amf {
+            font-size: 120px;
+            font-weight: 900;
+            letter-spacing: -0.05em;
+            line-height: 0.9;
+        }
+        
+        .tagline {
+            font-size: 28px;
+            color: var(--color-gray-600);
+            font-weight: 400;
+            margin-bottom: 80px;
+        }
+        
+        .deck-meta {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            padding-top: 40px;
+            border-top: 1px solid var(--color-gray-200);
+        }
+        
+        .meta-item {
+            text-align: center;
+        }
+        
+        .meta-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .meta-label {
+            font-size: 14px;
+            color: var(--color-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* ============================================= 
+           SLIDE 2: PROBLEM/SOLUTION
+           ============================================= */
+        
+        .problem-solution {
+            background: var(--color-gray-50);
+        }
+        
+        .ps-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+        
+        .ps-column h3 {
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--color-black);
+        }
+        
+        .ps-item {
+            margin-bottom: 32px;
+        }
+        
+        .ps-item h5 {
+            color: var(--color-black);
+            margin-bottom: 12px;
+        }
+        
+        .ps-item ul {
+            list-style: none;
+            color: var(--color-gray-600);
+        }
+        
+        .ps-item li {
+            padding-left: 20px;
+            margin-bottom: 8px;
+            position: relative;
+        }
+        
+        .ps-item li:before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: var(--color-gray-400);
+        }
+        
+        .problem h5 {
+            color: var(--color-danger);
+        }
+        
+        .solution h5 {
+            color: var(--color-success);
+        }
+        
+        /* ============================================= 
+           SLIDE 3: ROSTER GRID
+           ============================================= */
+        
+        .roster-slide {
+            background: var(--color-white);
+        }
+        
+        .roster-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .roster-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 60px;
+        }
+        
+        .artist-card {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            background: var(--color-white);
+            border: 1px solid var(--color-gray-200);
+        }
+        
+        .artist-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        }
+        
+        .artist-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+        }
+        
+        .artist-info {
+            padding: 16px;
+        }
+        
+        .artist-name {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .artist-role {
+            font-size: 12px;
+            color: var(--color-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .roster-validation {
+            text-align: center;
+            padding: 40px;
+            background: var(--color-gray-50);
+            border-radius: 8px;
+        }
+        
+        /* ============================================= 
+           SLIDE 4: CASE STUDIES
+           ============================================= */
+        
+        .case-study-slide {
+            background: var(--color-white);
+        }
+        
+        .case-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+        }
+        
+        .case-card {
+            padding: 40px;
+            background: var(--color-gray-50);
+            border-radius: 8px;
+        }
+        
+        .case-artist-name {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .case-tagline {
+            font-size: 18px;
+            color: var(--color-accent);
+            margin-bottom: 32px;
+        }
+        
+        .case-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-top: 32px;
+            padding-top: 32px;
+            border-top: 1px solid var(--color-gray-300);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--color-accent);
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: var(--color-gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* ============================================= 
+           SLIDE 5: SYNERGY/ECOSYSTEM
+           ============================================= */
+        
+        .synergy-slide {
+            background: linear-gradient(135deg, var(--color-gray-50) 0%, var(--color-white) 100%);
+        }
+        
+        .ecosystem-visual {
+            position: relative;
+            height: 500px;
+            margin: 60px 0;
+        }
+        
+        .ecosystem-node {
+            position: absolute;
+            padding: 16px 24px;
+            background: var(--color-white);
+            border: 2px solid var(--color-black);
+            border-radius: 100px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .ecosystem-node:hover {
+            background: var(--color-black);
+            color: var(--color-white);
+            transform: scale(1.1);
+        }
+        
+        .ecosystem-node.central {
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--color-black);
+            color: var(--color-white);
+        }
+        
+        .connection-line {
+            position: absolute;
+            height: 1px;
+            background: var(--color-gray-300);
+            transform-origin: left center;
+        }
+        
+        /* ============================================= 
+           SLIDE 6: FINANCIALS
+           ============================================= */
+        
+        .financials-slide {
+            background: var(--color-white);
+        }
+        
+        .revenue-chart {
+            margin: 60px 0;
+        }
+        
+        .chart-bars {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            height: 400px;
+            border-left: 2px solid var(--color-gray-300);
+            border-bottom: 2px solid var(--color-gray-300);
+            padding: 20px;
+        }
+        
+        .chart-bar {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            margin: 0 10px;
+        }
+        
+        .bar {
+            width: 100%;
+            background: linear-gradient(180deg, var(--color-accent) 0%, var(--color-primary) 100%);
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .bar:hover {
+            opacity: 0.8;
+        }
+        
+        .bar-value {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-weight: 700;
+            font-size: 14px;
+        }
+        
+        .bar-year {
+            margin-top: 16px;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--color-gray-600);
+        }
+        
+        /* ============================================= 
+           SLIDE 7: CAPITAL/INVESTMENT
+           ============================================= */
+        
+        .capital-slide {
+            background: var(--color-black);
+            color: var(--color-white);
+        }
+        
+        .capital-slide h1,
+        .capital-slide h2,
+        .capital-slide h3 {
+            color: var(--color-white);
+        }
+        
+        .capital-slide p {
+            color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .investment-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin: 60px 0;
+        }
+        
+        .investment-card {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .investment-value {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #0066FF 0%, #00FF88 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .investment-label {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.7;
+        }
+        
+        .use-of-capital {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            margin-top: 60px;
+        }
+        
+        /* ============================================= 
+           SLIDE 8: WHY NOW
+           ============================================= */
+        
+        .why-now-slide {
+            background: var(--color-gray-50);
+        }
+        
+        .why-now-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin: 60px 0;
+        }
+        
+        .why-card {
+            padding: 40px;
+            background: var(--color-white);
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .why-number {
+            font-size: 72px;
+            font-weight: 800;
+            color: var(--color-accent);
+            margin-bottom: 16px;
+        }
+        
+        /* ============================================= 
+           SLIDE 9: FOUNDER
+           ============================================= */
+        
+        .founder-slide {
+            background: var(--color-white);
+        }
+        
+        .founder-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 60px;
+            align-items: start;
+        }
+        
+        .founder-image {
+            width: 300px;
+            height: 400px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        .founder-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(100%);
+        }
+        
+        /* ============================================= 
+           SLIDE 10: CONTACT/CTA
+           ============================================= */
+        
+        .cta-slide {
+            background: linear-gradient(135deg, var(--color-black) 0%, var(--color-gray-900) 100%);
+            color: var(--color-white);
+            text-align: center;
+        }
+        
+        .cta-slide h1 {
+            color: var(--color-white);
+            margin-bottom: 40px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            padding: 20px 60px;
+            background: var(--color-white);
+            color: var(--color-black);
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 100px;
+            transition: all 0.3s;
+            margin-top: 40px;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+        }
+        
+        /* ============================================= 
+           ARTIST MODAL - Preserving functionality
+           ============================================= */
+        
+        .artist-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(20px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        
+        .artist-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background: var(--color-white);
+            max-width: 1000px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 48px;
+            height: 48px;
+            background: var(--color-black);
+            color: var(--color-white);
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s;
+        }
+        
+        .modal-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        /* ============================================= 
+           MOBILE RESPONSIVE
+           ============================================= */
+        
+        @media (max-width: 768px) {
+            .slide {
+                padding: 40px 20px;
+            }
+            
+            h1 {
+                font-size: 48px;
+            }
+            
+            h2 {
+                font-size: 32px;
+            }
+            
+            .roster-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .ps-grid,
+            .case-grid,
+            .use-of-capital {
+                grid-template-columns: 1fr;
+            }
+            
+            .investment-grid,
+            .why-now-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .founder-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .founder-image {
+                order: -1;
+                margin: 0 auto 40px;
+            }
+        }
+        
+        /* ============================================= 
+           ANIMATIONS
+           ============================================= */
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .animate-in {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        [data-animate] {
+            opacity: 0;
+            animation: fadeInUp 0.6s ease forwards;
+        }
+        
+        [data-animate="1"] { animation-delay: 0.1s; }
+        [data-animate="2"] { animation-delay: 0.2s; }
+        [data-animate="3"] { animation-delay: 0.3s; }
+        [data-animate="4"] { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner">
+            <div class="nav-logo">ALL MY FRIENDS</div>
+            <ul class="nav-links">
+                <li><a href="#intro" class="nav-link active">Intro</a></li>
+                <li><a href="#problem" class="nav-link">Problem</a></li>
+                <li><a href="#roster" class="nav-link">Roster</a></li>
+                <li><a href="#cases" class="nav-link">Cases</a></li>
+                <li><a href="#synergy" class="nav-link">Synergy</a></li>
+                <li><a href="#financials" class="nav-link">Financials</a></li>
+                <li><a href="#capital" class="nav-link">Capital</a></li>
+                <li><a href="#why-now" class="nav-link">Why Now</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- SLIDE 1: Title -->
+    <section id="intro" class="slide title-slide" data-page="01">
+        <div class="slide-content">
+            <div class="logo-container">
+                <div class="logo-amf">ALL MY<br>FRIENDS</div>
+            </div>
+            <h1 class="tagline">Building the Future of Artist Development</h1>
+            <p class="lead">A new kind of management company — one that treats artists as partners, not products.</p>
+            
+            <div class="deck-meta">
+                <div class="meta-item">
+                    <div class="meta-value">$1M</div>
+                    <div class="meta-label">Raising</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value">$30M</div>
+                    <div class="meta-label">Post-Money</div>
+                </div>
+                <div class="meta-item">
+                    <div class="meta-value">SAFE</div>
+                    <div class="meta-label">Structure</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 2: Problem/Solution -->
+    <section id="problem" class="slide problem-solution" data-page="02">
+        <div class="slide-content">
+            <h2 style="text-align: center; margin-bottom: 60px;">The Industry is Broken</h2>
+            
+            <div class="ps-grid">
+                <div class="ps-column problem">
+                    <h3>The Average Manager</h3>
+                    
+                    <div class="ps-item">
+                        <h5>CHASE</h5>
+                        <ul>
+                            <li>Follows trends instead of setting them</li>
+                            <li>Reacts to what's already working</li>
+                            <li>Signs artists based on viral moments</li>
+                            <li>Prioritizes quick wins over lasting careers</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ps-item">
+                        <h5>CASH</h5>
+                        <ul>
+                            <li>Treats artists as short-term profit channels</li>
+                            <li>Pushes for immediate revenue</li>
+                            <li>Takes commission without building value</li>
+                            <li>No equity alignment or long-term vision</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ps-item">
+                        <h5>COLLAPSE</h5>
+                        <ul>
+                            <li>Burns out artists with unsustainable pace</li>
+                            <li>Abandons when momentum slows</li>
+                            <li>No infrastructure for career longevity</li>
+                            <li>Leaves artists worse than they found them</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="ps-column solution">
+                    <h3>All My Friends</h3>
+                    
+                    <div class="ps-item">
+                        <h5>DISCOVER</h5>
+                        <ul>
+                            <li>Identifies talent before the market catches up</li>
+                            <li>Sees potential others miss</li>
+                            <li>Builds from authentic artistry, not algorithms</li>
+                            <li>Invests in vision over virality</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ps-item">
+                        <h5>DEVELOP</h5>
+                        <ul>
+                            <li>Partners with artists as co-owners</li>
+                            <li>Builds sustainable, compounding careers</li>
+                            <li>Creates ecosystem value through collaboration</li>
+                            <li>Aligns incentives for long-term growth</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="ps-item">
+                        <h5>DELIVER</h5>
+                        <ul>
+                            <li>Achieves institutional validation</li>
+                            <li>Compounds success across the roster</li>
+                            <li>Creates generational artists, not one-hit wonders</li>
+                            <li>Builds lasting value for all stakeholders</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 3: Roster -->
+    <section id="roster" class="slide roster-slide" data-page="03">
+        <div class="slide-content">
+            <div class="roster-header">
+                <h2>7 Artists. 7 Institutions. 1 Vision.</h2>
+                <p class="lead">Every artist on our roster is validated by the industry's most prestigious institutions — before they've even peaked.</p>
+            </div>
+            
+            <div class="roster-grid">
+                <div class="artist-card" data-artist="hudson">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png" alt="Hudson Ingram" class="artist-image">
+                    <div class="artist-info">
+                        <div class="artist-name">Hudson Ingram</div>
+                        <div class="artist-role">Interscope/Dessner JV</div>
+                    </div>
+                </div>
+                
+                <div class="artist-card" data-artist="jack">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png" alt="Jack Schrepferman" class="artist-image">
+                    <div class="artist-info">
+                        <div class="artist-name">Jack Schrepferman</div>
+                        <div class="artist-role">Kobalt Publishing</div>
+                    </div>
+                </div>
+                
+                <div class="artist-card" data-artist="ruby">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png" alt="Ruby Plume" class="artist-image">
+                    <div class="artist-info">
+                        <div class="artist-name">Ruby Plume</div>
+                        <div class="artist-role">PULSE Publishing</div>
+                    </div>
+                </div>
+                
+                <div class="artist-card" data-artist="kate">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg" alt="Kate Stephenson" class="artist-image">
+                    <div class="artist-info">
+                        <div class="artist-name">Kate Stephenson</div>
+                        <div class="artist-role">In Negotiation</div>
+                    </div>
+                </div>
+                
+                <div class="artist-card" data-artist="leon">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png" alt="Leon Sharplin" class="artist-image">
+                    <div class="artist-info">
+                        <div class="artist-name">Leon Sharplin</div>
+                        <div class="artist-role">In Negotiation</div>
+                    </div>
+                </div>
+                
+                <div class="artist-card" data-artist="tom">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png" alt="Tom Siletto" class="artist-image">
+                    <div class="artist-info">
+                        <div class="artist-name">Tom Siletto</div>
+                        <div class="artist-role">In Negotiation</div>
+                    </div>
+                </div>
+                
+                <div class="artist-card" data-artist="conall">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png" alt="Conall Cafferty" class="artist-image">
+                    <div class="artist-info">
+                        <div class="artist-name">Conall Cafferty</div>
+                        <div class="artist-role">In Negotiation</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="roster-validation">
+                <h4>Institutional Validation</h4>
+                <p>Interscope Records • Universal Music Publishing • Kobalt • PULSE • Capitol • And more in negotiation</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 4: Case Studies -->
+    <section id="cases" class="slide case-study-slide" data-page="04">
+        <div class="slide-content">
+            <h2 style="text-align: center; margin-bottom: 60px;">Case Studies</h2>
+            
+            <div class="case-grid">
+                <div class="case-card">
+                    <h3 class="case-artist-name">HUDSON INGRAM</h3>
+                    <p class="case-tagline">The Next Great American Storyteller</p>
+                    
+                    <h5>THE ARTIST</h5>
+                    <ul style="margin-bottom: 24px;">
+                        <li>18-year-old Texas native with generational songwriting talent</li>
+                        <li>Discovered on TikTok at 16; signed to management within weeks</li>
+                        <li>Comps: Early Taylor Swift meets Noah Kahan</li>
+                        <li>Genre: Singer-songwriter with pop sensibility</li>
+                    </ul>
+                    
+                    <h5>THE VALIDATION</h5>
+                    <ul>
+                        <li>Interscope Records / Aaron Dessner JV</li>
+                        <li>Universal Music Publishing Group</li>
+                        <li>Top-tier booking agency interest</li>
+                        <li>Industry buzzing despite no official releases</li>
+                    </ul>
+                    
+                    <div class="case-stats">
+                        <div class="stat">
+                            <div class="stat-value">0→100K</div>
+                            <div class="stat-label">Followers in 6 months</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">2025</div>
+                            <div class="stat-label">Major Label Debut</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="case-card">
+                    <h3 class="case-artist-name">JACK SCHREPFERMAN</h3>
+                    <p class="case-tagline">The Producer Behind the Artists</p>
+                    
+                    <h5>THE PRODUCER</h5>
+                    <ul style="margin-bottom: 24px;">
+                        <li>21-year-old multi-genre producer/songwriter</li>
+                        <li>70M+ streams across catalog</li>
+                        <li>Comps: Jack Antonoff meets Finneas</li>
+                        <li>Creates the sonic architecture for tomorrow's hits</li>
+                    </ul>
+                    
+                    <h5>THE VALIDATION</h5>
+                    <ul>
+                        <li>Kobalt Publishing worldwide deal</li>
+                        <li>15+ major label cuts (Warner, RCA, Geffen, Island)</li>
+                        <li>Key collaborator on Hudson's Interscope project</li>
+                        <li>Building the AMF sound across the roster</li>
+                    </ul>
+                    
+                    <div class="case-stats">
+                        <div class="stat">
+                            <div class="stat-value">70M+</div>
+                            <div class="stat-label">Total Streams</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-value">15+</div>
+                            <div class="stat-label">Major Label Cuts</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 5: Cross-Roster Compounding -->
+    <section id="synergy" class="slide synergy-slide" data-page="05">
+        <div class="slide-content">
+            <h2 style="text-align: center;">History Proves the Power<br>of Artist–Producer Partnerships</h2>
+            <p class="lead" style="text-align: center; margin-bottom: 40px;">The greatest artists in history didn't build alone. They built together.</p>
+            
+            <!-- Collage Image -->
+            <div style="text-align: center; margin: 40px 0;">
+                <img src="/assets/img/synergy/reference_collage.png" alt="History of artist-producer partnerships" style="max-width: 100%; height: auto; border-radius: 8px;">
+                <p style="font-size: 14px; color: var(--color-gray-500); margin-top: 16px;">From The Beatles & George Martin to Billie & Finneas — greatness compounds through collaboration</p>
+            </div>
+            
+            <div class="ecosystem-visual">
+                <div class="ecosystem-node central">AMF<br>ECOSYSTEM</div>
+                <div class="ecosystem-node" style="top: 20%; left: 20%;">Hudson<br>Ingram</div>
+                <div class="ecosystem-node" style="top: 20%; right: 20%;">Jack<br>Schrepferman</div>
+                <div class="ecosystem-node" style="bottom: 30%; left: 15%;">Ruby<br>Plume</div>
+                <div class="ecosystem-node" style="bottom: 30%; right: 15%;">Kate<br>Stephenson</div>
+                <div class="ecosystem-node" style="bottom: 20%; left: 35%;">Tom<br>Siletto</div>
+                <div class="ecosystem-node" style="bottom: 20%; right: 35%;">Leon<br>Sharplin</div>
+                <div class="ecosystem-node" style="top: 40%; left: 10%;">Conall<br>Cafferty</div>
+            </div>
+            
+            <h3 style="text-align: center; margin-top: 60px;">The Halo Funnel</h3>
+            <p style="text-align: center; font-size: 20px; line-height: 2;">
+                Roster Synergy → Bigger Credits & Collaborations →<br>
+                Industry Attention & Validation → Halo Effect →<br>
+                Bigger Signings → AMF Growth
+            </p>
+        </div>
+    </section>
+
+    <!-- SLIDE 6: Vision - 30 by 2030 -->
+    <section class="slide" data-page="06" style="background: var(--color-gray-50);">
+        <div class="slide-content">
+            <h2 style="text-align: center;">Vision: 30 Artists by 2030</h2>
+            <p class="lead" style="text-align: center; margin-bottom: 60px;">Building a self-sustaining ecosystem where artists, producers, and songwriters grow together.</p>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 60px;">
+                <div>
+                    <h3>The Five-Year Thesis</h3>
+                    <ul style="font-size: 18px; line-height: 2;">
+                        <li><strong>Year 1-2:</strong> Foundation<br>Roster validation, infrastructure, first breakouts</li>
+                        <li><strong>Year 3:</strong> First superstar emerges<br>Tours, awards, culture impact</li>
+                        <li><strong>Year 4:</strong> Second superstar<br>Cross-roster amplification</li>
+                        <li><strong>Year 5:</strong> Third superstar<br>Self-sustaining ecosystem at scale</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>The Math</h3>
+                    <div style="background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; text-align: center;">
+                            <div>
+                                <div style="font-size: 48px; font-weight: 800; color: var(--color-accent);">7</div>
+                                <div style="font-size: 14px; color: var(--color-gray-500);">Current Artists</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 48px; font-weight: 800;">30</div>
+                                <div style="font-size: 14px; color: var(--color-gray-500);">Target 2030</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 48px; font-weight: 800; color: var(--color-success);">$250K</div>
+                                <div style="font-size: 14px; color: var(--color-gray-500);">Current Revenue</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 48px; font-weight: 800; color: var(--color-success);">$30M</div>
+                                <div style="font-size: 14px; color: var(--color-gray-500);">Target Revenue</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 7: The Road to $30M -->
+    <section id="financials" class="slide financials-slide" data-page="07">
+        <div class="slide-content">
+            <h2 style="text-align: center;">From $250K to $30M in Five Years</h2>
+            <p class="lead" style="text-align: center; margin-bottom: 60px;">A clear, achievable path to building one of the most valuable independent management companies in music.</p>
+            
+            <div class="revenue-chart">
+                <div class="chart-bars">
+                    <div class="chart-bar">
+                        <div class="bar" style="height: 10%;">
+                            <span class="bar-value">$250K</span>
+                        </div>
+                        <span class="bar-year">2024</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar" style="height: 15%;">
+                            <span class="bar-value">$400K</span>
+                        </div>
+                        <span class="bar-year">2025</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar" style="height: 25%;">
+                            <span class="bar-value">$1.5M</span>
+                        </div>
+                        <span class="bar-year">2026</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar" style="height: 40%;">
+                            <span class="bar-value">$5M</span>
+                        </div>
+                        <span class="bar-year">2027</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar" style="height: 60%;">
+                            <span class="bar-value">$12M</span>
+                        </div>
+                        <span class="bar-year">2028</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar" style="height: 80%;">
+                            <span class="bar-value">$20M</span>
+                        </div>
+                        <span class="bar-year">2029</span>
+                    </div>
+                    <div class="chart-bar">
+                        <div class="bar" style="height: 100%; background: linear-gradient(180deg, var(--color-success) 0%, var(--color-accent) 100%);">
+                            <span class="bar-value">$30M</span>
+                        </div>
+                        <span class="bar-year">2030</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 60px;">The Milestones</h3>
+            <ul style="font-size: 18px; line-height: 2; max-width: 800px; margin: 0 auto;">
+                <li><strong>2024-2025:</strong> Foundation — 7 artists, all with institutional validation</li>
+                <li><strong>2026:</strong> First breakout — Hudson's Interscope campaign launches</li>
+                <li><strong>2027:</strong> First superstar — Festival headlines, global touring</li>
+                <li><strong>2028:</strong> Second superstar — Cross-roster amplification</li>
+                <li><strong>2029:</strong> Third superstar — Self-sustaining ecosystem</li>
+                <li><strong>2030:</strong> 30 artists, $30M revenue, generational company</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- SLIDE 8: Capital Structure -->
+    <section id="capital" class="slide capital-slide" data-page="08">
+        <div class="slide-content">
+            <h1 style="text-align: center;">$1M SAFE at $30M Post-Money</h1>
+            <p class="lead" style="text-align: center; margin-bottom: 60px;">Modern structure. Clear path. One opportunity.</p>
+            
+            <div class="investment-grid">
+                <div class="investment-card">
+                    <div class="investment-value">$1M</div>
+                    <div class="investment-label">Capital Raise</div>
+                </div>
+                <div class="investment-card">
+                    <div class="investment-value">$30M</div>
+                    <div class="investment-label">Post-Money Valuation</div>
+                </div>
+                <div class="investment-card">
+                    <div class="investment-value">SAFE</div>
+                    <div class="investment-label">Investment Structure</div>
+                </div>
+            </div>
+            
+            <h2 style="text-align: center; margin-top: 80px;">Use of Capital</h2>
+            
+            <div class="use-of-capital">
+                <div>
+                    <h3>Artist Development</h3>
+                    <ul style="font-size: 18px; line-height: 1.8;">
+                        <li>Strategic artist signings</li>
+                        <li>Tour support and development</li>
+                        <li>Content and creative campaigns</li>
+                        <li>Producer/songwriter infrastructure</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Strategic Infrastructure</h3>
+                    <ul style="font-size: 18px; line-height: 1.8;">
+                        <li>Travel & Entertainment for relationship building</li>
+                        <li>Seed funding for artists (pre-label runway = 5x+ deal leverage)</li>
+                        <li>Office & Creative Hub: Non-traditional loft-style HQ that doubles as workspace, listening room, showcase venue, and studio</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 60px;">
+                <h3 style="font-size: 32px; margin-bottom: 20px;">Capital that compounds culture,<br>not just cash flow.</h3>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 9: Why Now -->
+    <section id="why-now" class="slide why-now-slide" data-page="09">
+        <div class="slide-content">
+            <h2 style="text-align: center; margin-bottom: 60px;">The Perfect Storm</h2>
+            
+            <div class="why-now-grid">
+                <div class="why-card">
+                    <div class="why-number">1</div>
+                    <h4>The Market is Ready</h4>
+                    <p>Streaming has matured. Social discovery works. Artists can build real audiences before labels engage. The infrastructure for independent success has never been stronger.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-number">2</div>
+                    <h4>The Majors are Vulnerable</h4>
+                    <p>Legacy management companies are bloated, slow, and stuck in old models. They chase trends instead of setting them. Artists want partners, not gatekeepers.</p>
+                </div>
+                <div class="why-card">
+                    <div class="why-number">3</div>
+                    <h4>Our Timing is Perfect</h4>
+                    <p>We've assembled a roster of pre-breakout talent with institutional validation. Hudson's Interscope deal. Jack's Kobalt partnership. Ruby's PULSE agreement. The foundation is set.</p>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 80px;">
+                <h3 style="font-size: 48px; font-weight: 800;">This is the only raise.</h3>
+                <p style="font-size: 24px; color: var(--color-gray-600);">One opportunity to join before the rocket takes off.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 10: The Founder -->
+    <section class="slide founder-slide" data-page="10">
+        <div class="slide-content">
+            <h2>The Founder</h2>
+            
+            <div class="founder-content">
+                <div>
+                    <h3 style="font-size: 48px; margin-bottom: 8px;">Theo Battaglia</h3>
+                    <p style="font-size: 24px; color: var(--color-accent); margin-bottom: 40px;">Founder & CEO</p>
+                    
+                    <div style="margin-bottom: 32px;">
+                        <h5>THE VISION</h5>
+                        <p style="font-size: 18px; line-height: 1.8;">
+                            "I started All My Friends because I saw a gap in the market — artists were being treated like products 
+                            instead of partners. We're building something different. A company where artists own their success, 
+                            where collaboration multiplies value, and where we measure success in decades, not quarters."
+                        </p>
+                    </div>
+                    
+                    <div style="margin-bottom: 32px;">
+                        <h5>TRACK RECORD</h5>
+                        <ul style="font-size: 18px; line-height: 1.8;">
+                            <li>Founded AMF in 2022; profitable since day one</li>
+                            <li>Discovered Hudson Ingram on TikTok; secured Interscope/Dessner JV</li>
+                            <li>Built roster to 7 artists with 100% institutional validation</li>
+                            <li>Previously: Founded and sold tech ventures; early crypto investor</li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h5>THE APPROACH</h5>
+                        <p style="font-size: 18px; line-height: 1.8;">
+                            Theo brings a unique combination of creative intuition and business acumen to All My Friends. 
+                            At 27, he's already built and sold companies, developed artists from bedroom to Billboard, and earned the 
+                            trust of the industry's most prestigious institutions.
+                        </p>
+                    </div>
+                </div>
+                <div class="founder-image">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/theo-battaglia.jpg" alt="Theo Battaglia" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SLIDE 11: Contact/CTA -->
+    <section class="slide cta-slide" data-page="11">
+        <div class="slide-content">
+            <h1>Join Us</h1>
+            <p style="font-size: 32px; margin-bottom: 60px;">One opportunity to invest in the future of music.</p>
+            
+            <div style="margin-bottom: 80px;">
+                <h3 style="font-size: 24px; margin-bottom: 40px;">Ready to build the next great management company?</h3>
+                <a href="mailto:theo@allmyfriendsinc.com" class="cta-button">Get in Touch</a>
+            </div>
+            
+            <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 40px;">
+                <p style="font-size: 14px; opacity: 0.6;">© 2025 All My Friends Inc. — Confidential Investment Materials</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Artist Modal -->
+    <div class="artist-modal" id="artist-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            
+            <!-- Modal content will be dynamically populated -->
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <!-- Complete JavaScript with all functionality -->
+    <script>
+        // Artist data
+        const artistData = {
+            hudson: {
+                name: "Hudson Ingram",
+                role: "Artist • Interscope/Dessner JV",
+                bio: "Hudson Ingram, an 18-year-old Nashville-based artist from Texas, makes music that feels as big as commercial pop but is built on a foundation of sharp songwriting and real musicianship. The son of country artist Jack Ingram, he grew up immersed in storytelling, developing a style that merges intimate, deeply felt lyrics with hooks that hit on first listen.",
+                image: "https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png",
+                instagram: "https://www.instagram.com/hudson.ingram/",
+                tiktok: "https://www.tiktok.com/@hudson.ingram",
+                spotify: "https://untitled.stream/embed/TEoWLLmvBCMx"
+            },
+            jack: {
+                name: "Jack Schrepferman", 
+                role: "Producer • Kobalt Publishing",
+                bio: "Jack Schrepferman is a Nashville-based multi genre songwriter, producer, and multi-instrumentalist known for crafting song-centered music that seamlessly blends pop sensibility with bold, innovative production. At just 21, his catalogue has amassed over 70 million streams across all genres.",
+                image: "https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png",
+                instagram: "https://www.instagram.com/jackschrepferman/",
+                spotify: "https://untitled.stream/embed/WNFeGYKaapgk"
+            },
+            ruby: {
+                name: "Ruby Plume",
+                role: "Artist/Songwriter • PULSE Publishing", 
+                bio: "Ruby Plume is an alt-folk-pop artist from Boston whose intricate storytelling and lush guitar melodies form a liminal, daydreamy musical canvas. Her vocals carry a quiet intensity, layering youthful clarity over emotional depth.",
+                image: "https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png",
+                instagram: "https://www.instagram.com/rubytplume/",
+                tiktok: "https://www.tiktok.com/@rubytplume",
+                spotify: "https://untitled.stream/embed/TzHxY2K2S4gX"
+            },
+            kate: {
+                name: "Kate Stephenson",
+                role: "Artist/Creator",
+                bio: "Kate Stephenson is a Nashville-based folk-pop experimentalist from the Illinois suburbs. Raised backstage while her orchestral-musician parents rehearsed and classically trained from childhood, she carries that precision in her bones.",
+                image: "https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg",
+                instagram: "https://www.instagram.com/kate_stephenson/",
+                tiktok: "https://www.tiktok.com/@katestephensonmusic",
+                spotify: "https://untitled.stream/embed/DvbwudWvMBk1"
+            },
+            leon: {
+                name: "Leon Sharplin",
+                role: "Producer/Artist",
+                bio: "Leon Sharplin is a Los Angeles–based producer, songwriter, and multi-instrumentalist from New Zealand whose Berklee-honed chops let him weave finger-picked guitars, chamber-ready strings, and surgically sculpted synths into one seamless folk-pop-R&B mosaic.",
+                image: "https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png",
+                instagram: "https://www.instagram.com/leonsharplin/",
+                spotify: "https://untitled.stream/embed/ob42rf6hvgMB"
+            },
+            tom: {
+                name: "Tom Siletto",
+                role: "Artist",
+                bio: "Tom Siletto is an emerging artist in the indie folk/pop scene whose introspective, candid songwriting draws listeners in as if in conversation with a close friend.",
+                image: "https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png",
+                instagram: "https://www.instagram.com/tomsiletto/",
+                tiktok: "https://www.tiktok.com/@tomsilettomusic",
+                spotify: "https://untitled.stream/embed/LzuqcxQvWcrM"
+            },
+            conall: {
+                name: "Conall Cafferty",
+                role: "Artist/Songwriter",
+                bio: "Conall Cafferty—a 20-year-old singer-songwriter from Montclair, NJ now rooted in Nashville—pairs a self-taught, blues-bred guitar style and distinctive vocal tone with sharp lyricism.",
+                image: "https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png",
+                instagram: "https://www.instagram.com/conallcafferty/",
+                tiktok: "https://www.tiktok.com/@conallcafferty",
+                spotify: "https://untitled.stream/embed/auMykkLeigIV"
+            }
+        };
+
+        // Navigation active state
+        const sections = document.querySelectorAll('.slide[id]');
+        const navLinks = document.querySelectorAll('.nav-link');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                if (scrollY >= section.offsetTop - 100) {
+                    current = section.id;
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+            });
+        });
+        
+        // Smooth scroll
+        navLinks.forEach(link => {
+            link.addEventListener('click', e => {
+                e.preventDefault();
+                const target = document.querySelector(link.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        // Modal functionality
+        function openModal(artistId) {
+            const modal = document.getElementById('artist-modal');
+            const modalBody = document.getElementById('modal-body');
+            const artist = artistData[artistId];
+            
+            if (!artist) return;
+            
+            // Build modal content
+            modalBody.innerHTML = `
+                <div style="display: grid; grid-template-columns: 400px 1fr; gap: 40px; padding: 40px;">
+                    <div>
+                        <img src="${artist.image}" alt="${artist.name}" style="width: 100%; border-radius: 8px;">
+                    </div>
+                    <div>
+                        <h2 style="font-size: 48px; margin-bottom: 8px;">${artist.name}</h2>
+                        <p style="font-size: 20px; color: var(--color-accent); margin-bottom: 24px;">${artist.role}</p>
+                        <p style="font-size: 18px; line-height: 1.8; margin-bottom: 32px;">${artist.bio}</p>
+                        
+                        <div style="display: flex; gap: 16px; margin-bottom: 40px;">
+                            ${artist.instagram ? `<a href="${artist.instagram}" target="_blank" style="padding: 12px 24px; border: 2px solid black; text-decoration: none; color: black; font-weight: 600;">Instagram</a>` : ''}
+                            ${artist.tiktok ? `<a href="${artist.tiktok}" target="_blank" style="padding: 12px 24px; border: 2px solid black; text-decoration: none; color: black; font-weight: 600;">TikTok</a>` : ''}
+                        </div>
+                        
+                        ${artist.spotify ? `
+                            <h4 style="margin-bottom: 24px;">Music</h4>
+                            <iframe style="border-radius: 12px" src="${artist.spotify}" width="100%" height="352" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeModal() {
+            const modal = document.getElementById('artist-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // Artist card clicks
+        document.querySelectorAll('.artist-card').forEach(card => {
+            card.addEventListener('click', () => {
+                openModal(card.dataset.artist);
+            });
+        });
+        
+        // Close modal on backdrop click
+        document.getElementById('artist-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'artist-modal') {
+                closeModal();
+            }
+        });
+        
+        // Close modal on escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+        });
+        
+        // Animate elements on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Observe elements with data-animate
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            observer.observe(el);
+        });
+    </script>
+</body>
+</html>

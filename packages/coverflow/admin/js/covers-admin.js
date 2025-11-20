@@ -111,6 +111,34 @@ function renderCoversGridView(covers) {
     const div = createCoverElement(cover);
     container.appendChild(div);
   });
+  
+  // Enable drag-to-reorder functionality
+  if (typeof Sortable !== 'undefined' && !window.batchMode) {
+    new Sortable(container, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      handle: '.cover-image-wrapper',
+      filter: 'button, input',
+      onEnd: function(evt) {
+        // Update cover indices based on new order
+        const coverElements = container.querySelectorAll('.cover-item');
+        coverElements.forEach((el, index) => {
+          const coverId = el.dataset.coverId;
+          const cover = window.covers.find(c => c.id === coverId);
+          if (cover) {
+            cover.index = index;
+          }
+        });
+        
+        // Mark as having changes
+        window.adminState.hasChanges = true;
+        updateSaveButton();
+        showToast('Cover order updated - remember to save changes');
+      }
+    });
+  }
 }
 
 // List view renderer
@@ -172,7 +200,8 @@ function createCoverElement(cover) {
     ${window.batchMode ? `<input type="checkbox" class="batch-checkbox" ${window.selectedCovers.has(cover.id) ? 'checked' : ''}/>` : ''}
     <div class="cover-image-wrapper" data-index="${cover.index || 0}">
       <img src="${imgUrl}" alt="${cover.albumTitle || 'Untitled'}" loading="lazy" 
-           onerror="this.src='/placeholder.jpg'">
+           onerror="this.src='/placeholder.jpg'"
+           style="width: 100%; height: 100%; object-fit: cover;">
       <div class="cover-overlay">
         <div class="cover-actions">
           <button onclick="editCover(covers.find(c => c.id === '${cover.id}'))" title="Edit">
@@ -262,6 +291,24 @@ window.renderRecentCovers = function() {
     div.classList.add('recent-cover');
     container.appendChild(div);
   });
+  
+  // Enable drag-to-reorder for recent covers too
+  if (typeof Sortable !== 'undefined' && !window.batchMode) {
+    new Sortable(container, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      handle: '.cover-image-wrapper',
+      filter: 'button, input',
+      group: 'covers', // Allow dragging between recent and main grid
+      onEnd: function(evt) {
+        // If moved from recent to main or vice versa, update both arrays
+        updateCoverOrder();
+        showToast('Cover order updated - remember to save changes');
+      }
+    });
+  }
 };
 
 // Edit cover modal

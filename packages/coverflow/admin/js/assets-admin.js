@@ -46,6 +46,7 @@ window.loadAssets = async function() {
 
     // 2) Best-effort: augment with live GCS listing (do not abort UI on failure)
     try {
+      console.log('Attempting to load GCS assets...');
       const gcsRes = await fetch('/api/list-gcs-assets');
       if (gcsRes.status === 401) {
         showToast('AUTHENTICATION REQUIRED FOR GCS ASSETS');
@@ -53,10 +54,12 @@ window.loadAssets = async function() {
         return;
       }
       if (!gcsRes.ok) {
-        throw new Error(`Failed to load GCS assets: ${gcsRes.status}`);
+        throw new Error(`Failed to load GCS assets: ${gcsRes.status} ${gcsRes.statusText}`);
       }
       const gcsData = await gcsRes.json();
-      if (gcsData.images) {
+      console.log('GCS response:', gcsData);
+      
+      if (gcsData.images && gcsData.images.length > 0) {
         const mapped = gcsData.images.map(url => {
           const filename = url.split('/').pop().toLowerCase();
           const isVideo = filename.match(/\.(mov|mp4|webm|avi)$/i);
@@ -70,13 +73,20 @@ window.loadAssets = async function() {
         // Merge with any existing images instead of overwriting
         const existing = Array.isArray(window.assets.images) ? window.assets.images : [];
         window.assets.images = [...existing, ...mapped];
+        console.log(`Loaded ${gcsData.images.length} GCS assets`);
+        showToast(`LOADED ${gcsData.images.length} GCS ASSETS`);
+      } else {
+        console.warn('No GCS images found in response');
+        showToast('NO GCS ASSETS FOUND', 3000);
       }
     } catch (err) {
       console.error('Failed to load GCS assets:', err);
-      // Don't toast loudly here; we've already loaded from assets.json
+      showToast(`GCS LOAD ERROR: ${err.message}`, 5000);
     }
 
     // Render whatever we have
+    console.log('Current assets:', window.assets);
+    console.log('Total images:', window.assets.images?.length || 0);
     renderAssetsWithView();
     renderRecentAssets();
   } catch (err) {
@@ -205,7 +215,11 @@ window.updateCurrentFolderIndicator = function() {
 // Get items in current folder
 function getCurrentFolderItems() {
   if (!window.currentPath) {
-    return { images: window.assets.images || [], folders: window.assets.children || [] };
+    // For root folder, show all images including GCS images
+    const allImages = window.assets.images || [];
+    const folders = window.assets.children || [];
+    console.log('Root folder - images:', allImages.length, 'folders:', folders.length);
+    return { images: allImages, folders: folders };
   }
 
   function findFolder(items, targetPath) {

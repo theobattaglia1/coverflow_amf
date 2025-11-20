@@ -1,0 +1,4359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All My Friends Inc. — Investment Opportunity</title>
+    <meta name="description" content="All My Friends Inc. – Building the future of artist development through vision-focused investment and genuine partnership"/>
+    
+    <!-- Open Graph meta tags for social sharing -->
+    <meta property="og:title" content="All My Friends Inc. — Investment Opportunity"/>
+    <meta property="og:description" content="All My Friends Inc. – Building the future of artist development through vision-focused investment and genuine partnership"/>
+    <meta property="og:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:url" content="https://allmyfriendsinc.com/investors_220220.html"/>
+    
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image"/>
+    <meta name="twitter:title" content="All My Friends Inc. — Investment Opportunity"/>
+    <meta name="twitter:description" content="All My Friends Inc. – Building the future of artist development through vision-focused investment and genuine partnership"/>
+    <meta name="twitter:image" content="https://allmyfriendsinc.com/uploads/upload-1752019334557-17590324.png"/>
+    
+    <style>
+        /* ———————————— 0. Reset & Core */
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        
+        /* ———————————— 1. Design System Variables */
+        :root{
+            /* Core Palette */
+            --bg:#FFFFFF;
+            --ink:#000000;
+            --accent:#0000FF;
+            --success:#22C55E;
+            
+            /* Fluid Type Scale - Slightly Tighter than Hudson */
+            --step--2: clamp(.5rem,.6vw,.7rem);
+            --step--1: clamp(.625rem,.75vw,.825rem);
+            --step-0:  clamp(.75rem,.9vw,.95rem);
+            --step-1:  clamp(.875rem,1.1vw,1.15rem);
+            --step-2:  clamp(1.25rem,1.8vw,1.8rem);
+            --step-3:  clamp(2rem,2.5vw,2.5rem);
+            --step-4:  clamp(2.5rem,4vw,4rem);
+            --step-5:  clamp(3rem,6vw,6rem);
+            --step-6:  clamp(4.5rem,10vw,10rem);
+            
+            /* Grid & Spacing */
+            --gutter:1.5rem;
+            --max-width:1000px;
+            --section-space:6rem;
+        }
+        
+        /* ———————————— 2. Base Typography */
+        html{scroll-behavior:smooth;font-size:16px;-webkit-font-smoothing:antialiased;}
+        body{
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-weight:400;
+            font-size:var(--step-0);
+            line-height:1.4;
+            color:var(--ink);
+            background:var(--bg);
+            letter-spacing:-.01em;
+            overflow-x:hidden;
+            margin:0;
+            padding-top:100px;
+        }
+        
+        h1,h2,h3,h4,h5,h6{
+            font-weight:700;
+            line-height:1;
+            letter-spacing:-.04em;
+            margin:0;
+            position:relative;
+        }
+        
+        /* Section header watermark effect */
+        h2::before{
+            content:attr(data-watermark);
+            position:absolute;
+            top:0.2em;
+            left:0.1em;
+            font-size:inherit;
+            font-weight:inherit;
+            color:var(--accent);
+            opacity:0.15;
+            z-index:-1;
+            white-space:nowrap;
+            pointer-events:none;
+        }
+        
+        h1{font-size:var(--step-6);letter-spacing:-.06em;}
+        h2{font-size:var(--step-5);letter-spacing:-.05em;}
+        h3{font-size:var(--step-4);letter-spacing:-.04em;}
+        h4{font-size:var(--step-3);letter-spacing:-.03em;}
+        h5{font-size:var(--step-2);letter-spacing:-.02em;}
+        
+        .display{
+            font-size:clamp(4rem,15vw,14rem);
+            font-weight:900;
+            line-height:.8;
+            letter-spacing:-.08em;
+            text-transform:uppercase;
+        }
+        
+        p{
+            margin-bottom:1.5rem;
+            max-width:65ch;
+            text-align:justify;
+            line-height:1.4;
+        }
+        
+        .lead{
+            font-size:var(--step-1);
+            line-height:1.4;
+            font-weight:400;
+            letter-spacing:-.02em;
+            text-align:justify;
+        }
+        
+        a{
+            color:var(--ink);
+            text-decoration:none;
+        }
+        
+        a:hover{
+            text-decoration:underline;
+            text-underline-offset:2px;
+        }
+        
+        strong{
+            font-weight:700;
+        }
+        
+        /* CHAOS: Subtle mis-registration on key headlines */
+        [data-misreg]::after{
+            content:attr(data-misreg);
+            position:absolute;
+            top:1px;
+            left:1px;
+            color:var(--accent);
+            opacity:.15;
+            z-index:-1;
+        }
+        
+        /* ———————————— 3. Grid System */
+        .container{
+            max-width:var(--max-width);
+            margin-inline:auto;
+            padding-inline:var(--gutter);
+            width:100%;
+            box-sizing:border-box;
+        }
+        
+        .grid{
+            display:grid;
+            grid-template-columns:repeat(12,1fr);
+            gap:var(--gutter);
+        }
+        
+        .col-12{grid-column:span 12;}
+        .col-10{grid-column:span 10;}
+        .col-8{grid-column:span 8;}
+        .col-7{grid-column:span 7;}
+        .col-6{grid-column:span 6;}
+        .col-5{grid-column:span 5;}
+        .col-4{grid-column:span 4;}
+        .col-3{grid-column:span 3;}
+        .col-2{grid-column:span 2;}
+        
+        /* Column offsets */
+        .offset-1{grid-column-start:2;}
+        .offset-2{grid-column-start:3;}
+        .offset-3{grid-column-start:4;}
+        
+        /* Enhanced Problem/Solution Cards */
+        .concept-cards{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:3rem;
+            margin-top:2rem;
+            position:relative;
+        }
+        
+        .concept-card{
+            padding:2rem;
+            position:relative;
+            overflow:hidden;
+            border:2px solid var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .concept-card::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:var(--ink);
+            transform:translateX(-100%);
+            transition:transform 0.3s ease;
+            z-index:-1;
+        }
+        
+        .concept-card:hover{
+            color:var(--bg);
+            transform:translateY(-4px);
+        }
+        
+        .concept-card:hover::before{
+            transform:translateX(0);
+        }
+        
+        .concept-card.problem{
+            border-left-width:6px;
+        }
+        
+        .concept-card.solution{
+            border-right-width:6px;
+        }
+        
+        .concept-card h5{
+            margin-bottom:1.5rem;
+            font-size:var(--step-2);
+            position:relative;
+        }
+        
+        .concept-card.problem h5::after{
+            content:'×';
+            position:absolute;
+            right:0;
+            top:0;
+            font-size:var(--step-3);
+            opacity:0.2;
+        }
+        
+        .concept-card.solution h5::after{
+            content:'✓';
+            position:absolute;
+            right:0;
+            top:0;
+            font-size:var(--step-3);
+            opacity:0.2;
+        }
+        
+        /* Abstract corner element */
+        .abstract-corner{
+            position:absolute;
+            top:-10%;
+            right:-5%;
+            width:25vw;
+            height:25vw;
+            background:linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.02) 50%);
+            transform:rotate(45deg);
+            z-index:-1;
+        }
+        
+        /* Management Comparison Styles */
+        .management-comparison{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:3rem;
+            margin-top:4rem;
+            position:relative;
+        }
+        
+        .comparison-column{
+            padding:3rem;
+            position:relative;
+            overflow:hidden;
+            border:2px solid var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .comparison-column.average-manager{
+            border-color:#DC2626;
+            background:linear-gradient(135deg, rgba(220,38,38,0.02) 0%, transparent 50%);
+        }
+        
+        .comparison-column.all-my-friends{
+            border-color:#16A34A;
+            background:linear-gradient(135deg, rgba(22,163,74,0.02) 0%, transparent 50%);
+        }
+        
+        .comparison-header{
+            font-size:var(--step-3);
+            font-weight:900;
+            margin-bottom:3rem;
+            text-align:left;
+            letter-spacing:-0.05em;
+            text-transform:uppercase;
+            position:relative;
+            padding-bottom:1.5rem;
+        }
+        
+        .comparison-header::after{
+            content:'';
+            position:absolute;
+            bottom:0;
+            left:0;
+            width:60%;
+            height:2px;
+            background:currentColor;
+            opacity:0.2;
+        }
+        
+        .comparison-column.average-manager .comparison-header{
+            color:#DC2626;
+        }
+        
+        .comparison-column.all-my-friends .comparison-header{
+            color:#16A34A;
+        }
+        
+        .comparison-section{
+            margin-bottom:2rem;
+        }
+        
+        .comparison-section:last-child{
+            margin-bottom:0;
+        }
+        
+        .phase-header{
+            font-size:var(--step-1);
+            font-weight:700;
+            margin-bottom:1rem;
+            letter-spacing:-0.02em;
+        }
+        
+        .phase-header.chase,
+        .phase-header.cash,
+        .phase-header.collapse{
+            color:#DC2626;
+        }
+        
+        .phase-header.discover,
+        .phase-header.develop,
+        .phase-header.deliver{
+            color:#16A34A;
+        }
+        
+        .comparison-column ul{
+            list-style:none;
+            padding:0;
+        }
+        
+        .comparison-column li{
+            position:relative;
+            padding-left:1.5rem;
+            margin-bottom:0.5rem;
+            font-size:var(--step--1);
+            line-height:0.9;
+            text-align:justify;
+        }
+        
+        .comparison-column li::before{
+            content:'•';
+            position:absolute;
+            left:0;
+            font-weight:700;
+        }
+        
+        .comparison-column.average-manager li::before{
+            color:#DC2626;
+        }
+        
+        .comparison-column.all-my-friends li::before{
+            color:#16A34A;
+        }
+        
+        @media(max-width:768px){
+            .management-comparison{
+                gap:1.5rem;
+            }
+            .comparison-column{
+                padding:1.5rem;
+            }
+            .comparison-header{
+                font-size:var(--step-2);
+                margin-bottom:2rem;
+                padding-bottom:1rem;
+            }
+            .comparison-header::after{
+                width:80%;
+            }
+            .phase-header{
+                font-size:var(--step-0);
+                margin-bottom:0.75rem;
+            }
+            .comparison-section{
+                margin-bottom:1.5rem;
+            }
+            .comparison-column li{
+                font-size:0.7rem;
+                padding-left:1rem;
+            }
+        }
+        
+        /* Founder section with image */
+        .founder-section{
+            padding:6rem 0;
+            background:var(--bg);
+        }
+        
+        .founder-content{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            align-items:start;
+            margin-top:4rem;
+        }
+        
+        .founder-image{
+            position:relative;
+            width:100%;
+            height:600px;
+            overflow:hidden;
+            border-radius:0;
+        }
+        
+        .founder-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        .founder-overlay{
+            position:absolute;
+            bottom:2rem;
+            left:2rem;
+            color:white;
+            z-index:2;
+        }
+        
+        .founder-title{
+            font-size:var(--step-0);
+            font-weight:600;
+            margin-bottom:0.5rem;
+            opacity:0.9;
+        }
+        
+        .founder-name{
+            font-size:var(--step-4);
+            font-weight:900;
+            letter-spacing:-0.02em;
+            line-height:0.9;
+        }
+        
+        .founder-details{
+            display:flex;
+            flex-direction:column;
+            gap:3rem;
+        }
+        
+        .founder-info{
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        }
+        
+        .info-item{
+            font-size:var(--step-0);
+            font-weight:600;
+        }
+        
+        .founder-experience{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+        }
+        
+        .experience-section h4{
+            font-size:var(--step-1);
+            font-weight:700;
+            margin-bottom:1rem;
+            text-decoration:underline;
+            text-underline-offset:4px;
+        }
+        
+        .experience-section ul{
+            list-style:none;
+            padding:0;
+            margin:0;
+        }
+        
+        .experience-section li{
+            font-size:var(--step-0);
+            margin-bottom:0.5rem;
+            line-height:1.4;
+        }
+        
+        @media(max-width:768px){
+            .founder-content{
+                grid-template-columns:1fr;
+                gap:3rem;
+            }
+            
+            .founder-image{
+                height:400px;
+            }
+            
+            .founder-overlay{
+                bottom:1.5rem;
+                left:1.5rem;
+            }
+            
+            .founder-name{
+                font-size:var(--step-3);
+            }
+        }
+
+        .modal-music-section .track-list{
+            margin-bottom:2rem;
+            max-height:300px;
+            overflow-y:auto;
+        }
+
+        .modal-music-section .track{
+            padding:1rem 0;
+            border-bottom:1px solid rgba(0,0,0,0.1);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            gap:1rem;
+        }
+
+        .modal-music-section .track:hover{
+            padding-left:1rem;
+            background:rgba(0,0,0,0.02);
+        }
+
+        .modal-music-section .track.active{
+            color:var(--accent);
+            font-weight:600;
+        }
+
+        .modal-music-section .track-number{
+            font-weight:700;
+            opacity:0.5;
+            width:20px;
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+        }
+
+        .modal-music-section .track-title{
+            flex:1;
+        }
+
+        .modal-music-section .track-duration{
+            font-size:var(--step--2);
+            opacity:0.5;
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+        }
+
+        .modal-music-section .loading-spinner{
+            display:none;
+            width:20px;
+            height:20px;
+            border:2px solid rgba(0,0,0,0.1);
+            border-top-color:var(--accent);
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+
+        .modal-music-section .track.loading .loading-spinner{
+            display:block;
+        }
+
+        .modal-music-section .track.loading .track-duration{
+            display:none;
+        }
+
+        .modal-music-section .player-controls{
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        }
+
+        .modal-music-section .progress-bar{
+            width:100%;
+            height:4px;
+            background:rgba(0,0,0,0.1);
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .modal-music-section .progress-fill{
+            height:100%;
+            background:var(--accent);
+            width:0%;
+            transition:width 0.1s linear;
+        }
+
+        .modal-music-section .time-display{
+            display:flex;
+            justify-content:space-between;
+            font-size:var(--step--2);
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            opacity:0.7;
+        }
+
+        .modal-music-section .control-buttons{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:2rem;
+        }
+
+        .modal-music-section .control-btn{
+            background:none;
+            border:none;
+            color:var(--ink);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:0.5rem;
+        }
+
+        .modal-music-section .control-btn:hover{
+            color:var(--accent);
+            transform:scale(1.1);
+        }
+
+        .modal-music-section .play-btn{
+            width:48px;
+            height:48px;
+            border:2px solid var(--ink);
+            border-radius:50%;
+            font-size:1.25rem;
+        }
+
+        .modal-music-section .play-btn:hover{
+            border-color:var(--accent);
+            background:var(--accent);
+            color:var(--bg);
+        }
+
+        @media(max-width:768px){
+            .grid{grid-template-columns:repeat(4,1fr);}
+            [class*="col-"]{grid-column:span 4;}
+            [class*="offset-"]{grid-column-start:1;}
+            .concept-cards{grid-template-columns:1fr 1fr;}
+        }
+        
+        /* ———————————— 4. Section Architecture */
+        section{
+            padding-block:calc(var(--section-space) * 0.6);
+            position:relative;
+        }
+        
+        section:first-child{
+            padding-top:0;
+        }
+        
+        /* CHAOS: Selective disruption */
+        .break-grid{
+            margin-left:calc(var(--gutter) * -2);
+            margin-right:calc(var(--gutter) * -4);
+        }
+        
+        /* ———————————— 5. Navigation */
+        .nav{
+            position:fixed !important;
+            top:0 !important;
+            left:0 !important;
+            right:0 !important;
+            z-index:1000;
+            padding:1.5rem 0;
+            background:rgba(255,255,255,.8);
+            backdrop-filter:blur(10px);
+            min-height:60px;
+            border-bottom:1px solid rgba(0,0,0,0.1);
+            transition:background 0.3s ease, backdrop-filter 0.3s ease;
+            transform:none !important;
+        }
+        
+        .nav:hover,
+        .nav.scrolled{
+            background:rgba(255,255,255,.95);
+            backdrop-filter:blur(15px);
+        }
+        
+        /* Ensure navigation is always visible */
+        .nav{
+            display:block !important;
+            visibility:visible !important;
+            opacity:1 !important;
+        }
+        
+        .nav-inner{
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+        }
+        
+        .nav-toggle{
+            display:none;
+            flex-direction:column;
+            justify-content:space-around;
+            width:30px;
+            height:25px;
+            background:transparent;
+            border:none;
+            cursor:pointer;
+            padding:0;
+            z-index:1001;
+        }
+        
+        .nav-toggle span{
+            width:100%;
+            height:3px;
+            background:var(--ink);
+            border-radius:10px;
+            transition:all 0.3s linear;
+            position:relative;
+            transform-origin:1px;
+        }
+        
+        .nav-toggle.active span:first-child{
+            transform:rotate(45deg);
+        }
+        
+        .nav-toggle.active span:nth-child(2){
+            opacity:0;
+        }
+        
+        .nav-toggle.active span:nth-child(3){
+            transform:rotate(-45deg);
+        }
+        
+        .nav-logo{
+            font-size:1.5rem;
+            font-weight:900;
+            letter-spacing:-.05em;
+        }
+        
+        .nav-links{
+            display:flex;
+            gap:3rem;
+            list-style:none;
+            margin:0;
+            padding:0;
+        }
+        
+        .nav-link{
+            font-size:var(--step--1);
+            font-weight:500;
+            letter-spacing:-.02em;
+            opacity:.5;
+            transition:opacity .2s;
+            color:var(--ink);
+            text-decoration:none;
+            display:block;
+        }
+        
+        @media(max-width:768px){
+            .container{
+                padding-inline:1rem;
+            }
+            
+            .nav-toggle{
+                display:flex;
+            }
+            
+            .nav-links{
+                position:fixed;
+                top:0;
+                right:0;
+                bottom:0;
+                width:300px;
+                background:rgba(255,255,255,0.95);
+                backdrop-filter:blur(10px);
+                display:flex;
+                flex-direction:column;
+                justify-content:flex-start;
+                align-items:flex-end;
+                padding:6rem 2rem 2rem 2rem;
+                gap:1.5rem;
+                transform:translateX(100%);
+                transition:transform 0.3s ease-in-out;
+                z-index:1000;
+                border-left:1px solid rgba(0,0,0,0.1);
+                visibility:hidden;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+                visibility:visible;
+            }
+            
+            .nav-link{
+                font-size:var(--step-1);
+                font-weight:500;
+                opacity:0.7;
+                transition:opacity 0.2s;
+            }
+            
+            .nav-link:hover,
+            .nav-link.active{
+                opacity:1;
+            }
+            
+            .nav-logo{
+                font-size:1.25rem;
+            }
+        }
+        
+        @media(max-width:480px){
+            .container{
+                padding-inline:0.75rem;
+            }
+            
+            .nav-links{
+                width:280px;
+                padding:5rem 1.5rem 2rem 1.5rem;
+                gap:1.25rem;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+            }
+            
+            .nav-link{
+                font-size:var(--step-0);
+            }
+            
+            .nav-logo{
+                font-size:1rem;
+            }
+        }
+        
+        .nav-link:hover,
+        .nav-link.active{
+            opacity:1;
+            text-decoration:none;
+        }
+        
+        /* ———————————— 6. Hero */
+        .hero{
+            height:100vh;
+            display:flex;
+            align-items:center;
+            position:relative;
+            overflow:hidden;
+            padding-top:80px;
+        }
+        
+        .hero-content{
+            position:relative;
+            z-index:2;
+        }
+        
+        .hero-title{
+            margin-bottom:1.5rem;
+        }
+        
+        /* CHAOS: Off-kilter hero image */
+        .hero-image{
+            position:absolute;
+            right:-10%;
+            top:50%;
+            transform:translateY(-50%) rotate(-2deg);
+            width:45vw;
+            height:70vh;
+            background:var(--ink);
+            opacity:.03;
+            z-index:1;
+        }
+        
+        @media(max-width:768px){
+            .hero-image{
+                width:100%;
+                height:50vh;
+                right:0;
+                top:auto;
+                bottom:0;
+                transform:none;
+            }
+        }
+        
+        /* ———————————— 7. Story Section */
+        .section-marker{
+            font-size:var(--step--2);
+            font-weight:700;
+            letter-spacing:-.02em;
+            margin-bottom:4rem;
+            opacity:.2;
+        }
+        
+        /* Large off-kilter image */
+        .large-image{
+            position:relative;
+            margin-block:6rem;
+            margin-left:-10vw;
+            width:60vw;
+            height:70vh;
+            overflow:hidden;
+            transform:rotate(1deg);
+        }
+        
+        .large-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        /* Small accent image */
+        .accent-image{
+            position:absolute;
+            width:25vw;
+            height:35vh;
+            overflow:hidden;
+            z-index:-1;
+        }
+        
+        .accent-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+        }
+        
+        .accent-image.top-right{
+            top:-5rem;
+            right:-5rem;
+            transform:rotate(-3deg);
+        }
+        
+        .accent-image.bottom-left{
+            bottom:-3rem;
+            left:-8rem;
+            transform:rotate(2deg);
+        }
+        
+        /* Pull quote */
+        .quote{
+            font-size:var(--step-3);
+            font-weight:300;
+            line-height:1.2;
+            letter-spacing:-.03em;
+            margin-block:6rem;
+            padding-left:2rem;
+            border-left:4px solid var(--ink);
+            text-align:justify;
+        }
+        
+        /* ———————————— 8. Metrics Grid */
+        .metrics-grid{
+            display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:4rem;
+            margin-top:6rem;
+        }
+        
+        .metric-item{
+            position:relative;
+        }
+        
+        .metric-value{
+            font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;
+            font-size:var(--step-4);
+            font-weight:900;
+            letter-spacing:-.06em;
+            line-height:1;
+            margin-bottom:.5rem;
+            color:var(--accent);
+        }
+        
+        .metric-label{
+            font-size:var(--step--1);
+            font-weight:400;
+            letter-spacing:-.01em;
+            opacity:.7;
+            text-transform:uppercase;
+        }
+        
+        @media(max-width:768px){
+            .metrics-grid{
+                grid-template-columns:repeat(4,1fr);
+                gap:2rem;
+            }
+        }
+        
+        /* ———————————— 9. Enhanced Timeline */
+        .timeline{
+            position:relative;
+            padding-top:4rem;
+        }
+        
+        .timeline-line{
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            height:2px;
+            background:linear-gradient(90deg, var(--ink) 0%, var(--accent) 50%, var(--success) 100%);
+            opacity:.2;
+        }
+        
+        .timeline-line::before{
+            content:'2022';
+            position:absolute;
+            left:0;
+            top:-25px;
+            font-size:var(--step--2);
+            font-weight:700;
+            opacity:0.5;
+        }
+        
+        .timeline-line::after{
+            content:'2030';
+            position:absolute;
+            right:0;
+            top:-25px;
+            font-size:var(--step--2);
+            font-weight:700;
+            opacity:0.5;
+        }
+        
+        .timeline-items{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:3rem;
+            position:relative;
+        }
+        
+        .timeline-item{
+            padding-top:2rem;
+            position:relative;
+        }
+        
+        .timeline-marker{
+            position:absolute;
+            top:-6px;
+            left:0;
+            width:12px;
+            height:12px;
+            background:var(--ink);
+            border-radius:50%;
+            transition:all 0.3s ease;
+        }
+        
+        .timeline-item:hover .timeline-marker{
+            transform:scale(1.5);
+            background:var(--accent);
+        }
+        
+        .timeline-year{
+            font-size:var(--step-2);
+            font-weight:900;
+            margin-bottom:1rem;
+        }
+        
+        @media(max-width:768px){
+            .timeline-items{
+                grid-template-columns:repeat(2,1fr);
+                gap:2rem;
+            }
+        }
+        
+        /* ———————————— 10. Artist Grid */
+        .artist-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:3rem;
+            margin:4rem 0;
+        }
+        
+        @media(max-width:768px){
+            .artist-grid{
+                grid-template-columns:repeat(3,1fr);
+                gap:2rem;
+            }
+        }
+        
+        @media(max-width:480px){
+            .artist-grid{
+                grid-template-columns:repeat(3,1fr);
+                gap:1.5rem;
+            }
+        }
+        
+        /* Artist Cards */
+        .artist-card{
+            position:relative;
+            width:100%;
+            max-width:300px;
+            margin:0 auto;
+            cursor:pointer;
+            overflow:hidden;
+            border:1px solid rgba(0,0,0,0.1);
+            transition:all 0.3s ease;
+        }
+
+        .artist-card:hover{
+            transform:translateY(-4px);
+            box-shadow:0 8px 16px rgba(0,0,0,0.1);
+        }
+
+        .artist-card::before{
+            content:'';
+            position:absolute;
+            top:0;
+            right:0;
+            width:8px;
+            height:100%;
+            background:linear-gradient(90deg,rgba(0,0,0,0) 0%,rgba(0,0,0,0.05) 50%,rgba(0,0,0,0.1) 100%);
+            z-index:1;
+        }
+
+        .album-cover{
+            width:100%;
+            height:clamp(200px, 25vw, 300px);
+            object-fit:cover;
+            filter:saturate(70%) contrast(1.1);
+            transition:all 0.3s ease;
+        }
+
+        .artist-card:hover .album-cover{
+            filter:saturate(100%) contrast(1);
+            transform:scale(1.02);
+        }
+
+        .artist-info{
+            position:absolute;
+            bottom:0;
+            left:0;
+            right:0;
+            padding:clamp(0.75rem, 2vw, var(--gutter));
+            background:linear-gradient(to top,rgba(0,0,0,0.9) 0%,transparent 100%);
+            color:var(--bg);
+            transform:translateY(100%);
+            transition:transform 0.3s ease;
+            z-index:2;
+        }
+
+        .artist-card:hover .artist-info{
+            transform:translateY(0);
+        }
+
+        .artist-name{
+            font-size:clamp(0.625rem, 1.5vw, var(--step-0));
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.02em;
+            margin-bottom:0.15rem;
+            line-height:1.1;
+        }
+
+        .artist-role{
+            font-size:clamp(0.5rem, 1.2vw, var(--step--1));
+            opacity:0.8;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            line-height:1.1;
+        }
+
+        /* Modal Styles */
+        .artist-modal{
+            position:fixed;
+            top:0;
+            left:0;
+            width:100%;
+            height:100%;
+            background:rgba(255,255,255,0.95);
+            backdrop-filter:blur(10px);
+            z-index:2000;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            opacity:0;
+            visibility:hidden;
+            transition:all 0.3s ease;
+        }
+
+        .artist-modal.active{
+            opacity:1;
+            visibility:visible;
+        }
+
+        .modal-content{
+            background:var(--bg);
+            max-width:1200px;
+            width:90%;
+            max-height:90vh;
+            overflow-y:auto;
+            position:relative;
+            box-shadow:0 20px 40px rgba(0,0,0,0.1);
+            transform:scale(0.9) translateY(20px);
+            opacity:0;
+            transition:all 0.3s cubic-bezier(0.22,1,0.36,1);
+        }
+
+        .modal-content::-webkit-scrollbar{
+            width:8px;
+        }
+
+        .modal-content::-webkit-scrollbar-track{
+            background:rgba(0,0,0,0.05);
+        }
+
+        .modal-content::-webkit-scrollbar-thumb{
+            background:rgba(0,0,0,0.2);
+            border-radius:4px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb:hover{
+            background:rgba(0,0,0,0.3);
+        }
+
+        .artist-modal.active .modal-content{
+            transform:scale(1) translateY(0);
+            opacity:1;
+            transition-delay:0.1s;
+        }
+
+        .modal-close{
+            position:absolute;
+            top:2rem;
+            right:2rem;
+            width:40px;
+            height:40px;
+            background:var(--ink);
+            color:var(--bg);
+            border:none;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:1.5rem;
+            transition:all 0.3s ease;
+            z-index:10;
+        }
+
+        .modal-close:hover{
+            background:var(--accent);
+            transform:rotate(90deg);
+        }
+
+        .modal-artist-header{
+            display:grid;
+            grid-template-columns:400px 1fr;
+            gap:4rem;
+            padding:4rem;
+        }
+
+        .modal-artist-image{
+            width:400px;
+            height:400px;
+            overflow:hidden;
+        }
+
+        .modal-artist-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:saturate(70%) contrast(1.1);
+        }
+
+        .modal-artist-info h2{
+            font-size:var(--step-4);
+            margin-bottom:0.5rem;
+        }
+
+        .modal-artist-role{
+            font-size:var(--step-1);
+            color:var(--accent);
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+            margin-bottom:2rem;
+        }
+
+        .artist-bio{
+            font-size:var(--step-0);
+            line-height:1.6;
+            margin-bottom:2rem;
+            max-width:600px;
+            text-align:justify;
+        }
+
+        .social-links{
+            display:flex;
+            gap:1rem;
+            margin-bottom:3rem;
+        }
+
+        .social-link{
+            display:inline-flex;
+            align-items:center;
+            gap:0.5rem;
+            padding:0.75rem 1.5rem;
+            border:2px solid var(--ink);
+            text-decoration:none;
+            color:var(--ink);
+            font-weight:500;
+            transition:all 0.3s ease;
+            font-size:var(--step--1);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .social-link::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:-100%;
+            width:100%;
+            height:100%;
+            background:var(--ink);
+            transition:left 0.3s ease;
+            z-index:-1;
+        }
+
+        .social-link:hover{
+            color:var(--bg);
+            transform:translateY(-2px);
+        }
+
+        .social-link:hover::before{
+            left:0;
+        }
+
+        .modal-music-section{
+            background:#FAFAFA;
+            padding:3rem 4rem;
+        }
+
+        .modal-section-title{
+            font-size:var(--step-2);
+            margin-bottom:2rem;
+            text-transform:uppercase;
+            letter-spacing:-0.02em;
+        }
+
+        @media(max-width:768px){
+            .modal-artist-header{
+                grid-template-columns:300px 1fr;
+                gap:2rem;
+                padding:2rem;
+            }
+            
+            .modal-artist-image{
+                width:300px;
+                height:300px;
+            }
+            
+            .social-links{
+                flex-wrap:wrap;
+            }
+        }
+
+        .player-header{
+            display:flex;
+            justify-content:space-between;
+            align-items:start;
+            margin-bottom:var(--gutter);
+        }
+
+        .player-artist h3{
+            font-size:var(--step-1);
+            font-weight:700;
+            margin-bottom:0.25rem;
+        }
+
+        .player-artist p{
+            font-size:var(--step--1);
+            color:var(--accent);
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+        }
+
+        .close-btn{
+            width:32px;
+            height:32px;
+            background:none;
+            border:1px solid rgba(255,255,255,0.3);
+            color:var(--bg);
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:1.25rem;
+            transition:all 0.3s ease;
+        }
+
+        .close-btn:hover{
+            background:var(--bg);
+            color:var(--ink);
+        }
+
+        .track-list{
+            flex:1;
+            margin-bottom:var(--gutter);
+            overflow-y:auto;
+            max-height:200px;
+        }
+
+        .track{
+            padding:var(--space-sm) 0;
+            border-bottom:1px solid rgba(255,255,255,0.1);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            gap:var(--space-sm);
+        }
+
+        .track:hover{
+            padding-left:var(--space-xs);
+        }
+
+        .track.active{
+            color:var(--accent);
+        }
+
+        .track-number{
+            font-weight:700;
+            opacity:0.5;
+            width:20px;
+        }
+
+        .track-title{
+            flex:1;
+            font-size:var(--step--1);
+        }
+
+        .track-duration{
+            font-size:var(--step--2);
+            opacity:0.5;
+        }
+
+        .player-controls{
+            display:flex;
+            flex-direction:column;
+            gap:var(--space-sm);
+        }
+
+        .progress-bar{
+            width:100%;
+            height:4px;
+            background:rgba(255,255,255,0.1);
+            cursor:pointer;
+            position:relative;
+            overflow:hidden;
+        }
+
+        .progress-fill{
+            height:100%;
+            background:var(--accent);
+            width:0%;
+            transition:width 0.1s linear;
+        }
+
+        .control-buttons{
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            gap:var(--gutter);
+        }
+
+        .control-btn{
+            background:none;
+            border:none;
+            color:var(--bg);
+            cursor:pointer;
+            transition:all 0.3s ease;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+
+        .control-btn:hover{
+            color:var(--accent);
+            transform:scale(1.1);
+        }
+
+        .play-btn{
+            width:48px;
+            height:48px;
+            border:2px solid var(--bg);
+            border-radius:50%;
+            font-size:1.25rem;
+        }
+
+        .play-btn:hover{
+            border-color:var(--accent);
+            background:var(--accent);
+            color:var(--ink);
+        }
+
+        .time-display{
+            display:flex;
+            justify-content:space-between;
+            font-size:var(--step--2);
+            opacity:0.7;
+            margin-top:var(--space-xs);
+        }
+
+        .loading-spinner{
+            display:none;
+            width:24px;
+            height:24px;
+            border:2px solid rgba(255,255,255,0.3);
+            border-top-color:var(--accent);
+            border-radius:50%;
+            animation:spin 1s linear infinite;
+        }
+
+        .track.loading .loading-spinner{
+            display:block;
+        }
+
+        .track.loading .track-duration{
+            display:none;
+        }
+
+        .click-hint{
+            position:absolute;
+            bottom:-2rem;
+            left:50%;
+            transform:translateX(-50%);
+            font-size:var(--step--2);
+            text-transform:uppercase;
+            letter-spacing:0.1em;
+            color:var(--ink);
+            opacity:0;
+            transition:opacity 0.3s ease;
+        }
+
+        .jewel-case:hover .click-hint{
+            opacity:0.5;
+        }
+        
+        /* ———————————— 11. Case Study Section */
+        .case-study{
+            background:#FAFAFA;
+            margin-inline:calc(var(--gutter) * -2);
+            padding-inline:calc(var(--gutter) * 2);
+        }
+        
+        .case-header{
+            display:grid;
+            grid-template-columns:300px 1fr;
+            gap:4rem;
+            align-items:center;
+            margin-bottom:4rem;
+        }
+        
+        .case-image{
+            width:300px;
+            height:300px;
+            overflow:hidden;
+            transform:rotate(-1deg);
+        }
+        
+        .case-image{
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .case-image img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:saturate(70%) contrast(1.1);
+            transition:all 0.3s ease;
+        }
+        
+        .case-image:hover img{
+            filter:saturate(100%) contrast(1);
+        }
+        
+        /* Refined Case Study Styles */
+        .case-header-refined{
+            margin-bottom:3rem;
+        }
+        
+        .case-image-refined{
+            position:relative;
+            width:100%;
+            height:45vh;
+            overflow:hidden;
+            border-radius:12px;
+        }
+        
+        .case-image-refined img{
+            width:100%;
+            height:100%;
+            object-fit:cover;
+            filter:grayscale(20%) contrast(1.1);
+        }
+        
+        .artist-name-overlay-refined{
+            position:absolute;
+            bottom:0;
+            left:0;
+            right:0;
+            background:linear-gradient(transparent, rgba(0,0,0,0.8));
+            color:white;
+            font-size:var(--step-5);
+            font-weight:900;
+            letter-spacing:-0.05em;
+            line-height:0.8;
+            padding:2rem 2rem 1.5rem;
+            z-index:2;
+        }
+        
+
+        
+
+        
+        .case-content-refined{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            margin-top:3rem;
+            align-items:start;
+        }
+        
+        .case-main-content{
+            position:relative;
+        }
+        
+        .stats-line{
+            font-size:var(--step--1);
+            font-weight:600;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            margin-bottom:2rem;
+            padding-bottom:1rem;
+            border-bottom:2px solid var(--ink);
+            opacity:0.6;
+        }
+        
+        .intro-paragraph{
+            font-size:var(--step-1);
+            line-height:1.4;
+            margin-bottom:2rem;
+            color:var(--ink);
+            font-weight:400;
+            text-align:justify;
+        }
+        
+        .section-title{
+            font-size:var(--step-2);
+            font-weight:700;
+            margin-bottom:1rem;
+            color:var(--ink);
+            letter-spacing:-0.02em;
+        }
+        
+        .main-bio{
+            font-size:var(--step-0);
+            line-height:1.5;
+            color:var(--ink);
+            font-weight:400;
+            text-align:justify;
+        }
+        
+        .case-deal-section{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+        }
+        
+        .deal-card{
+            background:var(--bg);
+            border:2px solid var(--ink);
+            padding:2rem;
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .deal-card:hover{
+            transform:translateY(-2px);
+            box-shadow:0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .deal-card::before{
+            content:'';
+            position:absolute;
+            top:-1px;
+            left:-1px;
+            right:-1px;
+            bottom:-1px;
+            background:var(--accent);
+            opacity:0;
+            transition:opacity 0.3s ease;
+            z-index:-1;
+        }
+        
+        .deal-card:hover::before{
+            opacity:0.05;
+        }
+        
+        .deal-title{
+            font-size:var(--step-0);
+            font-weight:700;
+            margin-bottom:1rem;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .deal-details{
+            font-size:var(--step--1);
+            line-height:1.4;
+            color:var(--ink);
+            font-weight:400;
+            opacity:0.8;
+            text-align:justify;
+        }
+        
+        /* Enhanced Case Study Text Layout */
+        .case-content{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            margin-top:3rem;
+            position:relative;
+        }
+        
+        .case-section{
+            position:relative;
+            padding:2rem;
+            background:var(--bg);
+            border:1px solid rgba(0,0,0,0.1);
+            transition:all 0.3s ease;
+        }
+        
+        .case-section::before{
+            content:'';
+            position:absolute;
+            top:-1px;
+            left:-1px;
+            right:-1px;
+            bottom:-1px;
+            background:var(--accent);
+            opacity:0;
+            transition:opacity 0.3s ease;
+            z-index:-1;
+        }
+        
+        .case-section:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .case-section:hover::before{
+            opacity:0.05;
+        }
+        
+        .case-deal{
+            grid-column:span 2;
+            margin-top:2rem;
+            padding:3rem;
+            background:var(--ink);
+            color:var(--bg);
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .case-deal::after{
+            content:'$$$';
+            position:absolute;
+            top:-20px;
+            right:20px;
+            font-size:var(--step-6);
+            opacity:0.05;
+            font-weight:900;
+        }
+        
+        @media(max-width:768px){
+            .case-header{
+                grid-template-columns:200px 1fr;
+                gap:2rem;
+            }
+            .case-image{
+                width:200px;
+                height:200px;
+                margin:0;
+            }
+            .case-content{
+                grid-template-columns:1fr 1fr;
+                gap:2rem;
+            }
+            .case-deal{
+                grid-column:span 2;
+            }
+        }
+        
+        /* ———————————— 12. Financials */
+        .financial-grid{
+            display:grid;
+            grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+            gap:3rem;
+            margin-top:4rem;
+        }
+        
+        .financial-year{
+            padding:2rem;
+            border:2px solid var(--ink);
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .financial-year:hover{
+            transform:translateY(-4px);
+            box-shadow:0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        .financial-year.highlight{
+            border-color:var(--accent);
+            background:linear-gradient(135deg,rgba(0,0,255,0.02) 0%,transparent 50%);
+        }
+        
+        .year-label{
+            font-size:var(--step-2);
+            font-weight:900;
+            margin-bottom:1rem;
+        }
+        
+        table{
+            width:100%;
+            font-size:var(--step--1);
+            line-height:1.8;
+            border-collapse:collapse;
+        }
+        
+        table tr{
+            border-bottom:1px solid rgba(0,0,0,0.1);
+        }
+        
+        table td{
+            padding:0.5rem 0;
+        }
+        
+        table td:last-child{
+            text-align:right;
+            font-weight:600;
+        }
+        
+        /* ———————————— 13. Investment Section */
+        .investment-section{
+            background:var(--ink);
+            color:var(--bg);
+            margin-inline:calc(var(--gutter) * -2);
+            padding:8rem var(--gutter);
+        }
+        
+        .investment-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:4rem;
+            margin-top:4rem;
+        }
+        
+        .investment-number{
+            font-size:var(--step-5);
+            font-weight:900;
+            letter-spacing:-.06em;
+            line-height:1;
+            margin-bottom:.5rem;
+            color:var(--accent);
+        }
+        
+        .investment-label{
+            font-size:var(--step--1);
+            font-weight:400;
+            letter-spacing:-.01em;
+            opacity:.7;
+            text-transform:uppercase;
+        }
+        
+        /* ———————————— 14. Footer */
+        .footer{
+            padding-block:8rem;
+            text-align:center;
+        }
+        
+        .footer-title{
+            font-size:var(--step-5);
+            margin-bottom:2rem;
+            letter-spacing:-.05em;
+        }
+        
+        .btn{
+            display:inline-block;
+            padding:1rem 2rem;
+            border:2px solid var(--ink);
+            font-weight:500;
+            letter-spacing:-.02em;
+            transition:all .2s;
+            margin:.5rem;
+        }
+        
+        .btn:hover{
+            background:var(--ink);
+            color:var(--bg);
+            text-decoration:none;
+        }
+        
+        .btn-primary{
+            background:var(--ink);
+            color:var(--bg);
+            text-decoration:none;
+        }
+        
+        .btn-primary:hover{
+            background:transparent;
+            color:var(--ink);
+            transform:translateY(-2px);
+            box-shadow:0 4px 8px rgba(0,0,0,0.1);
+            text-decoration:none;
+        }
+        
+        /* ———————————— 15. Utilities */
+        .spacer-xs{height:1rem;}
+        .spacer-sm{height:2rem;}
+        .spacer-md{height:3rem;}
+        .spacer-lg{height:4rem;}
+        .spacer-xl{height:6rem;}
+        
+        .text-center{text-align:center;}
+        .opacity-50{opacity:.5;}
+        .opacity-20{opacity:.2;}
+        
+        /* ———————————— 16. Growth Chart */
+        .growth-chart{
+            margin:4rem 0;
+            padding:3rem;
+            border:3px solid var(--ink);
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .growth-bars{
+            display:flex;
+            align-items:flex-end;
+            justify-content:space-between;
+            height:400px;
+            margin-bottom:2rem;
+            position:relative;
+            z-index:1;
+        }
+        
+        .growth-bar{
+            flex:1;
+            display:flex;
+            flex-direction:column;
+            align-items:center;
+            margin:0 1rem;
+            cursor:pointer;
+            transition:all 0.3s ease;
+        }
+        
+        .growth-bar:hover{
+            transform:translateY(-8px);
+        }
+        
+        .bar-fill{
+            width:100%;
+            background:var(--success);
+            transition:all 0.5s cubic-bezier(0.22,1,0.36,1);
+            position:relative;
+            overflow:hidden;
+        }
+        
+        .bar-fill::after{
+            content:'';
+            position:absolute;
+            top:0;
+            left:-100%;
+            width:100%;
+            height:100%;
+            background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.3) 50%,transparent 100%);
+            animation:shimmer 2s infinite;
+        }
+        
+        .growth-bar:last-child .bar-fill{
+            background:var(--accent);
+        }
+        
+        .bar-year{
+            margin-top:1rem;
+            font-weight:700;
+        }
+        
+        .bar-value{
+            color:var(--success);
+            font-weight:700;
+            font-size:var(--step-1);
+            margin-top:0.5rem;
+        }
+        
+        .growth-bar:last-child .bar-value{
+            color:var(--accent);
+        }
+        
+        /* ———————————— 17. Cross-Roster Compounding */
+        .cross-roster-content{
+            margin:4rem 0;
+        }
+        
+        .cross-roster-intro{
+            text-align:center;
+            margin-bottom:6rem;
+        }
+        
+        .cross-roster-intro p{
+            font-size:var(--step-1);
+            max-width:60ch;
+            margin:0 auto;
+            line-height:1.6;
+            text-align:justify;
+        }
+        
+        .revenue-multiplier-chart{
+            position:relative;
+            max-width:600px;
+            margin:0 auto;
+        }
+        
+        .multiplier-arc{
+            position:relative;
+            height:60px;
+            margin-bottom:2rem;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        
+        .multiplier-arc::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            height:100%;
+            background:linear-gradient(90deg, transparent 0%, #FFD700 50%, transparent 100%);
+            border-radius:50px;
+            opacity:0.3;
+        }
+        
+        .multiplier-arc span{
+            position:relative;
+            z-index:2;
+            font-size:var(--step--1);
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            color:var(--ink);
+        }
+        
+        .multiplier-stack{
+            display:flex;
+            flex-direction:column;
+            gap:0.4rem;
+            position:relative;
+        }
+        
+        .multiplier-scale{
+            position:absolute;
+            right:-60px;
+            top:0;
+            width:50px;
+            height:350px;
+            background:var(--ink);
+            border:2px solid var(--ink);
+            border-radius:0;
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            padding:0.75rem 0.5rem;
+        }
+        
+        .multiplier-scale::after{
+            content:'';
+            position:absolute;
+            bottom:-15px;
+            left:50%;
+            transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:8px solid transparent;
+            border-right:8px solid transparent;
+            border-top:12px solid #696969;
+        }
+        
+        .multiplier-scale::before{
+            content:'';
+            position:absolute;
+            bottom:-15px;
+            left:50%;
+            transform:translateX(-50%);
+            width:0;
+            height:0;
+            border-left:8px solid transparent;
+            border-right:8px solid transparent;
+            border-top:12px solid var(--ink);
+            z-index:-1;
+        }
+        
+        .scale-label{
+            position:absolute;
+            right:-100px;
+            top:50%;
+            transform:translateY(-50%) rotate(-90deg);
+            font-size:var(--step--1);
+            font-weight:700;
+            color:var(--ink);
+            white-space:nowrap;
+            text-transform:uppercase;
+            letter-spacing:-0.01em;
+        }
+        
+        .scale-markers{
+            display:flex;
+            flex-direction:column;
+            justify-content:space-between;
+            height:100%;
+            color:white;
+            font-weight:900;
+            font-size:var(--step--1);
+            letter-spacing:-0.02em;
+        }
+        
+        .multiplier-block{
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:1.5rem 2rem;
+            border-radius:0;
+            color:white;
+            font-weight:700;
+            position:relative;
+            overflow:hidden;
+            text-transform:uppercase;
+            letter-spacing:-0.02em;
+            border-left:4px solid rgba(255,255,255,0.3);
+        }
+        
+        .multiplier-block::before{
+            content:'';
+            position:absolute;
+            top:0;
+            left:0;
+            right:0;
+            bottom:0;
+            background:currentColor;
+            opacity:0.9;
+        }
+        
+        .multiplier-label{
+            position:relative;
+            z-index:2;
+            font-size:var(--step-0);
+            color:white;
+            font-weight:600;
+            letter-spacing:-0.01em;
+        }
+        
+        .multiplier-value{
+            position:relative;
+            z-index:2;
+            font-size:var(--step-1);
+            font-weight:900;
+            color:white;
+            letter-spacing:-0.03em;
+        }
+        
+        .multiplier-block.teal{
+            color:#20B2AA;
+        }
+        
+        .multiplier-block.purple{
+            color:#9370DB;
+        }
+        
+        .multiplier-block.green{
+            color:#32CD32;
+        }
+        
+        .multiplier-block.red{
+            color:#DC143C;
+        }
+        
+        .multiplier-block.blue{
+            color:#4169E1;
+        }
+        
+        /* Synergy Case Study */
+        .synergy-case-study{
+            background:#F5F5F5;
+            margin-inline:calc(var(--gutter) * -2);
+            padding:4rem calc(var(--gutter) * 2);
+        }
+        
+        .case-study-header{
+            text-align:center;
+            margin-bottom:3rem;
+        }
+        
+        .case-study-header h3{
+            font-size:var(--step-3);
+            margin-bottom:1.5rem;
+            font-weight:700;
+            letter-spacing:-0.02em;
+        }
+        
+        .case-study-intro{
+            font-size:var(--step-0);
+            max-width:50ch;
+            margin:0 auto;
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+            opacity:0.7;
+        }
+        
+        .case-study-content{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:4rem;
+            align-items:start;
+            max-width:900px;
+            margin:0 auto;
+        }
+        
+        .value-chart h5{
+            font-size:var(--step-0);
+            margin-bottom:2rem;
+            font-weight:700;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+            color:var(--ink);
+        }
+        
+        .chart-bars{
+            display:flex;
+            flex-direction:column;
+            gap:1.5rem;
+        }
+        
+        .chart-bar{
+            display:flex;
+            align-items:center;
+            gap:1.5rem;
+        }
+        
+        .bar-fill{
+            width:100px;
+            height:32px;
+            background:#D3D3D3;
+            border-radius:4px;
+            position:relative;
+        }
+        
+        .chart-bar.hudson-individual .bar-fill{
+            width:70px;
+            background:#A9A9A9;
+        }
+        
+        .chart-bar.jack-individual .bar-fill{
+            width:50px;
+            background:#696969;
+        }
+        
+        .chart-bar.multiplier-effect .bar-fill{
+            width:160px;
+            background:var(--ink);
+        }
+        
+        .bar-label{
+            font-size:var(--step--1);
+            font-weight:600;
+            color:var(--ink);
+            flex:1;
+        }
+        
+        .case-study-text h5{
+            font-size:var(--step-1);
+            margin-bottom:1.5rem;
+            font-weight:700;
+            color:var(--ink);
+            letter-spacing:-0.01em;
+        }
+        
+        .case-study-text p{
+            font-size:var(--step-0);
+            line-height:1.4;
+            margin-bottom:2rem;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        .roster-image{
+            margin-top:2rem;
+        }
+        
+        .roster-image img{
+            width:100%;
+            height:auto;
+            border-radius:8px;
+        }
+        
+        /* ———————————— 18. Vision Section Styles */
+        .vision-principles{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:3rem;
+            margin:4rem 0;
+        }
+        
+        .principle{
+            padding:2rem;
+            border:2px solid var(--ink);
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .principle:hover{
+            transform:translateY(-4px);
+            box-shadow:0 8px 24px rgba(0,0,0,0.1);
+        }
+        
+        .principle h4{
+            font-size:var(--step-1);
+            margin-bottom:1rem;
+            font-weight:700;
+            color:var(--ink);
+        }
+        
+        .principle p{
+            font-size:var(--step-0);
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        .vision-layout{
+            display:grid;
+            grid-template-columns:2fr 1fr;
+            gap:4rem;
+            align-items:start;
+        }
+        
+        .vision-content h4{
+            font-size:var(--step-2);
+            margin-bottom:1rem;
+            font-weight:700;
+            color:var(--ink);
+        }
+        
+        .vision-content p{
+            font-size:var(--step-0);
+            margin-bottom:3rem;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        .capital-uses{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+        }
+        
+        .capital-item{
+            padding:1.5rem;
+            border-left:4px solid var(--accent);
+            background:rgba(0,0,255,0.02);
+            transition:all 0.3s ease;
+        }
+        
+        .capital-item:hover{
+            background:rgba(0,0,255,0.05);
+            transform:translateX(4px);
+        }
+        
+        .capital-item h5{
+            font-size:var(--step-0);
+            margin-bottom:0.5rem;
+            font-weight:700;
+            color:var(--ink);
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .capital-item p{
+            font-size:var(--step--1);
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+            margin-bottom:0;
+        }
+        
+        .vision-highlight{
+            background:var(--accent);
+            color:var(--bg);
+            padding:3rem;
+            border-radius:12px;
+            position:sticky;
+            top:2rem;
+        }
+        
+        .vision-highlight h3{
+            font-size:var(--step-2);
+            margin-bottom:2rem;
+            font-weight:700;
+            color:var(--bg);
+        }
+        
+        .vision-highlight ul{
+            list-style:none;
+            padding:0;
+        }
+        
+        .vision-highlight li{
+            font-size:var(--step-0);
+            line-height:1.4;
+            margin-bottom:1rem;
+            padding-left:1.5rem;
+            position:relative;
+        }
+        
+        .vision-highlight li::before{
+            content:'•';
+            position:absolute;
+            left:0;
+            color:var(--bg);
+            font-weight:700;
+        }
+        
+        .vision-timeline{
+            margin-top:4rem;
+        }
+        
+        .timeline-grid{
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:2rem;
+        }
+        
+        .timeline-year{
+            padding:2rem;
+            border:2px solid var(--ink);
+            position:relative;
+            transition:all 0.3s ease;
+        }
+        
+        .timeline-year:hover{
+            transform:translateY(-2px);
+            box-shadow:0 4px 16px rgba(0,0,0,0.1);
+        }
+        
+        .timeline-year h5{
+            font-size:var(--step-2);
+            margin-bottom:1rem;
+            font-weight:700;
+            color:var(--ink);
+        }
+        
+        .timeline-year p{
+            font-size:var(--step--1);
+            line-height:1.4;
+            text-align:justify;
+            color:var(--ink);
+        }
+        
+        @media(max-width:768px){
+            .vision-principles{
+                grid-template-columns:1fr;
+                gap:2rem;
+            }
+            
+            .vision-layout{
+                grid-template-columns:1fr;
+                gap:3rem;
+            }
+            
+            .vision-highlight{
+                position:static;
+            }
+            
+            .timeline-grid{
+                grid-template-columns:repeat(2,1fr);
+                gap:1.5rem;
+            }
+        }
+        
+        @media(max-width:480px){
+            .timeline-grid{
+                grid-template-columns:1fr;
+            }
+        }
+        
+        /* ———————————— 19. Investment Section Styles */
+        .investment-section{
+            background:var(--ink);
+            color:var(--bg);
+            padding:6rem 0;
+        }
+        
+        .investment-layout{
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:3rem;
+            align-items:center;
+            margin-top:2rem;
+            max-width:1000px;
+            margin-left:auto;
+            margin-right:auto;
+        }
+        
+        .investment-terms{
+            display:flex;
+            flex-direction:column;
+            gap:2rem;
+            align-items:center;
+        }
+        
+        .term-item{
+            display:flex;
+            flex-direction:column;
+            gap:0.25rem;
+            text-align:center;
+        }
+        
+        .term-value{
+            font-size:var(--step-4);
+            font-weight:700;
+            color:var(--accent);
+            line-height:1;
+        }
+        
+        .term-label{
+            font-size:var(--step-0);
+            font-weight:400;
+            color:var(--bg);
+            opacity:0.8;
+            text-transform:uppercase;
+            letter-spacing:0.05em;
+        }
+        
+        .investment-description ul{
+            list-style:none;
+            padding:0;
+            margin:0;
+        }
+        
+        .investment-description li{
+            font-size:var(--step-0);
+            line-height:1.4;
+            margin-bottom:1rem;
+            color:var(--bg);
+            font-weight:400;
+        }
+        
+        @media(max-width:768px){
+            .investment-layout{
+                grid-template-columns:1fr 1fr;
+                gap:2rem;
+            }
+            
+            .investment-terms{
+                gap:1.5rem;
+            }
+            
+            .term-value{
+                font-size:var(--step-3);
+            }
+        }
+        
+        @keyframes shimmer{
+            to{left:100%;}
+        }
+        
+        @keyframes spin{
+            from{transform:rotate(0deg);}
+            to{transform:rotate(360deg);}
+        }
+        
+        /* Body printing state */
+        body.printing{
+            overflow:visible !important;
+        }
+        
+        /* ———————————— 18. Print Styles */
+        @media print{
+            @page{
+                margin:0.75in;
+                size:letter;
+            }
+            
+            body{
+                background:#fff;
+                color:#000;
+                font-size:11pt;
+                line-height:1.4;
+            }
+            
+            /* Hide navigation and interactive elements */
+            .nav,
+            .modal-close,
+            .control-buttons,
+            .player-controls,
+            .artist-modal{
+                display:none;
+            }
+            
+            /* Ensure sections don't break */
+            section{
+                padding-block:2rem;
+                page-break-inside:avoid;
+            }
+            
+            .hero{
+                height:auto;
+                min-height:100vh;
+                page-break-after:always;
+            }
+            
+            .financial-year,
+            .timeline-item,
+            .case-header,
+            .metrics-grid{
+                page-break-inside:avoid;
+            }
+            
+            /* Reset transforms for print */
+            .hero-image,
+            .large-image,
+            .case-image,
+            .album-cover,
+            .founder-image{
+                transform:none !important;
+            }
+            
+            /* Ensure images print */
+            img{
+                max-width:100%;
+                page-break-inside:avoid;
+                filter:none !important;
+            }
+            
+            /* Typography adjustments */
+            h1{font-size:48pt;}
+            h2{font-size:36pt;}
+            h3{font-size:24pt;}
+            h4{font-size:18pt;}
+            h5{font-size:14pt;}
+            
+            .display{
+                font-size:60pt;
+            }
+            
+            /* Ensure tables are readable */
+            table{
+                font-size:10pt;
+                width:100%;
+            }
+            
+            /* Color adjustments */
+            .investment-section{
+                background:#000 !important;
+                color:#fff !important;
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+            
+            .case-study{
+                background:#f5f5f5 !important;
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+            
+            /* Artist cards show properly in print */
+            .artist-card{
+                transform:none !important;
+                max-width:200px;
+                page-break-inside:avoid;
+            }
+            
+            .artist-info{
+                position:static;
+                transform:none !important;
+                background:#000;
+                color:#fff;
+                padding:0.5rem;
+                margin:0;
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+            .footer{
+                page-break-before:always;
+                padding:3rem 0;
+            }
+            
+            /* Ensure accent colors print */
+            *{
+                -webkit-print-color-adjust:exact;
+                print-color-adjust:exact;
+            }
+        }
+        
+        /* ———————————— 19. EXCEPTIONAL MOBILE ENHANCEMENTS */
+        /* Mobile Navigation Burger */
+        .nav-burger{
+            display:none;
+            flex-direction:column;
+            gap:4px;
+            cursor:pointer;
+            z-index:1001;
+            padding:8px;
+            margin-right:-8px;
+        }
+        
+        .nav-burger span{
+            width:24px;
+            height:2px;
+            background:var(--ink);
+            transition:all 0.3s ease;
+        }
+        
+        .nav-burger.active span:nth-child(1){
+            transform:rotate(45deg) translate(5px, 5px);
+        }
+        
+        .nav-burger.active span:nth-child(2){
+            opacity:0;
+        }
+        
+        .nav-burger.active span:nth-child(3){
+            transform:rotate(-45deg) translate(5px, -5px);
+        }
+        
+        /* Enhanced Mobile Typography */
+        @media(max-width:768px){
+            :root{
+                /* Better mobile type scale */
+                --step--2: clamp(.6rem,.8vw,.7rem);
+                --step--1: clamp(.7rem,.9vw,.825rem);
+                --step-0:  clamp(.875rem,1vw,1rem);
+                --step-1:  clamp(1rem,1.2vw,1.25rem);
+                --step-2:  clamp(1.5rem,2vw,2rem);
+                --step-3:  clamp(2rem,3vw,2.5rem);
+                --step-4:  clamp(2.5rem,5vw,3.5rem);
+                --step-5:  clamp(3rem,7vw,5rem);
+                --step-6:  clamp(4rem,12vw,8rem);
+                
+                /* Adjusted spacing for mobile */
+                --gutter:1rem;
+                --section-space:5rem;
+            }
+            
+
+            
+            .nav-burger{
+                display:flex;
+            }
+            
+            .nav-links{
+                position:fixed;
+                top:0;
+                left:0;
+                right:0;
+                bottom:0;
+                background:var(--bg);
+                flex-direction:column;
+                justify-content:center;
+                align-items:center;
+                gap:2rem;
+                transform:translateX(100%);
+                transition:transform 0.3s ease;
+            }
+            
+            .nav-links.active{
+                transform:translateX(0);
+            }
+            
+            .nav-link{
+                font-size:var(--step-2);
+                opacity:1;
+            }
+            
+            /* Mobile Hero */
+            .hero{
+                min-height:100vh;
+                padding-top:5rem;
+            }
+            
+            .display{
+                font-size:clamp(3rem,20vw,8rem);
+                line-height:.9;
+            }
+            
+            /* Mobile Sections */
+            section{
+                padding-block:var(--section-space);
+            }
+            
+            /* Enhanced Mobile Cards */
+            .concept-card{
+                padding:2rem;
+                margin-bottom:1.5rem;
+                background:var(--bg);
+                position:relative;
+                overflow:visible;
+            }
+            
+            .concept-card::after{
+                content:'';
+                position:absolute;
+                bottom:-8px;
+                left:8px;
+                right:-8px;
+                height:100%;
+                background:var(--ink);
+                opacity:0.1;
+                z-index:-1;
+                transition:all 0.3s ease;
+            }
+            
+            .concept-card:active{
+                transform:translateY(-2px);
+            }
+            
+            .concept-card:active::after{
+                bottom:-4px;
+                left:4px;
+                right:-4px;
+            }
+            
+            /* Mobile Touch Targets */
+            .nav-link,
+            .btn,
+            .social-link{
+                min-height:44px;
+                display:flex;
+                align-items:center;
+            }
+            
+            /* Enhanced Mobile Artist Grid */
+            .artist-grid{
+                gap:1.5rem;
+                padding:0 0.5rem;
+            }
+            
+            .artist-card{
+                max-width:100%;
+                aspect-ratio:1;
+                position:relative;
+            }
+            
+            .album-cover{
+                height:100%;
+                aspect-ratio:1;
+            }
+            
+            .artist-info{
+                transform:translateY(0);
+                position:absolute;
+                bottom:0;
+                background:linear-gradient(to top,rgba(0,0,0,0.95) 0%,rgba(0,0,0,0.7) 70%,transparent 100%);
+                padding:2rem var(--gutter) var(--gutter);
+            }
+            
+            /* Mobile Modal Enhancements */
+            .artist-modal{
+                align-items:flex-end;
+            }
+            
+            .modal-content{
+                width:100%;
+                max-width:100%;
+                height:90vh;
+                border-radius:1.5rem 1.5rem 0 0;
+                transform:translateY(100%);
+            }
+            
+            .artist-modal.active .modal-content{
+                transform:translateY(0);
+            }
+            
+            .modal-close{
+                position:sticky;
+                top:1rem;
+                right:1rem;
+                background:rgba(255,255,255,0.9);
+                color:var(--ink);
+                backdrop-filter:blur(10px);
+                border:2px solid var(--ink);
+            }
+            
+            .modal-artist-header{
+                gap:2rem;
+                padding:2rem 1rem;
+            }
+            
+            .modal-artist-image{
+                height:50vh;
+                border-radius:1rem;
+                overflow:hidden;
+            }
+            
+            /* Mobile Player Enhancement */
+            .modal-music-section{
+                padding:2rem 1rem;
+                background:var(--ink);
+                color:var(--bg);
+            }
+            
+            .track{
+                padding:1.25rem 0;
+                position:relative;
+            }
+            
+            .track:active{
+                background:rgba(255,255,255,0.1);
+                padding-left:1rem;
+            }
+            
+            .progress-bar{
+                height:6px;
+                margin:1.5rem 0;
+                cursor:pointer;
+                position:relative;
+            }
+            
+            .progress-bar::before{
+                content:'';
+                position:absolute;
+                top:-10px;
+                bottom:-10px;
+                left:0;
+                right:0;
+            }
+            
+            /* Mobile Timeline */
+            .timeline{
+                padding-left:2rem;
+                position:relative;
+            }
+            
+            .timeline-line{
+                left:0;
+                top:0;
+                bottom:0;
+                right:auto;
+                width:2px;
+                height:100%;
+                background:linear-gradient(180deg, var(--ink) 0%, var(--accent) 50%, var(--success) 100%);
+            }
+            
+            .timeline-item{
+                padding-left:2rem;
+                padding-top:0;
+                margin-bottom:3rem;
+            }
+            
+            .timeline-marker{
+                left:-6px;
+                top:0;
+            }
+            
+            /* Mobile Case Studies */
+            .case-image{
+                width:200px;
+                height:200px;
+                margin-bottom:0;
+            }
+            
+            .case-section{
+                margin-bottom:1rem;
+            }
+            
+            .case-deal{
+                padding:2rem 1.5rem;
+                margin-inline:-1rem;
+            }
+            
+            /* Mobile Synergy Network */
+            .synergy-network{
+                height:auto;
+                padding:2rem 0;
+            }
+            
+            .synergy-node{
+                position:absolute !important;
+                width:150px;
+                margin-bottom:0;
+                text-align:center;
+                padding:1rem;
+                font-size:var(--step--1);
+            }
+            
+            .synergy-lines{
+                display:block;
+            }
+            
+            .multiplier-callout{
+                position:relative;
+                margin-top:2rem;
+                bottom:auto;
+            }
+            
+            /* Mobile Financial Tables */
+            .financial-year{
+                overflow-x:auto;
+            }
+            
+            table{
+                font-size:var(--step--1);
+                min-width:280px;
+            }
+            
+            table td{
+                padding:0.75rem 0.5rem;
+            }
+            
+            /* Mobile Investment Section */
+            .investment-section{
+                padding:4rem 1rem;
+                margin-inline:-1rem;
+            }
+            
+            .investment-grid{
+                grid-template-columns:repeat(3,1fr);
+                gap:2rem;
+                text-align:center;
+            }
+            
+            .investment-terms-grid{
+                grid-template-columns:repeat(3,1fr) !important;
+                gap:1.5rem !important;
+            }
+            
+            /* Mobile Footer */
+            .footer{
+                padding-block:4rem;
+            }
+            
+            .footer-title{
+                font-size:var(--step-4);
+            }
+            
+            /* Mobile Quotes */
+            .quote{
+                font-size:var(--step-2);
+                margin-block:3rem;
+                padding-left:1.5rem;
+                border-left-width:3px;
+            }
+            
+            /* Swipe Hints */
+            .swipe-hint{
+                display:block;
+                text-align:center;
+                font-size:var(--step--2);
+                opacity:0.5;
+                margin-top:1rem;
+                text-transform:uppercase;
+                letter-spacing:0.1em;
+            }
+            
+            /* Performance Optimizations */
+            .artist-card,
+            .concept-card,
+            .case-section,
+            .financial-year,
+            .timeline-item{
+                will-change:transform;
+            }
+            
+            /* Reduced Motion Support */
+            @media(prefers-reduced-motion: reduce){
+                *{
+                    animation:none !important;
+                    transition:none !important;
+                }
+            }
+            
+            /* Touch Feedback */
+            .artist-card:active,
+            .btn:active,
+            .social-link:active,
+            .nav-link:active{
+                transform:scale(0.98);
+            }
+            
+
+            
+            .footer{
+                padding-bottom:max(4rem, env(safe-area-inset-bottom));
+            }
+            
+            /* Improved Tap Targets */
+            .track,
+            .social-link,
+            .nav-link{
+                position:relative;
+            }
+            
+            .track::before,
+            .social-link::before,
+            .nav-link::before{
+                content:'';
+                position:absolute;
+                top:-8px;
+                bottom:-8px;
+                left:-12px;
+                right:-12px;
+            }
+        }
+        
+        /* Small Mobile Optimizations */
+        @media(max-width:375px){
+            .display{
+                font-size:clamp(2.5rem,18vw,6rem);
+            }
+            
+            .modal-artist-info h2{
+                font-size:var(--step-3);
+            }
+            
+            .investment-number{
+                font-size:var(--step-4);
+            }
+            
+            .investment-terms-grid{
+                grid-template-columns:repeat(3,1fr) !important;
+                gap:1rem !important;
+            }
+        }
+        
+        /* Landscape Mobile */
+        @media(max-width:768px) and (orientation:landscape){
+            .hero{
+                min-height:auto;
+                padding:3rem 0;
+            }
+            
+            .modal-content{
+                height:100vh;
+                border-radius:0;
+            }
+            
+            .modal-artist-image{
+                height:40vh;
+            }
+        }
+        
+        /* ———————————— 20. Mobile-only Enhancements */
+        .reading-progress{
+            position:fixed;top:0;left:0;height:3px;width:0;background:var(--accent);z-index:1100;transform-origin:left center;opacity:0;transition:opacity .2s;
+        }
+        @media(max-width:768px){
+            .reading-progress{opacity:1;}
+            .back-to-top{
+                position:fixed;right:1rem;bottom:1rem;z-index:1000;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);color:#fff;border:none;opacity:0;pointer-events:none;transition:opacity .2s, transform .2s;box-shadow:0 4px 12px rgba(0,0,0,.2);
+            }
+            .back-to-top.visible{opacity:1;pointer-events:auto;}
+            .mobile-synergy-list{margin-top:1rem;padding:1rem;border:1px solid rgba(0,0,0,.08);border-radius:12px;background:#fff;}
+            .mobile-synergy-list ul{padding-left:1rem;}
+            .mobile-synergy-list li{margin:.5rem 0;}
+        }
+    </style>
+<head>
+    
+</head>
+<body>
+    <div class="reading-progress"></div>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="nav-inner container">
+            <div class="nav-logo">ALL MY FRIENDS</div>
+            
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#intro" class="nav-link active">Intro</a></li>
+                <li><a href="#artists" class="nav-link">Artists</a></li>
+                <li><a href="#timeline" class="nav-link">Timeline</a></li>
+                <li><a href="#cases" class="nav-link">Case Studies</a></li>
+                <li><a href="#synergy" class="nav-link">Synergy</a></li>
+                <li><a href="#future" class="nav-link">Future</a></li>
+                <li><a href="#financials" class="nav-link">Financials</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    
+    <!-- Hero / Intro -->
+    <section id="intro" class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div style="margin-bottom: 4rem; display: block; width: 100%; overflow: visible; min-height: 560px;">
+                    <style>
+                        .amf-logo {
+                            --logo-unit: 102px;
+                            --bar-width: 77px;
+                            --gap: calc(var(--logo-unit) / 12);
+                            --black: #000;
+                            --white: #fff;
+                            --font-family: 'Helvetica Neue', Arial, sans-serif;
+                        }
+
+                        .amf-logo-wrapper {
+                            width: 100%;
+                            height: 560px;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            padding: 6rem 2rem 2rem 2rem;
+                        }
+
+                        .amf-logo-container {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-start;
+                            user-select: none;
+                        }
+
+                        .amf-logo-elements {
+                            display: flex;
+                            align-items: flex-end;
+                            gap: var(--gap);
+                        }
+
+                        .amf-logo-a .amf-circle {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--black);
+                            color: var(--white);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border: 1px solid var(--white);
+                            border-radius: 50%;
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                            animation: amfRotateKnob 6s linear infinite;
+                        }
+
+                        .amf-rounded-bar {
+                            width: var(--bar-width);
+                            background: var(--black);
+                            border: 1px solid rgba(255, 255, 255, 0.2);
+                            border-radius: calc(var(--bar-width)/2);
+                            position: relative;
+                            overflow: hidden;
+                            display: flex;
+                            align-items: flex-end;
+                            justify-content: center;
+                        }
+
+                        .amf-bar-m {
+                            height: calc(var(--logo-unit) * 2);
+                        }
+
+                        .amf-bar-f {
+                            height: calc(var(--logo-unit) * 3.7);
+                            top: calc(var(--logo-unit) * 0.8);
+                        }
+
+                        .amf-rounded-bar .amf-letter {
+                            width: var(--bar-width);
+                            height: var(--bar-width);
+                            background: var(--white);
+                            color: var(--black);
+                            font: bold calc(var(--logo-unit)/2) var(--font-family);
+                            border-radius: 50%;
+                            position: absolute;
+                            bottom: 0;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            display: flex;
+                            justify-content: center;
+                            align-items: center;
+                        }
+
+                        .amf-bar-m .amf-letter {
+                            animation: amfSliderUpDown 6s ease-in-out infinite alternate;
+                        }
+
+                        .amf-bar-f .amf-letter {
+                            animation: amfSliderDownUp 6.5s ease-in-out infinite alternate;
+                        }
+
+                        @keyframes amfSliderUpDown {
+                            0%, 100% { bottom: 0; }
+                            50%      { bottom: 60%; }
+                        }
+                        @keyframes amfSliderDownUp {
+                            0%, 100% { bottom: 60%; }
+                            50%      { bottom: 0; }
+                        }
+                        @keyframes amfRotateKnob {
+                            from { transform: rotate(0deg); }
+                            to   { transform: rotate(360deg); }
+                        }
+
+                        .amf-logo-a,
+                        .amf-bar-m {
+                            transform: translateY(24px);
+                        }
+
+                        .amf-logo-text {
+                            display: inline-block;
+                            white-space: nowrap;
+                            margin-top: calc(var(--logo-unit) / 2.5);
+                            margin-left: calc(var(--bar-width) * 2 + var(--gap));
+                            transform: translateX(-100%);
+                            font-family: var(--font-family);
+                            font-size: calc(var(--logo-unit) / 2.8);
+                            text-transform: uppercase;
+                            letter-spacing: -0.5px;
+                            color: var(--black);
+                            line-height: 1;
+                            font-weight: bold;
+                        }
+
+                        @media (max-width: 768px) {
+                            .amf-logo {
+                                --logo-unit: 80px;
+                                --bar-width: 60px;
+                            }
+                        }
+                        @media (max-width: 500px) {
+                            .amf-logo {
+                                --logo-unit: 65px;
+                                --bar-width: 50px;
+                            }
+                        }
+                        @media (max-width: 400px) {
+                            .amf-logo {
+                                --logo-unit: 55px;
+                                --bar-width: 42px;
+                            }
+                        }
+                    </style>
+                    
+                    <div class="amf-logo">
+                        <div class="amf-logo-wrapper">
+                            <div class="amf-logo-container">
+                                <div class="amf-logo-elements">
+                                    <div class="amf-logo-a">
+                                        <div class="amf-circle">A</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-m">
+                                        <div class="amf-letter">M</div>
+                                    </div>
+                                    <div class="amf-rounded-bar amf-bar-f">
+                                        <div class="amf-letter">F</div>
+                                    </div>
+                                </div>
+                                <div class="amf-logo-text">ALL MY FRIENDS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p class="lead">Building the future of artist development<br>through vision-focused investment and genuine partnership</p>
+                <div class="spacer-md"></div>
+
+            </div>
+        </div>
+        <div class="hero-image"></div>
+    </section>
+    
+    <!-- Overview -->
+    <section style="position:relative;">
+        <div class="abstract-corner"></div>
+        
+        <div class="container">
+            <p class="section-marker">01 — OVERVIEW</p>
+            
+            <div class="grid">
+                <div class="col-10">
+                    <h2 data-watermark="MANAGEMENT" data-misreg="THE EVOLVED">THE EVOLVED<br>MANAGEMENT<br>COMPANY</h2>
+                    <div class="spacer-md"></div>
+                    <p class="lead">
+                        All My Friends Inc. is a music management venture built on the conviction that real, 
+                        lasting artist development isn't a temporary highway to a destination—it's an 
+                        evolving journey that grows alongside the artist.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="management-comparison">
+                <div class="comparison-column average-manager">
+                    <h4 class="comparison-header">THE AVERAGE MANAGER</h4>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header chase">CHASE</h5>
+                        <ul>
+                            <li>Follows trends instead of setting them</li>
+                            <li>Reacts to what's already working</li>
+                            <li>Signs artists based on viral moments</li>
+                            <li>Prioritizes quick wins over lasting careers</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header cash">CASH</h5>
+                        <ul>
+                            <li>Treats artists as short-term profit channels</li>
+                            <li>Pushes for immediate revenue</li>
+                            <li>Takes commission without building value</li>
+                            <li>No equity alignment or long-term vision</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header collapse">COLLAPSE</h5>
+                        <ul>
+                            <li>Burns out artists with unsustainable pace</li>
+                            <li>Abandons when momentum slows</li>
+                            <li>No infrastructure for career longevity</li>
+                            <li>Leaves artists worse than they found them</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="comparison-column all-my-friends">
+                    <h4 class="comparison-header">ALL MY FRIENDS</h4>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header discover">DISCOVER</h5>
+                        <ul>
+                            <li>Identifies talent before the market catches up</li>
+                            <li>Sees potential others miss</li>
+                            <li>Builds from authentic artistry, not algorithms</li>
+                            <li>Invests in vision over virality</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header develop">DEVELOP</h5>
+                        <ul>
+                            <li>Partners with artists as co-owners</li>
+                            <li>Builds sustainable, compounding careers</li>
+                            <li>Creates ecosystem value through collaboration</li>
+                            <li>Aligns incentives for long-term growth</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="comparison-section">
+                        <h5 class="phase-header deliver">DELIVER</h5>
+                        <ul>
+                            <li>Achieves institutional validation</li>
+                            <li>Compounds success across the roster</li>
+                            <li>Creates generational artists, not one-hit wonders</li>
+                            <li>Builds lasting value for all stakeholders</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Artist Showcase -->
+    <section id="artists">
+        <div class="container">
+            <p class="section-marker">02 — OUR ARTISTS</p>
+            
+            <div class="grid">
+                <div class="col-10">
+                    <h2>MEET THE <span data-misreg="ROSTER">ROSTER</span></h2>
+                    <p class="lead">Click any artist to explore their story, hear exclusive demos, and discover their journey</p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="artist-grid">
+                <!-- Hudson Ingram -->
+                <div class="artist-card" data-artist="hudson">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png" 
+                         alt="Hudson Ingram" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Hudson Ingram</div>
+                        <div class="artist-role">Artist • Interscope/Dessner JV</div>
+                    </div>
+                </div>
+                
+                <!-- Jack Schrepferman -->
+                <div class="artist-card" data-artist="jack">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png" 
+                         alt="Jack Schrepferman" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Jack Schrepferman</div>
+                        <div class="artist-role">Producer • Kobalt</div>
+                    </div>
+                </div>
+                
+                <!-- Ruby Plume -->
+                <div class="artist-card" data-artist="ruby">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png" 
+                         alt="Ruby Plume" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Ruby Plume</div>
+                        <div class="artist-role">Artist/Songwriter • PULSE Publishing</div>
+                    </div>
+                </div>
+                
+                <!-- Kate Stephenson -->
+                <div class="artist-card" data-artist="kate">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg" 
+                         alt="Kate Stephenson" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Kate Stephenson</div>
+                        <div class="artist-role">Artist/Creator</div>
+                    </div>
+                </div>
+                
+                <!-- Leon Sharplin -->
+                <div class="artist-card" data-artist="leon">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png" 
+                         alt="Leon Sharplin" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Leon Sharplin</div>
+                        <div class="artist-role">Producer/Artist</div>
+                    </div>
+                </div>
+                
+                <!-- Tom Siletto -->
+                <div class="artist-card" data-artist="tom">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png" 
+                         alt="Tom Siletto" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Tom Siletto</div>
+                        <div class="artist-role">Artist</div>
+                    </div>
+                </div>
+                
+                <!-- Conall Cafferty -->
+                <div class="artist-card" data-artist="conall">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png" 
+                         alt="Conall Cafferty" 
+                         class="album-cover">
+                    <div class="artist-info">
+                        <div class="artist-name">Conall Cafferty</div>
+                        <div class="artist-role">Artist/Songwriter</div>
+                    </div>
+                </div>
+            </div>
+            <p class="swipe-hint">Tap to explore</p>
+        </div>
+    </section>
+
+
+
+
+   
+    
+    <!-- Case Study: Hudson -->
+    <section id="cases" class="case-study">
+        <div class="container">
+            <p class="section-marker">03 — ARTIST CASE STUDY</p>
+            
+            <div class="case-header-refined">
+                <div class="case-image-refined">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png" alt="Hudson Ingram">
+                    <div class="artist-name-overlay-refined">HUDSON<br>INGRAM</div>
+                </div>
+            </div>
+            
+            <div class="case-content-refined">
+                <div class="case-main-content">
+                    <div class="stats-line">AGE: 19 YEARS OLD • GENRE: POP, SINGER-SONGWRITER • HOMETOWN: AUSTIN, TEXAS</div>
+                    
+                    <p class="intro-paragraph">With heavyweight backing from Interscope, Universal Music Publishing, and the architects behind Taylor Swift, Gracie Abrams, Role Model, Bruno Mars, and Pink, Hudson is positioned to define the next era of male pop.</p>
+                    
+                    <h5 class="section-title">THE ALL-AMERICAN BOY-NEXT-DOOR</h5>
+                    <p class="main-bio">Nashville-based artist from Texas makes music that feels as big as commercial pop but is built on a foundation of sharp songwriting and real musicianship. The son of country artist Jack Ingram, he grew up immersed in storytelling, developing a style that merges intimate, deeply felt lyrics with hooks that hit on first listen. Obsessed with the craft, self-taught in production, and relentless in his pursuit of mastery, Hudson is carving his own lane—one that feels classic, yet completely his own.</p>
+                </div>
+                
+                <div class="case-deal-section">
+                    <div class="deal-card">
+                        <h5 class="deal-title">RECORD LABEL: INTERSCOPE</h5>
+                        <p class="deal-details">FIRST EVER JOINT VENTURE SIGNING WITH PROLIFIC PRODUCER AARON DESSNER</p>
+                    </div>
+                    
+                    <div class="deal-card">
+                        <h5 class="deal-title">PUBLISHING CO: UNIVERSAL MUSIC PUBLISHING GROUP</h5>
+                        <p class="deal-details">FIRST EVER SIGNING WITH PROLIFIC SONGWRITERS LIZ ROSE (TAYLOR SWIFT, LITTLE BIG TOWN) & KARA DIOGUARDI (MAROON 5, P!NK, CELINE DION, KELLY CLARKSON, BRUNO MARS, EMINEM, BRITNEY SPEARS)</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Case Study: Jack -->
+    <section class="case-study">
+        <div class="container">
+            <p class="section-marker">04 — PRODUCER CASE STUDY</p>
+            
+            <div class="case-header-refined">
+                <div class="case-image-refined">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png" alt="Jack Schrepferman">
+                    <div class="artist-name-overlay-refined">JACK<br>SCHREPFERMAN</div>
+                </div>
+            </div>
+            
+            <div class="case-content-refined">
+                <div class="case-main-content">
+                    <div class="stats-line">AGE: 22 • GENRE: POP, FOLK, COUNTRY, ROCK • HOMETOWN: INDIANAPOLIS, IN</div>
+                    
+                    <p class="intro-paragraph">With heavyweight backing from Kobalt and 100 Publishing, and creative teams behind Cirkut, Alex Da Kid, Stargate, Dijon, Bon Iver, Childish Gambino, and FKA twigs, Jack is positioned as a versatile and commercially potent young producer.</p>
+                    
+                    <h5 class="section-title">THE ARCHITECT OF SOUND</h5>
+                    <p class="main-bio">Likened to Jack Antonoff and Dan Nigro for his ability to blend left-of-center artistry with chart-ready pop. Jack effortlessly moves between genres, bringing sharp, boundary-pushing production with undeniable commercial appeal. At 21 at the time of signing, his unique combination of taste and hitmaking ability has already secured him a place among the industry's most promising young producers.</p>
+                </div>
+                
+                <div class="case-deal-section">
+                    <div class="deal-card">
+                        <h5 class="deal-title">COMPS</h5>
+                        <p class="deal-details">Jack Antonoff<br>Dan Nigro<br>Gabe Simon<br>Noah Conrad<br>Cirkut</p>
+                    </div>
+                    
+                    <div class="deal-card">
+                        <h5 class="deal-title">PUBLISHING: KOBALT / 100 PUBLISHING</h5>
+                        <p class="deal-details">Signed at 21, joining a roster that includes Cirkut, Alex Da Kid, Stargate, Dijon, Bon Iver, Childish Gambino, and FKA twigs.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Cross-Roster Compounding Section -->
+    <section id="synergy">
+        <div class="container">
+            <p class="section-marker">05 — ROSTER SYNERGY LIFT + ECOSYSTEM DESIGN</p>
+            
+            <div class="grid">
+                <div class="col-10">
+                    <h2 data-watermark="SYNERGY" data-misreg="CROSS-ROSTER">CROSS-ROSTER<br>COMPOUNDING</h2>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="cross-roster-content">
+                <div class="cross-roster-intro">
+                    <p class="lead">
+                        Our roster operates as a creative multiplier. When artists collaborate internally, 
+                        they share audiences, reduce costs, and create a self-reinforcing cycle of growth. 
+                        Every connection strengthens the whole—turning individual success into collective momentum.
+                    </p>
+                </div>
+                
+                <div class="revenue-multiplier-chart">
+                    <div class="multiplier-arc">
+                        <span>AMF Consolidated Value Capture Exponential Growth</span>
+                    </div>
+                    <div class="multiplier-stack">
+                        <div class="multiplier-block blue">
+                            <span class="multiplier-label">Roster Synergy</span>
+                            <span class="multiplier-value">2x Base</span>
+                        </div>
+                        <div class="multiplier-block red">
+                            <span class="multiplier-label">Bigger Credits & Collaborations</span>
+                            <span class="multiplier-value">3x Revenue</span>
+                        </div>
+                        <div class="multiplier-block green">
+                            <span class="multiplier-label">Industry Attention & Validation</span>
+                            <span class="multiplier-value">4x Revenue</span>
+                        </div>
+                        <div class="multiplier-block purple">
+                            <span class="multiplier-label">Halo Effect</span>
+                            <span class="multiplier-value">5x Revenue</span>
+                        </div>
+                        <div class="multiplier-block teal">
+                            <span class="multiplier-label">Bigger Signings → AMF Growth</span>
+                            <span class="multiplier-value">6x Revenue</span>
+                        </div>
+                        <div class="multiplier-scale">
+                            <span class="scale-label">Illustrative Revenue Multiplier</span>
+                                                    <div class="scale-markers">
+                            <span>2x</span>
+                            <span>3x</span>
+                            <span>4x</span>
+                            <span>5x</span>
+                            <span>6x</span>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="spacer-xl"></div>
+            
+            <!-- Synergy Case Study -->
+            <div class="synergy-case-study">
+                <div class="case-study-header">
+                    <h3>SYNERGY CASE STUDY Jack + Hudson</h3>
+                    <p class="case-study-intro">
+                        Individually, they already create value. Together, their synergy and output value compounds into exponential upside captured by AMF.
+                    </p>
+                </div>
+                
+                <div class="case-study-content">
+                    <div class="value-chart">
+                        <h5>Illustrative Future Annual Value (Commission $M)</h5>
+                        <div class="chart-bars">
+                            <div class="chart-bar hudson-individual">
+                                <div class="bar-fill"></div>
+                                <span class="bar-label">Hudson (Individually)</span>
+                            </div>
+                            <div class="chart-bar jack-individual">
+                                <div class="bar-fill"></div>
+                                <span class="bar-label">Jack (Individually)</span>
+                            </div>
+                            <div class="chart-bar multiplier-effect">
+                                <div class="bar-fill"></div>
+                                <span class="bar-label">Jack x Hudson Multiplier Effect</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="case-study-text">
+                        <h5>History Proves the Power of Artist-Producer Partnerships</h5>
+                        <p>
+                            Nearly every global superstar is built on a core artist-producer bond — partnerships that create not just hits, but cultural momentum, credibility, and a consistent identity that scales. We are structured and intend to capture both sides of that value: with Hudson x Jack as the model, we multiply returns across artist and producer lanes, creating a halo effect that compounds across the entire roster.
+                        </p>
+                        <div class="roster-image">
+                            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ALL%20MY%20FRIENDS/Untitled-1.png" alt="All My Friends Roster">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- The Vision -->
+    <section id="future">
+        <div class="container">
+            <p class="section-marker">06 — THE VISION</p>
+            
+            <div class="grid">
+                <div class="col-10">
+                    <h2 data-watermark="VISION" data-misreg="30 ARTISTS $30M">30 ARTISTS<br>$30M<br><span style="font-size:var(--step-3);font-weight:400;opacity:0.6;">BY 2030</span></h2>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="grid">
+                <div class="col-8">
+                    <p class="lead">
+                        Over the next five years, AMF will scale from a boutique roster into a diversified management ecosystem of 30 artists and producers by 2030. The model is simple:
+                    </p>
+                </div>
+            </div>
+            
+            <div class="spacer-lg"></div>
+            
+            <div class="vision-principles">
+                <div class="principle">
+                    <h4>One superstar changes everything.</h4>
+                    <p>Even if just one artist breaks at scale, the business explodes — but we are not betting on one.</p>
+                </div>
+                <div class="principle">
+                    <h4>Diversification is our advantage.</h4>
+                    <p>By balancing artists with producers, we smooth the natural ebbs and flows of careers while increasing hit probability.</p>
+                </div>
+                <div class="principle">
+                    <h4>The compounding flywheel.</h4>
+                    <p>Every signing strengthens the others: producers amplify artists, artists pull producers into new rooms, and the company captures the exponential value at the center.</p>
+                </div>
+            </div>
+            
+            <div class="spacer-xl"></div>
+            
+            <div class="vision-layout">
+                <div class="vision-content">
+                    <h4>How Capital Will Be Used (High-Level):</h4>
+                    <p>The $1M capital raise will be deployed to accelerate growth without diluting our strategic advantage:</p>
+                    
+                    <div class="capital-uses">
+                        <div class="capital-item">
+                            <h5>Artist Development</h5>
+                            <p>Seeding projects, funding creative work, and supporting breakthrough campaigns that amplify label deal value by 5x (or, in unicorn cases, exponentially more).</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Travel & Entertainment</h5>
+                            <p>Opening doors globally, maintaining high-touch relationships with labels, publishers, and brands.</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Seed Funding for Artists</h5>
+                            <p>Providing upfront runway before label signings, ensuring leverage and outsized deal structures when labels enter the picture.</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Strategic Infrastructure</h5>
+                            <p>Building the systems and relationships that allow AMF to scale to 30 artists while maintaining quality control.</p>
+                        </div>
+                        <div class="capital-item">
+                            <h5>Office & Creative Hub</h5>
+                            <p>Establishing a non-traditional loft-style space that functions as both headquarters and cultural hub — with workstations, a listening room, and open-plan areas that can double as showcase venue, meeting space, and creative studio.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="vision-highlight">
+                    <h3>THE ROAD TO $30M</h3>
+                    <ul>
+                        <li>Scale roster methodically to 30 artists/producers.</li>
+                        <li>Cultivate at least 3 superstars in the next 5 years.</li>
+                        <li>Diversify across genres and formats to increase stability.</li>
+                        <li>Build a portfolio where each artist's success multiplies opportunities for the others.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="spacer-xl"></div>
+            
+            <!-- Timeline Section -->
+            <div class="vision-timeline">
+                <div class="timeline-grid">
+                    <div class="timeline-year">
+                        <h5>2025</h5>
+                        <p><strong>Foundation year:</strong> roster validation, early revenue base; Label/publisher partnerships confirm market fit; Lean ops; focus on breakthrough setup.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2026</h5>
+                        <p><strong>Validation compounding:</strong> pipeline deepens; Producers stabilize income; artists expand upside; Runway for first breakout moments.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2027</h5>
+                        <p><strong>First superstar emerges:</strong> Network effects accelerate across roster; Touring and brand revenue ramp.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2028</h5>
+                        <p><strong>Two superstars scaling:</strong> catalogue value increases; Cross-collaboration compounds audience growth; Diversified revenue mix strengthens margins.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2029</h5>
+                        <p><strong>Three superstars compounding:</strong> Ecosystem flywheel humming; Scale without headcount sprawl.</p>
+                    </div>
+                    <div class="timeline-year">
+                        <h5>2030</h5>
+                        <p><strong>Three+ sustained superstars</strong> anchor 30-artist roster; $30M annual revenue target; Enduring, compounding enterprise value.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Investment Opportunity -->
+    <section class="investment-section">
+        <div class="container">
+            <p class="section-marker">07 — THE INVESTMENT OPPORTUNITY</p>
+            
+            <h2 data-watermark="INVESTMENT">THE INVESTMENT OPPORTUNITY</h2>
+            
+            <div class="investment-layout">
+                <div class="investment-terms">
+                    <div class="term-item">
+                        <div class="term-value">$1M</div>
+                        <div class="term-label">CAPITAL RAISE</div>
+                    </div>
+                    <div class="term-item">
+                        <div class="term-value">$5M</div>
+                        <div class="term-label">VALUATION</div>
+                    </div>
+                    <div class="term-item">
+                        <div class="term-value">SAFE</div>
+                        <div class="term-label">STRUCTURE</div>
+                    </div>
+                </div>
+                
+                <div class="investment-description">
+                    <ul>
+                        <li>ONE OPPORTUNITY TO JOIN BEFORE SCALE COMPOUNDS.</li>
+                        <li>FLEXIBLE, MODERN STRUCTURE — NO FORCED EQUITY NOW.</li>
+                        <li>ALIGNS INCENTIVES FOR LEAN GROWTH AND BREAKOUT SCALE.</li>
+                        <li>CLEAN GOVERNANCE, CLEAR UPSIDE.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- About The Founder -->
+    <section class="founder-section">
+        <div class="container">
+            <p class="section-marker">09 — THE FOUNDER</p>
+            
+            <h2 data-watermark="FOUNDER">ABOUT THE FOUNDER</h2>
+            
+            <div class="founder-content">
+                <div class="founder-image">
+                    <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Theo/Screenshot 2025-07-30 at 5.54.44â¯PM.png" alt="Theo Battaglia">
+                    <div class="founder-overlay">
+                        <div class="founder-title">FOUNDER</div>
+                        <div class="founder-name">THEO BATTAGLIA</div>
+                    </div>
+                </div>
+                
+                <div class="founder-details">
+                    <div class="founder-info">
+                        <div class="info-item">
+                            <strong>AGE:</strong> 32
+                        </div>
+                        <div class="info-item">
+                            <strong>HOMETOWN:</strong> LOS ANGELES, CA
+                        </div>
+                    </div>
+                    
+                    <div class="founder-experience">
+                        <div class="experience-section">
+                            <h4>PREVIOUSLY</h4>
+                            <ul>
+                                <li>10K PROJECTS (EXECUTIVE VICE PRESIDENT, CREATIVE)</li>
+                                <li>APPLE INC (SERVICES MARKETING & CREATIVE)</li>
+                                <li>HBO (CONTENT MARKETING)</li>
+                                <li>WARNER BROS. (CREATIVE DEVELOPMENT & PRODUCTION)</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="experience-section">
+                            <h4>EDUCATION</h4>
+                            <ul>
+                                <li>NYU TISCH SCHOOL OF THE ARTS (GRADUATED 2014)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <h2 class="footer-title">All My Friends</h2>
+            <p class="lead text-center">
+                Building lasting careers through<br>
+                vision, partnership, and genuine care
+            </p>
+            
+            <div class="spacer-md"></div>
+            
+            <a href="#" id="download-pdf" class="btn btn-primary">Download as PDF</a>
+            
+            <div class="spacer-xl"></div>
+            
+            <p class="opacity-50">© 2025 All My Friends Inc.</p>
+        </div>
+    </footer>
+    <button class="back-to-top" aria-label="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+    
+    <!-- Artist Modal -->
+    <div class="artist-modal" id="artist-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">×</button>
+            
+            <!-- Hudson Modal -->
+            <div id="hudson-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Hudson75.png" alt="Hudson Ingram">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Hudson Ingram</h2>
+                        <p class="modal-artist-role">Artist • Interscope/Dessner JV</p>
+                        <p class="artist-bio">
+                            Hudson Ingram is a 18-year-old singer-songwriter from Texas whose authentic voice and storytelling 
+                            have captured the attention of the music industry. Discovered on TikTok in 2023, Hudson has quickly 
+                            risen from social media sensation to major label signing, with his debut project set for release 
+                            through Interscope Records and Aaron Dessner's joint venture.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">TikTok</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TEoWLLmvBCMx" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Jack Modal -->
+            <div id="jack-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Jack.png" alt="Jack Schrepferman">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Jack Schrepferman</h2>
+                        <p class="modal-artist-role">Producer • Kobalt</p>
+                        <p class="artist-bio">
+                            Jack Schrepferman is a rising producer whose innovative sound design and production techniques 
+                            have made him a sought-after collaborator in the pop and alternative music scenes. With credits 
+                            including Midwxst and dhruv, Jack's production style bridges the gap between indie credibility 
+                            and mainstream accessibility.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">SoundCloud</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/WNFeGYKaapgk" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Ruby Modal -->
+            <div id="ruby-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Ruby.png" alt="Ruby Plume">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Ruby Plume</h2>
+                        <p class="modal-artist-role">Artist/Songwriter • PULSE Publishing</p>
+                        <p class="artist-bio">
+                            Ruby Plume is a dynamic artist and songwriter whose unique blend of pop sensibilities and 
+                            alternative edge has positioned her as one of the most exciting emerging voices in music. 
+                            With a publishing deal with PULSE and a growing catalog of hits, Ruby represents the future 
+                            of genre-blending pop music.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">YouTube</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/TzHxY2K2S4gX" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Kate Modal -->
+            <div id="kate-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Kate.jpg" alt="Kate Stephenson">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Kate Stephenson</h2>
+                        <p class="modal-artist-role">Artist/Creator</p>
+                        <p class="artist-bio">
+                            Kate Stephenson is a multi-talented artist and creator whose work spans music, visual arts, 
+                            and digital content. With a unique perspective on modern creativity and a growing following 
+                            across multiple platforms, Kate represents the new generation of artists who build careers 
+                            through authentic connection and innovative content creation.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">TikTok</a>
+                            <a href="#" class="social-link">YouTube</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/DvbwudWvMBk1" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Leon Modal -->
+            <div id="leon-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Leon.png" alt="Leon Sharplin">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Leon Sharplin</h2>
+                        <p class="modal-artist-role">Producer/Artist</p>
+                        <p class="artist-bio">
+                            Leon Sharplin is a versatile producer and artist whose work spans multiple genres and 
+                            creative disciplines. With a background in sound design and electronic music production, 
+                            Leon brings a unique technical expertise to the roster while maintaining strong artistic vision.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">SoundCloud</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/ob42rf6hvgMB" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Tom Modal -->
+            <div id="tom-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Tom.png" alt="Tom Siletto">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Tom Siletto</h2>
+                        <p class="modal-artist-role">Artist</p>
+                        <p class="artist-bio">
+                            Tom Siletto is an emerging artist whose raw talent and authentic voice have quickly 
+                            captured attention in the music industry. With a focus on honest songwriting and 
+                            compelling performances, Tom represents the next generation of singer-songwriters 
+                            who connect through genuine emotion and storytelling.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">TikTok</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/LzuqcxQvWcrM" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+            
+            <!-- Conall Modal -->
+            <div id="conall-modal" style="display:none;">
+                <div class="modal-artist-header">
+                    <div class="modal-artist-image">
+                        <img src="https://storage.googleapis.com/allmyfriends-assets-2025/Conall.png" alt="Conall Cafferty">
+                    </div>
+                    <div class="modal-artist-info">
+                        <h2>Conall Cafferty</h2>
+                        <p class="modal-artist-role">Artist/Songwriter</p>
+                        <p class="artist-bio">
+                            Conall Cafferty is a talented artist and songwriter whose work combines thoughtful 
+                            lyricism with memorable melodies. With a growing catalog of songs and a unique 
+                            perspective on modern life, Conall is building a career through authentic 
+                            storytelling and genuine connection with listeners.
+                        </p>
+                        <div class="social-links">
+                            <a href="#" class="social-link">Spotify</a>
+                            <a href="#" class="social-link">Instagram</a>
+                            <a href="#" class="social-link">YouTube</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-music-section">
+                    <h5 class="modal-section-title">Music</h5>
+                    <iframe style="border-radius: 24px" src="https://untitled.stream/embed/auMykkLeigIV" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Minimal JS -->
+<script>
+
+
+// Mobile Navigation Toggle
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.querySelectorAll('.nav-link');
+const navLinksContainer = document.getElementById('navLinks');
+
+navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('active');
+    navLinksContainer.classList.toggle('active');
+});
+
+// Close mobile nav when clicking on a link
+navLinks.forEach(link => {
+    link.addEventListener('click', () => {
+        navToggle.classList.remove('active');
+        navLinksContainer.classList.remove('active');
+    });
+});
+
+// Navigation scroll effects
+const nav = document.querySelector('.nav');
+let lastScrollY = window.scrollY;
+
+window.addEventListener('scroll', () => {
+  const currentScrollY = window.scrollY;
+  
+  // Add scrolled class for enhanced background
+  if (currentScrollY > 50) {
+    nav.classList.add('scrolled');
+  } else {
+    nav.classList.remove('scrolled');
+  }
+  
+  lastScrollY = currentScrollY;
+});
+
+// Active nav highlighting
+const sections = document.querySelectorAll('section[id]');
+
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(section => {
+    if (scrollY >= section.offsetTop - 100) {
+      current = section.id;
+    }
+  });
+
+  navLinks.forEach(link => {
+    link.classList.toggle('active', link.getAttribute('href') === '#' + current);
+  });
+  // Update reading progress
+  const progressEl = document.querySelector('.reading-progress');
+  if (progressEl) {
+    const scrollTop = window.scrollY || document.documentElement.scrollTop;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+    progressEl.style.width = progress + '%';
+  }
+});
+
+navLinks.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(link.getAttribute('href'));
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+});
+
+// Modal Functionality for Artist Cards
+function openModal(artistId) {
+  document.getElementById('artist-modal').classList.add('active');
+  const modals = document.querySelectorAll('#artist-modal > .modal-content > div[id$="-modal"]');
+  modals.forEach(m => m.style.display = 'none');
+  const target = document.getElementById(artistId + '-modal');
+  if (target) target.style.display = 'block';
+}
+
+function closeModal() {
+  document.getElementById('artist-modal').classList.remove('active');
+  const modals = document.querySelectorAll('#artist-modal > .modal-content > div[id$="-modal"]');
+  modals.forEach(m => m.style.display = 'none');
+}
+
+function initializeArtistCards() {
+  document.querySelectorAll('.artist-card').forEach(card => {
+    card.addEventListener('click', () => openModal(card.dataset.artist));
+  });
+
+  const modal = document.getElementById('artist-modal');
+  modal.addEventListener('click', e => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+  });
+}
+
+// Synergy Lines
+function drawSynergyLines() {
+  const container = document.querySelector('.synergy-lines');
+  const nodes = document.querySelectorAll('.synergy-node');
+  if (window.innerWidth <= 768) return;
+  container.innerHTML = '';
+  const connections = [
+    [0, 1], [0, 2], [0, 3], [0, 4],
+    [1, 2], [1, 4], [1, 6], [5, 2],
+    [5, 3], [5, 6], [0, 5]
+  ];
+  connections.forEach(([from, to]) => {
+    const fromNode = nodes[from];
+    const toNode = nodes[to];
+    if (fromNode && toNode) {
+      const fromRect = fromNode.getBoundingClientRect();
+      const toRect = toNode.getBoundingClientRect();
+      const containerRect = container.getBoundingClientRect();
+      const x1 = fromRect.left + fromRect.width / 2 - containerRect.left;
+      const y1 = fromRect.top + fromRect.height / 2 - containerRect.top;
+      const x2 = toRect.left + toRect.width / 2 - containerRect.left;
+      const y2 = toRect.top + toRect.height / 2 - containerRect.top;
+      const length = Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+      const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+      const line = document.createElement('div');
+      line.className = 'synergy-line';
+      line.style.width = `${length}px`;
+      line.style.left = `${x1}px`;
+      line.style.top = `${y1}px`;
+      line.style.transform = `rotate(${angle}deg)`;
+      container.appendChild(line);
+    }
+  });
+}
+
+// Download PDF
+function downloadPDF() {
+  const originalTitle = document.title;
+  document.title = 'All My Friends Inc - Investment Deck 2025';
+  document.body.classList.add('printing');
+  window.print();
+  setTimeout(() => {
+    document.body.classList.remove('printing');
+    document.title = originalTitle;
+  }, 100);
+}
+
+// Mobile Touch Gestures
+let touchStartX = 0;
+let touchEndX = 0;
+function handleGesture() {
+  // No-op since music player is removed
+}
+
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+  initializeArtistCards();
+  setTimeout(drawSynergyLines, 100);
+  window.addEventListener('resize', drawSynergyLines);
+  const pdfButton = document.getElementById('download-pdf');
+  if (pdfButton) {
+    pdfButton.addEventListener('click', e => {
+      e.preventDefault();
+      downloadPDF();
+    });
+  }
+
+  // Back to top visibility
+  const backToTop = document.querySelector('.back-to-top');
+  const toggleBackToTop = () => {
+    if (!backToTop) return;
+    backToTop.classList.toggle('visible', window.scrollY > window.innerHeight * 0.8);
+  };
+  toggleBackToTop();
+  window.addEventListener('scroll', toggleBackToTop);
+  const modalContent = document.querySelector('.modal-content');
+  if (modalContent) {
+    modalContent.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+    modalContent.addEventListener('touchend', e => { touchEndX = e.changedTouches[0].screenX; handleGesture(); });
+  }
+  document.body.addEventListener('touchmove', e => {
+    if (e.touches.length > 1) e.preventDefault();
+  }, { passive: false });
+});
+</script>
+
+</body>
+</html>

@@ -10,6 +10,56 @@
   <link rel="stylesheet" href="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.css">
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
   <script src="https://unpkg.com/cropperjs@1.6.1/dist/cropper.min.js"></script>
+  
+  <style>
+    /* Image scaling fixes */
+    .cover-image-wrapper {
+      width: 100%;
+      aspect-ratio: 1;
+      overflow: hidden;
+      position: relative;
+      background: #f0f0f0;
+    }
+    
+    .cover-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    
+    .recent-cover .cover-image-wrapper {
+      aspect-ratio: 1;
+    }
+    
+    /* Drag and drop styles */
+    .sortable-ghost {
+      opacity: 0.4;
+    }
+    
+    .sortable-chosen {
+      transform: scale(1.02);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    }
+    
+    .sortable-drag {
+      opacity: 1 !important;
+      cursor: grabbing !important;
+    }
+    
+    /* Cursor hint for draggable items */
+    .covers-grid .cover-image-wrapper {
+      cursor: grab;
+    }
+    
+    .covers-grid .cover-image-wrapper:active {
+      cursor: grabbing;
+    }
+    
+    /* Disable drag cursor in batch mode */
+    .batch-active .cover-image-wrapper {
+      cursor: pointer !important;
+    }
+  </style>
 </head>
 <body>
 
