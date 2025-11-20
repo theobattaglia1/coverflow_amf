@@ -530,9 +530,13 @@ function editCover(cover) {
             <img id="frontImagePreview" src="${cover.frontImage || '/placeholder.jpg'}" 
                  style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
             <input type="hidden" name="frontImage" value="${cover.frontImage || ''}">
-            <button type="button" class="btn" onclick="openImageLibrary('frontImage')" style="width: 100%;">
-              CHANGE IMAGE
+            <button type="button" class="btn" onclick="openImageLibrary('frontImage')" style="width: 100%; margin-bottom: var(--space-xs);">
+              CHANGE IMAGE (LIBRARY)
             </button>
+            <button type="button" class="btn btn-secondary" id="frontImageUploadBtn" style="width: 100%;">
+              UPLOAD FROM DEVICE
+            </button>
+            <input type="file" id="frontImageFileInput" accept="image/*" style="display:none;">
           </div>
         </div>
         <div class="form-group">
@@ -541,9 +545,13 @@ function editCover(cover) {
             <img id="backImagePreview" src="${cover.backImage || '/placeholder.jpg'}" 
                  style="width: 100%; aspect-ratio: 1; object-fit: cover; margin-bottom: var(--space-sm);">
             <input type="hidden" name="backImage" value="${cover.backImage || ''}">
-            <button type="button" class="btn" onclick="openImageLibrary('backImage')" style="width: 100%;">
-              CHANGE IMAGE
+            <button type="button" class="btn" onclick="openImageLibrary('backImage')" style="width: 100%; margin-bottom: var(--space-xs);">
+              CHANGE IMAGE (LIBRARY)
             </button>
+            <button type="button" class="btn btn-secondary" id="backImageUploadBtn" style="width: 100%;">
+              UPLOAD FROM DEVICE
+            </button>
+            <input type="file" id="backImageFileInput" accept="image/*" style="display:none;">
           </div>
         </div>
       </div>
@@ -628,6 +636,40 @@ function editCover(cover) {
     backPreview.style.cursor = 'pointer';
     backPreview.title = 'Click to crop & zoom';
     backPreview.addEventListener('click', () => openImageCropper('backImage'));
+  }
+  
+  // Hook up "Upload from device" buttons for front/back images
+  const frontUploadBtn = document.getElementById('frontImageUploadBtn');
+  const frontFileInput = document.getElementById('frontImageFileInput');
+  if (frontUploadBtn && frontFileInput) {
+    frontUploadBtn.addEventListener('click', () => {
+      currentCropTargetField = 'frontImage';
+      frontFileInput.click();
+    });
+    frontFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      currentCropTargetField = 'frontImage';
+      handleModalImageUpload(file);
+      // reset value so same file can be reselected if needed
+      frontFileInput.value = '';
+    });
+  }
+
+  const backUploadBtn = document.getElementById('backImageUploadBtn');
+  const backFileInput = document.getElementById('backImageFileInput');
+  if (backUploadBtn && backFileInput) {
+    backUploadBtn.addEventListener('click', () => {
+      currentCropTargetField = 'backImage';
+      backFileInput.click();
+    });
+    backFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      currentCropTargetField = 'backImage';
+      handleModalImageUpload(file);
+      backFileInput.value = '';
+    });
   }
   
   openModal();
