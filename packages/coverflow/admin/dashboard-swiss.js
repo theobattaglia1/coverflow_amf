@@ -1354,13 +1354,22 @@ async function handleModalImageUpload(file) {
       // Add to assets immediately
       if (!assets.images) assets.images = [];
       assets.images.push({ type: 'image', url: data.url, name: file.name, uploadedAt: new Date().toISOString() });
-      // Update the first image input field if present
-      const input = document.querySelector("#editCoverForm input[type='text'][name*='Image']");
-      if (input) {
-        input.value = data.url;
-        input.dispatchEvent(new Event('input'));
+
+      // Decide which image field to target: current crop target, or default to frontImage
+      const targetField = currentCropTargetField || 'frontImage';
+      const form = document.getElementById('editCoverForm');
+      if (form) {
+        const input = form.querySelector(`input[name='${targetField}']`);
+        if (input) {
+          input.value = data.url;
+        }
       }
-      showToast('IMAGE UPLOADED');
+      const preview = document.getElementById(`${targetField}Preview`);
+      if (preview) {
+        preview.src = data.url;
+      }
+
+      showToast('IMAGE UPLOADED', 3000);
     } else {
       showToast('UPLOAD FAILED: ' + (data.error || 'Unknown error'), 5000);
     }
