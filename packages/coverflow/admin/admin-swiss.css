@@ -332,6 +332,60 @@ a:hover {
   padding: var(--space-xxl) 0;
 }
 
+/* Shell layout: sidebar + main content */
+.admin-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: var(--space-xl);
+}
+
+.admin-sidebar {
+  border-right: 1px solid var(--ink);
+  padding-right: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.admin-content {
+  min-width: 0;
+}
+
+.sidebar-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.sidebar-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--grey-500);
+  margin-bottom: var(--space-xs);
+}
+
+.admin-sidebar .admin-nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.admin-sidebar .admin-nav a {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  padding: 4px 0;
+  border-bottom: none;
+  cursor: pointer;
+}
+
+.admin-sidebar .admin-nav a.active {
+  font-weight: 700;
+}
+
 /* Section markers: "01 — SECTION TITLE" format */
 .section {
   margin-bottom: var(--space-xxl);

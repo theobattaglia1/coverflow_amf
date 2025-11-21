@@ -108,24 +108,47 @@
         </div>
       </div>
       
-      <nav class="admin-nav">
-        <a href="#covers" class="active">COVERS</a>
-        <a href="#assets">ASSETS</a>
-        <a href="#audio">AUDIO</a>
-        <a href="#users">USERS</a>
-        
+      <div class="header-actions">
         <div class="user-info">
           <span id="username">LOADING...</span>
           <span class="user-role" id="userRole">—</span>
           <button class="btn btn-danger" onclick="logout()">EXIT</button>
         </div>
-      </nav>
+      </div>
     </div>
   </header>
 
   <!-- Main Content: Generous spacing, editorial structure -->
   <main class="admin-main">
     <div class="container">
+      <div class="admin-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="admin-sidebar">
+          <div class="sidebar-group">
+            <div class="sidebar-label">CONTENT</div>
+            <nav class="admin-nav">
+              <a href="#covers" class="active">COVERS</a>
+            </nav>
+          </div>
+          
+          <div class="sidebar-group">
+            <div class="sidebar-label">LIBRARY</div>
+            <nav class="admin-nav">
+              <a href="#assets">ASSETS</a>
+              <a href="#audio">AUDIO</a>
+            </nav>
+          </div>
+          
+          <div class="sidebar-group">
+            <div class="sidebar-label">SYSTEM</div>
+            <nav class="admin-nav">
+              <a href="#users">USERS</a>
+            </nav>
+          </div>
+        </aside>
+        
+        <!-- Primary content area -->
+        <div class="admin-content">
       
       <!-- 01 — COVERS -->
       <section class="section" id="coversSection">
@@ -541,7 +564,9 @@
           </div>
         </div>
       </section>
-
+        </div> <!-- end admin-content -->
+      </div> <!-- end admin-layout -->
+    
     </div>
   </main>
 </div>
