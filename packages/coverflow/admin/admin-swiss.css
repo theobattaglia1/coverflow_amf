@@ -1082,10 +1082,30 @@ a:hover {
   transform: translateY(200%);
   transition: transform var(--transition);
   z-index: 2000;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-md);
 }
 
 .toast.show {
   transform: translateY(0);
+}
+
+.toast.has-action .toast-undo-btn {
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  padding: 2px 10px;
+  font-family: inherit;
+  font-size: 0.75rem;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  cursor: pointer;
+}
+
+.toast.has-action .toast-undo-btn:hover {
+  background: var(--paper);
+  color: var(--ink);
 }
 
 /* Loading state: Minimal indicator */

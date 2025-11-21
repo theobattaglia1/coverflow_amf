@@ -25,6 +25,49 @@ window.showToast = function(message, duration = 5000) {
   }, duration);
 };
 
+// Toast with inline UNDO action (used for client-side undo only)
+window.showUndoToast = function(message, onUndo, duration = 5000) {
+  const toast = document.getElementById('toast');
+  if (!toast) {
+    console.warn('Toast element not found');
+    return;
+  }
+  toast.innerHTML = `
+    <span class="toast-message">${message}</span>
+    <button class="toast-undo-btn" type="button">UNDO</button>
+  `;
+  toast.classList.add('show', 'has-action');
+  
+  const undoBtn = toast.querySelector('.toast-undo-btn');
+  let undone = false;
+  
+  const cleanup = () => {
+    toast.classList.remove('show', 'has-action');
+    // Restore to simple text-only to avoid stale markup
+    toast.textContent = '';
+  };
+  
+  const timer = setTimeout(() => {
+    if (!undone) cleanup();
+  }, duration);
+  
+  if (undoBtn) {
+    undoBtn.addEventListener('click', () => {
+      if (undone) return;
+      undone = true;
+      clearTimeout(timer);
+      cleanup();
+      if (typeof onUndo === 'function') {
+        try {
+          onUndo();
+        } catch (err) {
+          console.error('UNDO handler failed:', err);
+        }
+      }
+    }, { once: true });
+  }
+};
+
 // Loading states
 window.showLoading = function(type = 'default') {
   const loadingEl = document.getElementById('loading');
@@ -124,11 +167,70 @@ window.initializeKeyboardShortcuts = function() {
       closeModal();
     }
     
-    // Cmd/Ctrl + S to save
+    // Cmd/Ctrl + S to save (covers)
     if ((e.metaKey || e.ctrlKey) && e.key === 's') {
       e.preventDefault();
       if (window.saveChanges) {
         window.saveChanges();
+      }
+    }
+    
+    // Global section navigation
+    if (e.altKey || e.metaKey || e.ctrlKey) return; // avoid clashing with browser/system
+    
+    if (e.key === '1') {
+      // COVERS
+      const coversLink = document.querySelector('.admin-nav a[href="#covers"]');
+      const coversSection = document.getElementById('coversSection');
+      if (coversSection) {
+        coversSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (coversLink) {
+        document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+        coversLink.classList.add('active');
+      }
+    } else if (e.key === '2') {
+      // ASSETS
+      const assetsLink = document.querySelector('.admin-nav a[href="#assets"]');
+      const assetsSection = document.getElementById('assetsSection');
+      if (assetsSection) {
+        assetsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (assetsLink) {
+        document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+        assetsLink.classList.add('active');
+      }
+    } else if (e.key === '3') {
+      // AUDIO
+      const audioLink = document.querySelector('.admin-nav a[href="#audio"]');
+      const audioSection = document.getElementById('audioSection');
+      if (audioSection) {
+        audioSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (audioLink) {
+        document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+        audioLink.classList.add('active');
+      }
+    } else if (e.key === '4') {
+      // USERS
+      const usersLink = document.querySelector('.admin-nav a[href="#users"]');
+      const usersSection = document.getElementById('usersSection');
+      if (usersSection) {
+        usersSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (usersLink) {
+        document.querySelectorAll('.admin-nav a').forEach(a => a.classList.remove('active'));
+        usersLink.classList.add('active');
+      }
+    }
+    
+    // "/" focuses global search when not typing into an input
+    if (e.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)) {
+      e.preventDefault();
+      const globalSearch = document.getElementById('globalSearch');
+      if (globalSearch) {
+        globalSearch.focus();
+        globalSearch.select();
       }
     }
   });

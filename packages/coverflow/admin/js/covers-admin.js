@@ -438,13 +438,31 @@ window.editCover = function(cover) {
 
 // Delete cover
 window.deleteCover = async function(coverId) {
-  if (!confirm('Delete this cover? This cannot be undone.')) return;
+  const target = window.covers.find(c => c.id === coverId);
+  if (!target) return;
+  
+  if (!confirm(`Delete cover "${target.albumTitle || 'Untitled'}"? This cannot be undone.`)) return;
+  
+  // Keep a copy for potential undo
+  const index = window.covers.findIndex(c => c.id === coverId);
+  const deletedCover = { ...target };
   
   window.covers = window.covers.filter(c => c.id !== coverId);
   window.adminState.hasChanges = true;
   updateSaveButton();
   renderCovers();
-  showToast('COVER DELETED');
+  
+  // Offer quick UNDO (client-side only)
+  if (window.showUndoToast) {
+    window.showUndoToast('COVER DELETED', () => {
+      window.covers.splice(index, 0, deletedCover);
+      window.adminState.hasChanges = true;
+      updateSaveButton();
+      renderCovers();
+    });
+  } else {
+    showToast('COVER DELETED');
+  }
 };
 
 // Duplicate cover
@@ -462,7 +480,17 @@ window.duplicateCover = function(coverId) {
   window.adminState.hasChanges = true;
   updateSaveButton();
   renderCovers();
-  showToast('COVER DUPLICATED');
+  
+  if (window.showUndoToast) {
+    window.showUndoToast('COVER DUPLICATED', () => {
+      window.covers = window.covers.filter(c => c.id !== newCover.id);
+      window.adminState.hasChanges = true;
+      updateSaveButton();
+      renderCovers();
+    });
+  } else {
+    showToast('COVER DUPLICATED');
+  }
 };
 
 // Save changes
@@ -605,12 +633,26 @@ window.deleteSelectedCovers = async function() {
   
   if (!confirm(`Delete ${window.selectedCovers.size} covers? This cannot be undone.`)) return;
   
-  window.covers = window.covers.filter(cover => !window.selectedCovers.has(cover.id));
+  const idsToDelete = new Set(window.selectedCovers);
+  const deleted = window.covers.filter(cover => idsToDelete.has(cover.id));
+  
+  window.covers = window.covers.filter(cover => !idsToDelete.has(cover.id));
   window.selectedCovers.clear();
   window.adminState.hasChanges = true;
   updateSaveButton();
   renderCovers();
-  showToast(`${window.selectedCovers.size} COVERS DELETED`);
+  
+  if (window.showUndoToast && deleted.length) {
+    window.showUndoToast(`${deleted.length} COVERS DELETED`, () => {
+      // Reinsert deleted covers (append to end to avoid complex index tracking)
+      window.covers = window.covers.concat(deleted);
+      window.adminState.hasChanges = true;
+      updateSaveButton();
+      renderCovers();
+    });
+  } else {
+    showToast(`${deleted.length} COVERS DELETED`);
+  }
 };
 
 // Search and filter handlers
@@ -671,6 +713,9 @@ window.setViewMode = function(mode) {
   });
   
   renderCovers();
+  
+  // Lightweight feedback
+  showToast(`VIEW: ${mode.toUpperCase()}`, 1200);
 };
 
 // Initialize covers module
