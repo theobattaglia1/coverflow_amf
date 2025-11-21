@@ -19,9 +19,9 @@
   --accent: #0000FF;
   --accent-dim: rgba(0, 0, 255, 0.08);
   
-  /* Typography: Helvetica Neue with system fallbacks */
-  --font-primary: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+  /* Typography: Helvetica-forward with system fallbacks */
+  --font-primary: 'Helvetica Neue', 'Helvetica', 'Arial', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'Helvetica Neue', 'Helvetica', 'Arial', -apple-system, BlinkMacSystemFont, sans-serif;
   
   /* Extreme negative tracking */
   --tracking-display: -0.08em;

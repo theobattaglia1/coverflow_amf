@@ -18,6 +18,8 @@ window.assetsPerPage = 48;
 window.assetCurrentPage = 1;
 window.sortBy = 'name';
 window.assetViewMode = 'grid';
+window.assetTypeFilter = '';
+window.assetSortOrder = 'date-desc';
 
 // Image cropper state
 window.dashboardImageLibraryTarget = null;
@@ -263,11 +265,25 @@ window.renderAssetsWithView = function() {
     assetsToShow = window.filteredAssets.length > 0 ? window.filteredAssets : assetsToShow;
   }
 
+  // Apply type filter (images vs videos)
+  if (window.assetTypeFilter) {
+    assetsToShow = assetsToShow.filter(asset => {
+      if (asset.isFolder) return true; // keep folders visible
+      return asset.type === window.assetTypeFilter;
+    });
+  }
+
   // Apply sorting
-  if (window.sortBy === 'name') {
+  const sortOrder = window.assetSortOrder || 'date-desc';
+  if (sortOrder.startsWith('name')) {
     assetsToShow.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-  } else if (window.sortBy === 'date') {
+    if (sortOrder === 'name-desc') assetsToShow.reverse();
+  } else if (sortOrder.startsWith('date')) {
     assetsToShow.sort((a, b) => new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0));
+    if (sortOrder === 'date-asc') assetsToShow.reverse();
+  } else if (sortOrder.startsWith('size')) {
+    assetsToShow.sort((a, b) => (b.size || 0) - (a.size || 0));
+    if (sortOrder === 'size-asc') assetsToShow.reverse();
   }
 
   // Pagination
@@ -928,6 +944,8 @@ function updateAssetSelectionCounter() {
 // Enhanced asset search
 window.setupEnhancedAssetSearch = function() {
   const searchInput = document.getElementById('assetSearch');
+  const typeSelect = document.getElementById('assetTypeFilter');
+  const sortSelect = document.getElementById('assetSortOrder');
   if (!searchInput) return;
   
   let searchTimeout;
@@ -945,9 +963,28 @@ window.setupEnhancedAssetSearch = function() {
       } else {
         window.filteredAssets = [];
       }
+      window.assetCurrentPage = 1;
       renderAssetsWithView();
     }, 300);
   });
+  
+  // Type filter (images / videos / documents)
+  if (typeSelect) {
+    typeSelect.addEventListener('change', (e) => {
+      window.assetTypeFilter = e.target.value || '';
+      window.assetCurrentPage = 1;
+      renderAssetsWithView();
+    });
+  }
+  
+  // Sort order
+  if (sortSelect) {
+    sortSelect.addEventListener('change', (e) => {
+      window.assetSortOrder = e.target.value || 'date-desc';
+      window.assetCurrentPage = 1;
+      renderAssetsWithView();
+    });
+  }
 };
 
 // Setup drag and drop for assets

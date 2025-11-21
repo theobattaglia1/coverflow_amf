@@ -570,7 +570,10 @@
 document.querySelectorAll('.admin-nav a[href^="#"]').forEach(anchor => {
   anchor.addEventListener('click', function (e) {
     e.preventDefault();
-    const target = document.querySelector(this.getAttribute('href'));
+    const href = this.getAttribute('href'); // e.g. "#covers"
+    const baseId = href.replace('#', '');   // "covers"
+    const sectionId = `${baseId}Section`;   // "coversSection"
+    const target = document.getElementById(sectionId);
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
@@ -581,15 +584,7 @@ document.querySelectorAll('.admin-nav a[href^="#"]').forEach(anchor => {
   });
 });
 
-// Show/hide sections based on navigation
-function showSection(sectionId) {
-  document.querySelectorAll('.section').forEach(section => {
-    section.style.display = section.id === sectionId ? 'block' : 'none';
-  });
-}
-
-// Note: Main initialization handled by dashboard-swiss.js
-// This prevents duplicate initialization conflicts
+// Note: Main initialization now lives in modular JS files
 
 // Logout function
 function logout() {
