@@ -13,8 +13,9 @@ window.assetMultiSelectMode = false;
 window.lastSelectedAssetIndex = -1;
 window.draggedAssets = new Set();
 window.isDraggingAssets = false;
-window.assetsPerPage = 24;
-window.currentPage = 0;
+// Pagination for assets grid (per folder)
+window.assetsPerPage = 48;
+window.assetCurrentPage = 1;
 window.sortBy = 'name';
 window.assetViewMode = 'grid';
 
@@ -269,25 +270,65 @@ window.renderAssetsWithView = function() {
     assetsToShow.sort((a, b) => new Date(b.uploadedAt || 0) - new Date(a.uploadedAt || 0));
   }
 
+  // Pagination
+  const totalAssets = assetsToShow.length;
+  const pageSize = window.assetsPerPage || 48;
+  const totalPages = Math.max(1, Math.ceil(totalAssets / pageSize));
+  if (!window.assetCurrentPage || window.assetCurrentPage < 1) window.assetCurrentPage = 1;
+  if (window.assetCurrentPage > totalPages) window.assetCurrentPage = totalPages;
+  const startIndex = (window.assetCurrentPage - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const pageAssets = assetsToShow.slice(startIndex, endIndex);
+
+  // Update asset count indicator
+  const countIndicator = document.getElementById('assetCountIndicator');
+  if (countIndicator) {
+    const suffix = totalAssets === 1 ? 'ASSET' : 'ASSETS';
+    countIndicator.textContent = `${totalAssets} ${suffix}`;
+  }
+
   // Clear and render
   assetGrid.innerHTML = '';
   assetGrid.className = `asset-grid asset-view-${window.assetViewMode} ${window.mediaLibraryExpanded ? 'expanded' : ''}`;
 
-  if (assetsToShow.length === 0) {
+  if (pageAssets.length === 0) {
     assetGrid.innerHTML = '<div class="empty-state">No assets in this folder</div>';
-    return;
-  }
-
-  // Render items
-  assetsToShow.forEach((asset, index) => {
+  } else {
+    // Render items for current page
+    pageAssets.forEach((asset, index) => {
     if (asset.isFolder) {
       const folderDiv = createFolderElement(asset);
       assetGrid.appendChild(folderDiv);
     } else {
       const assetDiv = createAssetElement(asset, index);
       assetGrid.appendChild(assetDiv);
+      }
+    });
+  }
+
+  // Update pagination controls
+  const pagination = document.getElementById('assetPaginationControls');
+  const pageInfo = document.getElementById('assetPageInfo');
+  const prevBtn = document.getElementById('assetPrevPage');
+  const nextBtn = document.getElementById('assetNextPage');
+
+  if (pagination && pageInfo) {
+    if (totalPages > 1) {
+      pagination.style.display = 'flex';
+      pageInfo.textContent = `${window.assetCurrentPage} / ${totalPages}`;
+      if (prevBtn) prevBtn.disabled = window.assetCurrentPage <= 1;
+      if (nextBtn) nextBtn.disabled = window.assetCurrentPage >= totalPages;
+    } else {
+      pagination.style.display = 'none';
     }
-  });
+  }
+};
+
+// Change page in Assets grid
+window.changeAssetPage = function(delta) {
+  window.assetCurrentPage = (window.assetCurrentPage || 1) + delta;
+  if (window.assetCurrentPage < 1) window.assetCurrentPage = 1;
+  renderAssetsWithView();
 };
 
 // View mode handling for Assets section
@@ -418,6 +459,19 @@ window.renderRecentAssets = function() {
     `;
     container.appendChild(div);
   });
+};
+
+// Refresh assets from server/GCS
+window.refreshAssets = async function() {
+  try {
+    showLoading();
+    window.assetCurrentPage = 1;
+    await loadAssets();
+    renderAssetsWithView();
+    showToast('ASSETS REFRESHED', 2000);
+  } finally {
+    hideLoading();
+  }
 };
 
 // Create new folder
@@ -972,7 +1026,11 @@ window.initializeAssets = function() {
     console.warn('Could not read saved assets view mode', err);
   }
   
-  loadAssets();
+  loadAssets().then(() => {
+    // Reset to first page on initial load
+    window.assetCurrentPage = 1;
+    renderAssetsWithView();
+  });
   setupEnhancedAssetSearch();
   setupAssetDragAndDrop();
 };

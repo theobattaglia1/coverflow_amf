@@ -371,6 +371,12 @@
             <div class="asset-grid" id="assetsContainer">
               <!-- Assets will be dynamically loaded -->
             </div>
+
+            <div class="pagination-controls" id="assetPaginationControls" style="display: none; margin-top: var(--space-lg);">
+              <button class="btn btn-sm" id="assetPrevPage" onclick="changeAssetPage(-1)">← PREV</button>
+              <span class="page-info" id="assetPageInfo">1 / 1</span>
+              <button class="btn btn-sm" id="assetNextPage" onclick="changeAssetPage(1)">NEXT →</button>
+            </div>
           </div>
         </div>
         
