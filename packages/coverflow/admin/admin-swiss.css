@@ -1794,6 +1794,79 @@ a:hover {
   gap: var(--space-lg);
 }
 
+/* Audio artist hubs */
+.audio-artist-hubs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--space-md);
+  overflow-x: auto;
+  padding: 0 0 var(--space-md) 0;
+  margin-bottom: var(--space-md);
+}
+
+.audio-artist-card {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid var(--grey-300);
+  background: var(--paper);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.audio-artist-card.active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.audio-artist-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--grey-200);
+  background-size: cover;
+  background-position: center;
+}
+
+.audio-artist-avatar.all {
+  background: var(--grey-900);
+}
+
+.audio-artist-avatar.unassigned {
+  background: var(--grey-300);
+}
+
+.audio-artist-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.audio-artist-name {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+.audio-artist-count {
+  font-size: 0.7rem;
+  color: var(--grey-500);
+}
+
+.audio-artist-label {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.audio-artist-unassigned {
+  color: var(--grey-500);
+}
+
 .audio-item {
   border: 1px solid var(--grey-300);
   padding: var(--space-lg);

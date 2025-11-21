@@ -9,23 +9,82 @@ window.selectedAudioFiles = new Set();
 window.currentAudioFolder = '';
 window.audioFolders = [];
 
-// Load audio files
+// Artist hubs for audio
+window.audioArtists = [];
+window.audioArtistFilter = ''; // '' = all artists, 'UNASSIGNED' = no match
+
+// Utility: infer artist name for an audio file based on known artists and filename/url
+function inferArtistForAudio(audio, artists) {
+  const haystack = (audio.filename || audio.name || audio.url || '').toLowerCase();
+  let bestMatch = '';
+  let bestLength = 0;
+  artists.forEach(artist => {
+    const name = (artist.name || '').toLowerCase();
+    if (!name) return;
+    if (haystack.includes(name) && name.length > bestLength) {
+      bestMatch = artist.name;
+      bestLength = name.length;
+    }
+  });
+  return bestMatch;
+}
+
+// Build artist hubs from covers.json
+function buildAudioArtistsFromCovers(covers) {
+  const map = new Map();
+  (covers || []).forEach(cover => {
+    const name = (cover.coverLabel || cover.artistDetails?.name || '').trim();
+    if (!name) return;
+    if (!map.has(name)) {
+      map.set(name, {
+        name,
+        id: cover.id || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        coverImage: cover.frontImage || cover.artistDetails?.image || ''
+      });
+    }
+  });
+  return Array.from(map.values()).sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Load audio files + artist hubs
 window.loadAudioFiles = function() {
-  // For now, load audio files from the assets.json
-  // In the future, this could be a separate endpoint
-  fetch('/data/assets.json')
-    .then(res => res.json())
-    .then(data => {
-      // Filter for audio files
-      window.audioFiles = (data.images || []).filter(asset => 
+  // Load assets (for audio files) and covers (for artist list) in parallel
+  return Promise.all([
+    fetch('/data/assets.json').then(res => res.json()),
+    fetch('/data/covers.json').then(res => res.json()).catch(err => {
+      console.warn('Failed to load covers.json for audio artists:', err);
+      return [];
+    })
+  ])
+    .then(([assetsData, coversData]) => {
+      // 1) Build artist hubs
+      window.audioArtists = buildAudioArtistsFromCovers(coversData);
+      
+      // 2) Filter for audio files from assets
+      window.audioFiles = (assetsData.images || []).filter(asset => 
         asset.url && (
-          asset.url.includes('.mp3') || 
-          asset.url.includes('.wav') || 
-          asset.url.includes('.m4a') || 
-          asset.url.includes('.ogg') ||
-          asset.url.includes('.aac')
+          asset.url.toLowerCase().includes('.mp3') || 
+          asset.url.toLowerCase().includes('.wav') || 
+          asset.url.toLowerCase().includes('.m4a') || 
+          asset.url.toLowerCase().includes('.ogg') ||
+          asset.url.toLowerCase().includes('.aac') ||
+          asset.type === 'audio'
         )
       );
+      
+      // 3) Infer artist per audio file
+      window.audioFiles.forEach(audio => {
+        if (!audio.artist) {
+          const inferred = inferArtistForAudio(audio, window.audioArtists);
+          if (inferred) {
+            audio.artist = inferred;
+          } else {
+            audio.artist = ''; // unassigned
+          }
+        }
+      });
+      
+      renderAudioArtists();
       renderAudioFiles();
     })
     .catch(err => {
@@ -41,7 +100,18 @@ window.renderAudioFiles = function() {
   
   container.innerHTML = '';
   
-  window.audioFiles.forEach((audio, index) => {
+  let filesToRender = window.audioFiles;
+  
+  // Apply artist hub filter if any
+  if (window.audioArtistFilter) {
+    if (window.audioArtistFilter === 'UNASSIGNED') {
+      filesToRender = filesToRender.filter(a => !a.artist);
+    } else {
+      filesToRender = filesToRender.filter(a => a.artist === window.audioArtistFilter);
+    }
+  }
+  
+  filesToRender.forEach((audio) => {
     const audioDiv = document.createElement('div');
     audioDiv.className = `audio-item ${window.selectedAudioFiles.has(audio.url) ? 'selected' : ''}`;
     audioDiv.dataset.audioId = audio.url;
@@ -59,6 +129,9 @@ window.renderAudioFiles = function() {
         <div class="audio-info">
           <input type="text" class="audio-filename" value="${audio.filename || 'audio-file'}" 
                  onchange="updateAudioMetadata('${audio.url}', 'filename', this.value)">
+          <div class="audio-artist-label">
+            ${audio.artist ? audio.artist : '<span class="audio-artist-unassigned">UNASSIGNED ARTIST</span>'}
+          </div>
           <div class="audio-url" onclick="copyAudioUrl('${audio.url}')" title="Click to copy URL">
             ${audio.url}
           </div>
@@ -72,6 +145,76 @@ window.renderAudioFiles = function() {
   
   updateAudioSelectionCounter();
 };
+
+// Render artist hubs
+function renderAudioArtists() {
+  const container = document.getElementById('audioArtistHubs');
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  const totalTracks = window.audioFiles.length;
+  
+  // "All audio" hub
+  const allDiv = document.createElement('button');
+  allDiv.className = 'audio-artist-card' + (!window.audioArtistFilter ? ' active' : '');
+  allDiv.type = 'button';
+  allDiv.innerHTML = `
+    <div class="audio-artist-avatar all"></div>
+    <div class="audio-artist-meta">
+      <div class="audio-artist-name">ALL AUDIO</div>
+      <div class="audio-artist-count">${totalTracks} track${totalTracks === 1 ? '' : 's'}</div>
+    </div>
+  `;
+  allDiv.addEventListener('click', () => {
+    window.audioArtistFilter = '';
+    renderAudioArtists();
+    renderAudioFiles();
+  });
+  container.appendChild(allDiv);
+  
+  // Per-artist hubs
+  window.audioArtists.forEach(artist => {
+    const count = window.audioFiles.filter(a => a.artist === artist.name).length;
+    const card = document.createElement('button');
+    card.className = 'audio-artist-card' + (window.audioArtistFilter === artist.name ? ' active' : '');
+    card.type = 'button';
+    card.innerHTML = `
+      <div class="audio-artist-avatar" style="${artist.coverImage ? `background-image:url('${artist.coverImage}')` : ''}"></div>
+      <div class="audio-artist-meta">
+        <div class="audio-artist-name">${artist.name}</div>
+        <div class="audio-artist-count">${count} track${count === 1 ? '' : 's'}</div>
+      </div>
+    `;
+    card.addEventListener('click', () => {
+      window.audioArtistFilter = artist.name;
+      renderAudioArtists();
+      renderAudioFiles();
+    });
+    container.appendChild(card);
+  });
+  
+  // Unassigned hub if needed
+  const unassignedCount = window.audioFiles.filter(a => !a.artist).length;
+  if (unassignedCount > 0) {
+    const unassigned = document.createElement('button');
+    unassigned.className = 'audio-artist-card' + (window.audioArtistFilter === 'UNASSIGNED' ? ' active' : '');
+    unassigned.type = 'button';
+    unassigned.innerHTML = `
+      <div class="audio-artist-avatar unassigned"></div>
+      <div class="audio-artist-meta">
+        <div class="audio-artist-name">UNASSIGNED</div>
+        <div class="audio-artist-count">${unassignedCount} track${unassignedCount === 1 ? '' : 's'}</div>
+      </div>
+    `;
+    unassigned.addEventListener('click', () => {
+      window.audioArtistFilter = 'UNASSIGNED';
+      renderAudioArtists();
+      renderAudioFiles();
+    });
+    container.appendChild(unassigned);
+  }
+}
 
 // Toggle audio selection
 window.toggleAudioSelection = function(audioUrl) {
