@@ -1187,6 +1187,38 @@ a:hover {
   padding: var(--space-xl);
 }
 
+/* Side-panel variant for cover editing */
+.modal-side {
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.modal-content-side {
+  max-width: 520px;
+  width: 520px;
+  height: 100vh;
+  max-height: 100vh;
+  border-left: 1px solid var(--ink);
+  border-right: none;
+  border-top: none;
+  border-bottom: none;
+  padding: var(--space-xl);
+  box-shadow: -12px 0 40px rgba(0,0,0,0.25);
+}
+
+.modal-side .modal-header {
+  position: sticky;
+  top: 0;
+  padding-bottom: var(--space-md);
+  margin-bottom: var(--space-md);
+  background: linear-gradient(to bottom, var(--paper) 70%, rgba(255,255,255,0));
+  z-index: 1;
+}
+
+.modal-side #modalBody {
+  padding-right: var(--space-sm);
+}
+
 .modal-header {
   display: flex;
   justify-content: space-between;
