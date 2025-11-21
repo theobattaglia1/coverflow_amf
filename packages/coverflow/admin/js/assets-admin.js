@@ -209,7 +209,9 @@ window.navigateToFolder = function(path) {
 window.updateCurrentFolderIndicator = function() {
   const indicator = document.getElementById('currentFolderIndicator');
   if (indicator) {
-    indicator.textContent = window.currentPath || 'ROOT';
+    const parts = (window.currentPath || '').split('/').filter(Boolean);
+    const label = parts.length ? parts.join(' / ') : 'ROOT';
+    indicator.textContent = `Current Folder: ${label}`;
   }
 };
 
