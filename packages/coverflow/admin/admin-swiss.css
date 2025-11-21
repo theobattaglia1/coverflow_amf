@@ -386,6 +386,28 @@ a:hover {
   font-weight: 700;
 }
 
+@media (max-width: 960px) {
+  .admin-layout {
+    grid-template-columns: 1fr;
+  }
+  
+  .admin-sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--ink);
+    padding-right: 0;
+    padding-bottom: var(--space-md);
+    margin-bottom: var(--space-md);
+    flex-direction: row;
+    gap: var(--space-lg);
+    overflow-x: auto;
+  }
+  
+  .admin-sidebar .admin-nav {
+    flex-direction: row;
+    gap: var(--space-md);
+  }
+}
+
 /* Section markers: "01 — SECTION TITLE" format */
 .section {
   margin-bottom: var(--space-xxl);
@@ -1797,9 +1819,8 @@ a:hover {
 /* Audio artist hubs */
 .audio-artist-hubs {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: var(--space-md);
-  overflow-x: auto;
   padding: 0 0 var(--space-md) 0;
   margin-bottom: var(--space-md);
 }
@@ -1813,6 +1834,8 @@ a:hover {
   background: var(--paper);
   cursor: pointer;
   white-space: nowrap;
+  flex: 1 1 220px;
+  max-width: 260px;
 }
 
 .audio-artist-card.active {
@@ -1865,6 +1888,18 @@ a:hover {
 
 .audio-artist-unassigned {
   color: var(--grey-500);
+}
+
+@media (max-width: 768px) {
+  .audio-artist-hubs {
+    gap: var(--space-sm);
+  }
+  
+  .audio-artist-card {
+    flex: 1 1 100%;
+    max-width: 100%;
+    justify-content: flex-start;
+  }
 }
 
 .audio-item {
