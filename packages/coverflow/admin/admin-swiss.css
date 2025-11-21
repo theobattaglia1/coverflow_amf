@@ -1272,6 +1272,8 @@ a:hover {
   border-bottom: none;
   padding: var(--space-xl);
   box-shadow: -12px 0 40px rgba(0,0,0,0.25);
+  box-sizing: border-box;
+  overflow-x: hidden;
 }
 
 .modal-side .modal-header {
@@ -1285,6 +1287,13 @@ a:hover {
 
 .modal-side #modalBody {
   padding-right: var(--space-sm);
+}
+
+@media (max-width: 900px) {
+  .modal-content-side {
+    width: 100%;
+    max-width: 100%;
+  }
 }
 
 .modal-header {

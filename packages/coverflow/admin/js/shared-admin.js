@@ -85,15 +85,24 @@ window.hideLoading = function() {
 
 // Modal management
 window.openModal = function() {
-  document.getElementById('coverModal')?.classList.add('active');
+  const modal = document.getElementById('coverModal');
+  if (!modal) return;
+  modal.classList.add('active');
+  // Prevent background scroll when panel is open
+  document.body.style.overflow = 'hidden';
 };
 
 window.closeModal = function() {
-  document.getElementById('coverModal')?.classList.remove('active');
+  const modal = document.getElementById('coverModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
   const modalBodyElement = document.getElementById('modalBody');
   if (modalBodyElement) {
     modalBodyElement.innerHTML = '';
   }
+  // Restore scroll
+  document.body.style.overflow = '';
 };
 
 // Save button state management
