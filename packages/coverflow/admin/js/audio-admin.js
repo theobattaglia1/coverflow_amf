@@ -33,12 +33,18 @@ function inferArtistForAudio(audio, artists) {
 function buildAudioArtistsFromCovers(covers) {
   const map = new Map();
   (covers || []).forEach(cover => {
-    const name = (cover.coverLabel || cover.artistDetails?.name || '').trim();
-    if (!name) return;
-    if (!map.has(name)) {
-      map.set(name, {
-        name,
-        id: cover.id || name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+    const categories = (cover.category || []).map(c => String(c).toLowerCase());
+    const isArtistType = categories.some(c => c === 'artist' || c === 'songwriter' || c === 'producer');
+    if (!isArtistType) return;
+
+    // Prefer explicit artistDetails.name, fall back to albumTitle
+    const baseName = (cover.artistDetails?.name || cover.albumTitle || '').trim();
+    if (!baseName) return;
+
+    if (!map.has(baseName)) {
+      map.set(baseName, {
+        name: baseName,
+        id: cover.id || baseName.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
         coverImage: cover.frontImage || cover.artistDetails?.image || ''
       });
     }
@@ -48,13 +54,11 @@ function buildAudioArtistsFromCovers(covers) {
 
 // Load audio files + artist hubs
 window.loadAudioFiles = function() {
-  // Load assets (for audio files) and covers (for artist list) in parallel
+  // Load assets (for audio files) and covers (for artist list) in parallel,
+  // using shared safe JSON loader to tolerate HTML/error responses.
   return Promise.all([
-    fetch('/data/assets.json').then(res => res.json()),
-    fetch('/data/covers.json').then(res => res.json()).catch(err => {
-      console.warn('Failed to load covers.json for audio artists:', err);
-      return [];
-    })
+    window.loadJsonData ? window.loadJsonData('/data/assets.json', {}) : fetch('/data/assets.json').then(r => r.json()).catch(() => ({})),
+    window.loadJsonData ? window.loadJsonData('/data/covers.json', []) : fetch('/data/covers.json').then(r => r.json()).catch(() => [])
   ])
     .then(([assetsData, coversData]) => {
       // 1) Build artist hubs
@@ -483,6 +487,18 @@ window.initializeAudio = function() {
   console.log('🎵 Audio Module Initialized');
   loadAudioFiles();
   setupEnhancedAudioSearch();
+};
+
+// Simple refresh hook for audio section (used by REFRESH button)
+window.refreshAudio = function() {
+  showLoading();
+  loadAudioFiles()
+    .catch(err => {
+      console.error('Audio refresh failed:', err);
+    })
+    .finally(() => {
+      hideLoading();
+    });
 };
 
 // Export for shared use

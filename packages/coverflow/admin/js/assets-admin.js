@@ -34,9 +34,9 @@ window.loadAssets = async function() {
 
     // 1) Load structured folders + any pre-defined assets from assets.json
     try {
-      const res = await fetch('/data/assets.json');
-      if (!res.ok) throw new Error(`Failed to load assets.json: ${res.status}`);
-      const data = await res.json();
+      const data = window.loadJsonData
+        ? await window.loadJsonData('/data/assets.json', {})
+        : await fetch('/data/assets.json').then(r => r.json());
       console.log('[FRONTEND] Loaded assets.json:', data);
       window.assets = data || window.assets;
     } catch (err) {
