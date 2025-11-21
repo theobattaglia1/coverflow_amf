@@ -85,6 +85,7 @@ window.loadAudioFiles = function() {
       });
       
       renderAudioArtists();
+      renderAudioFolders();
       renderAudioFiles();
     })
     .catch(err => {
@@ -213,6 +214,51 @@ function renderAudioArtists() {
       renderAudioFiles();
     });
     container.appendChild(unassigned);
+  }
+}
+
+// Render audio folder tree based on artists (virtual folders per artist)
+function renderAudioFolders() {
+  const tree = document.getElementById('audioFolderTree');
+  if (!tree) return;
+  
+  tree.innerHTML = '';
+  
+  // Helper to create a folder item
+  function createFolderItem(label, key, isActive) {
+    const li = document.createElement('li');
+    li.className = 'folder-item' + (isActive ? ' active' : '');
+    li.dataset.artistKey = key;
+    li.innerHTML = `<span style="cursor:pointer;">${label}</span>`;
+    li.addEventListener('click', () => {
+      if (key === '__ALL__') {
+        window.audioArtistFilter = '';
+      } else if (key === '__UNASSIGNED__') {
+        window.audioArtistFilter = 'UNASSIGNED';
+      } else {
+        window.audioArtistFilter = key;
+      }
+      renderAudioArtists();
+      renderAudioFolders();
+      renderAudioFiles();
+    });
+    tree.appendChild(li);
+  }
+  
+  // ALL AUDIO folder
+  createFolderItem('ALL ARTISTS', '__ALL__', !window.audioArtistFilter);
+  
+  // One folder per artist
+  window.audioArtists.forEach(artist => {
+    const isActive = window.audioArtistFilter === artist.name;
+    createFolderItem(artist.name.toUpperCase(), artist.name, isActive);
+  });
+  
+  // Unassigned folder
+  const unassignedCount = window.audioFiles.filter(a => !a.artist).length;
+  if (unassignedCount > 0) {
+    const isActive = window.audioArtistFilter === 'UNASSIGNED';
+    createFolderItem('UNASSIGNED', '__UNASSIGNED__', isActive);
   }
 }
 
