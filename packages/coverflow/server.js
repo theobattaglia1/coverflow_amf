@@ -1326,6 +1326,42 @@ app.get('/api/list-gcs-assets', requireAuth('editor'), async (req, res) => {
   }
 });
 
+// --- NEW ENDPOINT: Generate Signed URL for Streaming ---
+app.post('/api/generate-stream-link', requireAuth('viewer'), async (req, res) => {
+  try {
+    // The App sends: { "filePath": "artist-name/song-title.mp3" }
+    // Note: The filePath should be the relative path inside the bucket, e.g. "my-folder/song.mp3"
+    const { filePath } = req.body;
+
+    if (!filePath) {
+      return res.status(400).json({ error: 'File path is required' });
+    }
+
+    console.log(`[STREAM] Generating signed URL for: ${filePath}`);
+
+    // Define the configuration for the signed URL
+    const options = {
+      version: 'v4',
+      action: 'read',
+      expires: Date.now() + 60 * 60 * 1000, // Link expires in 1 hour
+    };
+
+    // Ask Google Cloud to sign the URL
+    // We use the existing gcsStorage instance and bucket name
+    const [url] = await gcsStorage
+      .bucket(gcsBucketName)
+      .file(filePath)
+      .getSignedUrl(options);
+
+    // Send the temporary "Key Card" back to the app
+    res.json({ signedUrl: url });
+
+  } catch (error) {
+    console.error('[STREAM] Error generating signed URL:', error);
+    res.status(500).json({ error: 'Failed to generate stream link', details: error.message });
+  }
+});
+
 // Cover & Data Management Endpoints
 app.post('/save-cover', requireAuth('editor'), async (req, res) => {
     try {
