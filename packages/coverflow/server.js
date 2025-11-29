@@ -118,7 +118,9 @@ const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     if (process.env.NODE_ENV === 'production') {
-      if (origin.endsWith('.allmyfriendsinc.com') || origin === 'https://allmyfriendsinc.com') {
+      if (origin.endsWith('.allmyfriendsinc.com') || 
+          origin === 'https://allmyfriendsinc.com' || 
+          origin === 'https://app.flutterflow.io') {
         return callback(null, true);
       }
     } else {
