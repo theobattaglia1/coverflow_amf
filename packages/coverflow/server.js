@@ -19,6 +19,7 @@ import sharp from 'sharp';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
 import { execSync } from 'child_process';
+import jwt from 'jsonwebtoken';
 
 // Set FFmpeg path
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -113,6 +114,11 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
+// --- JWT Configuration ---
+// Secret for signing JWT tokens (use env variable in production)
+const JWT_SECRET = process.env.JWT_SECRET || crypto.randomBytes(64).toString('hex');
+const JWT_EXPIRY = '24h'; // Token expires in 24 hours
+
 // CORS configuration - Permissive for FlutterFlow Testing
 const corsOptions = {
   origin: function (origin, callback) {
@@ -123,7 +129,10 @@ const corsOptions = {
     // We can tighten this back up later when the app is published.
     return callback(null, true);
   },
-  credentials: true
+  credentials: true,
+  // Explicitly allow Authorization header for JWT
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Authorization']
 };
 
 app.use(cors(corsOptions));
@@ -161,12 +170,49 @@ function isAdminSubdomain(req) {
   return req.hostname.startsWith('admin.');
 }
 
+// --- JWT Verification Helper ---
+// Extracts and verifies JWT from Authorization header
+function verifyJwtToken(req) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return null;
+  }
+  
+  const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    return decoded;
+  } catch (error) {
+    console.log('[JWT] Token verification failed:', error.message);
+    return null;
+  }
+}
+
+// --- Combined Auth Middleware ---
+// Supports BOTH JWT tokens (for FlutterFlow/API) AND sessions (for web admin panel)
 const requireAuth = (requiredRole = 'viewer') => {
   return (req, res, next) => {
+    // Development bypass
     if (process.env.NODE_ENV === 'development' && process.env.BYPASS_AUTH === 'true') {
       req.session.user = req.session.user || { username: 'dev', role: 'admin' };
+      req.user = req.session.user;
       return next();
     }
+    
+    // First, try JWT authentication (for FlutterFlow/API clients)
+    const jwtUser = verifyJwtToken(req);
+    if (jwtUser) {
+      req.user = jwtUser;
+      // Check role permissions
+      const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
+      const userRole = jwtUser.role;
+      if (userRole === 'admin' || allowedRoles.includes(userRole) || (userRole === 'editor' && allowedRoles.includes('viewer'))) {
+        return next();
+      }
+      return res.status(403).json({ error: 'Insufficient permissions' });
+    }
+    
+    // Fall back to session authentication (for web admin panel)
     if (!isAuthenticated(req)) {
       if (req.xhr || req.headers.accept?.includes('application/json')) {
         return res.status(401).json({ error: 'Authentication required' });
@@ -177,6 +223,8 @@ const requireAuth = (requiredRole = 'viewer') => {
       }
       return res.redirect('/login.html');
     }
+    
+    req.user = req.session.user;
     const allowedRoles = Array.isArray(requiredRole) ? requiredRole : [requiredRole];
     const userRole = req.session.user.role;
     if (userRole === 'admin' || allowedRoles.includes(userRole) || (userRole === 'editor' && allowedRoles.includes('viewer'))) {
@@ -574,19 +622,41 @@ app.post('/api/login', async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // Only allow login for the 'admin' user from env variable
+    // Validate credentials against admin user from env variable
     if (
       username === 'admin' &&
       password === process.env.ADMIN_PASSWORD
     ) {
-      req.session.user = { username: 'admin', role: 'admin' };
-      return res.json({ success: true, role: 'admin' });
+      // Create user object
+      const user = { username: 'admin', role: 'admin' };
+      
+      // Generate JWT token for API/FlutterFlow clients
+      const token = jwt.sign(
+        { username: user.username, role: user.role },
+        JWT_SECRET,
+        { expiresIn: JWT_EXPIRY }
+      );
+      
+      // Also set session for web admin panel compatibility
+      req.session.user = user;
+      
+      // Return JWT token in response (FlutterFlow will use this)
+      return res.json({
+        success: true,
+        token: token,
+        user: {
+          username: user.username
+        }
+      });
     } else {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({
+        success: false,
+        error: 'Invalid username or password'
+      });
     }
   } catch (err) {
     console.error('Login error:', err);
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ success: false, error: 'Login failed' });
   }
 });
 
@@ -598,11 +668,18 @@ app.post('/api/logout', (req, res) => {
 });
 
 app.get('/api/me', (req, res) => {
-  if (req.session.user) {
-    res.json({ user: req.session.user });
-  } else {
-    res.status(401).json({ error: 'Not authenticated' });
+  // First, try JWT authentication
+  const jwtUser = verifyJwtToken(req);
+  if (jwtUser) {
+    return res.json({ user: { username: jwtUser.username, role: jwtUser.role } });
   }
+  
+  // Fall back to session authentication
+  if (req.session.user) {
+    return res.json({ user: req.session.user });
+  }
+  
+  return res.status(401).json({ error: 'Not authenticated' });
 });
 
 // User Management
