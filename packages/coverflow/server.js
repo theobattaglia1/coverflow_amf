@@ -113,24 +113,15 @@ if (process.env.NODE_ENV === 'production') {
   app.set('trust proxy', 1);
 }
 
-// CORS configuration
+// CORS configuration - Permissive for FlutterFlow Testing
 const corsOptions = {
   origin: function (origin, callback) {
-    // 1. Allow requests with no origin (like mobile apps or curl)
+    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-
-    // 2. Allow FlutterFlow Test Mode specifically
-    if (origin === 'https://app.flutterflow.io') return callback(null, true);
-
-    // 3. Allow your own domains
-    if (origin.endsWith('.allmyfriendsinc.com') || origin === 'https://allmyfriendsinc.com') {
-      return callback(null, true);
-    }
-
-    // 4. (Optional) While testing, you can uncomment this to allow EVERYTHING if you are stuck:
-    // return callback(null, true);
-
-    callback(new Error('Not allowed by CORS'));
+    
+    // For now, allow ALL origins so FlutterFlow Test Mode works without issues.
+    // We can tighten this back up later when the app is published.
+    return callback(null, true);
   },
   credentials: true
 };
@@ -1329,6 +1320,35 @@ app.get('/api/list-gcs-assets', requireAuth('editor'), async (req, res) => {
       details: err.message,
       fullError: err,
     });
+  }
+});
+
+// --- NEW ENDPOINT: List Audio Files ---
+app.get('/api/list-audio', requireAuth('viewer'), async (req, res) => {
+  try {
+    console.log(`[AUDIO] Listing audio files from bucket: ${gcsBucketName}`);
+    const bucket = gcsStorage.bucket(gcsBucketName);
+    const [files] = await bucket.getFiles();
+
+    // Filter for audio extensions only
+    const audioFiles = files.filter((f) => {
+      const name = (f.name || '').toLowerCase();
+      return /\.(mp3|wav|m4a|aac|flac|ogg|aiff)$/i.test(name);
+    });
+
+    // Map to a clean format for the app
+    const tracks = audioFiles.map((f) => ({
+      name: f.name.split('/').pop(), // Get just the filename
+      path: f.name, // The full path needed for the signing endpoint
+      size: f.metadata.size,
+      updated: f.metadata.updated
+    }));
+
+    res.json({ tracks });
+
+  } catch (err) {
+    console.error('[AUDIO] Error listing files:', err);
+    res.status(500).json({ error: 'Failed to list audio', details: err.message });
   }
 });
 
