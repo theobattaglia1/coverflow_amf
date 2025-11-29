@@ -116,16 +116,20 @@ if (process.env.NODE_ENV === 'production') {
 // CORS configuration
 const corsOptions = {
   origin: function (origin, callback) {
+    // 1. Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
-    if (process.env.NODE_ENV === 'production') {
-      if (origin.endsWith('.allmyfriendsinc.com') || 
-          origin === 'https://allmyfriendsinc.com' || 
-          origin === 'https://app.flutterflow.io') {
-        return callback(null, true);
-      }
-    } else {
-      return callback(null, true); // Allow all in development
+
+    // 2. Allow FlutterFlow Test Mode specifically
+    if (origin === 'https://app.flutterflow.io') return callback(null, true);
+
+    // 3. Allow your own domains
+    if (origin.endsWith('.allmyfriendsinc.com') || origin === 'https://allmyfriendsinc.com') {
+      return callback(null, true);
     }
+
+    // 4. (Optional) While testing, you can uncomment this to allow EVERYTHING if you are stuck:
+    // return callback(null, true);
+
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true
