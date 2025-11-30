@@ -13,6 +13,180 @@ window.audioFolders = [];
 window.audioArtists = [];
 window.audioArtistFilter = ''; // '' = all artists, 'UNASSIGNED' = no match
 
+// ============================================
+// SUBFOLDER SYSTEM (Alias/Playlist-style)
+// ============================================
+// Subfolders are like playlists - songs can belong to multiple subfolders
+// without being duplicated. The song exists once, subfolders are just references.
+
+// Structure: { "Artist Name": ["EP 2024", "Singles", "Demos"], ... }
+window.artistSubfolders = {};
+
+// Current subfolder filter (null = show all songs for current artist)
+window.currentSubfolder = null;
+
+// Get subfolders for an artist
+function getArtistSubfolders(artistName) {
+  if (!artistName) return [];
+  return window.artistSubfolders[artistName] || [];
+}
+
+// Create a new subfolder for an artist
+window.createSubfolder = function(artistName, folderName) {
+  if (!artistName || !folderName) return false;
+  
+  if (!window.artistSubfolders[artistName]) {
+    window.artistSubfolders[artistName] = [];
+  }
+  
+  // Check if already exists
+  if (window.artistSubfolders[artistName].includes(folderName)) {
+    showToast('SUBFOLDER ALREADY EXISTS', 'error');
+    return false;
+  }
+  
+  window.artistSubfolders[artistName].push(folderName);
+  saveSubfoldersToStorage();
+  return true;
+};
+
+// Rename a subfolder
+window.renameSubfolder = function(artistName, oldName, newName) {
+  if (!artistName || !oldName || !newName) return false;
+  
+  const folders = window.artistSubfolders[artistName];
+  if (!folders) return false;
+  
+  const index = folders.indexOf(oldName);
+  if (index === -1) return false;
+  
+  // Update folder name
+  folders[index] = newName;
+  
+  // Update all audio files that reference this subfolder
+  window.audioFiles.forEach(audio => {
+    if (audio.artist === artistName && audio.subfolders) {
+      const subIdx = audio.subfolders.indexOf(oldName);
+      if (subIdx !== -1) {
+        audio.subfolders[subIdx] = newName;
+      }
+    }
+  });
+  
+  saveSubfoldersToStorage();
+  return true;
+};
+
+// Delete a subfolder (removes references from songs, doesn't delete songs)
+window.deleteSubfolder = function(artistName, folderName) {
+  if (!artistName || !folderName) return false;
+  
+  const folders = window.artistSubfolders[artistName];
+  if (!folders) return false;
+  
+  const index = folders.indexOf(folderName);
+  if (index === -1) return false;
+  
+  // Remove folder
+  folders.splice(index, 1);
+  
+  // Remove subfolder reference from all audio files
+  window.audioFiles.forEach(audio => {
+    if (audio.artist === artistName && audio.subfolders) {
+      const subIdx = audio.subfolders.indexOf(folderName);
+      if (subIdx !== -1) {
+        audio.subfolders.splice(subIdx, 1);
+      }
+    }
+  });
+  
+  // Reset current subfolder if it was deleted
+  if (window.currentSubfolder === folderName) {
+    window.currentSubfolder = null;
+  }
+  
+  saveSubfoldersToStorage();
+  return true;
+};
+
+// Add song(s) to a subfolder (creates alias, not copy)
+window.addToSubfolder = function(audioUrls, artistName, folderName) {
+  if (!Array.isArray(audioUrls)) audioUrls = [audioUrls];
+  
+  let addedCount = 0;
+  audioUrls.forEach(url => {
+    const audio = window.audioFiles.find(a => a.url === url);
+    if (audio && audio.artist === artistName) {
+      if (!audio.subfolders) audio.subfolders = [];
+      if (!audio.subfolders.includes(folderName)) {
+        audio.subfolders.push(folderName);
+        addedCount++;
+      }
+    }
+  });
+  
+  saveSubfoldersToStorage();
+  return addedCount;
+};
+
+// Remove song(s) from a subfolder (removes alias, song still exists)
+window.removeFromSubfolder = function(audioUrls, folderName) {
+  if (!Array.isArray(audioUrls)) audioUrls = [audioUrls];
+  
+  let removedCount = 0;
+  audioUrls.forEach(url => {
+    const audio = window.audioFiles.find(a => a.url === url);
+    if (audio && audio.subfolders) {
+      const index = audio.subfolders.indexOf(folderName);
+      if (index !== -1) {
+        audio.subfolders.splice(index, 1);
+        removedCount++;
+      }
+    }
+  });
+  
+  saveSubfoldersToStorage();
+  return removedCount;
+};
+
+// Save subfolders to localStorage (and optionally sync to server)
+function saveSubfoldersToStorage() {
+  try {
+    localStorage.setItem('amf_audio_subfolders', JSON.stringify(window.artistSubfolders));
+    
+    // Also save subfolder assignments in audio files
+    localStorage.setItem('amf_audio_subfolder_assignments', JSON.stringify(
+      window.audioFiles.map(a => ({ url: a.url, subfolders: a.subfolders || [] }))
+    ));
+  } catch (e) {
+    console.warn('[AUDIO] Failed to save subfolders to localStorage:', e);
+  }
+}
+
+// Load subfolders from localStorage
+function loadSubfoldersFromStorage() {
+  try {
+    const saved = localStorage.getItem('amf_audio_subfolders');
+    if (saved) {
+      window.artistSubfolders = JSON.parse(saved);
+    }
+    
+    // Restore subfolder assignments to audio files
+    const assignments = localStorage.getItem('amf_audio_subfolder_assignments');
+    if (assignments) {
+      const parsed = JSON.parse(assignments);
+      parsed.forEach(item => {
+        const audio = window.audioFiles.find(a => a.url === item.url);
+        if (audio && item.subfolders?.length) {
+          audio.subfolders = item.subfolders;
+        }
+      });
+    }
+  } catch (e) {
+    console.warn('[AUDIO] Failed to load subfolders from localStorage:', e);
+  }
+}
+
 // Utility: infer artist name for an audio file based on known artists and filename/url
 function inferArtistForAudio(audio, artists) {
   const haystack = (audio.filename || audio.name || audio.url || '').toLowerCase();
@@ -86,7 +260,14 @@ window.loadAudioFiles = function() {
             audio.artist = ''; // unassigned
           }
         }
+        // Initialize subfolders array if not present
+        if (!audio.subfolders) {
+          audio.subfolders = [];
+        }
       });
+      
+      // 4) Load subfolder data from localStorage
+      loadSubfoldersFromStorage();
       
       renderAudioArtists();
       renderAudioFolders();
@@ -144,6 +325,13 @@ window.renderAudioFiles = function() {
     }
   }
   
+  // Apply subfolder filter if any (only when viewing an artist)
+  if (window.currentSubfolder && window.audioArtistFilter && window.audioArtistFilter !== 'UNASSIGNED') {
+    filesToRender = filesToRender.filter(a => 
+      a.subfolders && a.subfolders.includes(window.currentSubfolder)
+    );
+  }
+  
   // Build iTunes-style table
   container.innerHTML = `
     <div class="audio-list">
@@ -192,6 +380,16 @@ window.renderAudioFiles = function() {
     row.dataset.url = audio.url;
     row.draggable = true;
     
+    // Build subfolder badges
+    const subfolderBadges = (audio.subfolders && audio.subfolders.length > 0) 
+      ? audio.subfolders.map(sf => `<span class="audio-subfolder-badge">${escapeHtml(sf)}</span>`).join('')
+      : '';
+    
+    // Show add-to-subfolder button only when viewing an artist with subfolders
+    const showSubfolderBtn = window.audioArtistFilter && 
+                              window.audioArtistFilter !== 'UNASSIGNED' && 
+                              getArtistSubfolders(window.audioArtistFilter).length > 0;
+    
     row.innerHTML = `
       <input type="checkbox" class="audio-row-checkbox" 
              ${isSelected ? 'checked' : ''} 
@@ -199,9 +397,12 @@ window.renderAudioFiles = function() {
       <button class="audio-play-btn" onclick="playAudio('${escapedUrl}')" title="Play">
         ${isPlaying ? '❚❚' : '▶'}
       </button>
-      <input type="text" class="audio-title-input" value="${escapeHtml(displayName)}" 
-             onchange="updateAudioMetadata('${escapedUrl}', 'filename', this.value)"
-             title="${escapedUrl}">
+      <div class="audio-title-cell">
+        <input type="text" class="audio-title-input" value="${escapeHtml(displayName)}" 
+               onchange="updateAudioMetadata('${escapedUrl}', 'filename', this.value)"
+               title="${escapedUrl}">
+        ${subfolderBadges ? `<div class="audio-subfolder-badges">${subfolderBadges}</div>` : ''}
+      </div>
       <div class="audio-artist ${!audio.artist ? 'unassigned' : ''}" 
            onclick="showMoveModal('${escapedUrl}')" 
            title="Click to change artist">
@@ -209,9 +410,10 @@ window.renderAudioFiles = function() {
       </div>
       <div class="audio-duration" data-url="${escapedUrl}">--:--</div>
       <div class="audio-actions">
+        ${showSubfolderBtn ? `<button class="audio-action-btn" onclick="showSubfolderModal('${escapedUrl}')" title="Add to subfolder">📁</button>` : ''}
         <button class="audio-action-btn" onclick="copyAudioUrl('${escapedUrl}')" title="Copy URL">📋</button>
-        <button class="audio-action-btn" onclick="showMoveModal('${escapedUrl}')" title="Move">↗</button>
-        <button class="audio-action-btn danger" onclick="deleteAudioFile('${escapedUrl}')" title="Delete">✕</button>
+        <button class="audio-action-btn" onclick="showMoveModal('${escapedUrl}')" title="Move artist">↗</button>
+        <button class="audio-action-btn danger" onclick="${window.currentSubfolder ? `removeFromCurrentSubfolder('${escapedUrl}')` : `deleteAudioFile('${escapedUrl}')`}" title="${window.currentSubfolder ? 'Remove from folder' : 'Delete'}">✕</button>
       </div>
     `;
     
@@ -487,6 +689,7 @@ function renderAudioArtists() {
   const allDiv = createArtistCard('ALL AUDIO', totalTracks, !window.audioArtistFilter, '', 'all');
   allDiv.addEventListener('click', () => {
     window.audioArtistFilter = '';
+    window.currentSubfolder = null; // Reset subfolder when changing artist
     renderAudioArtists();
     renderAudioFiles();
   });
@@ -499,6 +702,10 @@ function renderAudioArtists() {
     const card = createArtistCard(artist.name, count, window.audioArtistFilter === artist.name, avatarStyle);
     
     card.addEventListener('click', () => {
+      // Only reset subfolder if changing to a different artist
+      if (window.audioArtistFilter !== artist.name) {
+        window.currentSubfolder = null;
+      }
       window.audioArtistFilter = artist.name;
       renderAudioArtists();
       renderAudioFiles();
@@ -516,6 +723,7 @@ function renderAudioArtists() {
     const unassigned = createArtistCard('UNASSIGNED', unassignedCount, window.audioArtistFilter === 'UNASSIGNED', '', 'unassigned');
     unassigned.addEventListener('click', () => {
       window.audioArtistFilter = 'UNASSIGNED';
+      window.currentSubfolder = null;
       renderAudioArtists();
       renderAudioFiles();
     });
@@ -523,7 +731,248 @@ function renderAudioArtists() {
     setupDropTarget(unassigned, '');
     container.appendChild(unassigned);
   }
+  
+  // ============================================
+  // SUBFOLDERS SECTION (when artist is selected)
+  // ============================================
+  if (window.audioArtistFilter && window.audioArtistFilter !== 'UNASSIGNED') {
+    renderSubfoldersSection(container);
+  }
 }
+
+// Render subfolders section for current artist
+function renderSubfoldersSection(container) {
+  const artistName = window.audioArtistFilter;
+  const subfolders = getArtistSubfolders(artistName);
+  const artistTracks = window.audioFiles.filter(a => a.artist === artistName);
+  
+  // Create subfolders container
+  const subfoldersDiv = document.createElement('div');
+  subfoldersDiv.className = 'audio-subfolders-section';
+  subfoldersDiv.innerHTML = `
+    <div class="audio-subfolders-header">
+      <span class="audio-subfolders-title">FOLDERS</span>
+      <button class="audio-subfolder-add-btn" onclick="promptCreateSubfolder()" title="Create new folder">+</button>
+    </div>
+    <div class="audio-subfolders-list" id="audioSubfoldersList"></div>
+  `;
+  
+  container.appendChild(subfoldersDiv);
+  
+  const listEl = document.getElementById('audioSubfoldersList');
+  
+  // "All Songs" option (shows all songs for this artist)
+  const allSongsBtn = document.createElement('button');
+  allSongsBtn.className = `audio-subfolder-btn${!window.currentSubfolder ? ' active' : ''}`;
+  allSongsBtn.innerHTML = `
+    <span class="audio-subfolder-name">ALL SONGS</span>
+    <span class="audio-subfolder-count">${artistTracks.length}</span>
+  `;
+  allSongsBtn.addEventListener('click', () => {
+    window.currentSubfolder = null;
+    renderAudioArtists();
+    renderAudioFiles();
+  });
+  listEl.appendChild(allSongsBtn);
+  
+  // Render each subfolder
+  subfolders.forEach(folderName => {
+    const count = artistTracks.filter(a => a.subfolders?.includes(folderName)).length;
+    
+    const btn = document.createElement('button');
+    btn.className = `audio-subfolder-btn${window.currentSubfolder === folderName ? ' active' : ''}`;
+    btn.draggable = false;
+    btn.innerHTML = `
+      <span class="audio-subfolder-name">${escapeHtml(folderName)}</span>
+      <span class="audio-subfolder-count">${count}</span>
+      <span class="audio-subfolder-actions">
+        <button class="audio-subfolder-action" onclick="event.stopPropagation(); promptRenameSubfolder('${escapeHtml(folderName)}')" title="Rename">✎</button>
+        <button class="audio-subfolder-action danger" onclick="event.stopPropagation(); confirmDeleteSubfolder('${escapeHtml(folderName)}')" title="Delete folder">✕</button>
+      </span>
+    `;
+    
+    btn.addEventListener('click', () => {
+      window.currentSubfolder = folderName;
+      renderAudioArtists();
+      renderAudioFiles();
+    });
+    
+    // Enable drop on subfolder to add songs
+    setupSubfolderDropTarget(btn, folderName);
+    
+    listEl.appendChild(btn);
+  });
+}
+
+// Setup drop target on subfolder buttons
+function setupSubfolderDropTarget(element, folderName) {
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    element.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, false);
+  });
+  
+  ['dragenter', 'dragover'].forEach(eventName => {
+    element.addEventListener(eventName, () => element.classList.add('drop-target'), false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    element.addEventListener(eventName, () => element.classList.remove('drop-target'), false);
+  });
+  
+  element.addEventListener('drop', (e) => {
+    const audioUrl = e.dataTransfer.getData('text/plain');
+    if (audioUrl && window.audioArtistFilter) {
+      const added = addToSubfolder(audioUrl, window.audioArtistFilter, folderName);
+      if (added > 0) {
+        showToast(`ADDED TO ${folderName.toUpperCase()}`);
+        renderAudioArtists();
+        renderAudioFiles();
+      }
+    }
+  }, false);
+}
+
+// Prompt to create new subfolder
+window.promptCreateSubfolder = function() {
+  const artistName = window.audioArtistFilter;
+  if (!artistName || artistName === 'UNASSIGNED') {
+    showToast('SELECT AN ARTIST FIRST', 'error');
+    return;
+  }
+  
+  const folderName = prompt('ENTER FOLDER NAME:');
+  if (!folderName || !folderName.trim()) return;
+  
+  if (createSubfolder(artistName, folderName.trim())) {
+    showToast(`FOLDER "${folderName.toUpperCase()}" CREATED`);
+    renderAudioArtists();
+  }
+};
+
+// Prompt to rename subfolder
+window.promptRenameSubfolder = function(oldName) {
+  const artistName = window.audioArtistFilter;
+  const newName = prompt('RENAME FOLDER:', oldName);
+  if (!newName || !newName.trim() || newName === oldName) return;
+  
+  if (renameSubfolder(artistName, oldName, newName.trim())) {
+    showToast(`FOLDER RENAMED TO "${newName.toUpperCase()}"`);
+    if (window.currentSubfolder === oldName) {
+      window.currentSubfolder = newName.trim();
+    }
+    renderAudioArtists();
+    renderAudioFiles();
+  }
+};
+
+// Confirm delete subfolder
+window.confirmDeleteSubfolder = function(folderName) {
+  const artistName = window.audioArtistFilter;
+  if (!confirm(`DELETE FOLDER "${folderName}"?\n\nThis will not delete the songs, only the folder.`)) return;
+  
+  if (deleteSubfolder(artistName, folderName)) {
+    showToast(`FOLDER "${folderName.toUpperCase()}" DELETED`);
+    renderAudioArtists();
+    renderAudioFiles();
+  }
+};
+
+// Remove from current subfolder
+window.removeFromCurrentSubfolder = function(url) {
+  if (!window.currentSubfolder) return;
+  
+  const removed = removeFromSubfolder(url, window.currentSubfolder);
+  if (removed > 0) {
+    showToast('REMOVED FROM FOLDER');
+    renderAudioFiles();
+    renderAudioArtists();
+  }
+};
+
+// Show modal to add song to subfolder
+window.showSubfolderModal = function(url) {
+  const artistName = window.audioArtistFilter;
+  if (!artistName || artistName === 'UNASSIGNED') return;
+  
+  const subfolders = getArtistSubfolders(artistName);
+  if (subfolders.length === 0) {
+    showToast('NO SUBFOLDERS - CREATE ONE FIRST');
+    return;
+  }
+  
+  const audio = window.audioFiles.find(a => a.url === url);
+  if (!audio) return;
+  
+  // Create modal
+  let modal = document.getElementById('audioSubfolderModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'audioSubfolderModal';
+    modal.className = 'audio-move-modal';
+    document.body.appendChild(modal);
+  }
+  
+  const currentFolders = audio.subfolders || [];
+  
+  modal.innerHTML = `
+    <div class="audio-move-content">
+      <div class="audio-move-title">ADD TO FOLDER</div>
+      <div class="audio-move-list">
+        ${subfolders.map(sf => `
+          <div class="audio-move-option ${currentFolders.includes(sf) ? 'selected' : ''}" 
+               data-folder="${escapeHtml(sf)}" data-url="${escapeHtml(url)}">
+            <span>${currentFolders.includes(sf) ? '☑' : '☐'} ${escapeHtml(sf)}</span>
+          </div>
+        `).join('')}
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn" onclick="closeSubfolderModal()">DONE</button>
+      </div>
+    </div>
+  `;
+  
+  // Toggle folder assignment on click
+  modal.querySelectorAll('.audio-move-option').forEach(option => {
+    option.addEventListener('click', () => {
+      const folder = option.dataset.folder;
+      const audioUrl = option.dataset.url;
+      const audioFile = window.audioFiles.find(a => a.url === audioUrl);
+      
+      if (!audioFile.subfolders) audioFile.subfolders = [];
+      
+      if (audioFile.subfolders.includes(folder)) {
+        // Remove from folder
+        removeFromSubfolder(audioUrl, folder);
+        option.classList.remove('selected');
+        option.querySelector('span').textContent = `☐ ${folder}`;
+      } else {
+        // Add to folder
+        addToSubfolder(audioUrl, artistName, folder);
+        option.classList.add('selected');
+        option.querySelector('span').textContent = `☑ ${folder}`;
+      }
+    });
+  });
+  
+  // Close on backdrop click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeSubfolderModal();
+  });
+  
+  modal.classList.add('active');
+};
+
+window.closeSubfolderModal = function() {
+  const modal = document.getElementById('audioSubfolderModal');
+  if (modal) {
+    modal.classList.remove('active');
+    // Refresh UI
+    renderAudioArtists();
+    renderAudioFiles();
+  }
+};
 
 // Render audio folder tree based on artists (virtual folders per artist)
 function renderAudioFolders() {
@@ -1096,10 +1545,13 @@ function setupAudioDropzone() {
   const dropzoneText = dropzone.querySelector('.dropzone-text');
   if (dropzoneText) {
     dropzoneText.innerHTML = `
-      <span style="font-size: 2rem; display: block; margin-bottom: 8px;">🎵</span>
-      DROP AUDIO FILES HERE<br>
-      <span style="font-size: 0.8em; opacity: 0.7;">or click to browse • MP3, WAV, M4A, AAC, FLAC, OGG</span>
+      <span style="font-size: 1.2rem; margin-right: 8px;">🎵</span>
+      DROP AUDIO FILES HERE
+      <span style="font-size: 0.75em; opacity: 0.5; margin-left: 8px;">or click • MP3, WAV, M4A, AAC, FLAC, OGG</span>
     `;
+    dropzoneText.style.display = 'flex';
+    dropzoneText.style.alignItems = 'center';
+    dropzoneText.style.justifyContent = 'center';
   }
   
   console.log('[AUDIO] Dropzone setup complete');

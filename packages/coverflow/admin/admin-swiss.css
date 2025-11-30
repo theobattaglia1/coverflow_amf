@@ -569,12 +569,12 @@ a:hover {
 
 /* Dropzone: Minimal intervention */
 .dropzone {
-  border: 1px dashed var(--grey-500);
-  padding: var(--space-xl);
+  border: 1px dashed var(--grey-400);
+  padding: 16px;
   text-align: center;
   cursor: pointer;
-  transition: all var(--transition);
-  margin-bottom: var(--space-xl);
+  transition: all 0.15s ease;
+  margin-bottom: 8px;
 }
 
 .dropzone:hover,
@@ -587,8 +587,7 @@ a:hover {
   border-color: #00cc66;
   border-style: solid;
   border-width: 2px;
-  background: rgba(0, 204, 102, 0.1);
-  transform: scale(1.01);
+  background: rgba(0, 204, 102, 0.08);
 }
 
 .dropzone-text {
@@ -653,8 +652,8 @@ a:hover {
 }
 
 .folder-panel {
-  border-right: 1px solid var(--ink);
-  padding-right: var(--space-lg);
+  border-right: 1px solid var(--grey-300);
+  padding-right: 8px;
 }
 
 .folder-list {
@@ -664,23 +663,24 @@ a:hover {
 }
 
 .folder-item {
-  padding: var(--space-sm) 0;
+  padding: 4px 0;
   font-family: var(--font-mono);
-  font-size: 0.875rem;
-  letter-spacing: var(--tracking-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.1s;
   border-left: 2px solid transparent;
-  padding-left: var(--space-sm);
+  padding-left: 6px;
+  text-transform: uppercase;
 }
 
 .folder-item:hover {
-  border-left-color: var(--grey-500);
+  border-left-color: var(--grey-400);
 }
 
 .folder-item.active {
   border-left-color: var(--ink);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 /* Asset grid */
@@ -1816,43 +1816,50 @@ a:hover {
   background: #ff6666;
 }
 
-/* Audio Management Styles */
+/* ============================================
+   Audio Management Styles - COMPACT LAYOUT
+   ============================================ */
+
 .audio-browser {
   display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: var(--space-xl);
-  margin-bottom: var(--space-xl);
+  grid-template-columns: 180px 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .audio-content {
-  padding: var(--space-lg);
+  padding: 8px;
 }
 
 .audio-grid {
   display: grid;
-  gap: var(--space-lg);
+  gap: 8px;
 }
 
-/* Audio artist hubs */
+/* Artist hubs - compact horizontal pills */
 .audio-artist-hubs {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-md);
-  padding: 0 0 var(--space-md) 0;
-  margin-bottom: var(--space-md);
+  gap: 4px;
+  padding: 0;
+  margin-bottom: 8px;
 }
 
 .audio-artist-card {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-md);
+  gap: 6px;
+  padding: 4px 10px;
   border: 1px solid var(--grey-300);
   background: var(--paper);
   cursor: pointer;
   white-space: nowrap;
-  flex: 1 1 220px;
-  max-width: 260px;
+  font-size: 0.7rem;
+  transition: all 0.1s;
+}
+
+.audio-artist-card:hover {
+  border-color: var(--grey-500);
 }
 
 .audio-artist-card.active {
@@ -1861,61 +1868,66 @@ a:hover {
   color: var(--paper);
 }
 
+.audio-artist-card.drop-target {
+  border-color: #00cc66 !important;
+  background: rgba(0, 204, 102, 0.1) !important;
+}
+
 .audio-artist-avatar {
-  width: 32px;
-  height: 32px;
+  width: 18px;
+  height: 18px;
   border-radius: 50%;
-  background: var(--grey-200);
+  background: var(--grey-300);
   background-size: cover;
   background-position: center;
+  flex-shrink: 0;
 }
 
 .audio-artist-avatar.all {
-  background: var(--grey-900);
+  background: var(--grey-800);
 }
 
 .audio-artist-avatar.unassigned {
-  background: var(--grey-300);
+  background: var(--grey-400);
 }
 
 .audio-artist-meta {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  gap: 6px;
 }
 
 .audio-artist-name {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
-  letter-spacing: var(--tracking-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
 .audio-artist-count {
-  font-size: 0.7rem;
-  color: var(--grey-500);
+  font-size: 0.6rem;
+  opacity: 0.5;
 }
 
-.audio-artist-label {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  margin-top: 4px;
+.audio-artist-card.active .audio-artist-count {
+  opacity: 0.7;
 }
 
+/* Hide these in compact mode */
+.audio-artist-label,
 .audio-artist-unassigned {
-  color: var(--grey-500);
+  display: none;
 }
 
 @media (max-width: 768px) {
-  .audio-artist-hubs {
-    gap: var(--space-sm);
+  .audio-browser {
+    grid-template-columns: 1fr;
   }
   
-  .audio-artist-card {
-    flex: 1 1 100%;
-    max-width: 100%;
-    justify-content: flex-start;
+  .audio-artist-hubs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
   }
 }
 
@@ -1926,16 +1938,16 @@ a:hover {
 /* Table header */
 .audio-table-header {
   display: grid;
-  grid-template-columns: 32px 36px 1fr 140px 80px 100px;
-  gap: 8px;
-  padding: 8px 12px;
+  grid-template-columns: 20px 24px 1fr 100px 50px 80px;
+  gap: 6px;
+  padding: 4px 8px;
   background: var(--grey-100);
   border-bottom: 1px solid var(--grey-300);
   font-family: var(--font-mono);
-  font-size: 0.65rem;
-  letter-spacing: var(--tracking-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
   text-transform: uppercase;
-  color: var(--grey-600);
+  color: var(--grey-500);
   position: sticky;
   top: 0;
   z-index: 10;
@@ -1951,20 +1963,21 @@ a:hover {
 .audio-list {
   border: 1px solid var(--grey-300);
   background: var(--paper);
-  max-height: 600px;
+  max-height: calc(100vh - 320px);
   overflow-y: auto;
 }
 
-/* Audio row - compact */
+/* Audio row - ultra compact */
 .audio-row {
   display: grid;
-  grid-template-columns: 32px 36px 1fr 140px 80px 100px;
-  gap: 8px;
-  padding: 6px 12px;
-  border-bottom: 1px solid var(--grey-200);
+  grid-template-columns: 20px 24px 1fr 100px 50px 80px;
+  gap: 6px;
+  padding: 3px 8px;
+  border-bottom: 1px solid var(--grey-100);
   align-items: center;
-  transition: background 0.1s ease;
+  transition: background 0.08s ease;
   cursor: default;
+  min-height: 28px;
 }
 
 .audio-row:hover {
@@ -1972,30 +1985,29 @@ a:hover {
 }
 
 .audio-row.selected {
-  background: rgba(0, 102, 255, 0.08);
+  background: rgba(0, 102, 255, 0.06);
 }
 
 .audio-row.playing {
-  background: rgba(0, 204, 102, 0.08);
+  background: rgba(0, 204, 102, 0.06);
 }
 
 .audio-row.dragging {
   opacity: 0.5;
-  background: var(--grey-100);
 }
 
 /* Checkbox column */
 .audio-row-checkbox {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   cursor: pointer;
   accent-color: var(--ink);
 }
 
 /* Play button column */
 .audio-play-btn {
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
   border: none;
   background: transparent;
   cursor: pointer;
@@ -2003,12 +2015,14 @@ a:hover {
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  transition: all 0.15s ease;
-  font-size: 12px;
+  transition: all 0.1s ease;
+  font-size: 9px;
+  color: var(--grey-500);
 }
 
 .audio-play-btn:hover {
   background: var(--grey-200);
+  color: var(--ink);
 }
 
 .audio-row.playing .audio-play-btn {
@@ -2019,7 +2033,7 @@ a:hover {
 /* Title column */
 .audio-title {
   font-family: var(--font-sans);
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -2031,11 +2045,11 @@ a:hover {
   background: transparent;
   border: none;
   font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
+  font-size: 0.75rem;
+  font-weight: 500;
   width: 100%;
-  padding: 2px 4px;
-  margin: -2px -4px;
+  padding: 1px 3px;
+  margin: -1px -3px;
   border-radius: 2px;
 }
 
@@ -2051,13 +2065,18 @@ a:hover {
 /* Artist column */
 .audio-artist {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--grey-600);
+  font-size: 0.6rem;
+  color: var(--grey-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
   letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.audio-artist:hover {
+  color: var(--ink);
 }
 
 .audio-artist.unassigned {
@@ -2068,31 +2087,37 @@ a:hover {
 /* Duration column */
 .audio-duration {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--grey-500);
+  font-size: 0.6rem;
+  color: var(--grey-400);
   text-align: right;
 }
 
-/* Actions column */
+/* Actions column - hidden by default, show on hover */
 .audio-actions {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   justify-content: flex-end;
+  opacity: 0;
+  transition: opacity 0.1s;
+}
+
+.audio-row:hover .audio-actions {
+  opacity: 1;
 }
 
 .audio-action-btn {
-  width: 24px;
-  height: 24px;
+  width: 18px;
+  height: 18px;
   border: none;
   background: transparent;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 3px;
-  font-size: 10px;
-  color: var(--grey-500);
-  transition: all 0.1s ease;
+  border-radius: 2px;
+  font-size: 9px;
+  color: var(--grey-400);
+  transition: all 0.08s ease;
 }
 
 .audio-action-btn:hover {
@@ -2101,20 +2126,20 @@ a:hover {
 }
 
 .audio-action-btn.danger:hover {
-  background: #ffebee;
+  background: #ffcdd2;
   color: #c62828;
 }
 
-/* Now playing bar */
+/* Now playing bar - compact */
 .audio-now-playing {
   position: sticky;
   bottom: 0;
   background: var(--ink);
   color: var(--paper);
-  padding: 12px 16px;
+  padding: 6px 12px;
   display: none;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
   z-index: 20;
 }
 
@@ -2128,7 +2153,7 @@ a:hover {
 }
 
 .audio-now-playing-title {
-  font-size: 0.85rem;
+  font-size: 0.75rem;
   font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
@@ -2137,20 +2162,20 @@ a:hover {
 
 .audio-now-playing-artist {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  opacity: 0.7;
+  font-size: 0.6rem;
+  opacity: 0.6;
   text-transform: uppercase;
 }
 
 .audio-now-playing-controls {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
 .audio-now-playing-btn {
-  width: 36px;
-  height: 36px;
+  width: 28px;
+  height: 28px;
   border: none;
   background: rgba(255,255,255,0.1);
   color: white;
@@ -2168,8 +2193,8 @@ a:hover {
 }
 
 .audio-now-playing-btn.play {
-  width: 44px;
-  height: 44px;
+  width: 32px;
+  height: 32px;
   background: white;
   color: var(--ink);
 }
@@ -2178,12 +2203,12 @@ a:hover {
   flex: 2;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
 
 .audio-progress-bar {
   flex: 1;
-  height: 4px;
+  height: 3px;
   background: rgba(255,255,255,0.2);
   border-radius: 2px;
   cursor: pointer;
@@ -2200,8 +2225,8 @@ a:hover {
 
 .audio-time {
   font-family: var(--font-mono);
-  font-size: 0.7rem;
-  min-width: 40px;
+  font-size: 0.6rem;
+  min-width: 32px;
   text-align: center;
 }
 
@@ -2266,6 +2291,178 @@ a:hover {
   background: var(--ink);
   color: var(--paper);
   border-color: var(--ink);
+}
+
+/* ============================================
+   Subfolders Section
+   ============================================ */
+
+.audio-subfolders-section {
+  width: 100%;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--grey-200);
+}
+
+.audio-subfolders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.audio-subfolders-title {
+  font-family: var(--font-mono);
+  font-size: 0.55rem;
+  letter-spacing: 0.03em;
+  color: var(--grey-400);
+  text-transform: uppercase;
+}
+
+.audio-subfolder-add-btn {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--grey-400);
+  background: transparent;
+  cursor: pointer;
+  font-size: 11px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.1s;
+}
+
+.audio-subfolder-add-btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.audio-subfolders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.audio-subfolder-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.08s;
+  width: 100%;
+}
+
+.audio-subfolder-btn:hover {
+  background: var(--grey-50);
+}
+
+.audio-subfolder-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.audio-subfolder-btn.drop-target {
+  border-color: #00cc66;
+  background: rgba(0, 204, 102, 0.08);
+}
+
+.audio-subfolder-name {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.audio-subfolder-count {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  opacity: 0.6;
+  min-width: 20px;
+  text-align: right;
+}
+
+.audio-subfolder-actions {
+  display: none;
+  gap: 2px;
+}
+
+.audio-subfolder-btn:hover .audio-subfolder-actions {
+  display: flex;
+}
+
+.audio-subfolder-btn.active .audio-subfolder-actions {
+  display: flex;
+}
+
+.audio-subfolder-action {
+  width: 18px;
+  height: 18px;
+  border: none;
+  background: rgba(255,255,255,0.2);
+  cursor: pointer;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 2px;
+  transition: background 0.1s;
+}
+
+.audio-subfolder-btn:not(.active) .audio-subfolder-action {
+  background: var(--grey-200);
+}
+
+.audio-subfolder-action:hover {
+  background: rgba(255,255,255,0.4);
+}
+
+.audio-subfolder-btn:not(.active) .audio-subfolder-action:hover {
+  background: var(--grey-300);
+}
+
+.audio-subfolder-action.danger:hover {
+  background: #ffcdd2;
+  color: #c62828;
+}
+
+/* Subfolder badges in track list */
+.audio-title-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.audio-subfolder-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+}
+
+.audio-subfolder-badge {
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  padding: 0 4px;
+  background: var(--grey-100);
+  color: var(--grey-500);
+  border-radius: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+}
+
+.audio-row.playing .audio-subfolder-badge {
+  background: rgba(0, 204, 102, 0.15);
+  color: #00994d;
 }
 
 /* Legacy support - hide old styles */
