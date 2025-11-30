@@ -33,7 +33,12 @@ function getArtistSubfolders(artistName) {
 
 // Create a new subfolder for an artist
 window.createSubfolder = function(artistName, folderName) {
-  if (!artistName || !folderName) return false;
+  console.log('[SUBFOLDER] Creating subfolder:', { artistName, folderName });
+  
+  if (!artistName || !folderName) {
+    console.warn('[SUBFOLDER] Missing artistName or folderName');
+    return false;
+  }
   
   if (!window.artistSubfolders[artistName]) {
     window.artistSubfolders[artistName] = [];
@@ -46,6 +51,8 @@ window.createSubfolder = function(artistName, folderName) {
   }
   
   window.artistSubfolders[artistName].push(folderName);
+  console.log('[SUBFOLDER] Created. Current subfolders for', artistName, ':', window.artistSubfolders[artistName]);
+  
   saveSubfoldersToStorage();
   return true;
 };
@@ -746,20 +753,27 @@ function renderSubfoldersSection(container) {
   const subfolders = getArtistSubfolders(artistName);
   const artistTracks = window.audioFiles.filter(a => a.artist === artistName);
   
+  console.log('[SUBFOLDER] Rendering subfolders section for:', artistName, 'Subfolders:', subfolders);
+  
   // Create subfolders container
   const subfoldersDiv = document.createElement('div');
   subfoldersDiv.className = 'audio-subfolders-section';
-  subfoldersDiv.innerHTML = `
-    <div class="audio-subfolders-header">
-      <span class="audio-subfolders-title">FOLDERS</span>
-      <button class="audio-subfolder-add-btn" onclick="promptCreateSubfolder()" title="Create new folder">+</button>
-    </div>
-    <div class="audio-subfolders-list" id="audioSubfoldersList"></div>
+  
+  // Create header
+  const headerDiv = document.createElement('div');
+  headerDiv.className = 'audio-subfolders-header';
+  headerDiv.innerHTML = `
+    <span class="audio-subfolders-title">FOLDERS (${subfolders.length})</span>
+    <button class="audio-subfolder-add-btn" onclick="promptCreateSubfolder()" title="Create new folder">+</button>
   `;
+  subfoldersDiv.appendChild(headerDiv);
+  
+  // Create list container directly (no innerHTML + getElementById)
+  const listEl = document.createElement('div');
+  listEl.className = 'audio-subfolders-list';
+  subfoldersDiv.appendChild(listEl);
   
   container.appendChild(subfoldersDiv);
-  
-  const listEl = document.getElementById('audioSubfoldersList');
   
   // "All Songs" option (shows all songs for this artist)
   const allSongsBtn = document.createElement('button');
