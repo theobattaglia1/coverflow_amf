@@ -1400,7 +1400,7 @@ app.get('/api/list-gcs-assets', requireAuth('editor'), async (req, res) => {
   }
 });
 
-// --- NEW ENDPOINT: List Audio Files ---
+// --- NEW ENDPOINT: List Audio Files for Music App ---
 app.get('/api/list-audio', requireAuth('viewer'), async (req, res) => {
   try {
     console.log(`[AUDIO] Listing audio files from bucket: ${gcsBucketName}`);
@@ -1410,13 +1410,14 @@ app.get('/api/list-audio', requireAuth('viewer'), async (req, res) => {
     // Filter for audio extensions only
     const audioFiles = files.filter((f) => {
       const name = (f.name || '').toLowerCase();
-      return /\.(mp3|wav|m4a|aac|flac|ogg|aiff)$/i.test(name);
+      // Filter out 'thumbnails' folder and check for audio extensions
+      return !name.includes('thumbnails/') && /\.(mp3|wav|m4a|aac|flac|ogg|aiff)$/i.test(name);
     });
 
     // Map to a clean format for the app
     const tracks = audioFiles.map((f) => ({
-      name: f.name.split('/').pop(), // Get just the filename
-      path: f.name, // The full path needed for the signing endpoint
+      name: f.name.split('/').pop(), // Get just the filename (e.g. "Song.mp3")
+      path: f.name, // The full path needed for the signing endpoint (e.g. "artist/Song.mp3")
       size: f.metadata.size,
       updated: f.metadata.updated
     }));
