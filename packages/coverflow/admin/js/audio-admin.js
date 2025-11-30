@@ -151,7 +151,7 @@ window.renderAudioFiles = function() {
   updateAudioSelectionCounter();
 };
 
-// Render artist hubs
+// Render artist hubs (with drop target support for audio uploads)
 function renderAudioArtists() {
   const container = document.getElementById('audioArtistHubs');
   if (!container) return;
@@ -160,17 +160,49 @@ function renderAudioArtists() {
   
   const totalTracks = window.audioFiles.length;
   
+  // Helper to create artist card with drop support
+  function createArtistCard(artistName, count, isActive, avatarStyle = '', avatarClass = '') {
+    const card = document.createElement('button');
+    card.className = 'audio-artist-card' + (isActive ? ' active' : '');
+    card.type = 'button';
+    card.innerHTML = `
+      <div class="audio-artist-avatar ${avatarClass}" style="${avatarStyle}"></div>
+      <div class="audio-artist-meta">
+        <div class="audio-artist-name">${artistName}</div>
+        <div class="audio-artist-count">${count} track${count === 1 ? '' : 's'}</div>
+      </div>
+    `;
+    return card;
+  }
+  
+  // Helper to setup drop target on a card
+  function setupDropTarget(card, targetArtist) {
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      card.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }, false);
+    });
+    
+    ['dragenter', 'dragover'].forEach(eventName => {
+      card.addEventListener(eventName, () => card.classList.add('drop-target'), false);
+    });
+    
+    ['dragleave', 'drop'].forEach(eventName => {
+      card.addEventListener(eventName, () => card.classList.remove('drop-target'), false);
+    });
+    
+    card.addEventListener('drop', async (e) => {
+      const files = e.dataTransfer.files;
+      if (files.length > 0 && window.uploadAudioFiles) {
+        showToast(`UPLOADING TO ${targetArtist || 'GENERAL'}...`);
+        await window.uploadAudioFiles(files, targetArtist);
+      }
+    }, false);
+  }
+  
   // "All audio" hub
-  const allDiv = document.createElement('button');
-  allDiv.className = 'audio-artist-card' + (!window.audioArtistFilter ? ' active' : '');
-  allDiv.type = 'button';
-  allDiv.innerHTML = `
-    <div class="audio-artist-avatar all"></div>
-    <div class="audio-artist-meta">
-      <div class="audio-artist-name">ALL AUDIO</div>
-      <div class="audio-artist-count">${totalTracks} track${totalTracks === 1 ? '' : 's'}</div>
-    </div>
-  `;
+  const allDiv = createArtistCard('ALL AUDIO', totalTracks, !window.audioArtistFilter, '', 'all');
   allDiv.addEventListener('click', () => {
     window.audioArtistFilter = '';
     renderAudioArtists();
@@ -181,42 +213,32 @@ function renderAudioArtists() {
   // Per-artist hubs
   window.audioArtists.forEach(artist => {
     const count = window.audioFiles.filter(a => a.artist === artist.name).length;
-    const card = document.createElement('button');
-    card.className = 'audio-artist-card' + (window.audioArtistFilter === artist.name ? ' active' : '');
-    card.type = 'button';
-    card.innerHTML = `
-      <div class="audio-artist-avatar" style="${artist.coverImage ? `background-image:url('${artist.coverImage}')` : ''}"></div>
-      <div class="audio-artist-meta">
-        <div class="audio-artist-name">${artist.name}</div>
-        <div class="audio-artist-count">${count} track${count === 1 ? '' : 's'}</div>
-      </div>
-    `;
+    const avatarStyle = artist.coverImage ? `background-image:url('${artist.coverImage}')` : '';
+    const card = createArtistCard(artist.name, count, window.audioArtistFilter === artist.name, avatarStyle);
+    
     card.addEventListener('click', () => {
       window.audioArtistFilter = artist.name;
       renderAudioArtists();
       renderAudioFiles();
     });
+    
+    // Enable drop on artist cards
+    setupDropTarget(card, artist.name);
+    
     container.appendChild(card);
   });
   
   // Unassigned hub if needed
   const unassignedCount = window.audioFiles.filter(a => !a.artist).length;
   if (unassignedCount > 0) {
-    const unassigned = document.createElement('button');
-    unassigned.className = 'audio-artist-card' + (window.audioArtistFilter === 'UNASSIGNED' ? ' active' : '');
-    unassigned.type = 'button';
-    unassigned.innerHTML = `
-      <div class="audio-artist-avatar unassigned"></div>
-      <div class="audio-artist-meta">
-        <div class="audio-artist-name">UNASSIGNED</div>
-        <div class="audio-artist-count">${unassignedCount} track${unassignedCount === 1 ? '' : 's'}</div>
-      </div>
-    `;
+    const unassigned = createArtistCard('UNASSIGNED', unassignedCount, window.audioArtistFilter === 'UNASSIGNED', '', 'unassigned');
     unassigned.addEventListener('click', () => {
       window.audioArtistFilter = 'UNASSIGNED';
       renderAudioArtists();
       renderAudioFiles();
     });
+    // Enable drop on unassigned (uploads to general audio folder)
+    setupDropTarget(unassigned, '');
     container.appendChild(unassigned);
   }
 }
@@ -482,11 +504,200 @@ function renderFilteredAudioFiles(filteredFiles) {
   updateAudioSelectionCounter();
 }
 
+// ============================================
+// AUDIO UPLOAD FUNCTIONALITY
+// ============================================
+
+// Accepted audio file types
+const AUDIO_EXTENSIONS = ['.mp3', '.wav', '.m4a', '.aac', '.flac', '.ogg', '.aiff'];
+const AUDIO_MIME_TYPES = ['audio/mpeg', 'audio/wav', 'audio/x-wav', 'audio/mp4', 'audio/m4a', 'audio/aac', 'audio/flac', 'audio/ogg', 'audio/aiff'];
+
+// Check if a file is an audio file
+function isAudioFile(file) {
+  const ext = '.' + file.name.split('.').pop().toLowerCase();
+  return AUDIO_EXTENSIONS.includes(ext) || AUDIO_MIME_TYPES.includes(file.type);
+}
+
+// Upload a single audio file
+async function uploadAudioFile(file, targetArtist = '') {
+  // Determine folder path based on artist
+  let folder = 'audio';
+  if (targetArtist && targetArtist !== '' && targetArtist !== 'UNASSIGNED') {
+    // Create artist-specific folder path
+    const artistSlug = targetArtist.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    folder = `audio/${artistSlug}`;
+  }
+  
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('folder', folder);
+  
+  console.log(`[AUDIO UPLOAD] Uploading "${file.name}" to folder "${folder}"`);
+  
+  const response = await fetch('/upload-image', {
+    method: 'POST',
+    body: formData
+  });
+  
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
+    throw new Error(errorData.error || `Upload failed with status ${response.status}`);
+  }
+  
+  const data = await response.json();
+  console.log(`[AUDIO UPLOAD] Success:`, data);
+  return data;
+}
+
+// Upload multiple audio files
+async function uploadAudioFiles(files, targetArtist = '') {
+  const audioFiles = Array.from(files).filter(isAudioFile);
+  
+  if (audioFiles.length === 0) {
+    showToast('NO AUDIO FILES SELECTED', 'error');
+    return [];
+  }
+  
+  showLoading();
+  const results = [];
+  const errors = [];
+  
+  for (let i = 0; i < audioFiles.length; i++) {
+    const file = audioFiles[i];
+    try {
+      updateLoadingMessage(`UPLOADING ${i + 1}/${audioFiles.length}: ${file.name}`);
+      const result = await uploadAudioFile(file, targetArtist);
+      results.push(result);
+      
+      // Add to local audio files array immediately
+      const newAudioEntry = {
+        url: result.url || result.gcsUrl,
+        filename: file.name,
+        artist: targetArtist || '',
+        type: 'audio',
+        size: file.size,
+        uploadedAt: new Date().toISOString()
+      };
+      window.audioFiles.push(newAudioEntry);
+      
+    } catch (err) {
+      console.error(`[AUDIO UPLOAD] Failed to upload ${file.name}:`, err);
+      errors.push({ file: file.name, error: err.message });
+    }
+  }
+  
+  hideLoading();
+  
+  // Refresh display
+  renderAudioArtists();
+  renderAudioFolders();
+  renderAudioFiles();
+  
+  // Show result message
+  if (errors.length === 0) {
+    showToast(`${results.length} AUDIO FILE${results.length > 1 ? 'S' : ''} UPLOADED SUCCESSFULLY`);
+  } else if (results.length > 0) {
+    showToast(`${results.length} UPLOADED, ${errors.length} FAILED`, 'warning');
+  } else {
+    showToast('ALL UPLOADS FAILED', 'error');
+  }
+  
+  return results;
+}
+
+// Helper to update loading message
+function updateLoadingMessage(message) {
+  const loadingText = document.querySelector('.loading-overlay .loading-text, .loading-message');
+  if (loadingText) {
+    loadingText.textContent = message;
+  }
+}
+
+// Setup dropzone for audio uploads
+function setupAudioDropzone() {
+  const dropzone = document.getElementById('audioDropzone');
+  if (!dropzone) {
+    console.warn('[AUDIO] Dropzone element not found');
+    return;
+  }
+  
+  console.log('[AUDIO] Setting up dropzone...');
+  
+  // Prevent default drag behaviors
+  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    }, false);
+  });
+  
+  // Highlight dropzone when dragging over
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.add('dragover');
+    }, false);
+  });
+  
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, () => {
+      dropzone.classList.remove('dragover');
+    }, false);
+  });
+  
+  // Handle dropped files
+  dropzone.addEventListener('drop', async (e) => {
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      // Upload to current artist filter if set, otherwise general audio folder
+      const targetArtist = (window.audioArtistFilter && window.audioArtistFilter !== 'UNASSIGNED') 
+        ? window.audioArtistFilter 
+        : '';
+      await uploadAudioFiles(files, targetArtist);
+    }
+  }, false);
+  
+  // Also allow click to select files
+  dropzone.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.multiple = true;
+    input.accept = AUDIO_EXTENSIONS.join(',') + ',' + AUDIO_MIME_TYPES.join(',');
+    
+    input.onchange = async (e) => {
+      if (e.target.files.length > 0) {
+        const targetArtist = (window.audioArtistFilter && window.audioArtistFilter !== 'UNASSIGNED') 
+          ? window.audioArtistFilter 
+          : '';
+        await uploadAudioFiles(e.target.files, targetArtist);
+      }
+    };
+    
+    input.click();
+  });
+  
+  // Update dropzone text to be more helpful
+  const dropzoneText = dropzone.querySelector('.dropzone-text');
+  if (dropzoneText) {
+    dropzoneText.innerHTML = `
+      <span style="font-size: 2rem; display: block; margin-bottom: 8px;">🎵</span>
+      DROP AUDIO FILES HERE<br>
+      <span style="font-size: 0.8em; opacity: 0.7;">or click to browse • MP3, WAV, M4A, AAC, FLAC, OGG</span>
+    `;
+  }
+  
+  console.log('[AUDIO] Dropzone setup complete');
+}
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
 // Initialize audio module
 window.initializeAudio = function() {
   console.log('🎵 Audio Module Initialized');
   loadAudioFiles();
   setupEnhancedAudioSearch();
+  setupAudioDropzone();
 };
 
 // Simple refresh hook for audio section (used by REFRESH button)
@@ -501,11 +712,17 @@ window.refreshAudio = function() {
     });
 };
 
+// Expose upload functions globally
+window.uploadAudioFiles = uploadAudioFiles;
+window.uploadAudioFile = uploadAudioFile;
+
 // Export for shared use
 window.audioModule = {
   loadAudioFiles,
   renderAudioFiles,
   searchAudio,
   deleteAudioFile,
-  updateAudioMetadata
+  updateAudioMetadata,
+  uploadAudioFiles,
+  uploadAudioFile
 };

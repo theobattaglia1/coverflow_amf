@@ -583,11 +583,28 @@ a:hover {
   background: var(--grey-50);
 }
 
+.dropzone.dragover {
+  border-color: #00cc66;
+  border-style: solid;
+  border-width: 2px;
+  background: rgba(0, 204, 102, 0.1);
+  transform: scale(1.01);
+}
+
 .dropzone-text {
   font-family: var(--font-mono);
   font-size: 0.75rem;
   letter-spacing: var(--tracking-mono);
   text-transform: uppercase;
+  line-height: 1.6;
+}
+
+/* Audio artist card drop target state */
+.audio-artist-card.drop-target {
+  border: 2px solid #00cc66 !important;
+  background: rgba(0, 204, 102, 0.15) !important;
+  transform: scale(1.05);
+  box-shadow: 0 4px 20px rgba(0, 204, 102, 0.3);
 }
 
 /* Forms: Studied restraint */
