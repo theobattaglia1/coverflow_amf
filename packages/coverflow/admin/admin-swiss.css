@@ -2886,47 +2886,50 @@ a:hover {
 } 
 
 /* Enhanced Asset Controls */
+/* Asset controls - compact single line */
 .asset-controls {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xl);
-  padding: var(--space-lg);
-  border: 1px solid var(--grey-100);
-  background: var(--grey-50);
-  /* Keep asset toolbar visible while scrolling */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--grey-200);
+  background: var(--paper);
   position: sticky;
-  top: 96px;
+  top: 52px;
   z-index: 500;
 }
 
 .asset-search-filter-container {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-md);
+  align-items: center;
+  gap: 6px;
+  flex: 1;
 }
 
-@media (min-width: 768px) {
-  .asset-search-filter-container {
-    flex-direction: row;
-    align-items: center;
-  }
-  
-  .asset-search-filter-container .search-input {
-    flex: 1;
-    max-width: none;
-  }
+.asset-search-filter-container .search-input {
+  flex: 1;
+  max-width: 200px;
+  padding: 5px 8px;
+  font-size: 0.55rem;
 }
 
 .asset-filter-controls {
   display: flex;
-  gap: var(--space-md);
+  gap: 4px;
   flex-wrap: wrap;
+}
+
+.asset-filter-controls .filter-select {
+  padding: 4px 6px;
+  font-size: 0.5rem;
 }
 
 .asset-view-actions-row {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
   align-items: center;
   flex-wrap: wrap;
   gap: var(--space-md);
@@ -2934,20 +2937,21 @@ a:hover {
 
 .asset-view-modes {
   display: flex;
-  gap: var(--space-xs);
+  gap: 2px;
 }
 
 .view-mode-btn {
-  width: 40px;
-  height: 40px;
+  width: 24px;
+  height: 24px;
   border: 1px solid var(--grey-300);
   background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: all 0.1s;
   font-family: var(--font-mono);
+  font-size: 0.7rem;
 }
 
 .view-mode-btn:hover {
@@ -2969,60 +2973,43 @@ a:hover {
 .asset-actions {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  flex-wrap: wrap;
+  gap: 4px;
 }
 
 .asset-count-indicator {
   font-family: var(--font-mono);
-  font-size: 0.75rem;
+  font-size: 0.55rem;
   color: var(--grey-500);
   text-transform: uppercase;
-  letter-spacing: var(--tracking-mono);
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--paper);
-  border: 1px solid var(--grey-300);
+  letter-spacing: 0.02em;
+  padding: 3px 6px;
+  background: var(--grey-50);
+  border: 1px solid var(--grey-200);
 }
 
 @media (max-width: 768px) {
   .asset-controls {
-    padding: var(--space-md);
+    padding: 6px;
+    gap: 4px;
   }
   
-  .asset-filter-controls {
-    flex-direction: column;
-  }
-  
-  .filter-select {
-    width: 100%;
-  }
-  
-  .asset-view-actions-row {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .asset-view-modes {
-    justify-content: center;
-  }
-  
-  .asset-actions {
-    justify-content: space-between;
+  .asset-search-filter-container .search-input {
+    max-width: 120px;
   }
 } 
 
-/* Enhanced Audio Controls */
+/* Audio controls - compact single line */
 .audio-controls {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xl);
-  padding: var(--space-lg);
-  border: 1px solid var(--grey-100);
-  background: var(--grey-50);
-  /* Keep audio toolbar visible while scrolling */
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 6px 10px;
+  border: 1px solid var(--grey-200);
+  background: var(--paper);
   position: sticky;
-  top: 96px;
+  top: 52px;
   z-index: 500;
 }
 
