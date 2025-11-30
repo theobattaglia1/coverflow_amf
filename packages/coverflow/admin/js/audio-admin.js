@@ -98,12 +98,40 @@ window.loadAudioFiles = function() {
     });
 };
 
-// Render audio files
+// ============================================
+// AUDIO PLAYER STATE
+// ============================================
+window.currentlyPlayingUrl = null;
+window.audioElement = null;
+
+// Format duration from seconds
+function formatDuration(seconds) {
+  if (!seconds || isNaN(seconds)) return '--:--';
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
+// Get filename without extension for display
+function getDisplayName(audio) {
+  const filename = audio.filename || audio.name || audio.url.split('/').pop() || 'Untitled';
+  return filename.replace(/\.(mp3|wav|m4a|aac|flac|ogg|aiff)$/i, '');
+}
+
+// Escape HTML for safe insertion
+function escapeHtml(str) {
+  if (!str) return '';
+  return str.replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[char]));
+}
+
+// ============================================
+// RENDER AUDIO LIST (iTunes-style)
+// ============================================
 window.renderAudioFiles = function() {
   const container = document.getElementById('audioContainer');
   if (!container) return;
-  
-  container.innerHTML = '';
   
   let filesToRender = window.audioFiles;
   
@@ -116,40 +144,294 @@ window.renderAudioFiles = function() {
     }
   }
   
-  filesToRender.forEach((audio) => {
-    const audioDiv = document.createElement('div');
-    audioDiv.className = `audio-item ${window.selectedAudioFiles.has(audio.url) ? 'selected' : ''}`;
-    audioDiv.dataset.audioId = audio.url;
+  // Build iTunes-style table
+  container.innerHTML = `
+    <div class="audio-list">
+      <div class="audio-table-header">
+        <span></span>
+        <span></span>
+        <span>TITLE</span>
+        <span>ARTIST</span>
+        <span>TIME</span>
+        <span></span>
+      </div>
+      <div class="audio-rows" id="audioRows">
+        ${filesToRender.length === 0 ? '<div style="padding: 40px; text-align: center; color: var(--grey-500);">No audio files</div>' : ''}
+      </div>
+    </div>
+    <div class="audio-now-playing" id="audioNowPlaying">
+      <div class="audio-now-playing-controls">
+        <button class="audio-now-playing-btn" onclick="audioSkipPrev()" title="Previous">⏮</button>
+        <button class="audio-now-playing-btn play" id="nowPlayingPlayBtn" onclick="audioTogglePlay()" title="Play/Pause">▶</button>
+        <button class="audio-now-playing-btn" onclick="audioSkipNext()" title="Next">⏭</button>
+      </div>
+      <div class="audio-now-playing-info">
+        <div class="audio-now-playing-title" id="nowPlayingTitle">-</div>
+        <div class="audio-now-playing-artist" id="nowPlayingArtist">-</div>
+      </div>
+      <div class="audio-progress">
+        <span class="audio-time" id="audioCurrentTime">0:00</span>
+        <div class="audio-progress-bar" id="audioProgressBar" onclick="audioSeek(event)">
+          <div class="audio-progress-fill" id="audioProgressFill"></div>
+        </div>
+        <span class="audio-time" id="audioDuration">0:00</span>
+      </div>
+    </div>
+  `;
+  
+  const rowsContainer = document.getElementById('audioRows');
+  
+  filesToRender.forEach((audio, index) => {
+    const isPlaying = window.currentlyPlayingUrl === audio.url;
+    const isSelected = window.selectedAudioFiles.has(audio.url);
+    const displayName = getDisplayName(audio);
+    const escapedUrl = escapeHtml(audio.url);
     
-    audioDiv.innerHTML = `
-      <div class="audio-item-content">
-        <input type="checkbox" class="audio-checkbox" ${window.selectedAudioFiles.has(audio.url) ? 'checked' : ''} 
-               onchange="toggleAudioSelection('${audio.url}')">
-        <div class="audio-player">
-          <audio controls style="width: 100%;">
-            <source src="${audio.url}" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-        <div class="audio-info">
-          <input type="text" class="audio-filename" value="${audio.filename || 'audio-file'}" 
-                 onchange="updateAudioMetadata('${audio.url}', 'filename', this.value)">
-          <div class="audio-artist-label">
-            ${audio.artist ? audio.artist : '<span class="audio-artist-unassigned">UNASSIGNED ARTIST</span>'}
-          </div>
-          <div class="audio-url" onclick="copyAudioUrl('${audio.url}')" title="Click to copy URL">
-            ${audio.url}
-          </div>
-          <button class="btn btn-danger btn-sm" onclick="deleteAudioFile('${audio.url}')">DELETE</button>
-        </div>
+    const row = document.createElement('div');
+    row.className = `audio-row${isSelected ? ' selected' : ''}${isPlaying ? ' playing' : ''}`;
+    row.dataset.url = audio.url;
+    row.draggable = true;
+    
+    row.innerHTML = `
+      <input type="checkbox" class="audio-row-checkbox" 
+             ${isSelected ? 'checked' : ''} 
+             onchange="toggleAudioSelection('${escapedUrl}')">
+      <button class="audio-play-btn" onclick="playAudio('${escapedUrl}')" title="Play">
+        ${isPlaying ? '❚❚' : '▶'}
+      </button>
+      <input type="text" class="audio-title-input" value="${escapeHtml(displayName)}" 
+             onchange="updateAudioMetadata('${escapedUrl}', 'filename', this.value)"
+             title="${escapedUrl}">
+      <div class="audio-artist ${!audio.artist ? 'unassigned' : ''}" 
+           onclick="showMoveModal('${escapedUrl}')" 
+           title="Click to change artist">
+        ${audio.artist || 'UNASSIGNED'}
+      </div>
+      <div class="audio-duration" data-url="${escapedUrl}">--:--</div>
+      <div class="audio-actions">
+        <button class="audio-action-btn" onclick="copyAudioUrl('${escapedUrl}')" title="Copy URL">📋</button>
+        <button class="audio-action-btn" onclick="showMoveModal('${escapedUrl}')" title="Move">↗</button>
+        <button class="audio-action-btn danger" onclick="deleteAudioFile('${escapedUrl}')" title="Delete">✕</button>
       </div>
     `;
     
-    container.appendChild(audioDiv);
+    // Add drag events for reordering
+    row.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', audio.url);
+      row.classList.add('dragging');
+    });
+    
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+    });
+    
+    row.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      const dragging = document.querySelector('.audio-row.dragging');
+      if (dragging && dragging !== row) {
+        const rect = row.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        if (e.clientY < midY) {
+          row.parentNode.insertBefore(dragging, row);
+        } else {
+          row.parentNode.insertBefore(dragging, row.nextSibling);
+        }
+      }
+    });
+    
+    // Double-click to play
+    row.addEventListener('dblclick', () => {
+      playAudio(audio.url);
+    });
+    
+    rowsContainer.appendChild(row);
+    
+    // Load duration asynchronously
+    loadAudioDuration(audio.url);
   });
   
+  // Update count indicator
+  const countIndicator = document.getElementById('audioCountIndicator');
+  if (countIndicator) {
+    countIndicator.textContent = `${filesToRender.length} TRACK${filesToRender.length !== 1 ? 'S' : ''}`;
+  }
+  
   updateAudioSelectionCounter();
+  
+  // Restore now playing state
+  if (window.currentlyPlayingUrl) {
+    updateNowPlayingBar();
+  }
 };
+
+// Load audio duration for a track
+function loadAudioDuration(url) {
+  const audio = new Audio();
+  audio.preload = 'metadata';
+  audio.src = url;
+  audio.onloadedmetadata = () => {
+    const durationEl = document.querySelector(`.audio-duration[data-url="${CSS.escape(url)}"]`);
+    if (durationEl) {
+      durationEl.textContent = formatDuration(audio.duration);
+    }
+    // Store duration in the audio file object
+    const audioFile = window.audioFiles.find(a => a.url === url);
+    if (audioFile) {
+      audioFile.duration = audio.duration;
+    }
+  };
+}
+
+// ============================================
+// AUDIO PLAYBACK CONTROLS
+// ============================================
+
+// Play a specific audio file
+window.playAudio = function(url) {
+  // If clicking the same track, toggle play/pause
+  if (window.currentlyPlayingUrl === url && window.audioElement) {
+    if (window.audioElement.paused) {
+      window.audioElement.play();
+    } else {
+      window.audioElement.pause();
+    }
+    updatePlayingState();
+    return;
+  }
+  
+  // Stop current audio if playing
+  if (window.audioElement) {
+    window.audioElement.pause();
+    window.audioElement = null;
+  }
+  
+  // Create new audio element
+  window.audioElement = new Audio(url);
+  window.currentlyPlayingUrl = url;
+  
+  window.audioElement.addEventListener('timeupdate', updateProgress);
+  window.audioElement.addEventListener('ended', handleAudioEnded);
+  window.audioElement.addEventListener('play', updatePlayingState);
+  window.audioElement.addEventListener('pause', updatePlayingState);
+  
+  window.audioElement.play();
+  updateNowPlayingBar();
+  renderAudioFiles(); // Re-render to show playing state
+};
+
+// Toggle play/pause for current track
+window.audioTogglePlay = function() {
+  if (!window.audioElement) return;
+  
+  if (window.audioElement.paused) {
+    window.audioElement.play();
+  } else {
+    window.audioElement.pause();
+  }
+};
+
+// Skip to previous track
+window.audioSkipPrev = function() {
+  const currentIndex = getCurrentPlayingIndex();
+  if (currentIndex > 0) {
+    const filteredFiles = getFilteredAudioFiles();
+    playAudio(filteredFiles[currentIndex - 1].url);
+  }
+};
+
+// Skip to next track
+window.audioSkipNext = function() {
+  const currentIndex = getCurrentPlayingIndex();
+  const filteredFiles = getFilteredAudioFiles();
+  if (currentIndex < filteredFiles.length - 1) {
+    playAudio(filteredFiles[currentIndex + 1].url);
+  }
+};
+
+// Seek in current track
+window.audioSeek = function(event) {
+  if (!window.audioElement) return;
+  
+  const bar = document.getElementById('audioProgressBar');
+  const rect = bar.getBoundingClientRect();
+  const percent = (event.clientX - rect.left) / rect.width;
+  window.audioElement.currentTime = percent * window.audioElement.duration;
+};
+
+// Get filtered audio files based on current filter
+function getFilteredAudioFiles() {
+  let files = window.audioFiles;
+  if (window.audioArtistFilter) {
+    if (window.audioArtistFilter === 'UNASSIGNED') {
+      files = files.filter(a => !a.artist);
+    } else {
+      files = files.filter(a => a.artist === window.audioArtistFilter);
+    }
+  }
+  return files;
+}
+
+// Get index of currently playing track
+function getCurrentPlayingIndex() {
+  if (!window.currentlyPlayingUrl) return -1;
+  const filteredFiles = getFilteredAudioFiles();
+  return filteredFiles.findIndex(a => a.url === window.currentlyPlayingUrl);
+}
+
+// Update progress bar
+function updateProgress() {
+  if (!window.audioElement) return;
+  
+  const currentTime = window.audioElement.currentTime;
+  const duration = window.audioElement.duration;
+  
+  document.getElementById('audioCurrentTime').textContent = formatDuration(currentTime);
+  document.getElementById('audioDuration').textContent = formatDuration(duration);
+  
+  const percent = (currentTime / duration) * 100;
+  document.getElementById('audioProgressFill').style.width = `${percent}%`;
+}
+
+// Handle audio ended
+function handleAudioEnded() {
+  // Auto-play next track
+  audioSkipNext();
+}
+
+// Update playing state UI
+function updatePlayingState() {
+  const playBtn = document.getElementById('nowPlayingPlayBtn');
+  if (playBtn && window.audioElement) {
+    playBtn.textContent = window.audioElement.paused ? '▶' : '❚❚';
+  }
+  
+  // Update row play buttons
+  document.querySelectorAll('.audio-row').forEach(row => {
+    const btn = row.querySelector('.audio-play-btn');
+    const isPlaying = row.dataset.url === window.currentlyPlayingUrl;
+    row.classList.toggle('playing', isPlaying && !window.audioElement?.paused);
+    if (btn) {
+      btn.textContent = (isPlaying && !window.audioElement?.paused) ? '❚❚' : '▶';
+    }
+  });
+}
+
+// Update now playing bar
+function updateNowPlayingBar() {
+  const nowPlaying = document.getElementById('audioNowPlaying');
+  if (!nowPlaying) return;
+  
+  if (window.currentlyPlayingUrl) {
+    const audio = window.audioFiles.find(a => a.url === window.currentlyPlayingUrl);
+    if (audio) {
+      document.getElementById('nowPlayingTitle').textContent = getDisplayName(audio);
+      document.getElementById('nowPlayingArtist').textContent = audio.artist || 'UNASSIGNED';
+      nowPlaying.classList.add('active');
+    }
+  } else {
+    nowPlaying.classList.remove('active');
+  }
+}
 
 // Render artist hubs (with drop target support for audio uploads)
 function renderAudioArtists() {
@@ -360,13 +642,128 @@ window.updateAudioMetadata = function(url, field, value) {
   }
 };
 
+// ============================================
+// MOVE AUDIO FUNCTIONALITY
+// ============================================
+
+// Currently selected URL for move (single item)
+window.moveTargetUrl = null;
+
+// Show move modal for single or multiple files
+window.showMoveModal = function(url = null) {
+  // Determine which files to move
+  let urlsToMove = [];
+  if (url) {
+    urlsToMove = [url];
+    window.moveTargetUrl = url;
+  } else if (window.selectedAudioFiles.size > 0) {
+    urlsToMove = Array.from(window.selectedAudioFiles);
+    window.moveTargetUrl = null;
+  } else {
+    showToast('NO AUDIO FILES SELECTED');
+    return;
+  }
+  
+  // Create modal if it doesn't exist
+  let modal = document.getElementById('audioMoveModal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'audioMoveModal';
+    modal.className = 'audio-move-modal';
+    document.body.appendChild(modal);
+  }
+  
+  const count = urlsToMove.length;
+  
+  // Build artist options
+  const artistOptions = window.audioArtists.map(artist => `
+    <div class="audio-move-option" data-artist="${escapeHtml(artist.name)}">
+      <div class="audio-artist-avatar" style="${artist.coverImage ? `background-image:url('${artist.coverImage}')` : 'background: var(--grey-300)'}; width: 24px; height: 24px; border-radius: 50%;"></div>
+      <span>${artist.name}</span>
+    </div>
+  `).join('');
+  
+  modal.innerHTML = `
+    <div class="audio-move-content">
+      <div class="audio-move-title">MOVE ${count} TRACK${count > 1 ? 'S' : ''} TO ARTIST</div>
+      <div class="audio-move-list">
+        <div class="audio-move-option" data-artist="">
+          <span style="opacity: 0.5;">— UNASSIGNED —</span>
+        </div>
+        ${artistOptions}
+      </div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn" onclick="closeMoveModal()">CANCEL</button>
+      </div>
+    </div>
+  `;
+  
+  // Add click handlers to options
+  modal.querySelectorAll('.audio-move-option').forEach(option => {
+    option.addEventListener('click', () => {
+      const targetArtist = option.dataset.artist;
+      executeMove(urlsToMove, targetArtist);
+      closeMoveModal();
+    });
+  });
+  
+  // Close on backdrop click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeMoveModal();
+    }
+  });
+  
+  modal.classList.add('active');
+};
+
+// Close move modal
+window.closeMoveModal = function() {
+  const modal = document.getElementById('audioMoveModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+  window.moveTargetUrl = null;
+};
+
+// Execute the move operation
+async function executeMove(urls, targetArtist) {
+  showLoading();
+  
+  let successCount = 0;
+  let failCount = 0;
+  
+  for (const url of urls) {
+    const audio = window.audioFiles.find(a => a.url === url);
+    if (audio) {
+      // Update local state immediately
+      audio.artist = targetArtist;
+      successCount++;
+      
+      // Optionally: call backend to persist the change
+      // For now, we'll update locally and save when user saves
+    }
+  }
+  
+  hideLoading();
+  
+  // Clear selection
+  window.selectedAudioFiles.clear();
+  
+  // Re-render
+  renderAudioArtists();
+  renderAudioFiles();
+  
+  showToast(`MOVED ${successCount} TRACK${successCount > 1 ? 'S' : ''} TO ${targetArtist || 'UNASSIGNED'}`);
+}
+
 // Audio batch operations
 window.moveSelectedAudio = function() {
   if (window.selectedAudioFiles.size === 0) {
     showToast('NO AUDIO FILES SELECTED');
     return;
   }
-  showToast('AUDIO MOVE FUNCTIONALITY NOT YET IMPLEMENTED');
+  showMoveModal();
 };
 
 window.downloadSelectedAudio = function() {
@@ -460,45 +857,65 @@ window.setupEnhancedAudioSearch = function() {
   });
 };
 
-// Render filtered audio files
+// Render filtered audio files (search results)
 function renderFilteredAudioFiles(filteredFiles) {
   const container = document.getElementById('audioContainer');
   if (!container) return;
   
-  container.innerHTML = '';
+  // Build iTunes-style table for search results
+  container.innerHTML = `
+    <div class="audio-list">
+      <div class="audio-table-header">
+        <span></span>
+        <span></span>
+        <span>TITLE</span>
+        <span>ARTIST</span>
+        <span>TIME</span>
+        <span></span>
+      </div>
+      <div class="audio-rows" id="audioRows">
+        ${filteredFiles.length === 0 ? '<div style="padding: 40px; text-align: center; color: var(--grey-500);">No matches found</div>' : ''}
+      </div>
+    </div>
+  `;
   
-  if (filteredFiles.length === 0) {
-    container.innerHTML = '<div class="empty-state">No audio files found</div>';
-    return;
-  }
+  const rowsContainer = document.getElementById('audioRows');
   
-  filteredFiles.forEach((audio, index) => {
-    const audioDiv = document.createElement('div');
-    audioDiv.className = `audio-item ${window.selectedAudioFiles.has(audio.url) ? 'selected' : ''}`;
-    audioDiv.dataset.audioId = audio.url;
+  filteredFiles.forEach((audio) => {
+    const isPlaying = window.currentlyPlayingUrl === audio.url;
+    const isSelected = window.selectedAudioFiles.has(audio.url);
+    const displayName = getDisplayName(audio);
+    const escapedUrl = escapeHtml(audio.url);
     
-    audioDiv.innerHTML = `
-      <div class="audio-item-content">
-        <input type="checkbox" class="audio-checkbox" ${window.selectedAudioFiles.has(audio.url) ? 'checked' : ''} 
-               onchange="toggleAudioSelection('${audio.url}')">
-        <div class="audio-player">
-          <audio controls style="width: 100%;">
-            <source src="${audio.url}" type="audio/mpeg">
-            Your browser does not support the audio element.
-          </audio>
-        </div>
-        <div class="audio-info">
-          <input type="text" class="audio-filename" value="${audio.filename || 'audio-file'}" 
-                 onchange="updateAudioMetadata('${audio.url}', 'filename', this.value)">
-          <div class="audio-url" onclick="copyAudioUrl('${audio.url}')" title="Click to copy URL">
-            ${audio.url}
-          </div>
-          <button class="btn btn-danger btn-sm" onclick="deleteAudioFile('${audio.url}')">DELETE</button>
-        </div>
+    const row = document.createElement('div');
+    row.className = `audio-row${isSelected ? ' selected' : ''}${isPlaying ? ' playing' : ''}`;
+    row.dataset.url = audio.url;
+    
+    row.innerHTML = `
+      <input type="checkbox" class="audio-row-checkbox" 
+             ${isSelected ? 'checked' : ''} 
+             onchange="toggleAudioSelection('${escapedUrl}')">
+      <button class="audio-play-btn" onclick="playAudio('${escapedUrl}')" title="Play">
+        ${isPlaying ? '❚❚' : '▶'}
+      </button>
+      <input type="text" class="audio-title-input" value="${escapeHtml(displayName)}" 
+             onchange="updateAudioMetadata('${escapedUrl}', 'filename', this.value)"
+             title="${escapedUrl}">
+      <div class="audio-artist ${!audio.artist ? 'unassigned' : ''}" 
+           onclick="showMoveModal('${escapedUrl}')" 
+           title="Click to change artist">
+        ${audio.artist || 'UNASSIGNED'}
+      </div>
+      <div class="audio-duration">${audio.duration ? formatDuration(audio.duration) : '--:--'}</div>
+      <div class="audio-actions">
+        <button class="audio-action-btn" onclick="copyAudioUrl('${escapedUrl}')" title="Copy URL">📋</button>
+        <button class="audio-action-btn" onclick="showMoveModal('${escapedUrl}')" title="Move">↗</button>
+        <button class="audio-action-btn danger" onclick="deleteAudioFile('${escapedUrl}')" title="Delete">✕</button>
       </div>
     `;
     
-    container.appendChild(audioDiv);
+    row.addEventListener('dblclick', () => playAudio(audio.url));
+    rowsContainer.appendChild(row);
   });
   
   updateAudioSelectionCounter();
