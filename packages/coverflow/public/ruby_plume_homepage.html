@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Ruby Plume — Quirky, Organic Pop/Folk</title>
+    <meta name="description" content="Ruby Plume – Listen, shop, find shows, and explore the archive."/>
+    
+    <!-- Open Graph / Social Media Preview -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Ruby Plume">
+    <meta property="og:description" content="Ruby Plume – Listen, shop, find shows, and explore the archive.">
+    <meta property="og:url" content="">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Ruby Plume">
+    <meta name="twitter:description" content="Ruby Plume – Handmade magic in sound.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300;1,9..40,400&family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+      /* Custom Fonts */
+      @font-face {
+        font-family: 'Serial Chaos';
+        src: url('./assets/fonts/SerialBChaosTRIAL-Frenzy.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+      
+      @font-face {
+        font-family: 'Serial Blur';
+        src: url('./assets/fonts/SerialBlurTRIAL-Blur_2ff7d5bc-a752-4485-8205-1bcb8c754a12.ttf') format('truetype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+      /* === RUBY PLUME DESIGN SYSTEM === */
+      /* "Clean editorial base + handmade overlay" */
+      
+      :root {
+        /* Warm Paper Palette */
+        --bg: #FAF8F5;
+        --bg-warm: #F5F0E8;
+        --ink: #2C2824;
+        --ink-light: #5C5650;
+        --accent: #C75D3A; /* Warm terracotta accent */
+        --accent-soft: #E8D5C4;
+        --paper: #FFFEF9;
+        --tape: rgba(255, 248, 220, 0.85);
+        
+        /* Type Scale */
+        --step--2: clamp(0.65rem, 0.6vw, 0.75rem);
+        --step--1: clamp(0.75rem, 0.8vw, 0.85rem);
+        --step-0: clamp(0.9rem, 1vw, 1rem);
+        --step-1: clamp(1.05rem, 1.2vw, 1.15rem);
+        --step-2: clamp(1.4rem, 2vw, 1.75rem);
+        --step-3: clamp(2rem, 3vw, 2.5rem);
+        --step-4: clamp(2.75rem, 5vw, 4rem);
+        
+        /* Spacing */
+        --gutter: clamp(1rem, 4vw, 2rem);
+        --section-space: clamp(5rem, 12vh, 10rem);
+        --max-width: 1100px;
+      }
+      
+      /* Reset & Base */
+      *, *::before, *::after { box-sizing: border-box; }
+      
+      html {
+        scroll-behavior: smooth;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+      
+      @media (prefers-reduced-motion: reduce) {
+        html { scroll-behavior: auto; }
+        *, *::before, *::after {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+        }
+      }
+      
+      body {
+        font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        font-size: var(--step-0);
+        font-weight: 400;
+        line-height: 1.6;
+        color: var(--ink);
+        background: var(--bg);
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+      }
+      
+      /* Typography */
+      h1, h2, h3, h4 {
+        font-family: 'Serial Blur', 'Cormorant Garamond', Georgia, serif;
+        font-weight: normal;
+        line-height: 1.1;
+        letter-spacing: 0.02em;
+        margin: 0 0 1rem 0;
+      }
+      
+      h1 { font-size: var(--step-4); }
+      h2 { font-size: var(--step-3); margin-bottom: 2rem; }
+      h3 { font-size: var(--step-2); }
+      
+      p { margin: 0 0 1rem 0; max-width: 55ch; }
+      
+      .serif-italic {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-style: italic;
+      }
+      
+      a {
+        color: var(--accent);
+        text-decoration: none;
+        position: relative;
+      }
+      
+      a:hover {
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        text-decoration-style: wavy;
+        text-decoration-thickness: 1px;
+      }
+      
+      /* === NAVIGATION === */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1000;
+        background: rgba(250, 248, 245, 0.92);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(44, 40, 36, 0.08);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      
+      nav.scrolled {
+        box-shadow: 0 2px 20px rgba(44, 40, 36, 0.06);
+      }
+      
+      .nav-inner {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        padding: 0.85rem var(--gutter);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      
+      .nav-logo {
+        font-family: 'Serial Chaos', Georgia, serif;
+        font-size: 1.4rem;
+        font-weight: normal;
+        letter-spacing: 0.02em;
+        color: var(--ink);
+      }
+      
+      .nav-links {
+        display: flex;
+        gap: clamp(1.25rem, 3vw, 2.5rem);
+        list-style: none;
+        margin: 0;
+        padding: 0;
+      }
+      
+      .nav-links a {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--1);
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-light);
+        transition: color 0.2s ease;
+      }
+      
+      .nav-links a:hover {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      
+      /* Mobile Nav Toggle */
+      .nav-toggle {
+        display: none;
+        background: none;
+        border: none;
+        padding: 0.5rem;
+        cursor: pointer;
+      }
+      
+      .nav-toggle span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--ink);
+        margin: 5px 0;
+        transition: 0.3s;
+      }
+      
+      @media (max-width: 700px) {
+        .nav-toggle { display: block; }
+        .nav-links {
+          position: fixed;
+          top: 56px;
+          left: 0;
+          right: 0;
+          background: var(--bg);
+          flex-direction: column;
+          padding: 1.5rem var(--gutter);
+          gap: 1.25rem;
+          border-bottom: 1px solid rgba(44, 40, 36, 0.1);
+          transform: translateY(-100%);
+          opacity: 0;
+          pointer-events: none;
+          transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .nav-links.open {
+          transform: translateY(0);
+          opacity: 1;
+          pointer-events: auto;
+        }
+      }
+      
+      /* === HERO SECTION === */
+      .hero {
+        min-height: 100vh;
+        min-height: 100dvh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: calc(80px + var(--gutter)) var(--gutter) var(--gutter);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: 
+          radial-gradient(ellipse at 20% 30%, rgba(232, 213, 196, 0.4) 0%, transparent 50%),
+          radial-gradient(ellipse at 80% 70%, rgba(199, 93, 58, 0.08) 0%, transparent 40%);
+        pointer-events: none;
+      }
+      
+      .hero-video-container {
+        position: relative;
+        width: min(90vw, 600px);
+        margin-bottom: 2.5rem;
+        animation: fadeUp 1s ease-out 0.2s both;
+        /* Apply blend mode to entire container */
+        mix-blend-mode: multiply;
+      }
+      
+      .hero-video {
+        width: 100%;
+        height: auto;
+        display: block;
+        /* Soft feathered edges */
+        mask-image: radial-gradient(ellipse 80% 80% at center, black 50%, transparent 95%);
+        -webkit-mask-image: radial-gradient(ellipse 80% 80% at center, black 50%, transparent 95%);
+      }
+      
+      .hero-cta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        justify-content: center;
+        animation: fadeUp 1s ease-out 0.6s both;
+      }
+      
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.85rem 1.75rem;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--1);
+        font-weight: 500;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: all 0.25s ease;
+        border: none;
+        text-decoration: none;
+      }
+      
+      .btn:hover { text-decoration: none; }
+      
+      .btn-primary {
+        background: var(--ink);
+        color: var(--bg);
+      }
+      
+      .btn-primary:hover {
+        background: var(--accent);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(199, 93, 58, 0.25);
+      }
+      
+      .btn-secondary {
+        background: transparent;
+        color: var(--ink);
+        border: 1.5px solid var(--ink);
+      }
+      
+      .btn-secondary:hover {
+        background: var(--ink);
+        color: var(--bg);
+        transform: translateY(-2px);
+      }
+      
+      .btn-small {
+        padding: 0.6rem 1.25rem;
+        font-size: var(--step--2);
+      }
+      
+      /* Scroll indicator */
+      .scroll-hint {
+        position: absolute;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: 'DM Sans', sans-serif;
+        font-size: var(--step--2);
+        font-weight: 400;
+        letter-spacing: 0.05em;
+        color: var(--ink-light);
+        opacity: 0.5;
+        animation: bounce 2s infinite;
+      }
+      
+      @keyframes bounce {
+        0%, 100% { transform: translateX(-50%) translateY(0); }
+        50% { transform: translateX(-50%) translateY(8px); }
+      }
+      
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      
+      /* === SECTIONS === */
+      section {
+        padding: var(--section-space) var(--gutter);
+        position: relative;
+      }
+      
+      .container {
+        max-width: var(--max-width);
+        margin: 0 auto;
+      }
+      
+      .section-header {
+        margin-bottom: 3rem;
+      }
+      
+      .section-marker {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--2);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: var(--ink-light);
+        opacity: 0.6;
+        margin-bottom: 0.75rem;
+        display: block;
+      }
+      
+      .section-title {
+        position: relative;
+        display: inline-block;
+      }
+      
+      /* Hand-drawn underline effect */
+      .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: 0;
+        width: 100%;
+        height: 8px;
+        background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 10'%3E%3Cpath d='M0,5 Q25,0 50,5 T100,5' stroke='%23C75D3A' stroke-width='2' fill='none' opacity='0.4'/%3E%3C/svg%3E") repeat-x;
+        background-size: 100px 10px;
+      }
+      
+      /* === MUSIC SECTION === */
+      #music {
+        background: var(--paper);
+      }
+      
+      .releases-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+      
+      .release-card {
+        background: var(--bg);
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative;
+      }
+      
+      .release-card:hover {
+        transform: translateY(-4px) rotate(-0.5deg);
+        box-shadow: 0 12px 40px rgba(44, 40, 36, 0.12);
+      }
+      
+      /* Tape on corner */
+      .release-card::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        right: 20px;
+        width: 40px;
+        height: 18px;
+        background: var(--tape);
+        transform: rotate(3deg);
+        z-index: 2;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+      }
+      
+      .release-artwork {
+        aspect-ratio: 1;
+        overflow: hidden;
+        background: var(--bg-warm);
+      }
+      
+      .release-artwork img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+      
+      .release-card:hover .release-artwork img {
+        transform: scale(1.03);
+      }
+      
+      .release-info {
+        padding: 1.25rem;
+      }
+      
+      .release-title {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step-1);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+      
+      .release-year {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--2);
+        font-weight: 300;
+        color: var(--ink-light);
+        margin-bottom: 1rem;
+        letter-spacing: 0.02em;
+      }
+      
+      .release-links {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+      
+      .release-link {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--2);
+        font-weight: 500;
+        padding: 0.4rem 0.85rem;
+        background: var(--bg-warm);
+        border-radius: 20px;
+        color: var(--ink);
+        transition: all 0.2s ease;
+      }
+      
+      .release-link:hover {
+        background: var(--accent);
+        color: var(--paper);
+        text-decoration: none;
+      }
+      
+      /* === MERCH SECTION === */
+      #merch {
+        background: linear-gradient(180deg, var(--bg) 0%, var(--bg-warm) 100%);
+      }
+      
+      .featured-drop {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        background: var(--accent-soft);
+        padding: 0.6rem 1.25rem;
+        border-radius: 30px;
+        display: inline-block;
+        font-size: var(--step--2);
+        font-weight: 500;
+        margin-bottom: 1.5rem;
+        letter-spacing: 0.03em;
+      }
+      
+      .merch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1.5rem;
+      }
+      
+      .merch-item {
+        text-align: center;
+        padding: 1.5rem;
+        background: var(--paper);
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+        position: relative;
+      }
+      
+      .merch-item:hover {
+        transform: rotate(1deg) scale(1.02);
+      }
+      
+      /* Slight paper tilt variations */
+      .merch-item:nth-child(2n) { transform: rotate(-0.5deg); }
+      .merch-item:nth-child(2n):hover { transform: rotate(0.5deg) scale(1.02); }
+      .merch-item:nth-child(3n) { transform: rotate(0.8deg); }
+      .merch-item:nth-child(3n):hover { transform: rotate(-0.8deg) scale(1.02); }
+      
+      .merch-image {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: cover;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+        background: var(--bg-warm);
+      }
+      
+      .merch-name {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step-0);
+        font-weight: 500;
+        margin-bottom: 0.25rem;
+      }
+      
+      .merch-price {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--1);
+        font-weight: 300;
+        color: var(--ink-light);
+        margin-bottom: 0.75rem;
+      }
+      
+      /* === LIVE SECTION === */
+      #live {
+        background: var(--paper);
+        position: relative;
+      }
+      
+      /* Paper texture overlay */
+      #live::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        opacity: 0.025;
+        pointer-events: none;
+      }
+      
+      .tour-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      
+      .tour-item {
+        display: grid;
+        grid-template-columns: 100px 1fr auto;
+        gap: 1.5rem;
+        align-items: center;
+        padding: 1.25rem 0;
+        border-bottom: 1px dashed rgba(44, 40, 36, 0.15);
+        transition: background 0.2s ease;
+      }
+      
+      .tour-item:hover {
+        background: rgba(232, 213, 196, 0.3);
+        margin: 0 -1rem;
+        padding: 1.25rem 1rem;
+        border-radius: 4px;
+      }
+      
+      @media (max-width: 600px) {
+        .tour-item {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+          text-align: left;
+        }
+        .tour-item:hover {
+          margin: 0;
+          padding: 1.25rem 0.5rem;
+        }
+      }
+      
+      .tour-date {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step-0);
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      
+      .tour-venue {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-weight: 500;
+      }
+      
+      .tour-city {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: var(--ink-light);
+        font-size: var(--step--1);
+        font-weight: 300;
+      }
+      
+      .past-dates-toggle {
+        background: none;
+        border: none;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--1);
+        font-weight: 500;
+        color: var(--ink-light);
+        cursor: pointer;
+        padding: 1rem 0;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+      
+      .past-dates-toggle:hover {
+        color: var(--accent);
+      }
+      
+      .past-dates-toggle::before {
+        content: '+';
+        font-size: 1.2em;
+        transition: transform 0.2s ease;
+      }
+      
+      .past-dates-toggle.open::before {
+        transform: rotate(45deg);
+      }
+      
+      .past-dates {
+        display: none;
+        opacity: 0.6;
+      }
+      
+      .past-dates.show {
+        display: block;
+      }
+      
+      .book-ruby {
+        margin-top: 3rem;
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-style: italic;
+        font-size: var(--step-1);
+      }
+      
+      /* === SCRAPBOOK SECTION - EDITORIAL === */
+      #scrapbook {
+        background: var(--bg-warm);
+        position: relative;
+        overflow: hidden;
+      }
+      
+      .editorial-feed {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+      
+      @media (max-width: 900px) {
+        .editorial-feed {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      
+      @media (max-width: 600px) {
+        .editorial-feed {
+          grid-template-columns: 1fr;
+        }
+      }
+      
+      .editorial-item {
+        position: relative;
+        transition: transform 0.3s ease, opacity 0.3s ease;
+      }
+      
+      .editorial-item:hover {
+        transform: translateY(-4px);
+      }
+      
+      .editorial-item.editorial-large {
+        grid-row: span 2;
+      }
+      
+      .editorial-item.editorial-wide {
+        grid-column: span 2;
+      }
+      
+      @media (max-width: 600px) {
+        .editorial-item.editorial-wide {
+          grid-column: span 1;
+        }
+      }
+      
+      .editorial-image {
+        overflow: hidden;
+        background: var(--ink);
+      }
+      
+      .editorial-image .placeholder-img {
+        transition: transform 0.4s ease;
+      }
+      
+      .editorial-item:hover .editorial-image .placeholder-img {
+        transform: scale(1.02);
+      }
+      
+      .editorial-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(44, 40, 36, 0.1);
+      }
+      
+      .editorial-date {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--2);
+        color: var(--ink-light);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      
+      .editorial-tag {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--2);
+        color: var(--ink);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+      
+      /* Quote Block */
+      .editorial-item.editorial-quote {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2.5rem 2rem;
+        background: var(--paper);
+        min-height: 200px;
+      }
+      
+      .editorial-item.editorial-quote blockquote {
+        font-family: 'Serial Blur', Georgia, serif;
+        font-size: var(--step-1);
+        line-height: 1.5;
+        color: var(--ink);
+        text-align: center;
+        margin: 0;
+        max-width: 280px;
+      }
+      
+      .editorial-item.editorial-quote.editorial-dark {
+        background: var(--ink);
+      }
+      
+      .editorial-item.editorial-quote.editorial-dark blockquote {
+        color: var(--paper);
+      }
+      
+      /* Text Block */
+      .editorial-item.editorial-text {
+        padding: 2rem 0;
+        background: transparent;
+      }
+      
+      .editorial-body {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step-0);
+        line-height: 1.7;
+        color: var(--ink);
+        margin-bottom: 1rem;
+      }
+      
+      .editorial-body a {
+        color: var(--ink);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+      }
+      
+      .editorial-item.editorial-text .editorial-date {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step--2);
+        color: var(--ink-light);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      
+      /* === NEWSLETTER / FOOTER === */
+      #newsletter {
+        background: var(--ink);
+        color: var(--paper);
+        text-align: center;
+        padding: var(--section-space) var(--gutter);
+      }
+      
+      #newsletter h2 {
+        color: var(--paper);
+      }
+      
+      #newsletter .section-title::after {
+        display: none;
+      }
+      
+      .newsletter-copy {
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-style: italic;
+        font-size: var(--step-1);
+        color: rgba(255, 254, 249, 0.7);
+        margin-bottom: 2rem;
+        max-width: 100%;
+      }
+      
+      .newsletter-form {
+        display: flex;
+        gap: 0.75rem;
+        max-width: 420px;
+        margin: 0 auto 3rem;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      .newsletter-input {
+        flex: 1;
+        min-width: 220px;
+        padding: 0.9rem 1.25rem;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: var(--step-0);
+        font-weight: 300;
+        background: rgba(255, 254, 249, 0.08);
+        border: 1px solid rgba(255, 254, 249, 0.2);
+        border-radius: 50px;
+        color: var(--paper);
+        outline: none;
+        transition: all 0.2s ease;
+      }
+      
+      .newsletter-input::placeholder {
+        color: rgba(255, 254, 249, 0.4);
+      }
+      
+      .newsletter-input:focus {
+        background: rgba(255, 254, 249, 0.12);
+        border-color: var(--accent);
+      }
+      
+      .btn-newsletter {
+        background: var(--accent);
+        color: var(--paper);
+        border: none;
+      }
+      
+      .btn-newsletter:hover {
+        background: #D97350;
+        transform: translateY(-2px);
+      }
+      
+      /* Footer */
+      footer {
+        background: var(--ink);
+        color: var(--paper);
+        padding: 0 var(--gutter) 3rem;
+      }
+      
+      .footer-inner {
+        max-width: var(--max-width);
+        margin: 0 auto;
+        border-top: 1px solid rgba(255, 254, 249, 0.1);
+        padding-top: 2rem;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1.5rem;
+      }
+      
+      .social-links {
+        display: flex;
+        gap: 1.5rem;
+      }
+      
+      .social-links a {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        color: rgba(255, 254, 249, 0.6);
+        font-size: var(--step--1);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        transition: color 0.2s ease;
+      }
+      
+      .social-links a:hover {
+        color: var(--accent);
+        text-decoration: none;
+      }
+      
+      .footer-info {
+        font-size: var(--step--2);
+        color: rgba(255, 254, 249, 0.4);
+        text-align: right;
+      }
+      
+      .footer-info a {
+        color: rgba(255, 254, 249, 0.5);
+      }
+      
+      .footer-info a:hover {
+        color: var(--accent);
+      }
+      
+      @media (max-width: 600px) {
+        .footer-inner {
+          flex-direction: column;
+          text-align: center;
+        }
+        .footer-info {
+          text-align: center;
+        }
+      }
+      
+      /* === UTILITY CLASSES === */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        border: 0;
+      }
+      
+      /* === SCROLL ANIMATIONS === */
+      .fade-in {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: opacity 0.8s ease, transform 0.8s ease;
+      }
+      
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* Staggered children */
+      .stagger-children > * {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+      }
+      
+      .stagger-children.visible > *:nth-child(1) { transition-delay: 0.1s; }
+      .stagger-children.visible > *:nth-child(2) { transition-delay: 0.15s; }
+      .stagger-children.visible > *:nth-child(3) { transition-delay: 0.2s; }
+      .stagger-children.visible > *:nth-child(4) { transition-delay: 0.25s; }
+      .stagger-children.visible > *:nth-child(5) { transition-delay: 0.3s; }
+      .stagger-children.visible > *:nth-child(6) { transition-delay: 0.35s; }
+      
+      .stagger-children.visible > * {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      
+      /* === PLACEHOLDER IMAGES === */
+      .placeholder-img {
+        background: linear-gradient(135deg, var(--bg-warm) 0%, var(--accent-soft) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--ink-light);
+        font-family: 'Cormorant Garamond', Georgia, serif;
+        font-style: italic;
+        font-size: var(--step--1);
+      }
+      
+      /* === FLOATING STICKERS === */
+      .floating-sticker {
+        position: absolute;
+        pointer-events: none;
+        z-index: 1;
+        transition: transform 0.6s ease;
+      }
+      
+      .floating-sticker img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+      
+      /* Sticker variations - unique positions, sizes, rotations, opacities */
+      .sticker-1 {
+        width: clamp(60px, 10vw, 120px);
+        top: 12%;
+        right: 5%;
+        opacity: 0.35;
+        transform: rotate(12deg);
+        animation: stickerFloat1 12s ease-in-out infinite;
+      }
+      
+      .sticker-2 {
+        width: clamp(45px, 8vw, 90px);
+        top: 65%;
+        left: 3%;
+        opacity: 0.5;
+        transform: rotate(-8deg);
+        animation: stickerFloat2 15s ease-in-out infinite;
+      }
+      
+      .sticker-3 {
+        width: clamp(70px, 12vw, 140px);
+        bottom: 15%;
+        right: 8%;
+        opacity: 0.25;
+        transform: rotate(22deg);
+        animation: stickerFloat3 18s ease-in-out infinite;
+      }
+      
+      .sticker-4 {
+        width: clamp(50px, 7vw, 100px);
+        top: 30%;
+        left: 6%;
+        opacity: 0.4;
+        transform: rotate(-15deg) scaleX(-1);
+        animation: stickerFloat1 14s ease-in-out infinite reverse;
+      }
+      
+      .sticker-5 {
+        width: clamp(55px, 9vw, 110px);
+        top: 5%;
+        left: 15%;
+        opacity: 0.3;
+        transform: rotate(5deg);
+        animation: stickerFloat2 16s ease-in-out infinite;
+      }
+      
+      /* Music section stickers */
+      .sticker-music-1 {
+        width: clamp(40px, 6vw, 80px);
+        top: -20px;
+        right: 10%;
+        opacity: 0.45;
+        transform: rotate(-18deg);
+      }
+      
+      .sticker-music-2 {
+        width: clamp(55px, 8vw, 100px);
+        bottom: 10%;
+        left: -20px;
+        opacity: 0.3;
+        transform: rotate(25deg);
+      }
+      
+      /* Merch section stickers */
+      .sticker-merch-1 {
+        width: clamp(60px, 10vw, 120px);
+        top: 5%;
+        right: -15px;
+        opacity: 0.35;
+        transform: rotate(8deg);
+      }
+      
+      /* Live section stickers */
+      .sticker-live-1 {
+        width: clamp(45px, 7vw, 85px);
+        bottom: 20%;
+        right: 5%;
+        opacity: 0.4;
+        transform: rotate(-12deg);
+      }
+      
+      /* Scrapbook section stickers */
+      .sticker-scrap-1 {
+        width: clamp(50px, 8vw, 95px);
+        top: 8%;
+        left: -10px;
+        opacity: 0.5;
+        transform: rotate(15deg);
+      }
+      
+      .sticker-scrap-2 {
+        width: clamp(65px, 10vw, 130px);
+        bottom: 5%;
+        right: 3%;
+        opacity: 0.25;
+        transform: rotate(-20deg) scaleX(-1);
+      }
+      
+      @keyframes stickerFloat1 {
+        0%, 100% { transform: rotate(12deg) translateY(0); }
+        50% { transform: rotate(15deg) translateY(-8px); }
+      }
+      
+      @keyframes stickerFloat2 {
+        0%, 100% { transform: rotate(-8deg) translateY(0) translateX(0); }
+        33% { transform: rotate(-5deg) translateY(-5px) translateX(3px); }
+        66% { transform: rotate(-10deg) translateY(3px) translateX(-2px); }
+      }
+      
+      @keyframes stickerFloat3 {
+        0%, 100% { transform: rotate(22deg) translateY(0); }
+        50% { transform: rotate(18deg) translateY(-10px); }
+      }
+      
+      /* Hide some stickers on mobile for cleaner look */
+      @media (max-width: 768px) {
+        .sticker-2, .sticker-4, .sticker-music-2, .sticker-scrap-2 {
+          display: none;
+        }
+        .floating-sticker {
+          opacity: 0.25 !important;
+        }
+      }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-inner">
+            <a href="#" class="nav-logo">Ruby Plume</a>
+            <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-links">
+                <li><a href="#music">Music</a></li>
+                <li><a href="#merch">Merch</a></li>
+                <li><a href="#live">Live</a></li>
+                <li><a href="#scrapbook">Scrapbook</a></li>
+                <li><a href="#newsletter">Newsletter</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <!-- Floating Stickers -->
+        <div class="floating-sticker sticker-1">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=7EEDA6C4-69F2-43CE-A62E-11B67A339B41&code=001&library=3&type=1&mode=1&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        <div class="floating-sticker sticker-2">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=94B91C14-840D-4173-8A0E-772F4EF4E2F4&code=001&library=3&type=1&mode=1&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        <div class="floating-sticker sticker-3">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=9578BF0E-79E0-4ED4-9A9C-6C11283B66FB&code=001&library=3&type=1&mode=2&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        <div class="floating-sticker sticker-4">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=9BB11409-AF90-4AC1-A49A-3544437B8B61&code=001&library=3&type=1&mode=2&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        <div class="floating-sticker sticker-5">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=D70CD677-F5CD-4094-B225-D09218653059&code=001&library=3&type=1&mode=1&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        
+        <div class="hero-video-container">
+            <video class="hero-video" autoplay loop muted playsinline>
+                <source src="https://storage.googleapis.com/allmyfriends-assets-2025/Untitled design.mp4" type="video/mp4">
+            </video>
+        </div>
+        
+        <div class="hero-cta">
+            <a href="#" class="btn btn-primary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                Listen Now
+            </a>
+            <a href="#merch" class="btn btn-secondary">Shop Merch</a>
+            <a href="#live" class="btn btn-secondary">Tour Dates</a>
+        </div>
+        
+        <span class="scroll-hint">scroll down ↓</span>
+    </section>
+
+    <!-- Music Section -->
+    <section id="music">
+        <!-- Scattered stickers -->
+        <div class="floating-sticker sticker-music-1">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=9BB11409-AF90-4AC1-A49A-3544437B8B61&code=001&library=3&type=1&mode=2&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        <div class="floating-sticker sticker-music-2">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=7EEDA6C4-69F2-43CE-A62E-11B67A339B41&code=001&library=3&type=1&mode=1&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-marker">Releases</span>
+                <h2 class="section-title">Music</h2>
+            </div>
+            
+            <div class="releases-grid stagger-children">
+                <!-- Release 1 -->
+                <article class="release-card">
+                    <div class="release-artwork">
+                        <div class="placeholder-img" style="aspect-ratio:1;">Pindrop Art</div>
+                    </div>
+                    <div class="release-info">
+                        <h3 class="release-title">Pindrop</h3>
+                        <p class="release-year">2024 · Single · 2:48</p>
+                        <div class="release-links">
+                            <a href="#" class="release-link">Spotify</a>
+                            <a href="#" class="release-link">Apple</a>
+                            <a href="#" class="release-link">YouTube</a>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Release 2 -->
+                <article class="release-card">
+                    <div class="release-artwork">
+                        <div class="placeholder-img" style="aspect-ratio:1;">Cherrypick Art</div>
+                    </div>
+                    <div class="release-info">
+                        <h3 class="release-title">Cherrypick</h3>
+                        <p class="release-year">2024 · Single · 3:00</p>
+                        <div class="release-links">
+                            <a href="#" class="release-link">Spotify</a>
+                            <a href="#" class="release-link">Apple</a>
+                            <a href="#" class="release-link">YouTube</a>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Release 3 -->
+                <article class="release-card">
+                    <div class="release-artwork">
+                        <div class="placeholder-img" style="aspect-ratio:1;">WTRA Art</div>
+                    </div>
+                    <div class="release-info">
+                        <h3 class="release-title">What's This Really About</h3>
+                        <p class="release-year">2024 · Single · 3:04</p>
+                        <div class="release-links">
+                            <a href="#" class="release-link">Spotify</a>
+                            <a href="#" class="release-link">Apple</a>
+                            <a href="#" class="release-link">YouTube</a>
+                        </div>
+                    </div>
+                </article>
+                
+                <!-- Release 4 -->
+                <article class="release-card">
+                    <div class="release-artwork">
+                        <div class="placeholder-img" style="aspect-ratio:1;">Duel Art</div>
+                    </div>
+                    <div class="release-info">
+                        <h3 class="release-title">Duel</h3>
+                        <p class="release-year">2024 · Single · 2:55</p>
+                        <div class="release-links">
+                            <a href="#" class="release-link">Spotify</a>
+                            <a href="#" class="release-link">Apple</a>
+                            <a href="#" class="release-link">YouTube</a>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Merch Section -->
+    <section id="merch">
+        <!-- Scattered sticker -->
+        <div class="floating-sticker sticker-merch-1">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=94B91C14-840D-4173-8A0E-772F4EF4E2F4&code=001&library=3&type=1&mode=1&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-marker">Shop</span>
+                <h2 class="section-title">Merch</h2>
+            </div>
+            
+            <div class="merch-grid stagger-children">
+                <article class="merch-item">
+                    <div class="placeholder-img merch-image">Tee Photo</div>
+                    <h3 class="merch-name">Pindrop Tour Tee</h3>
+                    <p class="merch-price">$35</p>
+                    <a href="#" class="btn btn-small btn-secondary">Buy</a>
+                </article>
+                
+                <article class="merch-item">
+                    <div class="placeholder-img merch-image">Hoodie Photo</div>
+                    <h3 class="merch-name">Ruby Plume Hoodie</h3>
+                    <p class="merch-price">$55</p>
+                    <a href="#" class="btn btn-small btn-secondary">Buy</a>
+                </article>
+                
+                <article class="merch-item">
+                    <div class="placeholder-img merch-image">Hat Photo</div>
+                    <h3 class="merch-name">Cherrypick Cap</h3>
+                    <p class="merch-price">$28</p>
+                    <a href="#" class="btn btn-small btn-secondary">Buy</a>
+                </article>
+                
+                <article class="merch-item">
+                    <div class="placeholder-img merch-image">Tote Photo</div>
+                    <h3 class="merch-name">Canvas Tote</h3>
+                    <p class="merch-price">$22</p>
+                    <a href="#" class="btn btn-small btn-secondary">Buy</a>
+                </article>
+                
+                <article class="merch-item">
+                    <div class="placeholder-img merch-image">Poster Photo</div>
+                    <h3 class="merch-name">Tour Poster</h3>
+                    <p class="merch-price">$18</p>
+                    <a href="#" class="btn btn-small btn-secondary">Buy</a>
+                </article>
+                
+                <article class="merch-item">
+                    <div class="placeholder-img merch-image">Sticker Photo</div>
+                    <h3 class="merch-name">Sticker Pack</h3>
+                    <p class="merch-price">$8</p>
+                    <a href="#" class="btn btn-small btn-secondary">Buy</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Section -->
+    <section id="live">
+        <!-- Scattered sticker -->
+        <div class="floating-sticker sticker-live-1">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=D70CD677-F5CD-4094-B225-D09218653059&code=001&library=3&type=1&mode=1&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-marker">Supporting Asha Banks</span>
+                <h2 class="section-title">Live</h2>
+            </div>
+            
+            <ul class="tour-list fade-in">
+                <li class="tour-item">
+                    <div class="tour-date">Dec 10</div>
+                    <div>
+                        <p class="tour-venue">The Echo</p>
+                        <p class="tour-city">Los Angeles, CA</p>
+                    </div>
+                    <a href="#" class="btn btn-small btn-primary">Tickets</a>
+                </li>
+                
+                <li class="tour-item">
+                    <div class="tour-date">Dec 12</div>
+                    <div>
+                        <p class="tour-venue">The Drake Hotel</p>
+                        <p class="tour-city">Toronto, Canada</p>
+                    </div>
+                    <a href="#" class="btn btn-small btn-primary">Tickets</a>
+                </li>
+                
+                <li class="tour-item">
+                    <div class="tour-date">Dec 14</div>
+                    <div>
+                        <p class="tour-venue">Schubas Tavern</p>
+                        <p class="tour-city">Chicago, IL</p>
+                    </div>
+                    <a href="#" class="btn btn-small btn-primary">Tickets</a>
+                </li>
+                
+                <li class="tour-item">
+                    <div class="tour-date">Dec 16</div>
+                    <div>
+                        <p class="tour-venue">Baby's All Right</p>
+                        <p class="tour-city">New York, NY</p>
+                    </div>
+                    <a href="#" class="btn btn-small btn-primary">Tickets</a>
+                </li>
+            </ul>
+            
+            <p class="book-ruby fade-in">
+                Want Ruby at your venue? <a href="mailto:booking@rubyplume.com">Get in touch →</a>
+            </p>
+        </div>
+    </section>
+
+    <!-- Scrapbook Section -->
+    <section id="scrapbook">
+        <!-- Scattered stickers -->
+        <div class="floating-sticker sticker-scrap-1">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=9578BF0E-79E0-4ED4-9A9C-6C11283B66FB&code=001&library=3&type=1&mode=2&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        <div class="floating-sticker sticker-scrap-2">
+            <img src="https://storage.googleapis.com/allmyfriends-assets-2025/ruby/thumbnails/uuid=9BB11409-AF90-4AC1-A49A-3544437B8B61&code=001&library=3&type=1&mode=2&loc=true&cap=true_thumb.jpg" alt="" aria-hidden="true">
+        </div>
+        
+        <div class="container">
+            <div class="section-header fade-in">
+                <span class="section-marker">Archive</span>
+                <h2 class="section-title">Scrapbook</h2>
+            </div>
+            
+            <div class="editorial-feed stagger-children">
+                <!-- Large Image -->
+                <article class="editorial-item editorial-large">
+                    <div class="editorial-image">
+                        <div class="placeholder-img" style="aspect-ratio:4/5; min-height: 400px;">Photo</div>
+                    </div>
+                    <div class="editorial-meta">
+                        <span class="editorial-date">Nov 2024</span>
+                        <span class="editorial-tag">Backstage</span>
+                    </div>
+                </article>
+                
+                <!-- Quote Block -->
+                <article class="editorial-item editorial-quote">
+                    <blockquote>
+                        "The best songs come at 3am when you're not trying to write anything at all."
+                    </blockquote>
+                </article>
+                
+                <!-- Standard Image -->
+                <article class="editorial-item">
+                    <div class="editorial-image">
+                        <div class="placeholder-img" style="aspect-ratio:1; min-height: 280px;">Photo</div>
+                    </div>
+                    <div class="editorial-meta">
+                        <span class="editorial-date">Oct 2024</span>
+                        <span class="editorial-tag">Studio</span>
+                    </div>
+                </article>
+                
+                <!-- Text Block -->
+                <article class="editorial-item editorial-text">
+                    <p class="editorial-body">Did an interview with <a href="#">Fader</a> about the new EP. We talked about recording at home, late night sessions, and the songs that almost didn't make it.</p>
+                    <span class="editorial-date">Press</span>
+                </article>
+                
+                <!-- Standard Image -->
+                <article class="editorial-item">
+                    <div class="editorial-image">
+                        <div class="placeholder-img" style="aspect-ratio:3/4; min-height: 320px;">Photo</div>
+                    </div>
+                    <div class="editorial-meta">
+                        <span class="editorial-date">Sep 2024</span>
+                        <span class="editorial-tag">Tour</span>
+                    </div>
+                </article>
+                
+                <!-- Quote Block Dark -->
+                <article class="editorial-item editorial-quote editorial-dark">
+                    <blockquote>
+                        Listening to Japanese Breakfast and Joni Mitchell on repeat.
+                    </blockquote>
+                </article>
+                
+                <!-- Wide Image -->
+                <article class="editorial-item editorial-wide">
+                    <div class="editorial-image">
+                        <div class="placeholder-img" style="aspect-ratio:16/9; min-height: 240px;">Photo</div>
+                    </div>
+                    <div class="editorial-meta">
+                        <span class="editorial-date">Aug 2024</span>
+                        <span class="editorial-tag">NYC</span>
+                    </div>
+                </article>
+                
+                <!-- Text Block -->
+                <article class="editorial-item editorial-text">
+                    <p class="editorial-body">Thank you Chicago. That show was something else. When you all sang Cherrypick back at me I lost it a little.</p>
+                    <span class="editorial-date">Live</span>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section id="newsletter">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Stay Close</h2>
+            </div>
+            
+            <p class="newsletter-copy">
+                I send notes sometimes — new music, tour dates, scrapbook updates, and other little things. No spam, promise.
+            </p>
+            
+            <form class="newsletter-form" action="#" method="POST">
+                <input type="email" class="newsletter-input" placeholder="your email" required aria-label="Email address">
+                <button type="submit" class="btn btn-newsletter">Subscribe</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-inner">
+            <div class="social-links">
+                <a href="#">Instagram</a>
+                <a href="#">Spotify</a>
+                <a href="#">TikTok</a>
+                <a href="#">YouTube</a>
+            </div>
+            
+            <div class="footer-info">
+                <p><a href="mailto:hello@rubyplume.com">hello@rubyplume.com</a></p>
+                <p>Management: <a href="mailto:mgmt@rubyplume.com">mgmt@rubyplume.com</a></p>
+                <p style="margin-top: 0.75rem;">© 2024 Ruby Plume. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+      // Mobile Navigation Toggle
+      const navToggle = document.querySelector('.nav-toggle');
+      const navLinks = document.querySelector('.nav-links');
+      
+      navToggle.addEventListener('click', () => {
+        const isOpen = navLinks.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', isOpen);
+      });
+      
+      // Close mobile nav when clicking a link
+      navLinks.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navLinks.classList.remove('open');
+          navToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+      
+      // Navbar scroll effect
+      const nav = document.querySelector('nav');
+      let lastScroll = 0;
+      
+      window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
+        
+        if (currentScroll > 50) {
+          nav.classList.add('scrolled');
+        } else {
+          nav.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+      });
+      
+      // Scroll Animations with Intersection Observer
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -10% 0px',
+        threshold: 0.1
+      };
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+      
+      // Observe all animated elements
+      document.querySelectorAll('.fade-in, .stagger-children').forEach(el => {
+        observer.observe(el);
+      });
+      
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            const navHeight = nav.offsetHeight;
+            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+            window.scrollTo({
+              top: targetPosition,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+      
+      // Hide scroll hint after scrolling
+      const scrollHint = document.querySelector('.scroll-hint');
+      
+      window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 100) {
+          scrollHint.style.opacity = '0';
+        } else {
+          scrollHint.style.opacity = '0.6';
+        }
+      }, { passive: true });
+      
+      // Add subtle parallax to scrapbook cards on mouse move (desktop only)
+      if (window.matchMedia('(pointer: fine)').matches) {
+        const scrapbookSection = document.querySelector('#scrapbook');
+        const scrapCards = document.querySelectorAll('.scrap-card');
+        
+        scrapbookSection.addEventListener('mousemove', (e) => {
+          const { clientX, clientY } = e;
+          const { left, top, width, height } = scrapbookSection.getBoundingClientRect();
+          
+          const x = (clientX - left) / width - 0.5;
+          const y = (clientY - top) / height - 0.5;
+          
+          scrapCards.forEach((card, index) => {
+            const factor = (index % 3 + 1) * 2;
+            card.style.transform = `
+              translateX(${x * factor}px) 
+              translateY(${y * factor}px) 
+              rotate(${card.style.getPropertyValue('--rotation') || '0deg'})
+            `;
+          });
+        });
+        
+        scrapbookSection.addEventListener('mouseleave', () => {
+          scrapCards.forEach(card => {
+            card.style.transform = `rotate(${card.style.getPropertyValue('--rotation') || '0deg'})`;
+          });
+        });
+      }
+    </script>
+</body>
+</html>
+
