@@ -1151,8 +1151,113 @@
         }
       }
     </style>
+      /* Password Protection Overlay */
+      .password-overlay {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+      }
+      
+      .password-overlay.hidden {
+        display: none;
+      }
+      
+      .password-logo {
+        font-family: 'Serial Chaos', sans-serif;
+        font-size: clamp(2rem, 5vw, 3rem);
+        color: var(--ink);
+        margin-bottom: 1rem;
+      }
+      
+      .password-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+        width: 100%;
+        max-width: 300px;
+        padding: 0 1.5rem;
+      }
+      
+      .password-input {
+        width: 100%;
+        padding: 0.875rem 1rem;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 1rem;
+        border: 1px solid rgba(44, 40, 36, 0.2);
+        border-radius: 4px;
+        background: var(--paper);
+        text-align: center;
+        transition: border-color 0.2s ease;
+      }
+      
+      .password-input:focus {
+        outline: none;
+        border-color: var(--ink);
+      }
+      
+      .password-input.error {
+        border-color: #c75d3a;
+        animation: shake 0.4s ease;
+      }
+      
+      @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-8px); }
+        75% { transform: translateX(8px); }
+      }
+      
+      .password-submit {
+        width: 100%;
+        padding: 0.875rem 1.5rem;
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        background: var(--ink);
+        color: var(--paper);
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: opacity 0.2s ease;
+      }
+      
+      .password-submit:hover {
+        opacity: 0.85;
+      }
+      
+      .password-hint {
+        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-size: 0.75rem;
+        color: var(--ink-light);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+      
+      .main-content.locked {
+        display: none;
+      }
+    </style>
 </head>
 <body>
+    <!-- Password Protection -->
+    <div class="password-overlay" id="passwordOverlay">
+      <div class="password-logo">Ruby Plume</div>
+      <form class="password-form" id="passwordForm">
+        <input type="password" class="password-input" id="passwordInput" placeholder="Enter password" autocomplete="off">
+        <button type="submit" class="password-submit">Enter</button>
+      </form>
+      <span class="password-hint">Preview Access</span>
+    </div>
+    
+    <div class="main-content locked" id="mainContent">
     <!-- Navigation -->
     <nav>
         <div class="nav-inner">
@@ -1644,6 +1749,47 @@
           });
         });
       }
+    </script>
+    </div><!-- End main-content -->
+    
+    <!-- Password Protection Script -->
+    <script>
+      (function() {
+        const CORRECT_PASSWORD = 'pindrop25';
+        const STORAGE_KEY = 'ruby_plume_access';
+        
+        const overlay = document.getElementById('passwordOverlay');
+        const mainContent = document.getElementById('mainContent');
+        const form = document.getElementById('passwordForm');
+        const input = document.getElementById('passwordInput');
+        
+        // Check if already authenticated
+        if (sessionStorage.getItem(STORAGE_KEY) === 'granted') {
+          overlay.classList.add('hidden');
+          mainContent.classList.remove('locked');
+        }
+        
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+          
+          if (input.value === CORRECT_PASSWORD) {
+            sessionStorage.setItem(STORAGE_KEY, 'granted');
+            overlay.classList.add('hidden');
+            mainContent.classList.remove('locked');
+          } else {
+            input.classList.add('error');
+            input.value = '';
+            input.placeholder = 'Try again';
+            setTimeout(() => {
+              input.classList.remove('error');
+              input.placeholder = 'Enter password';
+            }, 1000);
+          }
+        });
+        
+        // Focus input on load
+        input.focus();
+      })();
     </script>
 </body>
 </html>
