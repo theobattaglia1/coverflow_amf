@@ -287,6 +287,45 @@ async function loadUsers() {
     return users;
 }
 
+async function writeTextFileAtomically(filePath, contents) {
+  const dirPath = path.dirname(filePath);
+  await fs.promises.mkdir(dirPath, { recursive: true });
+
+  const tempPath = `${filePath}.${Date.now()}.${Math.random().toString(16).slice(2)}.tmp`;
+  try {
+    await fs.promises.writeFile(tempPath, contents);
+    await fs.promises.rename(tempPath, filePath);
+  } catch (err) {
+    try {
+      await fs.promises.unlink(tempPath);
+    } catch {
+      // ignore
+    }
+    throw err;
+  }
+}
+
+function getJsonRecordCount(parsed) {
+  if (Array.isArray(parsed)) return parsed.length;
+  if (parsed && typeof parsed === 'object') return Object.keys(parsed).length;
+  return 0;
+}
+
+async function restoreJsonFileFromBackup(mainPath, backupPath) {
+  const rawBackup = await fs.promises.readFile(backupPath, 'utf-8');
+  let parsed;
+  try {
+    parsed = JSON.parse(rawBackup);
+  } catch (err) {
+    throw new Error(`Backup JSON invalid: ${err.message}`);
+  }
+
+  const normalized = JSON.stringify(parsed, null, 2);
+  await writeTextFileAtomically(mainPath, normalized);
+  await syncFileToRemote(mainPath, normalized);
+  return { size: normalized.length, records: getJsonRecordCount(parsed) };
+}
+
 // Safe file write with backup
 async function safeWriteJson(filePath, data) {
   const backupPath = filePath.replace('.json', '-backup.json');
@@ -444,6 +483,15 @@ async function downloadJsonFromGcs(fileName) {
   }
   const [contents] = await file.download();
   const destinationPath = path.join(DATA_DIR, fileName);
+  const payload = Buffer.isBuffer(contents) ? contents.toString('utf-8') : String(contents);
+
+  // Validate JSON before overwriting local copy.
+  try {
+    JSON.parse(payload);
+  } catch (err) {
+    console.error(`[DATA SYNC] Downloaded ${fileName} but JSON is invalid; keeping local version: ${err.message}`);
+    return false;
+  }
   
   // Ensure the directory exists before writing
   try {
@@ -457,7 +505,7 @@ async function downloadJsonFromGcs(fileName) {
   }
   
   try {
-    await fs.promises.writeFile(destinationPath, contents);
+    await writeTextFileAtomically(destinationPath, payload);
     console.log(`[DATA SYNC] Downloaded ${fileName} from gs://${bucket.name}/${remoteKey} to ${destinationPath}`);
     return true;
   } catch (writeErr) {
@@ -1567,6 +1615,7 @@ app.post('/push-live', requireAuth('editor'), async (req, res) => {
         const validationResults = [];
         
         for (const file of criticalFiles) {
+            const backupPath = file.path.replace('.json', '-backup.json');
             try {
                 await fs.promises.access(file.path, fs.constants.R_OK);
                 const data = await fs.promises.readFile(file.path, 'utf-8');
@@ -1575,15 +1624,31 @@ app.post('/push-live', requireAuth('editor'), async (req, res) => {
                     file: file.name,
                     status: 'ok',
                     size: data.length,
-                    records: Array.isArray(parsed) ? parsed.length : Object.keys(parsed).length
+                    records: getJsonRecordCount(parsed)
                 });
             } catch (err) {
                 console.error(`Validation failed for ${file.name}:`, err);
-                validationResults.push({
-                    file: file.name,
-                    status: 'error',
-                    error: err.message
-                });
+                // Attempt a safe restore from the last known backup.
+                try {
+                    await fs.promises.access(backupPath, fs.constants.R_OK);
+                    const restored = await restoreJsonFileFromBackup(file.path, backupPath);
+                    dataCache.invalidate(file.name);
+                    validationResults.push({
+                        file: file.name,
+                        status: 'repaired',
+                        restoredFrom: path.basename(backupPath),
+                        ...restored
+                    });
+                    console.warn(`[PUSH LIVE] Auto-repaired ${file.name}.json from backup (${backupPath})`);
+                } catch (repairErr) {
+                    console.error(`[PUSH LIVE] Repair attempt failed for ${file.name}:`, repairErr);
+                    validationResults.push({
+                        file: file.name,
+                        status: 'error',
+                        error: err.message,
+                        repairError: repairErr.message
+                    });
+                }
             }
         }
         
@@ -1642,14 +1707,13 @@ app.post('/api/backup/restore/:type', requireAuth('admin'), async (req, res) => 
     // Check if backup exists
     await fs.promises.access(backupPath);
     
-    // Copy backup to main file
-    await fs.promises.copyFile(backupPath, mainPath);
+    const restored = await restoreJsonFileFromBackup(mainPath, backupPath);
     
     // Invalidate cache
     dataCache.invalidate(type);
     
     console.log(`Restored ${type} from backup by user: ${req.session.user?.username}`);
-    res.json({ success: true, message: `Restored ${type} from backup` });
+    res.json({ success: true, message: `Restored ${type} from backup`, ...restored });
   } catch (err) {
     console.error('Backup restore error:', err);
     res.status(500).json({ error: 'Failed to restore backup', details: err.message });

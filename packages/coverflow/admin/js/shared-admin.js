@@ -313,8 +313,17 @@ window.apiCall = async function(url, options = {}) {
     }
     
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: response.statusText }));
-      throw new Error(error.error || error.message || `API call failed: ${response.status}`);
+      const payload = await response.json().catch(() => ({ error: response.statusText }));
+      let message = payload.error || payload.message || `API call failed: ${response.status}`;
+      if (Array.isArray(payload.details) && payload.details.length) {
+        const detailSummary = payload.details
+          .map(d => `${d.file || 'unknown'}: ${d.error || d.repairError || 'error'}`)
+          .join(' | ');
+        message = `${message} (${detailSummary})`;
+      } else if (typeof payload.details === 'string' && payload.details) {
+        message = `${message} (${payload.details})`;
+      }
+      throw new Error(message);
     }
     
     return await response.json();
