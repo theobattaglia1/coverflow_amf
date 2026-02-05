@@ -17,6 +17,50 @@ window.sortOrder = 'index';
 window.currentViewMode = 'grid';
 window.showFullView = false;
 
+function getCoverCategories(cover) {
+  if (!cover) return [];
+  const raw = cover.category;
+  if (Array.isArray(raw)) return raw.map(c => String(c));
+  if (typeof raw === 'string') {
+    // tolerate comma-separated legacy values
+    return raw
+      .split(',')
+      .map(c => c.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
+
+function getCoverTimestampMs(cover) {
+  const raw =
+    cover?.lastModified ??
+    cover?.uploadedAt ??
+    cover?.updatedAt ??
+    cover?.createdAt ??
+    null;
+  if (raw === null || raw === undefined || raw === '') return null;
+  const ms = new Date(raw).getTime();
+  return Number.isFinite(ms) ? ms : null;
+}
+
+function getAdvancedFilterValues() {
+  const dateFrom = document.getElementById('dateFrom')?.value || '';
+  const dateTo = document.getElementById('dateTo')?.value || '';
+  const tagsRaw = document.getElementById('tagsFilter')?.value || '';
+  const tags = tagsRaw
+    .split(',')
+    .map(t => t.trim().toLowerCase())
+    .filter(Boolean);
+  return { dateFrom, dateTo, tags };
+}
+
+function normalizeSortOrder(sortOrder) {
+  if (!sortOrder) return 'index';
+  if (sortOrder === 'alphabetical') return 'title';
+  if (sortOrder === 'recent') return 'date';
+  return sortOrder;
+}
+
 // Load covers from server
 window.loadCovers = async function() {
   try {
@@ -49,35 +93,60 @@ window.renderCovers = function(search = '') {
   if (!container) return;
   
   // Apply search and filters
-  let filtered = window.covers;
+  let filtered = Array.isArray(window.covers) ? [...window.covers] : [];
   
   if (search || window.searchTerm) {
     const term = (search || window.searchTerm).toLowerCase();
     filtered = filtered.filter(cover => 
       cover.albumTitle?.toLowerCase().includes(term) ||
       cover.coverLabel?.toLowerCase().includes(term) ||
-      cover.artistDetails?.name?.toLowerCase().includes(term)
+      cover.artistDetails?.name?.toLowerCase().includes(term) ||
+      getCoverCategories(cover).some(cat => cat.toLowerCase().includes(term))
     );
   }
   
   if (window.categoryFilter) {
     filtered = filtered.filter(cover => 
-      cover.category?.includes(window.categoryFilter)
+      getCoverCategories(cover).some(cat => cat.toLowerCase() === window.categoryFilter.toLowerCase())
     );
+  }
+
+  // Advanced filters (date range + category "tags")
+  const { dateFrom, dateTo, tags } = getAdvancedFilterValues();
+  if (tags.length) {
+    filtered = filtered.filter(cover => {
+      const categories = getCoverCategories(cover).map(c => c.toLowerCase());
+      return tags.some(tag => categories.includes(tag));
+    });
+  }
+
+  if (dateFrom || dateTo) {
+    const fromMs = dateFrom ? new Date(`${dateFrom}T00:00:00`).getTime() : null;
+    const toMs = dateTo ? new Date(`${dateTo}T23:59:59.999`).getTime() : null;
+
+    filtered = filtered.filter(cover => {
+      const ms = getCoverTimestampMs(cover);
+      // If no timestamp exists on the record, do not hide it.
+      if (ms === null) return true;
+      if (fromMs !== null && ms < fromMs) return false;
+      if (toMs !== null && ms > toMs) return false;
+      return true;
+    });
   }
   
   // Sort covers
-  if (window.sortOrder === 'alphabetical') {
-    filtered.sort((a, b) => (a.albumTitle || '').localeCompare(b.albumTitle || ''));
-  } else if (window.sortOrder === 'recent') {
-    filtered.sort((a, b) => {
-      const timeA = a.lastModified || a.uploadedAt || 0;
-      const timeB = b.lastModified || b.uploadedAt || 0;
-      return new Date(timeB) - new Date(timeA);
-    });
+  const sort = normalizeSortOrder(window.sortOrder);
+  if (sort === 'title' || sort === 'title-asc') {
+    filtered.sort((a, b) => (a.albumTitle || '').localeCompare(b.albumTitle || '') || (a.index || 0) - (b.index || 0));
+  } else if (sort === 'title-desc') {
+    filtered.sort((a, b) => (b.albumTitle || '').localeCompare(a.albumTitle || '') || (a.index || 0) - (b.index || 0));
+  } else if (sort === 'date') {
+    filtered.sort((a, b) => (getCoverTimestampMs(b) || 0) - (getCoverTimestampMs(a) || 0) || (a.index || 0) - (b.index || 0));
+  } else if (sort === 'date-desc') {
+    filtered.sort((a, b) => (getCoverTimestampMs(a) || 0) - (getCoverTimestampMs(b) || 0) || (a.index || 0) - (b.index || 0));
   } else {
-    // Default to index order
-    filtered.sort((a, b) => (a.index || 0) - (b.index || 0));
+    // Default to index/manual order
+    filtered.sort((a, b) => (a.index || 0) - (b.index || 0) || (a.albumTitle || '').localeCompare(b.albumTitle || ''));
   }
   
   window.filteredCovers = filtered;
@@ -87,7 +156,7 @@ window.renderCovers = function(search = '') {
   container.className = `covers-container covers-${window.currentViewMode}`;
   
   if (filtered.length === 0) {
-    container.innerHTML = '<div class="empty-state">No covers found</div>';
+    container.innerHTML = '<div class="empty-state">No covers found. Try clearing filters.</div>';
     return;
   }
   
@@ -103,6 +172,18 @@ window.renderCovers = function(search = '') {
   updateBatchUI();
 };
 
+function canReorderCovers() {
+  if (typeof Sortable === 'undefined') return false;
+  if (window.batchMode) return false;
+  if (normalizeSortOrder(window.sortOrder) !== 'index') return false;
+  if (window.searchTerm) return false;
+  if (window.categoryFilter) return false;
+
+  const { dateFrom, dateTo, tags } = getAdvancedFilterValues();
+  if (dateFrom || dateTo || tags.length) return false;
+  return true;
+}
+
 // Grid view renderer
 function renderCoversGridView(covers) {
   const container = document.getElementById('coversContainer');
@@ -113,7 +194,7 @@ function renderCoversGridView(covers) {
   });
   
   // Enable drag-to-reorder functionality
-  if (typeof Sortable !== 'undefined' && !window.batchMode) {
+  if (canReorderCovers()) {
     new Sortable(container, {
       animation: 150,
       ghostClass: 'sortable-ghost',
@@ -681,11 +762,133 @@ window.setupSearchAndFilters = function() {
   }
   
   if (sortOrder) {
+    // Keep UI and state in sync (prevents confusing "NEWEST FIRST" label when we are in manual order)
+    if (sortOrder.value !== window.sortOrder && Array.from(sortOrder.options).some(o => o.value === window.sortOrder)) {
+      sortOrder.value = window.sortOrder;
+    } else {
+      window.sortOrder = sortOrder.value;
+    }
     sortOrder.addEventListener('change', (e) => {
       window.sortOrder = e.target.value;
       renderCovers();
     });
   }
+
+  // Advanced filter inputs
+  const dateFrom = document.getElementById('dateFrom');
+  const dateTo = document.getElementById('dateTo');
+  const tagsFilter = document.getElementById('tagsFilter');
+
+  if (dateFrom) {
+    dateFrom.addEventListener('change', () => renderCovers());
+  }
+  if (dateTo) {
+    dateTo.addEventListener('change', () => renderCovers());
+  }
+  if (tagsFilter) {
+    tagsFilter.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => renderCovers(), 250);
+    });
+  }
+
+  // Advanced filters toggle button
+  const advancedToggleBtn = document.getElementById('advancedFiltersToggle');
+  const advancedPanel = document.getElementById('advancedFilters');
+  if (advancedToggleBtn && advancedPanel) {
+    advancedToggleBtn.setAttribute('aria-controls', 'advancedFilters');
+    advancedToggleBtn.setAttribute('aria-expanded', advancedPanel.style.display === 'none' ? 'false' : 'true');
+  }
+};
+
+// Advanced filters: show/hide panel
+window.toggleAdvancedFilters = function(_section) {
+  const filters = document.getElementById('advancedFilters');
+  if (!filters) return;
+
+  const toggleBtn = document.getElementById('advancedFiltersToggle');
+  const isHidden = filters.style.display === 'none' || !filters.style.display;
+  filters.style.display = isHidden ? 'block' : 'none';
+  if (toggleBtn) toggleBtn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+};
+
+// Quick filters: set advanced inputs + re-render
+window.applyQuickFilter = function(filter) {
+  const filters = document.getElementById('advancedFilters');
+  if (filters && (filters.style.display === 'none' || !filters.style.display)) {
+    filters.style.display = 'block';
+    const toggleBtn = document.getElementById('advancedFiltersToggle');
+    if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+  }
+
+  // Visual active state
+  document.querySelectorAll('.quick-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.filter === filter);
+  });
+
+  const dateFrom = document.getElementById('dateFrom');
+  const dateTo = document.getElementById('dateTo');
+  const tagsFilter = document.getElementById('tagsFilter');
+  const sortOrder = document.getElementById('sortOrder');
+
+  const today = new Date();
+  const fmt = (d) => {
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  if (filter === 'recent') {
+    const from = new Date(today);
+    from.setDate(from.getDate() - 7);
+    if (dateFrom) dateFrom.value = fmt(from);
+    if (dateTo) dateTo.value = fmt(today);
+    window.sortOrder = 'date';
+    if (sortOrder) sortOrder.value = 'date';
+    showToast('FILTER: LAST 7 DAYS', 2000);
+  } else if (filter === 'month') {
+    const from = new Date(today);
+    from.setDate(from.getDate() - 30);
+    if (dateFrom) dateFrom.value = fmt(from);
+    if (dateTo) dateTo.value = fmt(today);
+    window.sortOrder = 'date';
+    if (sortOrder) sortOrder.value = 'date';
+    showToast('FILTER: LAST MONTH', 2000);
+  } else if (filter === 'favorites') {
+    if (tagsFilter) tagsFilter.value = 'favorite';
+    showToast('FILTER: FAVORITES', 2000);
+  }
+
+  renderCovers();
+};
+
+window.clearAllFilters = function() {
+  // Reset state
+  window.searchTerm = '';
+  window.categoryFilter = '';
+  window.sortOrder = 'index';
+
+  // Reset inputs
+  const coverSearch = document.getElementById('coverSearch');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const sortOrder = document.getElementById('sortOrder');
+  const dateFrom = document.getElementById('dateFrom');
+  const dateTo = document.getElementById('dateTo');
+  const tagsFilter = document.getElementById('tagsFilter');
+
+  if (coverSearch) coverSearch.value = '';
+  if (categoryFilter) categoryFilter.value = '';
+  if (sortOrder) sortOrder.value = 'index';
+  if (dateFrom) dateFrom.value = '';
+  if (dateTo) dateTo.value = '';
+  if (tagsFilter) tagsFilter.value = '';
+
+  // Clear quick filter active state
+  document.querySelectorAll('.quick-filter-btn').forEach(btn => btn.classList.remove('active'));
+
+  renderCovers();
+  showToast('FILTERS CLEARED', 1500);
 };
 
 // View mode toggles
