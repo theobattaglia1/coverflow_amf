@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node server.js",
     "build": "echo 'Installing Sharp with HEIC support' && npm rebuild sharp",
-    "test": "node --test tests/jwt.test.mjs",
+    "test": "node --test tests/jwt.test.mjs tests/session-store.test.mjs",
     "smoke": "node tests/smoke.mjs"
   },
   "keywords": [],

@@ -20,6 +20,8 @@ import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
 import { execSync } from 'child_process';
 import { signJwt, verifyJwt } from './lib/jwt.js';
+import { FileSessionStore } from './lib/file-session-store.js';
+import os from 'os';
 
 // Set FFmpeg path
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -137,7 +139,23 @@ app.use(express.json());
 
 // Session configuration
 const sessionSecret = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
+const SESSION_DIR = (() => {
+  const override = process.env.SESSION_DIR_PATH?.trim();
+  if (override) return path.resolve(override);
+  if (process.env.NODE_ENV === 'production') return path.join(DATA_DIR, 'sessions');
+  return path.join(os.tmpdir(), 'coverflow-sessions');
+})();
+
+let sessionStore;
+if (ensureWritableDirectory(SESSION_DIR)) {
+  sessionStore = new FileSessionStore({ dir: SESSION_DIR });
+  console.log(`[SESSION] Using file session store: ${SESSION_DIR}`);
+} else {
+  console.warn(`[SESSION] Session directory not writable (${SESSION_DIR}); falling back to MemoryStore`);
+}
+
 app.use(session({
+  store: sessionStore,
   secret: sessionSecret,
   resave: false,
   saveUninitialized: false,
