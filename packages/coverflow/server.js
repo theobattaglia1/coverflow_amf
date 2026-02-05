@@ -19,7 +19,7 @@ import sharp from 'sharp';
 import ffmpeg from 'fluent-ffmpeg';
 import ffmpegPath from 'ffmpeg-static';
 import { execSync } from 'child_process';
-import jwt from 'jsonwebtoken';
+import { signJwt, verifyJwt } from './lib/jwt.js';
 
 // Set FFmpeg path
 ffmpeg.setFfmpegPath(ffmpegPath);
@@ -48,15 +48,7 @@ function ensureWritableDirectory(dirPath) {
 }
 
 const DATA_DIR = (() => {
-  // If GCS sync is enabled, always use bundled directory (GCS is the persistence layer)
-  const syncProvider = (process.env.DATA_SYNC_PROVIDER || '').toLowerCase();
-  if (syncProvider === 'gcs') {
-    ensureWritableDirectory(DEFAULT_DATA_DIR);
-    console.log(`[DATA] GCS sync enabled - using bundled data directory: ${DEFAULT_DATA_DIR}`);
-    return DEFAULT_DATA_DIR;
-  }
-  
-  // Otherwise, try override path if specified
+  // Prefer override path if specified (works for both local and production persistent disks)
   const overridePath = process.env.DATA_DIR_PATH?.trim();
   if (overridePath) {
     const resolved = path.resolve(overridePath);
@@ -65,6 +57,11 @@ const DATA_DIR = (() => {
       return resolved;
     }
     console.warn(`[DATA] Override directory not writable, falling back to bundled: ${DEFAULT_DATA_DIR}`);
+  }
+
+  const syncProvider = (process.env.DATA_SYNC_PROVIDER || '').toLowerCase();
+  if (syncProvider === 'gcs') {
+    console.log(`[DATA] GCS sync enabled - using bundled data directory: ${DEFAULT_DATA_DIR}`);
   } else {
     console.log(`[DATA] Using bundled data directory: ${DEFAULT_DATA_DIR}`);
   }
@@ -180,7 +177,7 @@ function verifyJwtToken(req) {
   
   const token = authHeader.substring(7); // Remove 'Bearer ' prefix
   try {
-    const decoded = jwt.verify(token, JWT_SECRET);
+    const decoded = verifyJwt(token, JWT_SECRET);
     return decoded;
   } catch (error) {
     console.log('[JWT] Token verification failed:', error.message);
@@ -631,11 +628,7 @@ app.post('/api/login', async (req, res) => {
       const user = { username: 'admin', role: 'admin' };
       
       // Generate JWT token for API/FlutterFlow clients
-      const token = jwt.sign(
-        { username: user.username, role: user.role },
-        JWT_SECRET,
-        { expiresIn: JWT_EXPIRY }
-      );
+      const token = signJwt({ username: user.username, role: user.role }, JWT_SECRET, JWT_EXPIRY);
       
       // Also set session for web admin panel compatibility
       req.session.user = user;
