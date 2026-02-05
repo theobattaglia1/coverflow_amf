@@ -933,7 +933,7 @@ function findAssetRecursively(container, assetUrl) {
                 if (result) {
                     return result;
                 }
-            } else if (child.type === 'image' && child.url === assetUrl) {
+            } else if (child && child.type !== 'folder' && child.url === assetUrl) {
                 // Found asset directly in children array
                 return { asset: child, parent: container, location: 'children' };
             }
@@ -954,7 +954,7 @@ function removeAssetFromLocation(container, assetUrl) {
     
     // Remove from children array
     if (container.children) {
-        const index = container.children.findIndex(child => child.type === 'image' && child.url === assetUrl);
+        const index = container.children.findIndex(child => child && child.type !== 'folder' && child.url === assetUrl);
         if (index !== -1) {
             return container.children.splice(index, 1)[0];
         }
@@ -1079,16 +1079,17 @@ app.delete('/api/assets/bulk-delete', requireAuth('editor'), async (req, res) =>
         }
         
         const assetsPath = path.join(DATA_DIR, 'assets.json');
-        let assets = await readJsonFile(assetsPath, 'assets') || { images: [], folders: [] };
+        let assets = await readJsonFile(assetsPath, 'assets') || { images: [], children: [] };
         
-        const initialCount = assets.images?.length || 0;
+        // Ensure assets structure exists
+        if (!assets.images) assets.images = [];
+        if (!assets.children) assets.children = [];
         
-        // Remove assets from data structure
-        if (assets.images) {
-            assets.images = assets.images.filter(asset => !assetUrls.includes(asset.url));
+        let deletedCount = 0;
+        for (const assetUrl of assetUrls) {
+            const removed = removeAssetFromLocation(assets, assetUrl);
+            if (removed) deletedCount += 1;
         }
-        
-        const deletedCount = initialCount - (assets.images?.length || 0);
         
         await safeWriteJson(assetsPath, assets);
         dataCache.invalidate('assets');

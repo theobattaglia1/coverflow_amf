@@ -338,6 +338,9 @@ window.renderAssetsWithView = function() {
       pagination.style.display = 'none';
     }
   }
+
+  // Keep multi-select UI in sync even when state changes externally (e.g. Escape key shortcut)
+  updateAssetSelectionCounter();
 };
 
 // Change page in Assets grid
@@ -934,12 +937,270 @@ function toggleAssetSelection(assetId, index, event) {
 }
 
 function updateAssetSelectionCounter() {
-  const counter = document.getElementById('assetSelectionCounter');
-  if (counter) {
-    counter.textContent = `${window.selectedAssets.size} selected`;
-    counter.style.display = window.selectedAssets.size > 0 ? 'block' : 'none';
+  const count = window.selectedAssets?.size || 0;
+
+  // Ensure body state matches mode for checkbox visibility rules in CSS.
+  document.body.classList.toggle('asset-multi-select-mode', !!window.assetMultiSelectMode);
+
+  // Toggle button label/state (button contains a span in the current dashboard HTML).
+  const toggleText = document.getElementById('assetMultiSelectToggleText');
+  if (toggleText) {
+    toggleText.textContent = window.assetMultiSelectMode ? 'EXIT SELECTION' : 'MULTI-SELECT';
+    const btn = toggleText.closest('button');
+    if (btn) btn.classList.toggle('active', !!window.assetMultiSelectMode);
+  }
+
+  // Batch toolbar + count (current dashboard HTML)
+  const batchToolbar = document.getElementById('assetBatchToolbar');
+  if (batchToolbar) {
+    batchToolbar.style.display = window.assetMultiSelectMode ? 'flex' : 'none';
+  }
+
+  const selectedCountSpan = document.getElementById('assetSelectedCount');
+  if (selectedCountSpan) {
+    selectedCountSpan.textContent = String(count);
+  }
+
+  // Legacy counter (older layout) — keep best-effort compatibility.
+  const legacyCounter = document.getElementById('assetSelectionCounter');
+  if (legacyCounter) {
+    legacyCounter.textContent = count > 0 ? `${count} SELECTED` : '';
+    legacyCounter.style.display = count > 0 ? 'block' : 'none';
   }
 }
+
+// ============================================
+// Assets — Multi-select + batch toolbar actions
+// (wired from admin/index.html onclick handlers)
+// ============================================
+
+function getAssetsEligibleForSelection() {
+  const searchValue = document.getElementById('assetSearch')?.value?.trim();
+  if (window.filteredAssets.length > 0 || searchValue) {
+    // If filtering is active, select what the user is seeing (assets only; no folders)
+    return window.filteredAssets.length > 0 ? window.filteredAssets : getCurrentFolderItems().images;
+  }
+  return getCurrentFolderItems().images;
+}
+
+function collectFolderPaths() {
+  const paths = [];
+
+  const walk = (items, prefix = '') => {
+    if (!Array.isArray(items)) return;
+    items.forEach(item => {
+      if (!item || item.type !== 'folder') return;
+      const name = item.name || '';
+      const fullPath = item.path || (prefix ? `${prefix}/${name}` : name);
+      if (fullPath) paths.push(fullPath);
+
+      const children = []
+        .concat(item.folders || [], item.children || [])
+        .filter(c => c && c.type === 'folder');
+      walk(children, fullPath);
+    });
+  };
+
+  walk(window.assets?.children || []);
+  return paths.sort((a, b) => a.localeCompare(b));
+}
+
+window.toggleAssetMultiSelectMode = function() {
+  window.assetMultiSelectMode = !window.assetMultiSelectMode;
+  window.selectedAssets.clear();
+  window.lastSelectedAssetIndex = -1;
+  window.assetCurrentPage = 1;
+
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+
+  showToast(window.assetMultiSelectMode ? 'MULTI-SELECT ENABLED' : 'MULTI-SELECT DISABLED', 1500);
+};
+
+window.selectAllAssetsInFolder = function() {
+  if (!window.assetMultiSelectMode) {
+    // Make the action discoverable even if user clicks in non-multi-select mode.
+    window.assetMultiSelectMode = true;
+  }
+
+  const assetsToSelect = getAssetsEligibleForSelection();
+  window.selectedAssets.clear();
+  assetsToSelect.forEach(asset => {
+    if (asset?.url) window.selectedAssets.add(asset.url);
+  });
+
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+  showToast(`${window.selectedAssets.size} ASSET${window.selectedAssets.size === 1 ? '' : 'S'} SELECTED`, 2000);
+};
+
+window.deselectAllAssets = function() {
+  window.selectedAssets.clear();
+  window.lastSelectedAssetIndex = -1;
+  renderAssetsWithView();
+  updateAssetSelectionCounter();
+  showToast('SELECTION CLEARED', 1500);
+};
+
+window.copySelectedAssetLinks = async function() {
+  const urls = Array.from(window.selectedAssets || []);
+  if (urls.length === 0) {
+    showToast('NO ASSETS SELECTED', 2000);
+    return;
+  }
+
+  const text = urls.join('\n');
+  let copied = false;
+
+  try {
+    if (window.isSecureContext && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      copied = true;
+    }
+  } catch {}
+
+  if (!copied) {
+    try {
+      const textarea = document.createElement('textarea');
+      textarea.value = text;
+      textarea.style.position = 'fixed';
+      textarea.style.top = '0';
+      textarea.style.left = '0';
+      textarea.style.width = '2px';
+      textarea.style.height = '2px';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.focus();
+      textarea.select();
+      copied = document.execCommand('copy');
+      document.body.removeChild(textarea);
+    } catch {}
+  }
+
+  showToast(
+    copied
+      ? `${urls.length} LINK${urls.length === 1 ? '' : 'S'} COPIED`
+      : `COPY FAILED — ${urls.length} LINK${urls.length === 1 ? '' : 'S'} READY`,
+    2500
+  );
+};
+
+window.downloadSelectedAssets = function() {
+  const count = window.selectedAssets?.size || 0;
+  if (count === 0) {
+    showToast('NO ASSETS SELECTED', 2000);
+    return;
+  }
+  // Backend ZIP creation isn’t implemented yet; keep action non-breaking.
+  showToast(`DOWNLOAD OF ${count} ASSET${count === 1 ? '' : 'S'} NOT YET IMPLEMENTED`, 3000);
+};
+
+window.moveSelectedAssets = async function() {
+  const urls = Array.from(window.selectedAssets || []);
+  if (urls.length === 0) {
+    showToast('NO ASSETS SELECTED', 2000);
+    return;
+  }
+
+  const folderPaths = collectFolderPaths();
+  const promptText =
+    'Move to folder:\n- ROOT (leave empty)\n' +
+    (folderPaths.length ? `- ${folderPaths.join('\n- ')}` : '- (no folders found)');
+  const folderChoice = prompt(promptText, window.currentPath || '');
+  if (folderChoice === null) return;
+
+  const targetFolder = folderChoice.trim();
+
+  try {
+    showLoading();
+    const result = await apiCall('/api/assets/bulk-move', {
+      method: 'POST',
+      body: JSON.stringify({
+        assetUrls: urls,
+        targetFolder
+      })
+    });
+
+    window.selectedAssets.clear();
+    window.lastSelectedAssetIndex = -1;
+    renderAssetsWithView();
+    updateAssetSelectionCounter();
+
+    showToast(
+      result?.movedCount
+        ? `${result.movedCount} ASSET${result.movedCount === 1 ? '' : 'S'} MOVED`
+        : 'ASSETS MOVED',
+      2000
+    );
+
+    await loadAssets();
+  } catch (err) {
+    console.error('Failed to move assets:', err);
+    showToast('FAILED TO MOVE ASSETS', 5000);
+  } finally {
+    hideLoading();
+  }
+};
+
+window.deleteSelectedAssets = async function() {
+  const urls = Array.from(window.selectedAssets || []);
+  if (urls.length === 0) {
+    showToast('NO ASSETS SELECTED', 2000);
+    return;
+  }
+
+  if (!confirm(`DELETE ${urls.length} SELECTED ASSET${urls.length === 1 ? '' : 'S'}?`)) return;
+
+  try {
+    showLoading();
+    const result = await apiCall('/api/assets/bulk-delete', {
+      method: 'DELETE',
+      body: JSON.stringify({ assetUrls: urls })
+    });
+
+    // Update local state immediately (avoid a full reload and keep user context).
+    const urlSet = new Set(urls);
+    const removeFromTree = (container) => {
+      if (!container || typeof container !== 'object') return;
+
+      if (Array.isArray(container.images)) {
+        container.images = container.images.filter(a => !urlSet.has(a.url));
+      }
+
+      if (Array.isArray(container.children)) {
+        // Remove direct (non-folder) children that match
+        container.children = container.children.filter(child => {
+          if (!child || child.type === 'folder') return true;
+          return !(child.url && urlSet.has(child.url));
+        });
+
+        // Recurse into folder children
+        container.children.forEach(child => {
+          if (child?.type === 'folder') removeFromTree(child);
+        });
+      }
+
+      if (Array.isArray(container.folders)) {
+        container.folders.forEach(folder => removeFromTree(folder));
+      }
+    };
+    removeFromTree(window.assets);
+
+    window.selectedAssets.clear();
+    window.lastSelectedAssetIndex = -1;
+
+    renderAssetsWithView();
+    updateAssetSelectionCounter();
+
+    const deletedCount = result?.deletedCount ?? urls.length;
+    showToast(`${deletedCount} ASSET${deletedCount === 1 ? '' : 'S'} DELETED`, 2000);
+  } catch (err) {
+    console.error('Failed to delete assets:', err);
+    showToast('FAILED TO DELETE ASSETS', 5000);
+  } finally {
+    hideLoading();
+  }
+};
 
 // Enhanced asset search
 window.setupEnhancedAssetSearch = function() {
