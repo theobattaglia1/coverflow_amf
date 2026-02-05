@@ -75,6 +75,40 @@
 
   const ABOUT_TEXT = 'All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.';
 
+  // GSAP is loaded via CDN in `index.html`. If it fails to load, fall back to a tiny "no-animation"
+  // shim so the site still works (it will jump instead of animate).
+  const gsap = (() => {
+    if (window.gsap && typeof window.gsap.to === 'function') return window.gsap;
+
+    const isElement = (x) => x && typeof x === 'object' && x.nodeType === 1 && typeof x.style === 'object';
+
+    return {
+      to(target, vars = {}) {
+        const apply = (t) => {
+          if (!t) return;
+          if (isElement(t)) {
+            if (typeof vars.left === 'number') t.style.left = `${vars.left}px`;
+            if (typeof vars.top === 'number') t.style.top = `${vars.top}px`;
+            if (typeof vars.scale === 'number') {
+              if (vars.transformOrigin) t.style.transformOrigin = String(vars.transformOrigin);
+              t.style.transform = `translateZ(0) scale(${vars.scale})`;
+            }
+          } else if (typeof t === 'object') {
+            if (typeof vars.x === 'number') t.x = vars.x;
+            if (typeof vars.y === 'number') t.y = vars.y;
+          }
+        };
+
+        if (Array.isArray(target)) target.forEach(apply);
+        else apply(target);
+
+        if (typeof vars.onUpdate === 'function') vars.onUpdate();
+        if (typeof vars.onComplete === 'function') vars.onComplete();
+        return { kill(){} };
+      }
+    };
+  })();
+
   function showStatus(message, options = {}){
     if (!statusEl) return;
     const { variant = 'info', actionLabel, onAction } = options;
@@ -101,9 +135,41 @@
     statusEl.hidden = true;
   }
 
+  function sanitizeFontFamily(raw){
+    if (typeof raw !== 'string') return '';
+    const trimmed = raw.trim();
+    if (!trimmed) return '';
+
+    // Prevent CSS injection / broken declarations.
+    if (/[{}<>;]/.test(trimmed)) return '';
+    if (trimmed.length > 100) return '';
+
+    const parts = trimmed
+      .split(',')
+      .map(p => p.trim())
+      .filter(Boolean)
+      .slice(0, 5);
+
+    const safe = [];
+    for (const part of parts) {
+      const unquoted = part.replace(/^['"]|['"]$/g, '').trim();
+      if (!unquoted) continue;
+      if (!/^[a-zA-Z0-9 _\\.\\-]+$/.test(unquoted)) continue;
+
+      const escaped = unquoted.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+      safe.push(unquoted.includes(' ') ? `'${escaped}'` : escaped);
+    }
+
+    return safe.join(', ');
+  }
+
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
-    document.getElementById('global-styles').innerHTML = `body{font-family:'${style.fontFamily||'Inter'}',sans-serif;}`;
+    const family = sanitizeFontFamily(style?.fontFamily) || 'Inter';
+    const css = `body{font-family:${family},sans-serif;}`;
+    const globalStylesEl = document.getElementById('global-styles');
+    if (globalStylesEl) globalStylesEl.textContent = css;
+    if (document?.body) document.body.style.fontFamily = `${family}, sans-serif`;
   }).catch(()=>{});
 
   // Image helpers
@@ -165,8 +231,8 @@
       // Initialize transform for edge-to-edge feel; responsive to viewport
       setTimeout(() => {
         const isMobile = window.innerWidth <= 768;
-        // For desktop, pick a responsive starting scale based on viewport; mobile keeps currentScale
-        if (!isMobile) currentScale = Math.max(0.55, Math.min(1.1, getScale()));
+        // For desktop, start slightly zoomed out so more covers are visible immediately.
+        if (!isMobile) currentScale = Math.min(0.65, getScale());
 
         const containerRect = container.getBoundingClientRect();
         const canvasWidth = parseInt(canvas.style.width) || 2000;
