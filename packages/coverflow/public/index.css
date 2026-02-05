@@ -69,6 +69,40 @@ body {
 
 .gg-reset-chip { position: fixed; right: 14px; bottom: 18px; z-index: 12; padding: 8px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,0.2); background: rgba(0,0,0,0.6); color: #fff; font-size: 12px; }
 
+/* Status chip (loading / errors) */
+.gg-status{
+  position: fixed;
+  left: 50%;
+  top: 72px;
+  transform: translateX(-50%);
+  z-index: 30;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(0,0,0,0.6);
+  color: #fff;
+  font-size: 12px;
+  backdrop-filter: blur(10px);
+}
+.gg-status button{
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: #fff;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  font-size: 12px;
+}
+.gg-status button:focus-visible{
+  outline: 2px solid rgba(255,255,255,0.65);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+
 /* Floating contact block */
 .gg-contact-float{ position:fixed; right:24px; top:20%; z-index:12; color:#fff; text-align:right; pointer-events:auto; }
 .gg-contact-float .label{ font-weight:700; font-size:14px; letter-spacing:.02em; text-transform:uppercase; }
@@ -173,6 +207,5 @@ body {
   }
   .gg-name-list .name { display: block; padding: 1px 2px; font-size: 12px; margin: 0; line-height: 1.05; }
 }
-
 
 

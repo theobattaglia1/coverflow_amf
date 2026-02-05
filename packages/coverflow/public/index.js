@@ -7,6 +7,7 @@
   const overlays = document.getElementById('gg-overlays');
   const nameList = document.getElementById('gg-name-list');
   const resetChip = document.getElementById('gg-reset');
+  const statusEl = document.getElementById('gg-status');
   const gridEl = document.getElementById('gg-grid');
   const centerLogoFrame = document.querySelector('.gg-center-logo .center-logo-frame');
 
@@ -74,6 +75,32 @@
 
   const ABOUT_TEXT = 'All My Friends is an artist-first management team rooted in creative development. We work with artists, writers, and producers to build and back work that resonates—culturally, emotionally, and with the kind of clarity and depth that holds up over time. We’re grounded in a tight-knit approach—staying hands-on, taste-led, and guided by instinct. We work with good people who make things that matter.';
 
+  function showStatus(message, options = {}){
+    if (!statusEl) return;
+    const { variant = 'info', actionLabel, onAction } = options;
+
+    statusEl.replaceChildren();
+    const text = document.createElement('span');
+    text.textContent = message;
+    statusEl.appendChild(text);
+
+    if (actionLabel && typeof onAction === 'function') {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = actionLabel;
+      btn.addEventListener('click', onAction);
+      statusEl.appendChild(btn);
+    }
+
+    statusEl.hidden = false;
+    statusEl.setAttribute('role', variant === 'error' ? 'alert' : 'status');
+  }
+
+  function hideStatus(){
+    if (!statusEl) return;
+    statusEl.hidden = true;
+  }
+
   // Load fonts/styles from styles.json (light touch)
   fetch('/data/styles.json').then(r=>r.json()).then(style=>{
     document.getElementById('global-styles').innerHTML = `body{font-family:'${style.fontFamily||'Inter'}',sans-serif;}`;
@@ -124,25 +151,15 @@
   }
 
   // Load covers
-  fetch(`/data/covers.json?cb=${Date.now()}`)
-    .then(r=>r.json())
+  showStatus('Loading…');
+  fetch('/data/covers.json', { cache: 'no-cache' })
+    .then(r=>{
+      if (!r.ok) throw new Error(`Failed to load covers (HTTP ${r.status})`);
+      return r.json();
+    })
     .then(async data => { 
-      covers = data; 
+      covers = Array.isArray(data) ? data : []; 
       buildNames(); 
-      // Swap placement of Jack Schrepferman and Hudson Ingram in the initial order
-      try {
-        const findByName = (needle) => covers.findIndex(c => {
-          const n = (c.artistDetails?.name || c.coverLabel || c.albumTitle || '').toLowerCase();
-          return n.includes(needle);
-        });
-        const idxJack = findByName('jack schrepferman');
-        const idxHudson = findByName('hudson ingram');
-        if (idxJack >= 0 && idxHudson >= 0) {
-          const tmp = covers[idxJack];
-          covers[idxJack] = covers[idxHudson];
-          covers[idxHudson] = tmp;
-        }
-      } catch(e) { /* no-op */ }
       await preloadAspects(covers);
       layoutItems(); 
       // Initialize transform for edge-to-edge feel; responsive to viewport
@@ -169,8 +186,16 @@
       }, 100);
       buildEditorialOverlays(); 
       startLoop(); 
+      hideStatus();
     })
-    .catch(err => console.error('Failed to load covers', err));
+    .catch(err => {
+      console.error('Failed to load covers', err);
+      showStatus("Couldn't load the gallery.", {
+        variant: 'error',
+        actionLabel: 'Retry',
+        onAction: () => window.location.reload()
+      });
+    });
 
   function buildNames(){
     namesEl.innerHTML = '';
@@ -852,5 +877,3 @@
     overlays.appendChild(frag);
   }
 */
-
-
