@@ -184,6 +184,26 @@ function canReorderCovers() {
   return true;
 }
 
+function getPublicDesktopPositionLabel(orderIndex) {
+  const idx = Number.isFinite(orderIndex) ? orderIndex : 0;
+  const pattern = [3, 2, 4]; // mirrors public site desktop row rhythm
+  const cycleSize = pattern.reduce((a, b) => a + b, 0); // 9
+  const cycle = Math.floor(idx / cycleSize);
+  let rem = idx % cycleSize;
+
+  for (let rowIdx = 0; rowIdx < pattern.length; rowIdx++) {
+    const rowSize = pattern[rowIdx];
+    if (rem < rowSize) {
+      const row = cycle * pattern.length + rowIdx + 1;
+      const slot = rem + 1;
+      return `Public layout (desktop): Row ${row}, Slot ${slot} of ${rowSize}`;
+    }
+    rem -= rowSize;
+  }
+
+  return 'Public layout (desktop): position unknown';
+}
+
 // Grid view renderer
 function renderCoversGridView(covers) {
   const container = document.getElementById('coversContainer');
@@ -211,6 +231,15 @@ function renderCoversGridView(covers) {
           if (cover) {
             cover.index = index;
           }
+
+          // Keep index badges/tooltips in sync without a full re-render
+          const badge = el.querySelector('.cover-index');
+          if (badge) {
+            badge.textContent = String(index + 1);
+            badge.title = getPublicDesktopPositionLabel(index);
+          }
+          const wrap = el.querySelector('.cover-image-wrapper');
+          if (wrap) wrap.dataset.index = String(index);
         });
         
         // Mark as having changes
@@ -276,13 +305,15 @@ function createCoverElement(cover) {
   }
   
   const imgUrl = cover.frontImage || cover.artistDetails?.image || '/placeholder.jpg';
+  const manualIndex = Number.isFinite(cover.index) ? cover.index : 0;
   
   div.innerHTML = `
     ${window.batchMode ? `<input type="checkbox" class="batch-checkbox" ${window.selectedCovers.has(cover.id) ? 'checked' : ''}/>` : ''}
-    <div class="cover-image-wrapper" data-index="${cover.index || 0}">
+    <div class="cover-image-wrapper" data-index="${manualIndex}">
       <img src="${imgUrl}" alt="${cover.albumTitle || 'Untitled'}" loading="lazy" 
            onerror="this.src='/placeholder.jpg'"
            style="width: 100%; height: 100%; object-fit: cover;">
+      ${normalizeSortOrder(window.sortOrder) === 'index' ? `<div class="cover-index" title="${getPublicDesktopPositionLabel(manualIndex)}">${manualIndex + 1}</div>` : ''}
       <div class="cover-overlay">
         <div class="cover-actions">
           <button onclick="editCover(covers.find(c => c.id === '${cover.id}'))" title="Edit">
