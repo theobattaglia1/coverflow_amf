@@ -10,19 +10,54 @@ window.adminState = window.adminState || {
   hasChanges: false
 };
 
+function normalizeToastDuration(value, fallback = 5000) {
+  const n = Number(value);
+  if (!Number.isFinite(n)) return fallback;
+  if (n < 0) return fallback;
+  return Math.round(n);
+}
+
+function ensureToastA11yAttributes(toast) {
+  if (!toast) return;
+  if (!toast.hasAttribute('role')) toast.setAttribute('role', 'status');
+  if (!toast.hasAttribute('aria-live')) toast.setAttribute('aria-live', 'polite');
+  if (!toast.hasAttribute('aria-atomic')) toast.setAttribute('aria-atomic', 'true');
+}
+
 // Toast notification
-window.showToast = function(message, duration = 5000) {
+// Backwards compatible:
+// - showToast(message)
+// - showToast(message, durationMs)
+// - showToast(message, 'error'|'warning'|..., durationMs?)
+window.showToast = function(message, durationOrType = 5000, maybeDuration) {
   const toast = document.getElementById('toast');
   if (!toast) {
     console.warn('Toast element not found');
     return;
   }
-  toast.textContent = message;
+
+  ensureToastA11yAttributes(toast);
+
+  const type = typeof durationOrType === 'string' ? durationOrType : '';
+  const durationMs =
+    typeof durationOrType === 'string'
+      ? normalizeToastDuration(maybeDuration, 5000)
+      : normalizeToastDuration(durationOrType, 5000);
+
+  // Keep type as metadata for future styling without changing visuals now.
+  if (type) toast.dataset.toastType = type;
+  else delete toast.dataset.toastType;
+
+  // Cancel any prior hide timer so the toast duration is reliable.
+  if (toast._hideTimer) clearTimeout(toast._hideTimer);
+
+  toast.classList.remove('has-action');
+  toast.textContent = String(message ?? '');
   toast.classList.add('show');
-  
-  setTimeout(() => {
+
+  toast._hideTimer = setTimeout(() => {
     toast.classList.remove('show');
-  }, duration);
+  }, durationMs);
 };
 
 // Toast with inline UNDO action (used for client-side undo only)
@@ -32,6 +67,8 @@ window.showUndoToast = function(message, onUndo, duration = 5000) {
     console.warn('Toast element not found');
     return;
   }
+  ensureToastA11yAttributes(toast);
+  if (toast._hideTimer) clearTimeout(toast._hideTimer);
   toast.innerHTML = `
     <span class="toast-message">${message}</span>
     <button class="toast-undo-btn" type="button">UNDO</button>
@@ -50,6 +87,7 @@ window.showUndoToast = function(message, onUndo, duration = 5000) {
   const timer = setTimeout(() => {
     if (!undone) cleanup();
   }, duration);
+  toast._hideTimer = timer;
   
   if (undoBtn) {
     undoBtn.addEventListener('click', () => {

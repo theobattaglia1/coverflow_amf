@@ -13,6 +13,76 @@ window.audioFolders = [];
 window.audioArtists = [];
 window.audioArtistFilter = ''; // '' = all artists, 'UNASSIGNED' = no match
 
+// UI preferences / modes
+window.audioViewMode = window.audioViewMode || 'list';
+window.audioMultiSelectMode = window.audioMultiSelectMode || false;
+
+function normalizeAudioViewMode(mode) {
+  const allowed = new Set(['list', 'grid', 'player']);
+  return allowed.has(mode) ? mode : 'list';
+}
+
+function syncAudioViewModeUI() {
+  const mode = normalizeAudioViewMode(window.audioViewMode);
+  window.audioViewMode = mode;
+
+  document.querySelectorAll('.audio-view-modes .view-mode-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === mode);
+  });
+
+  const container = document.getElementById('audioContainer');
+  if (container) {
+    container.classList.remove('audio-view-list', 'audio-view-grid', 'audio-view-player');
+    container.classList.add(`audio-view-${mode}`);
+  }
+}
+
+function getAudioSearchQuery() {
+  return (document.getElementById('audioSearch')?.value || '').trim().toLowerCase();
+}
+
+function renderAudioFromCurrentInputs() {
+  const query = getAudioSearchQuery();
+  if (query) {
+    const filtered = window.audioFiles.filter(audio =>
+      audio.name?.toLowerCase().includes(query) ||
+      audio.filename?.toLowerCase().includes(query) ||
+      audio.url?.toLowerCase().includes(query)
+    );
+    renderFilteredAudioFiles(filtered);
+    return;
+  }
+  renderAudioFiles();
+}
+
+// View mode buttons (wired from admin/index.html)
+window.setAudioViewMode = function(mode) {
+  window.audioViewMode = normalizeAudioViewMode(mode);
+  try {
+    localStorage.setItem('amfAdmin.audio.viewMode', window.audioViewMode);
+  } catch {}
+
+  syncAudioViewModeUI();
+  renderAudioFromCurrentInputs();
+  showToast(`AUDIO VIEW: ${window.audioViewMode.toUpperCase()}`, 1500);
+};
+
+// Multi-select toggle (wired from admin/index.html)
+window.toggleAudioMultiSelectMode = function() {
+  const hasSelection = window.selectedAudioFiles?.size > 0;
+  const selectionActive = !!window.audioMultiSelectMode || hasSelection;
+
+  if (selectionActive) {
+    window.audioMultiSelectMode = false;
+    window.selectedAudioFiles.clear();
+  } else {
+    window.audioMultiSelectMode = true;
+  }
+
+  renderAudioFromCurrentInputs();
+  showToast(window.audioMultiSelectMode ? 'AUDIO MULTI-SELECT ENABLED' : 'AUDIO MULTI-SELECT DISABLED', 1500);
+};
+
 // ============================================
 // SUBFOLDER SYSTEM (Alias/Playlist-style)
 // ============================================
@@ -1049,15 +1119,23 @@ function updateAudioSelectionCounter() {
   const selectedCountSpan = document.getElementById('audioSelectedCount');
   
   const count = window.selectedAudioFiles.size;
+  const selectionActive = !!window.audioMultiSelectMode || count > 0;
   
   // Show/hide batch toolbar
   if (batchToolbar) {
-    batchToolbar.style.display = count > 0 ? 'flex' : 'none';
+    batchToolbar.style.display = selectionActive ? 'flex' : 'none';
   }
   
   // Update selected count in batch toolbar
   if (selectedCountSpan) {
     selectedCountSpan.textContent = count;
+  }
+
+  const toggleText = document.getElementById('audioMultiSelectToggleText');
+  if (toggleText) {
+    toggleText.textContent = selectionActive ? 'EXIT SELECTION' : 'MULTI-SELECT';
+    const btn = toggleText.closest('button');
+    if (btn) btn.classList.toggle('active', selectionActive);
   }
 }
 
@@ -1578,6 +1656,12 @@ function setupAudioDropzone() {
 // Initialize audio module
 window.initializeAudio = function() {
   console.log('🎵 Audio Module Initialized');
+  try {
+    const savedViewMode = localStorage.getItem('amfAdmin.audio.viewMode');
+    if (savedViewMode) window.audioViewMode = savedViewMode;
+  } catch {}
+  syncAudioViewModeUI();
+  updateAudioSelectionCounter();
   loadAudioFiles();
   setupEnhancedAudioSearch();
   setupAudioDropzone();
