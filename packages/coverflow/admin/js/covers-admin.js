@@ -267,6 +267,29 @@ function getPublicDesktopPositionLabel(orderIndex) {
   return 'Public layout (desktop): position unknown';
 }
 
+function setCoverIndicesFromIdOrder(coverIds) {
+  if (!Array.isArray(coverIds) || coverIds.length === 0) return;
+
+  const seen = new Set();
+  let nextIndex = 0;
+
+  for (const rawId of coverIds) {
+    const id = String(rawId ?? '');
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+
+    const cover = window.covers.find(c => String(c?.id) === id);
+    if (cover) cover.index = nextIndex++;
+  }
+
+  // If anything was missing (shouldn't happen in manual-order mode), keep it stable at the end.
+  window.covers.forEach(cover => {
+    const id = String(cover?.id ?? '');
+    if (!id || seen.has(id)) return;
+    cover.index = nextIndex++;
+  });
+}
+
 // Grid view renderer
 function renderCoversGridView(covers) {
   const container = document.getElementById('coversContainer');
@@ -278,6 +301,9 @@ function renderCoversGridView(covers) {
   
   // Enable drag-to-reorder functionality
   if (canReorderCovers()) {
+    let previousOrderIds = null;
+    let previousHadChanges = null;
+
     destroyCoversSortable();
     window._coversSortable = new Sortable(container, {
       animation: 150,
@@ -286,6 +312,12 @@ function renderCoversGridView(covers) {
       dragClass: 'sortable-drag',
       handle: '.cover-image-wrapper',
       filter: 'button, input',
+      onStart: function() {
+        previousHadChanges = Boolean(window.adminState?.hasChanges);
+        previousOrderIds = Array.from(container.querySelectorAll('.cover-item'))
+          .map(el => el?.dataset?.coverId)
+          .filter(Boolean);
+      },
       onEnd: function(evt) {
         // Update cover indices based on new order
         const coverElements = container.querySelectorAll('.cover-item');
@@ -309,7 +341,18 @@ function renderCoversGridView(covers) {
         // Mark as having changes
         window.adminState.hasChanges = true;
         updateSaveButton();
-        showToast('Cover order updated - remember to save changes');
+
+        if (window.showUndoToast && Array.isArray(previousOrderIds) && previousOrderIds.length) {
+          window.showUndoToast('ORDER UPDATED — SAVE CHANGES', () => {
+            setCoverIndicesFromIdOrder(previousOrderIds);
+            window.adminState.hasChanges = previousHadChanges;
+            updateSaveButton();
+            renderCovers();
+            showToast('ORDER RESTORED', 1500);
+          });
+        } else {
+          showToast('Cover order updated - remember to save changes');
+        }
       }
     });
   } else {
@@ -441,6 +484,9 @@ function renderCoversPublicPreviewView(covers) {
 
   // Enable drag-to-reorder directly in the preview when manual ordering is active.
   if (typeof Sortable !== 'undefined' && canReorderCovers()) {
+    let previousOrderIds = null;
+    let previousHadChanges = null;
+
     destroyCoversSortable();
     window._coversSortable = new Sortable(canvas, {
       animation: 150,
@@ -452,6 +498,10 @@ function renderCoversPublicPreviewView(covers) {
       dragClass: 'sortable-drag',
       onStart: function() {
         publicPreviewIsReordering = true;
+        previousHadChanges = Boolean(window.adminState?.hasChanges);
+        previousOrderIds = Array.from(canvas.querySelectorAll('.public-preview-item'))
+          .map(el => el?.dataset?.coverId)
+          .filter(Boolean);
       },
       onEnd: function() {
         publicPreviewIsReordering = false;
@@ -466,7 +516,17 @@ function renderCoversPublicPreviewView(covers) {
 
         window.adminState.hasChanges = true;
         updateSaveButton();
-        showToast('Cover order updated - remember to save changes');
+        if (window.showUndoToast && Array.isArray(previousOrderIds) && previousOrderIds.length) {
+          window.showUndoToast('ORDER UPDATED — SAVE CHANGES', () => {
+            setCoverIndicesFromIdOrder(previousOrderIds);
+            window.adminState.hasChanges = previousHadChanges;
+            updateSaveButton();
+            renderCovers();
+            showToast('ORDER RESTORED', 1500);
+          });
+        } else {
+          showToast('Cover order updated - remember to save changes');
+        }
 
         // Re-render to recompute the collage layout using the new order.
         setTimeout(() => {
