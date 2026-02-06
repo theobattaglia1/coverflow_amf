@@ -90,6 +90,8 @@ window.loadCovers = async function() {
 const publicPreviewAspectCache = new Map();
 const publicPreviewAspectPending = new Set();
 let publicPreviewRelayoutTimer = null;
+let publicPreviewSuppressClicksUntil = 0;
+let publicPreviewIsReordering = false;
 
 function getCoverImageUrl(cover) {
   return cover?.frontImage || cover?.artistDetails?.image || '/placeholder.jpg';
@@ -109,7 +111,7 @@ function ensureCoverAspectCached(url) {
     publicPreviewAspectCache.set(url, clamp(aspect, 0.3, 3));
     publicPreviewAspectPending.delete(url);
 
-    if (window.currentViewMode === 'public-preview') {
+    if (window.currentViewMode === 'public-preview' && !publicPreviewIsReordering) {
       clearTimeout(publicPreviewRelayoutTimer);
       publicPreviewRelayoutTimer = setTimeout(() => {
         try { window.renderCovers(); } catch { /* no-op */ }
@@ -306,7 +308,9 @@ function renderCoversPublicPreviewView(covers) {
 
   const hint = document.createElement('div');
   hint.className = 'public-preview-hint';
-  hint.textContent = 'PUBLIC PREVIEW — mirrors the public collage layout order.';
+  hint.textContent = canReorderCovers()
+    ? 'PUBLIC PREVIEW — drag to reorder (MANUAL ORDER).'
+    : 'PUBLIC PREVIEW — to reorder: set MANUAL ORDER and clear filters.';
   container.appendChild(hint);
 
   const viewport = document.createElement('div');
@@ -402,6 +406,7 @@ function renderCoversPublicPreviewView(covers) {
 
       item.addEventListener('click', () => {
         if (window.batchMode) return;
+        if (publicPreviewSuppressClicksUntil && performance.now() < publicPreviewSuppressClicksUntil) return;
         if (typeof window.editCover === 'function') window.editCover(cover);
       });
 
@@ -418,6 +423,40 @@ function renderCoversPublicPreviewView(covers) {
 
   canvas.style.width = `${Math.ceil(maxRight + startXBase)}px`;
   canvas.style.height = `${Math.ceil(rowY + startXBase)}px`;
+
+  // Enable drag-to-reorder directly in the preview when manual ordering is active.
+  if (typeof Sortable !== 'undefined' && canReorderCovers()) {
+    destroyCoversSortable();
+    window._coversSortable = new Sortable(canvas, {
+      animation: 150,
+      ghostClass: 'sortable-ghost',
+      chosenClass: 'sortable-chosen',
+      dragClass: 'sortable-drag',
+      onStart: function() {
+        publicPreviewIsReordering = true;
+      },
+      onEnd: function() {
+        publicPreviewIsReordering = false;
+        publicPreviewSuppressClicksUntil = performance.now() + 250;
+
+        const items = Array.from(canvas.querySelectorAll('.public-preview-item'));
+        items.forEach((el, index) => {
+          const coverId = el.dataset.coverId;
+          const cover = window.covers.find(c => c.id === coverId);
+          if (cover) cover.index = index;
+        });
+
+        window.adminState.hasChanges = true;
+        updateSaveButton();
+        showToast('Cover order updated - remember to save changes');
+
+        // Re-render to recompute the collage layout using the new order.
+        setTimeout(() => {
+          if (window.currentViewMode === 'public-preview') renderCovers();
+        }, 0);
+      }
+    });
+  }
 }
 
 // List view renderer
@@ -1143,7 +1182,7 @@ window.initializeCovers = function() {
   setupViewModeToggles();
   
   // Restore last used view mode (default to grid)
-  let initialMode = 'grid';
+  let initialMode = 'public-preview';
   try {
     const saved = localStorage.getItem('amfAdmin.covers.viewMode');
     if (saved) initialMode = saved;

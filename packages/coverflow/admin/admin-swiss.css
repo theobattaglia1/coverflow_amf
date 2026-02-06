@@ -2781,7 +2781,7 @@ a:hover {
 .public-preview-item {
   position: absolute;
   overflow: hidden;
-  cursor: pointer;
+  cursor: move;
   border: 1px solid var(--grey-200);
   background: var(--grey-100);
 }
