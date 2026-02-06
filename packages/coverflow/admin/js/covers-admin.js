@@ -66,6 +66,21 @@ window.loadCovers = async function() {
   try {
     showLoading('covers');
     const data = await loadJsonData('/data/covers.json', []);
+    // Normalize IDs so DOM dataset strings always match cover objects (prevents "reorder looks right but doesn't save").
+    if (Array.isArray(data)) {
+      data.forEach((cover, idx) => {
+        if (!cover || typeof cover !== 'object') return;
+        if (cover.id === undefined || cover.id === null || cover.id === '') {
+          cover.id = `${Date.now()}-${idx}`;
+        } else if (typeof cover.id !== 'string') {
+          cover.id = String(cover.id);
+        }
+        if (cover.index !== undefined && cover.index !== null && cover.index !== '') {
+          const n = Number(cover.index);
+          if (Number.isFinite(n)) cover.index = n;
+        }
+      });
+    }
     window.covers = data;
     
     // Update recent covers
@@ -860,6 +875,14 @@ window.saveChanges = async function() {
 
 // Push live
 window.pushLive = async function() {
+  // Guardrail: pushing live without saving is a very common footgun.
+  if (window.adminState?.hasChanges) {
+    const ok = confirm('You have UNSAVED changes.\n\nClick OK to SAVE first, then you can PUSH LIVE.\nClick Cancel to abort.');
+    if (!ok) return;
+    await window.saveChanges();
+    if (window.adminState?.hasChanges) return; // save failed / aborted
+  }
+
   if (!confirm('Push all changes to live site? This will make your edits visible to the public.')) return;
   
   try {
