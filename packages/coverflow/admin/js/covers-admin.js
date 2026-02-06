@@ -309,8 +309,8 @@ function renderCoversPublicPreviewView(covers) {
   const hint = document.createElement('div');
   hint.className = 'public-preview-hint';
   hint.textContent = canReorderCovers()
-    ? 'PUBLIC PREVIEW — drag to reorder (MANUAL ORDER).'
-    : 'PUBLIC PREVIEW — to reorder: set MANUAL ORDER and clear filters.';
+    ? 'PUBLIC PREVIEW — DRAG TO REORDER (MANUAL ORDER). CLICK A COVER TO EDIT.'
+    : 'PUBLIC PREVIEW — TO REORDER: SET MANUAL ORDER + CLEAR FILTERS. CLICK A COVER TO EDIT.';
   container.appendChild(hint);
 
   const viewport = document.createElement('div');
@@ -429,6 +429,9 @@ function renderCoversPublicPreviewView(covers) {
     destroyCoversSortable();
     window._coversSortable = new Sortable(canvas, {
       animation: 150,
+      delay: 120,
+      delayOnTouchOnly: true,
+      touchStartThreshold: 8,
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
       dragClass: 'sortable-drag',
@@ -1181,11 +1184,29 @@ window.initializeCovers = function() {
   setupSearchAndFilters();
   setupViewModeToggles();
   
-  // Restore last used view mode (default to grid)
+  // Default to Public Preview, but preserve explicit user preference going forward.
+  const viewModeKey = 'amfAdmin.covers.viewMode';
+  const migrationKey = 'amfAdmin.covers.viewMode.migratedToPublicPreviewDefault';
+  const allowed = new Set(['grid', 'list', 'coverflow', 'public-preview']);
+
   let initialMode = 'public-preview';
   try {
-    const saved = localStorage.getItem('amfAdmin.covers.viewMode');
-    if (saved) initialMode = saved;
+    const savedRaw = localStorage.getItem(viewModeKey);
+    const saved = savedRaw && allowed.has(savedRaw) ? savedRaw : null;
+    const migrated = localStorage.getItem(migrationKey) === '1';
+
+    if (!migrated) {
+      // If they were on the old default ("grid") or had no preference, move them to Public Preview once.
+      if (!saved || saved === 'grid') {
+        initialMode = 'public-preview';
+        localStorage.setItem(viewModeKey, initialMode);
+      } else {
+        initialMode = saved;
+      }
+      localStorage.setItem(migrationKey, '1');
+    } else if (saved) {
+      initialMode = saved;
+    }
   } catch (err) {
     console.warn('Could not read saved covers view mode', err);
   }
