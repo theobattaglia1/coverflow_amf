@@ -87,6 +87,49 @@ window.loadCovers = async function() {
   }
 };
 
+const publicPreviewAspectCache = new Map();
+const publicPreviewAspectPending = new Set();
+let publicPreviewRelayoutTimer = null;
+
+function getCoverImageUrl(cover) {
+  return cover?.frontImage || cover?.artistDetails?.image || '/placeholder.jpg';
+}
+
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, n));
+}
+
+function ensureCoverAspectCached(url) {
+  if (!url || publicPreviewAspectCache.has(url) || publicPreviewAspectPending.has(url)) return;
+  publicPreviewAspectPending.add(url);
+
+  const img = new Image();
+  img.onload = () => {
+    const aspect = img.naturalWidth && img.naturalHeight ? (img.naturalWidth / img.naturalHeight) : 1;
+    publicPreviewAspectCache.set(url, clamp(aspect, 0.3, 3));
+    publicPreviewAspectPending.delete(url);
+
+    if (window.currentViewMode === 'public-preview') {
+      clearTimeout(publicPreviewRelayoutTimer);
+      publicPreviewRelayoutTimer = setTimeout(() => {
+        try { window.renderCovers(); } catch { /* no-op */ }
+      }, 120);
+    }
+  };
+  img.onerror = () => {
+    publicPreviewAspectCache.set(url, 1);
+    publicPreviewAspectPending.delete(url);
+  };
+  img.src = url;
+}
+
+function destroyCoversSortable() {
+  if (window._coversSortable && typeof window._coversSortable.destroy === 'function') {
+    try { window._coversSortable.destroy(); } catch { /* no-op */ }
+  }
+  window._coversSortable = null;
+}
+
 // Render covers grid/list/coverflow
 window.renderCovers = function(search = '') {
   const container = document.getElementById('coversContainer');
@@ -161,10 +204,13 @@ window.renderCovers = function(search = '') {
   }
   
   // Render based on view mode
+  if (window.currentViewMode !== 'grid') destroyCoversSortable();
   if (window.currentViewMode === 'list') {
     renderCoversListView(filtered);
   } else if (window.currentViewMode === 'coverflow') {
     renderCoversCoverflowView(filtered);
+  } else if (window.currentViewMode === 'public-preview') {
+    renderCoversPublicPreviewView(filtered);
   } else {
     renderCoversGridView(filtered);
   }
@@ -215,7 +261,8 @@ function renderCoversGridView(covers) {
   
   // Enable drag-to-reorder functionality
   if (canReorderCovers()) {
-    new Sortable(container, {
+    destroyCoversSortable();
+    window._coversSortable = new Sortable(container, {
       animation: 150,
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
@@ -248,7 +295,129 @@ function renderCoversGridView(covers) {
         showToast('Cover order updated - remember to save changes');
       }
     });
+  } else {
+    destroyCoversSortable();
   }
+}
+
+function renderCoversPublicPreviewView(covers) {
+  const container = document.getElementById('coversContainer');
+  if (!container) return;
+
+  const hint = document.createElement('div');
+  hint.className = 'public-preview-hint';
+  hint.textContent = 'PUBLIC PREVIEW — mirrors the public collage layout order.';
+  container.appendChild(hint);
+
+  const viewport = document.createElement('div');
+  viewport.className = 'public-preview-viewport';
+  container.appendChild(viewport);
+
+  const canvas = document.createElement('div');
+  canvas.className = 'public-preview-canvas';
+  viewport.appendChild(canvas);
+
+  // Always preview manual order (the public site uses the ARRAY order in covers.json).
+  const ordered = (Array.isArray(covers) ? covers : [])
+    .map((c, pos) => ({ c, pos }))
+    .sort((a, b) => {
+      const ai = Number(a.c?.index);
+      const bi = Number(b.c?.index);
+      const aHas = Number.isFinite(ai);
+      const bHas = Number.isFinite(bi);
+      if (aHas && bHas) return ai - bi || a.pos - b.pos;
+      if (aHas) return -1;
+      if (bHas) return 1;
+      return a.pos - b.pos;
+    })
+    .map(x => x.c);
+
+  const seededRand = (seed, min, max) => {
+    const x = Math.sin(seed * 9973) * 43758.5453;
+    const t = x - Math.floor(x);
+    return min + t * (max - min);
+  };
+
+  const viewportW = viewport.clientWidth || 900;
+  const scale = clamp(viewportW / 1200, 0.5, 0.9);
+  const rowPattern = [3, 2, 4]; // public desktop rhythm
+  const baseHeight = 220;
+  const tileHeightPx = baseHeight * scale;
+  const startXBase = 28 * scale;
+
+  let rowY = 0;
+  let rowIndex = 0;
+  let i = 0;
+  let maxRight = 0;
+
+  while (i < ordered.length) {
+    const rowSize = rowPattern[rowIndex % rowPattern.length];
+    let cursorX = startXBase + (rowIndex % 2 === 1 ? 90 * scale : 0);
+
+    for (let k = 0; k < rowSize && i < ordered.length; k++, i++) {
+      const cover = ordered[i];
+      const url = getCoverImageUrl(cover);
+      ensureCoverAspectCached(url);
+
+      const aspect = clamp(publicPreviewAspectCache.get(url) || 1, 0.3, 3);
+      const widthPx = tileHeightPx * aspect;
+      const jitterY = seededRand(i, -10, 10) * scale;
+      const gapX = (80 * scale) + seededRand(i * 3, 12 * scale, 60 * scale);
+
+      const x = cursorX;
+      const y = rowY + jitterY;
+
+      const item = document.createElement('div');
+      item.className = 'public-preview-item';
+      item.style.left = `${x}px`;
+      item.style.top = `${y}px`;
+      item.style.width = `${Math.round(widthPx)}px`;
+      item.style.height = `${Math.round(tileHeightPx)}px`;
+      item.dataset.coverId = cover.id;
+      item.title = `${cover.albumTitle || 'Untitled'} — ${cover.artistDetails?.name || ''}`.trim();
+
+      const img = document.createElement('img');
+      img.className = 'cover-image';
+      img.loading = 'lazy';
+      img.src = url;
+      img.alt = cover.albumTitle || cover.artistDetails?.name || 'Cover';
+      img.onerror = () => { img.src = '/placeholder.jpg'; };
+      item.appendChild(img);
+
+      const idxBadge = document.createElement('div');
+      idxBadge.className = 'cover-index';
+      idxBadge.textContent = String(i + 1);
+      idxBadge.title = getPublicDesktopPositionLabel(i);
+      item.appendChild(idxBadge);
+
+      const meta = document.createElement('div');
+      meta.className = 'cover-meta';
+      const title = document.createElement('div');
+      title.textContent = cover.albumTitle || 'Untitled';
+      const sub = document.createElement('div');
+      sub.textContent = cover.artistDetails?.name || cover.coverLabel || '';
+      meta.appendChild(title);
+      meta.appendChild(sub);
+      item.appendChild(meta);
+
+      item.addEventListener('click', () => {
+        if (window.batchMode) return;
+        if (typeof window.editCover === 'function') window.editCover(cover);
+      });
+
+      canvas.appendChild(item);
+
+      cursorX += widthPx + gapX;
+      maxRight = Math.max(maxRight, cursorX);
+    }
+
+    rowIndex++;
+    const gapY = (84 * scale) + seededRand(rowIndex, 10 * scale, 32 * scale);
+    rowY += tileHeightPx + gapY;
+  }
+
+  canvas.style.width = `${Math.ceil(maxRight + startXBase)}px`;
+  canvas.style.height = `${Math.ceil(rowY + startXBase)}px`;
 }
 
 // List view renderer
@@ -612,14 +781,28 @@ window.saveChanges = async function() {
   try {
     showLoading();
     
-    // Update indices based on current order
-    window.covers.forEach((cover, idx) => {
-      cover.index = idx;
-    });
+    // Persist manual order as ARRAY order (public site consumes covers.json array order).
+    const covers = Array.isArray(window.covers) ? window.covers : [];
+    const ordered = covers
+      .map((c, pos) => ({ c, pos }))
+      .sort((a, b) => {
+        const ai = Number(a.c?.index);
+        const bi = Number(b.c?.index);
+        const aHas = Number.isFinite(ai);
+        const bHas = Number.isFinite(bi);
+        if (aHas && bHas) return ai - bi || a.pos - b.pos;
+        if (aHas) return -1;
+        if (bHas) return 1;
+        return a.pos - b.pos;
+      })
+      .map(x => x.c);
+
+    ordered.forEach((cover, idx) => { cover.index = idx; });
+    window.covers = ordered;
     
     const result = await apiCall('/save-covers', {
       method: 'POST',
-      body: JSON.stringify(window.covers)
+      body: JSON.stringify(ordered)
     });
     
     window.adminState.hasChanges = false;
