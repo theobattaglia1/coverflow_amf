@@ -156,6 +156,17 @@ window.updateSaveButton = function() {
   }
 };
 
+window.setupUnsavedChangesGuard = function() {
+  if (window.__amfUnsavedChangesGuardBound) return;
+  window.__amfUnsavedChangesGuardBound = true;
+
+  window.addEventListener('beforeunload', (event) => {
+    if (!window.adminState?.hasChanges) return;
+    event.preventDefault();
+    event.returnValue = '';
+  });
+};
+
 // Utility function to safely parse JSON responses
 window.safeJsonParse = async function(response) {
   const text = await response.text();
@@ -350,6 +361,7 @@ window.showSection = function(sectionId) {
 // Initialize shared functionality
 window.initializeShared = function() {
   console.log('🎛️ AMF Admin Shared Module Initialized');
+  setupUnsavedChangesGuard();
   initializeKeyboardShortcuts();
 };
 

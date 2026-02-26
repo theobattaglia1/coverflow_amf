@@ -2757,12 +2757,20 @@ a:hover {
 }
 
 .public-preview-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm);
   margin: 0 0 var(--space-md);
   font-family: var(--font-mono);
   font-size: 0.625rem;
   color: var(--grey-700);
   text-transform: uppercase;
   letter-spacing: var(--tracking-mono);
+}
+
+.public-preview-reorder-btn {
+  margin-left: auto;
 }
 
 .public-preview-viewport {
@@ -2793,6 +2801,47 @@ a:hover {
 
 .public-preview-item .cover-index {
   opacity: 0;
+}
+
+.public-preview-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  z-index: 20;
+}
+
+.public-preview-item:hover .public-preview-actions {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  .public-preview-actions {
+    opacity: 1;
+  }
+}
+
+.public-preview-action-btn {
+  border: 1px solid var(--grey-300);
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: 0.5rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  padding: 2px 6px;
+  cursor: pointer;
+}
+
+.public-preview-action-btn.danger {
+  color: #c62828;
+  border-color: #ffcdd2;
+}
+
+.public-preview-action-btn:hover {
+  border-color: var(--ink);
 }
 
 .public-preview-item:hover .cover-index {
@@ -2826,6 +2875,47 @@ a:hover {
   gap: var(--space-md);
   margin-top: var(--space-xl);
   flex-wrap: wrap;
+}
+
+.push-live-report {
+  margin-top: var(--space-md);
+  border: 1px solid var(--grey-200);
+  background: var(--grey-50);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+  color: var(--grey-700);
+}
+
+.push-live-report.has-error {
+  border-color: #ffcdd2;
+  background: #fff7f7;
+  color: #8e1c1c;
+}
+
+.push-live-report-header {
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.push-live-report-summary {
+  margin-bottom: 4px;
+}
+
+.push-live-report-list {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 0;
+}
+
+.push-live-report-list li {
+  margin: 0 0 2px;
+}
+
+.push-live-report-time {
+  color: var(--grey-600);
 }
 
 /* Enhanced Cover Items */

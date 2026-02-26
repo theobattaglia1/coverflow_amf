@@ -301,12 +301,13 @@
         
         <!-- Action buttons: Brutalist elegance -->
         <div class="covers-actions">
-          <button class="btn btn-primary" onclick="saveChanges()">SAVE CHANGES</button>
+          <button class="btn btn-primary" onclick="saveChanges()" id="saveAllBtn">SAVE CHANGES</button>
           <button class="btn" onclick="toggleBatchMode()" id="batchModeBtn">BATCH MODE</button>
           <button class="btn" onclick="exportCovers()" style="display: none;" id="exportBtn">EXPORT SELECTED</button>
           <button class="btn btn-danger" onclick="deleteSelected()" style="display: none;" id="deleteBtn">DELETE SELECTED</button>
-          <button class="btn" onclick="pushLive()">PUSH LIVE</button>
+          <button class="btn" onclick="pushLive()" id="pushLiveBtn">PUSH LIVE</button>
         </div>
+        <div class="push-live-report" id="pushLiveReport" hidden></div>
       </section>
 
       <!-- 02 — ASSETS -->

@@ -267,6 +267,30 @@ function getPublicDesktopPositionLabel(orderIndex) {
   return 'Public layout (desktop): position unknown';
 }
 
+window.enableManualReorderMode = function() {
+  window.searchTerm = '';
+  window.categoryFilter = '';
+  window.sortOrder = 'index';
+
+  const coverSearch = document.getElementById('coverSearch');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const sortOrder = document.getElementById('sortOrder');
+  const dateFrom = document.getElementById('dateFrom');
+  const dateTo = document.getElementById('dateTo');
+  const tagsFilter = document.getElementById('tagsFilter');
+
+  if (coverSearch) coverSearch.value = '';
+  if (categoryFilter) categoryFilter.value = '';
+  if (sortOrder) sortOrder.value = 'index';
+  if (dateFrom) dateFrom.value = '';
+  if (dateTo) dateTo.value = '';
+  if (tagsFilter) tagsFilter.value = '';
+
+  document.querySelectorAll('.quick-filter-btn').forEach(btn => btn.classList.remove('active'));
+  renderCovers();
+  showToast('MANUAL ORDER ENABLED', 1500);
+};
+
 function setCoverIndicesFromIdOrder(coverIds) {
   if (!Array.isArray(coverIds) || coverIds.length === 0) return;
 
@@ -364,11 +388,23 @@ function renderCoversPublicPreviewView(covers) {
   const container = document.getElementById('coversContainer');
   if (!container) return;
 
+  const reorderEnabled = canReorderCovers();
   const hint = document.createElement('div');
   hint.className = 'public-preview-hint';
-  hint.textContent = canReorderCovers()
-    ? 'PUBLIC PREVIEW — DRAG TO REORDER (MANUAL ORDER). CLICK A COVER TO EDIT.'
-    : 'PUBLIC PREVIEW — TO REORDER: SET MANUAL ORDER + CLEAR FILTERS. CLICK A COVER TO EDIT.';
+  const hintText = document.createElement('span');
+  hintText.textContent = reorderEnabled
+    ? 'PUBLIC PREVIEW — DRAG TO REORDER (MANUAL ORDER). CLICK A COVER TO EDIT OR DELETE.'
+    : 'PUBLIC PREVIEW — REORDER IS LOCKED BY CURRENT FILTER/SORT. CLICK ENABLE REORDER.';
+  hint.appendChild(hintText);
+
+  if (!reorderEnabled) {
+    const reorderBtn = document.createElement('button');
+    reorderBtn.type = 'button';
+    reorderBtn.className = 'btn btn-sm public-preview-reorder-btn';
+    reorderBtn.textContent = 'ENABLE REORDER';
+    reorderBtn.addEventListener('click', () => window.enableManualReorderMode());
+    hint.appendChild(reorderBtn);
+  }
   container.appendChild(hint);
 
   const viewport = document.createElement('div');
@@ -462,6 +498,35 @@ function renderCoversPublicPreviewView(covers) {
       meta.appendChild(sub);
       item.appendChild(meta);
 
+      const actions = document.createElement('div');
+      actions.className = 'public-preview-actions';
+
+      const editBtn = document.createElement('button');
+      editBtn.type = 'button';
+      editBtn.className = 'public-preview-action-btn';
+      editBtn.textContent = 'EDIT';
+      editBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (window.batchMode) return;
+        if (typeof window.editCover === 'function') window.editCover(cover);
+      });
+      actions.appendChild(editBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.type = 'button';
+      deleteBtn.className = 'public-preview-action-btn danger';
+      deleteBtn.textContent = 'DELETE';
+      deleteBtn.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (window.batchMode) return;
+        if (typeof window.deleteCover === 'function') window.deleteCover(String(cover.id));
+      });
+      actions.appendChild(deleteBtn);
+
+      item.appendChild(actions);
+
       item.addEventListener('click', () => {
         if (window.batchMode) return;
         if (publicPreviewSuppressClicksUntil && performance.now() < publicPreviewSuppressClicksUntil) return;
@@ -483,7 +548,7 @@ function renderCoversPublicPreviewView(covers) {
   canvas.style.height = `${Math.ceil(rowY + startXBase)}px`;
 
   // Enable drag-to-reorder directly in the preview when manual ordering is active.
-  if (typeof Sortable !== 'undefined' && canReorderCovers()) {
+  if (typeof Sortable !== 'undefined' && reorderEnabled) {
     let previousOrderIds = null;
     let previousHadChanges = null;
 
@@ -496,6 +561,7 @@ function renderCoversPublicPreviewView(covers) {
       ghostClass: 'sortable-ghost',
       chosenClass: 'sortable-chosen',
       dragClass: 'sortable-drag',
+      filter: '.public-preview-action-btn',
       onStart: function() {
         publicPreviewIsReordering = true;
         previousHadChanges = Boolean(window.adminState?.hasChanges);
@@ -790,6 +856,7 @@ window.editCover = function(cover) {
         </div>
       </div>
       <div style="display: flex; gap: var(--space-md); justify-content: flex-end;">
+        <button type="button" class="btn btn-danger" onclick="deleteCover('${cover.id}')">DELETE COVER</button>
         <button type="button" class="btn" onclick="closeModal()">CANCEL</button>
         <button type="submit" class="btn btn-primary">SAVE CHANGES</button>
       </div>
@@ -836,18 +903,20 @@ window.editCover = function(cover) {
 
 // Delete cover
 window.deleteCover = async function(coverId) {
-  const target = window.covers.find(c => c.id === coverId);
+  const normalizedId = String(coverId ?? '');
+  const target = window.covers.find(c => String(c?.id) === normalizedId);
   if (!target) return;
   
   if (!confirm(`Delete cover "${target.albumTitle || 'Untitled'}"? This cannot be undone.`)) return;
   
   // Keep a copy for potential undo
-  const index = window.covers.findIndex(c => c.id === coverId);
+  const index = window.covers.findIndex(c => String(c?.id) === normalizedId);
   const deletedCover = { ...target };
   
-  window.covers = window.covers.filter(c => c.id !== coverId);
+  window.covers = window.covers.filter(c => String(c?.id) !== normalizedId);
   window.adminState.hasChanges = true;
   updateSaveButton();
+  closeModal();
   renderCovers();
   
   // Offer quick UNDO (client-side only)
@@ -953,6 +1022,7 @@ window.pushLive = async function() {
     });
     
     showToast('SUCCESSFULLY PUSHED TO LIVE');
+    renderPushLiveReport(result);
     
     if (result.validation) {
       console.log('Push validation results:', result.validation);
@@ -961,10 +1031,54 @@ window.pushLive = async function() {
     hideLoading();
   } catch (err) {
     console.error('Push failed:', err);
+    renderPushLiveReport({ error: err.message }, true);
     showToast(`FAILED TO PUSH LIVE: ${err.message}`, 5000);
     hideLoading();
   }
 };
+
+function renderPushLiveReport(result, isError = false) {
+  const report = document.getElementById('pushLiveReport');
+  if (!report) return;
+
+  report.hidden = false;
+  report.classList.toggle('has-error', Boolean(isError));
+  report.innerHTML = '';
+
+  const header = document.createElement('div');
+  header.className = 'push-live-report-header';
+  header.textContent = isError ? 'PUSH LIVE FAILED' : 'PUSH LIVE REPORT';
+  report.appendChild(header);
+
+  const summary = document.createElement('div');
+  summary.className = 'push-live-report-summary';
+  summary.textContent = isError
+    ? (result?.error || 'Unknown error')
+    : (result?.message || 'Changes pushed live successfully');
+  report.appendChild(summary);
+
+  if (!isError && Array.isArray(result?.validation) && result.validation.length) {
+    const list = document.createElement('ul');
+    list.className = 'push-live-report-list';
+    result.validation.forEach((row) => {
+      const item = document.createElement('li');
+      const file = row?.file || 'unknown';
+      const status = String(row?.status || 'ok').toUpperCase();
+      const records = Number.isFinite(Number(row?.records)) ? ` · ${row.records} records` : '';
+      const size = Number.isFinite(Number(row?.size)) ? ` · ${row.size} bytes` : '';
+      item.textContent = `${file}: ${status}${records}${size}`;
+      list.appendChild(item);
+    });
+    report.appendChild(list);
+  }
+
+  const timestamp = document.createElement('div');
+  timestamp.className = 'push-live-report-time';
+  timestamp.textContent = result?.timestamp
+    ? `LAST PUSH: ${new Date(result.timestamp).toLocaleString()}`
+    : `LAST UPDATE: ${new Date().toLocaleString()}`;
+  report.appendChild(timestamp);
+}
 
 // Batch operations
 window.toggleBatchMode = function() {
