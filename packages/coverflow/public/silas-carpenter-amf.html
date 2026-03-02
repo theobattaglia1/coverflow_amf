@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Silas Carpenter | EPK</title>
+<meta name="description" content="Bedroom-built indie from Arkansas. Every part, every note, one person.">
+<meta property="og:title" content="Silas Carpenter | EPK">
+<meta property="og:description" content="Bedroom-built indie from Arkansas. Every part, every note, one person.">
+<meta property="og:image" content="/assets/silas/hero.png">
+<style>
+/* ── Reset & Tokens ─────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;padding:0;
+  --os-bg:#0c0b0a;--os-surface:#141312;--os-elevated:#1c1b19;
+  --os-border:#262422;--os-text:#f0ede7;--os-secondary:#9b958a;
+  --os-muted:#5e5a54;--os-accent:#d4732b;--os-accent-hover:#e07f35;
+  background:var(--os-bg);color:var(--os-text);
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Helvetica Neue",Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;line-height:1.5}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+
+/* ── Reveal Animation ───────────────────────────── */
+.os-reveal{opacity:0;transform:translateY(20px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
+.os-reveal.visible{opacity:1;transform:translateY(0)}
+@media(prefers-reduced-motion:reduce){.os-reveal{opacity:1;transform:none;transition:none}}
+
+/* ── Section ────────────────────────────────────── */
+.os-section{padding:4rem 1.25rem}
+@media(min-width:768px){.os-section{padding:6rem 2rem}}
+
+/* ── Focus ──────────────────────────────────────── */
+:focus-visible{outline:2px solid var(--os-accent);outline-offset:2px;border-radius:4px}
+
+/* ── Hero ───────────────────────────────────────── */
+.hero{position:relative;min-height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.hero__bg{position:absolute;inset:0;will-change:transform}
+.hero__bg-img{width:100%;height:100%;object-fit:cover;object-position:center 72%}
+.hero__overlay{position:absolute;inset:0;background:linear-gradient(to bottom,rgba(12,11,10,.45) 0%,rgba(12,11,10,.08) 28%,rgba(12,11,10,.03) 45%,rgba(12,11,10,.55) 72%,rgba(12,11,10,.95) 90%,rgba(12,11,10,1) 100%)}
+.hero__content{position:relative;z-index:10;display:flex;flex-direction:column;justify-content:space-between;min-height:100vh;padding:0 1.25rem}
+@media(min-width:768px){.hero__content{padding:0 2rem}}
+.hero__logo-wrap{padding-top:2.5rem;display:flex;justify-content:center}
+@media(min-width:768px){.hero__logo-wrap{padding-top:3.5rem}}
+.hero__logo{height:1.25rem;width:auto;filter:brightness(0) invert(1);opacity:.9}
+@media(min-width:640px){.hero__logo{height:1.5rem}}
+@media(min-width:768px){.hero__logo{height:2rem}}
+@media(min-width:1024px){.hero__logo{height:2.5rem}}
+.hero__bottom{padding-bottom:3.5rem;max-width:36rem}
+@media(min-width:768px){.hero__bottom{padding-bottom:4rem}}
+.hero__tagline{font-size:1rem;color:var(--os-text);opacity:.85;margin:0 0 2rem;line-height:1.65}
+@media(min-width:640px){.hero__tagline{font-size:1.125rem}}
+@media(min-width:768px){.hero__tagline{font-size:1.25rem}}
+.hero__ctas{display:flex;flex-wrap:wrap;gap:.75rem;margin-bottom:2.5rem}
+.hero__btn{display:inline-flex;align-items:center;gap:.5rem;padding:.75rem 1.5rem;border-radius:.5rem;font-size:.875rem;font-weight:500;cursor:pointer;transition:all .2s;border:none;font-family:inherit}
+.hero__btn:hover{transform:scale(1.02)}.hero__btn:active{transform:scale(.98)}
+.hero__btn--primary{background:var(--os-accent);color:#fff}
+.hero__btn--primary:hover{background:var(--os-accent-hover)}
+.hero__btn--outline{background:transparent;color:var(--os-text);border:1px solid rgba(255,255,255,.2)}
+.hero__btn--outline:hover{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.05)}
+.hero__socials{display:flex;gap:1rem}
+.hero__social{position:relative;color:rgba(255,255,255,.35);transition:color .2s}
+.hero__social:hover{color:var(--os-accent)}
+.hero__social-tip{position:absolute;top:-2rem;left:50%;transform:translateX(-50%);font-size:10px;color:var(--os-secondary);opacity:0;transition:opacity .2s;white-space:nowrap;pointer-events:none}
+.hero__social:hover .hero__social-tip{opacity:1}
+.hero__scroll{position:absolute;bottom:1.25rem;left:50%;transform:translateX(-50%);z-index:10;opacity:.25;animation:os-bounce 1s infinite}
+@media(prefers-reduced-motion:reduce){.hero__scroll{animation:none}}
+
+/* ── Music / Switcher Player ────────────────────── */
+.sp-wrap{max-width:64rem;margin:0 auto}
+.sp-heading{font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--os-muted);font-weight:500;margin:0 0 2.5rem}
+@media(min-width:768px){.sp-heading{margin-bottom:3.5rem}}
+.sp-embed__frame{background:var(--os-surface);border-radius:1rem;overflow:hidden;border:1px solid var(--os-border)}
+.sp-releases{margin-top:2.5rem}
+@media(min-width:768px){.sp-releases{margin-top:3.5rem}}
+.sp-releases__label{font-size:10px;text-transform:uppercase;letter-spacing:.25em;color:var(--os-muted);font-weight:500;margin:0 0 1.5rem}
+.sp-releases__grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media(min-width:640px){.sp-releases__grid{grid-template-columns:repeat(4,1fr);gap:1.25rem}}
+.sp-release{cursor:default}
+.sp-release__art{position:relative;border-radius:.5rem;overflow:hidden;margin-bottom:.75rem;border:1px solid var(--os-border);transition:border-color .3s}
+.sp-release:hover .sp-release__art{border-color:rgba(212,115,43,.4)}
+.sp-release__art img{width:100%;aspect-ratio:1;object-fit:cover;transition:transform .5s}
+.sp-release:hover .sp-release__art img{transform:scale(1.03)}
+.sp-release__badge{position:absolute;top:.5rem;right:.5rem;background:var(--os-accent);color:#fff;font-size:9px;text-transform:uppercase;letter-spacing:.05em;font-weight:600;padding:.15rem .5rem;border-radius:9999px}
+.sp-release__title{font-size:.875rem;font-weight:500;color:var(--os-text);margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sp-release__meta{font-size:.75rem;color:var(--os-muted);margin:.125rem 0 0}
+.sp-links{display:flex;gap:1rem;margin-top:2rem}
+.sp-link{display:inline-flex;align-items:center;gap:.375rem;font-size:.75rem;color:var(--os-muted);transition:color .2s}
+.sp-link:hover{color:var(--os-accent)}
+
+/* ── TikTok Embed ───────────────────────────────── */
+.tt-wrap{max-width:64rem;margin:0 auto}
+.tt-heading{font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--os-muted);font-weight:500;margin:0 0 2.5rem}
+@media(min-width:768px){.tt-heading{margin-bottom:3.5rem}}
+.tt-player{max-width:360px;margin:0 auto}
+.tt-frame{position:relative;background:var(--os-surface);border-radius:1rem;overflow:hidden;border:1px solid var(--os-border);aspect-ratio:9/16;max-height:680px}
+.tt-iframe{position:absolute;inset:0;width:100%;height:100%}
+.tt-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.tt-spinner{width:2rem;height:2rem;border:2px solid var(--os-border);border-top-color:var(--os-accent);border-radius:50%;animation:os-spin .8s linear infinite}
+.tt-caption{text-align:center;margin:1rem 0 0}
+.tt-link{font-size:.75rem;color:var(--os-muted);transition:color .2s}
+.tt-link:hover{color:var(--os-accent)}
+
+/* ── Bio Blocks ─────────────────────────────────── */
+.bio-wrap{max-width:64rem;margin:0 auto}
+.bio-heading{font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--os-muted);font-weight:500;margin:0 0 2.5rem}
+@media(min-width:768px){.bio-heading{margin-bottom:3.5rem}}
+.bio-cards{display:grid;gap:1rem}
+@media(min-width:640px){.bio-cards{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.bio-cards{grid-template-columns:repeat(3,1fr);gap:1.25rem}}
+.bio-card{background:var(--os-surface);border:1px solid var(--os-border);border-radius:.75rem;padding:1.5rem}
+@media(min-width:768px){.bio-card{padding:1.75rem}}
+.bio-card__heading{font-size:10px;text-transform:uppercase;letter-spacing:.25em;color:var(--os-accent);font-weight:600;margin:0 0 1rem}
+.bio-card__text{font-size:.875rem;color:var(--os-secondary);line-height:1.65;margin:0}
+.bio-highlights{margin-top:2.5rem}
+@media(min-width:768px){.bio-highlights{margin-top:3rem}}
+.bio-highlights__label{font-size:10px;text-transform:uppercase;letter-spacing:.25em;color:var(--os-muted);font-weight:500;margin:0 0 1.25rem}
+.bio-highlights__list{list-style:none;padding:0;margin:0;display:grid;gap:.625rem}
+@media(min-width:640px){.bio-highlights__list{grid-template-columns:repeat(2,1fr);column-gap:2rem}}
+.bio-highlights__item{display:flex;align-items:flex-start;gap:.625rem;font-size:.875rem;color:var(--os-secondary)}
+.bio-highlights__dot{width:4px;height:4px;border-radius:50%;background:var(--os-accent);margin-top:7px;flex-shrink:0}
+
+/* ── Contact ────────────────────────────────────── */
+.ct-wrap{max-width:48rem;margin:0 auto;text-align:center}
+.ct-heading{font-size:11px;text-transform:uppercase;letter-spacing:.2em;color:var(--os-muted);font-weight:500;margin:0 0 2.5rem}
+@media(min-width:768px){.ct-heading{margin-bottom:3.5rem}}
+.ct-grid{display:grid;gap:1rem}
+.ct-grid--single{max-width:24rem;margin:0 auto;grid-template-columns:1fr}
+.ct-card{display:block;background:var(--os-surface);border:1px solid var(--os-border);border-radius:.75rem;padding:1.5rem;transition:all .2s;text-align:center}
+@media(min-width:768px){.ct-card{padding:1.75rem}}
+.ct-card:hover{border-color:rgba(212,115,43,.25);background:var(--os-elevated)}
+.ct-card__label{font-size:10px;text-transform:uppercase;letter-spacing:.25em;color:var(--os-muted);font-weight:500;margin:0 0 .5rem}
+.ct-card__email{font-size:.875rem;color:var(--os-secondary);margin:0;transition:color .2s}
+.ct-card:hover .ct-card__email{color:var(--os-accent)}
+
+/* ── Footer ─────────────────────────────────────── */
+.os-footer{padding:1rem 1.25rem 2.5rem;text-align:center}
+.os-footer__copy{color:var(--os-muted);font-size:.75rem;letter-spacing:.05em;margin:0}
+
+/* ── Animations ─────────────────────────────────── */
+@keyframes os-spin{to{transform:rotate(360deg)}}
+@keyframes os-bounce{0%,100%{transform:translateY(-25%);animation-timing-function:cubic-bezier(.8,0,1,1)}50%{transform:translateY(0);animation-timing-function:cubic-bezier(0,0,.2,1)}}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HERO ════════════════ -->
+<section class="hero" aria-label="Hero">
+  <div class="hero__bg" id="heroBg">
+    <img src="assets/silas/hero.png" alt="Silas Carpenter portrait" class="hero__bg-img" fetchpriority="high">
+  </div>
+  <div class="hero__overlay"></div>
+  <div class="hero__content">
+    <div class="hero__logo-wrap">
+      <img src="assets/silas/logo.png" alt="Silas Carpenter" class="hero__logo">
+    </div>
+    <div class="hero__bottom">
+      <p class="hero__tagline">Bedroom-built indie from Arkansas. Every part, every note, one person.</p>
+      <div class="hero__ctas">
+        <a href="https://samply.app/p/rH3tOttiXAI4D4RYG2jj?si=sGcrq26TM0caiNL6NjRUikeicR32" target="_blank" rel="noopener noreferrer" class="hero__btn hero__btn--primary">
+          <svg style="width:1rem;height:1rem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+          Listen
+        </a>
+        <button onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="hero__btn hero__btn--outline">Contact</button>
+      </div>
+      <nav class="hero__socials" aria-label="Social links">
+        <a href="https://open.spotify.com/artist/4aiyliWs6AJkz9tMBreXwO" target="_blank" rel="noopener noreferrer" aria-label="Spotify" class="hero__social">
+          <svg style="width:1.25rem;height:1.25rem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.81-.87 7.077-.496 9.713 1.115a.623.623 0 01.206.857zm1.225-2.72a.78.78 0 01-1.072.257c-2.687-1.652-6.786-2.131-9.965-1.166a.78.78 0 01-.453-1.494c3.629-1.102 8.14-.568 11.233 1.329a.78.78 0 01.257 1.073zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.935.935 0 01-.543-1.79c3.533-1.073 9.405-.865 13.115 1.338a.935.935 0 01-1.053 1.545z"/></svg>
+          <span class="hero__social-tip">Spotify</span>
+        </a>
+        <a href="https://music.apple.com/us/artist/silas-carpenter/1675376911" target="_blank" rel="noopener noreferrer" aria-label="Apple Music" class="hero__social">
+          <svg style="width:1.25rem;height:1.25rem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043A5.022 5.022 0 0019.7.345 10.308 10.308 0 0017.564.1c-.574-.05-.96-.05-1.517-.05H7.95c-.556 0-.94 0-1.517.05C5.56.164 4.756.291 4.003.633 3.063 1.054 2.32 1.768 1.82 2.62c-.387.65-.585 1.37-.67 2.135-.066.583-.095.959-.108 1.522v11.416c.013.563.042.939.108 1.522.085.765.283 1.485.67 2.135.5.852 1.243 1.566 2.183 1.987.753.342 1.557.469 2.432.533.574.05.96.05 1.517.05h8.095c.557 0 .943 0 1.517-.05.875-.064 1.679-.191 2.432-.533.94-.421 1.683-1.135 2.183-1.987.387-.65.585-1.37.67-2.135.066-.583.095-.959.108-1.522V7.646c-.013-.563-.042-.939-.108-1.522z"/></svg>
+          <span class="hero__social-tip">Apple Music</span>
+        </a>
+        <a href="https://www.instagram.com/silas.carpenter/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" class="hero__social">
+          <svg style="width:1.25rem;height:1.25rem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          <span class="hero__social-tip">Instagram</span>
+        </a>
+        <a href="https://www.tiktok.com/@silas.carpenter2" target="_blank" rel="noopener noreferrer" aria-label="TikTok" class="hero__social">
+          <svg style="width:1.25rem;height:1.25rem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.3 0 .59.05.86.12V9.02a6.33 6.33 0 00-.86-.06 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.34-6.34V8.98a8.21 8.21 0 004.76 1.52V7.05a4.84 4.84 0 01-1-.36z"/></svg>
+          <span class="hero__social-tip">TikTok</span>
+        </a>
+      </nav>
+    </div>
+  </div>
+  <div class="hero__scroll">
+    <svg style="width:1.25rem;height:1.25rem;color:var(--os-text)" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </div>
+</section>
+
+<!-- ════════════════ MUSIC ════════════════ -->
+<section id="music" class="os-section">
+  <div class="sp-wrap">
+    <h2 class="sp-heading os-reveal">Music</h2>
+    <div class="sp-embed os-reveal" style="transition-delay:100ms">
+      <div class="sp-embed__frame">
+        <iframe src="https://untitled.stream/embed/7XkubrxS6dkR" width="100%" height="344" allowfullscreen allow="picture-in-picture" frameborder="0" loading="lazy" title="Music player" style="border-radius:16px"></iframe>
+      </div>
+    </div>
+    <div class="sp-releases os-reveal" style="transition-delay:200ms">
+      <h3 class="sp-releases__label">Releases</h3>
+      <div class="sp-releases__grid">
+        <div class="sp-release">
+          <div class="sp-release__art">
+            <img src="assets/silas/album-4.png" alt="The Big Idea" loading="lazy">
+            <span class="sp-release__badge">Latest</span>
+          </div>
+          <h4 class="sp-release__title">The Big Idea</h4>
+          <p class="sp-release__meta">2025 &middot; Album</p>
+        </div>
+        <div class="sp-release">
+          <div class="sp-release__art">
+            <img src="assets/silas/album-2.png" alt="My Mind" loading="lazy">
+          </div>
+          <h4 class="sp-release__title">My Mind</h4>
+          <p class="sp-release__meta">2025 &middot; Album</p>
+        </div>
+        <div class="sp-release">
+          <div class="sp-release__art">
+            <img src="assets/silas/album-5.png" alt="Love Never Hurt Nobody" loading="lazy">
+          </div>
+          <h4 class="sp-release__title">Love Never Hurt Nobody</h4>
+          <p class="sp-release__meta">2024 &middot; Single</p>
+        </div>
+        <div class="sp-release">
+          <div class="sp-release__art">
+            <img src="assets/silas/album-3.png" alt="BEDTIME SONGS" loading="lazy">
+          </div>
+          <h4 class="sp-release__title">BEDTIME SONGS</h4>
+          <p class="sp-release__meta">2024 &middot; Album</p>
+        </div>
+      </div>
+    </div>
+    <div class="sp-links os-reveal" style="transition-delay:300ms">
+      <a href="https://open.spotify.com/artist/4aiyliWs6AJkz9tMBreXwO" target="_blank" rel="noopener noreferrer" class="sp-link">
+        <svg style="width:1rem;height:1rem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424a.622.622 0 01-.857.207c-2.348-1.435-5.304-1.76-8.785-.964a.623.623 0 01-.277-1.215c3.81-.87 7.077-.496 9.713 1.115a.623.623 0 01.206.857zm1.225-2.72a.78.78 0 01-1.072.257c-2.687-1.652-6.786-2.131-9.965-1.166a.78.78 0 01-.453-1.494c3.629-1.102 8.14-.568 11.233 1.329a.78.78 0 01.257 1.073zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71a.935.935 0 01-.543-1.79c3.533-1.073 9.405-.865 13.115 1.338a.935.935 0 01-1.053 1.545z"/></svg>
+        Open in Spotify
+      </a>
+      <a href="https://music.apple.com/us/artist/silas-carpenter/1675376911" target="_blank" rel="noopener noreferrer" class="sp-link">
+        <svg style="width:1rem;height:1rem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M23.994 6.124a9.23 9.23 0 00-.24-2.19c-.317-1.31-1.062-2.31-2.18-3.043A5.022 5.022 0 0019.7.345 10.308 10.308 0 0017.564.1c-.574-.05-.96-.05-1.517-.05H7.95c-.556 0-.94 0-1.517.05C5.56.164 4.756.291 4.003.633 3.063 1.054 2.32 1.768 1.82 2.62c-.387.65-.585 1.37-.67 2.135-.066.583-.095.959-.108 1.522v11.416c.013.563.042.939.108 1.522.085.765.283 1.485.67 2.135.5.852 1.243 1.566 2.183 1.987.753.342 1.557.469 2.432.533.574.05.96.05 1.517.05h8.095c.557 0 .943 0 1.517-.05.875-.064 1.679-.191 2.432-.533.94-.421 1.683-1.135 2.183-1.987.387-.65.585-1.37.67-2.135.066-.583.095-.959.108-1.522V7.646c-.013-.563-.042-.939-.108-1.522z"/></svg>
+        Open in Apple Music
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FEATURED VIDEO ════════════════ -->
+<section id="featured-video" class="os-section">
+  <div class="tt-wrap">
+    <h2 class="tt-heading os-reveal">Featured</h2>
+    <div class="tt-player os-reveal" style="transition-delay:100ms">
+      <div class="tt-frame" id="tiktokFrame">
+        <div class="tt-loading"><div class="tt-spinner"></div></div>
+      </div>
+      <p class="tt-caption">
+        <a href="https://www.tiktok.com/@silas.carpenter2" target="_blank" rel="noopener noreferrer" class="tt-link">@silas.carpenter2</a>
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ ABOUT ════════════════ -->
+<section id="about" class="os-section">
+  <div class="bio-wrap">
+    <h2 class="bio-heading os-reveal">About</h2>
+    <div class="bio-cards">
+      <div class="bio-card os-reveal" style="transition-delay:80ms">
+        <h3 class="bio-card__heading">The Artist</h3>
+        <p class="bio-card__text">Silas Carpenter is a 19-year-old indie musician from Arkansas. Working out of a bedroom studio, he builds full songs from scratch: vocals, guitars, bass, keys, and drums. The process is fast, self-contained, and entirely hands-on.</p>
+      </div>
+      <div class="bio-card os-reveal" style="transition-delay:160ms">
+        <h3 class="bio-card__heading">The Sound</h3>
+        <p class="bio-card__text">Intimate, lyric-forward indie with quiet tension, sharp lines, and melodies that linger. The vocal layering nods to Elliott Smith, but the approach is entirely his own: one person, one room, a full band&#8217;s worth of parts.</p>
+      </div>
+      <div class="bio-card os-reveal" style="transition-delay:240ms">
+        <h3 class="bio-card__heading">The Process</h3>
+        <p class="bio-card__text">A steady output driven by obsession more than strategy. Every song starts and finishes in the same bedroom studio, with every instrument tracked by the same pair of hands. No collaborators, no outside production, no shortcuts.</p>
+      </div>
+    </div>
+    <div class="bio-highlights os-reveal" style="transition-delay:320ms">
+      <h3 class="bio-highlights__label">At a Glance</h3>
+      <ul class="bio-highlights__list">
+        <li class="bio-highlights__item"><span class="bio-highlights__dot" aria-hidden="true"></span>Writes, records, and produces entirely solo</li>
+        <li class="bio-highlights__item"><span class="bio-highlights__dot" aria-hidden="true"></span>Full instrumentation: vocals, guitar, bass, keys, drums</li>
+        <li class="bio-highlights__item"><span class="bio-highlights__dot" aria-hidden="true"></span>Bedroom studio, Searcy, Arkansas</li>
+        <li class="bio-highlights__item"><span class="bio-highlights__dot" aria-hidden="true"></span>5 albums &amp; 13+ singles since 2023</li>
+        <li class="bio-highlights__item"><span class="bio-highlights__dot" aria-hidden="true"></span>Influenced by Elliott Smith, built on his own terms</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ CONTACT ════════════════ -->
+<section id="contact" class="os-section">
+  <div class="ct-wrap">
+    <h2 class="ct-heading os-reveal">Contact</h2>
+    <div class="ct-grid ct-grid--single os-reveal" style="transition-delay:100ms">
+      <a href="mailto:theo@allmyfriendsinc.com" class="ct-card">
+        <p class="ct-card__label">General Inquiries</p>
+        <p class="ct-card__email">theo@allmyfriendsinc.com</p>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ════════════════ FOOTER ════════════════ -->
+<footer class="os-footer">
+  <p class="os-footer__copy">&copy; 2026 Silas Carpenter</p>
+</footer>
+
+<script>
+/* ── Parallax ────────────────────────── */
+(function(){
+  var bg=document.getElementById('heroBg'),ticking=false;
+  if(window.matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  window.addEventListener('scroll',function(){
+    if(!ticking){requestAnimationFrame(function(){bg.style.transform='translateY('+window.scrollY*.15+'px) scale(1.1)';ticking=false});ticking=true}
+  },{passive:true});
+})();
+
+/* ── Scroll Reveal ───────────────────── */
+(function(){
+  var els=document.querySelectorAll('.os-reveal');
+  if(!('IntersectionObserver' in window)){els.forEach(function(e){e.classList.add('visible')});return}
+  var obs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})
+  },{threshold:0.08,rootMargin:'0px 0px -40px 0px'});
+  els.forEach(function(e){obs.observe(e)});
+})();
+
+/* ── Lazy TikTok Embed ───────────────── */
+(function(){
+  var frame=document.getElementById('tiktokFrame');
+  var obs=new IntersectionObserver(function(entries){
+    if(entries[0].isIntersecting){
+      var iframe=document.createElement('iframe');
+      iframe.src='https://www.tiktok.com/embed/v2/7572808197795237150';
+      iframe.className='tt-iframe';iframe.frameBorder='0';
+      iframe.allow='autoplay; encrypted-media';iframe.allowFullscreen=true;
+      iframe.title='TikTok video by @silas.carpenter2';
+      frame.innerHTML='';frame.appendChild(iframe);
+      obs.unobserve(frame);
+    }
+  },{rootMargin:'300px'});
+  obs.observe(frame);
+})();
+</script>
+</body>
+</html>
