@@ -1,1206 +1,574 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8">
+  <script>document.documentElement.classList.remove("no-js")</script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <title>Adam Melchor — The Long Game</title>
-  <meta name="description" content="Adam Melchor — positioning and creative system overview for label-facing conversations.">
-
+  <meta name="description" content="Adam Melchor — positioning and creative system overview.">
   <meta property="og:type" content="website">
   <meta property="og:title" content="Adam Melchor — The Long Game">
   <meta property="og:description" content="A label-facing look at Adam Melchor's repeatable creative engine and durable audience model.">
   <meta property="og:image" content="./artists/adam/editorial-set-2026/adam-hero-img.jpg">
-
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="Adam Melchor — The Long Game">
-  <meta name="twitter:description" content="A label-facing look at Adam Melchor's repeatable creative engine and durable audience model.">
-  <meta name="twitter:image" content="./artists/adam/editorial-set-2026/adam-hero-img.jpg">
-
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&amp;display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:ital,wght@0,700;1,400;1,700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #ffffff;
-      --ink: #000000;
-      --accent: #b8860b;
-      --soft: #fafafa;
-      --warm-wash: rgba(184, 134, 11, 0.05);
-      --warm-dark: #1a1714;
-      --warm-dark-ink: #f2ece4;
-
-      --step--1: clamp(0.75rem, 0.85vw, 0.875rem);
-      --step-0: clamp(0.95rem, 1vw, 1.05rem);
-      --step-1: clamp(1.1rem, 1.2vw, 1.25rem);
-      --step-2: clamp(1.45rem, 2vw, 1.9rem);
-      --step-3: clamp(2rem, 3vw, 3.2rem);
-      --step-4: clamp(2.8rem, 6vw, 6rem);
-      --step-5: clamp(3.8rem, 9vw, 8.2rem);
-
-      --max-width: 1280px;
-      --gutter: 1.5rem;
-      --section-space: 12rem;
-      --nav-height: 72px;
-      --radius: 14px;
-      --line: rgba(0, 0, 0, 0.12);
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      font-size: 16px;
-      scroll-behavior: smooth;
-      -webkit-font-smoothing: antialiased;
-    }
-
-    body {
-      margin: 0;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-weight: 400;
-      font-size: var(--step-0);
-      line-height: 1.45;
-      color: var(--ink);
-      background: var(--bg);
-      overflow-x: hidden;
-    }
-
-    ::selection {
-      background: var(--accent);
-      color: #ffffff;
-    }
-
-    h1, h2, h3, h4, h5 {
-      margin: 0;
-      line-height: 1;
-      letter-spacing: -0.04em;
-      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-      font-weight: 700;
-    }
-
-    p {
-      margin: 0 0 1.3rem;
-      max-width: 72ch;
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    .container {
-      width: min(calc(100% - (var(--gutter) * 2)), var(--max-width));
-      margin-inline: auto;
-    }
-
-    .bg-soft {
-      background: var(--soft);
-    }
-
-    .bg-warm {
-      background: var(--warm-wash);
-    }
-
-    .section {
-      padding-block: var(--section-space);
-    }
-
-    .offset-left {
-      margin-left: 10%;
-      max-width: 860px;
-    }
-
-    .offset-right {
-      margin-right: 10%;
-      margin-left: auto;
-      max-width: 860px;
-    }
-
-    .section-heading {
-      margin-bottom: 2.75rem;
-    }
-
-    .section-marker {
-      display: block;
-      margin-bottom: 0.8rem;
-      color: var(--accent);
-      opacity: 0.5;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    .marquee-header {
-      display: block;
-      margin-bottom: 0.8rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      opacity: 0.65;
-    }
-
-    .stylized-subheader {
-      font-family: "Bookman", "Iowan Old Style", "Times New Roman", serif;
-      font-size: var(--step-3);
-      letter-spacing: -0.03em;
-      line-height: 1.05;
-    }
-
-    .lead {
-      font-size: var(--step-1);
-      line-height: 1.5;
-      letter-spacing: -0.01em;
-    }
-
-    .callout {
-      border-left: 4px solid var(--accent);
-      padding: 1.1rem 1.2rem;
-      background: rgba(184, 134, 11, 0.06);
-    }
-
-    .callout p:last-child {
-      margin-bottom: 0;
-    }
-
-    .callout-label {
-      margin-bottom: 0.4rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 100;
-      backdrop-filter: blur(12px);
-      background: rgba(255, 255, 255, 0.84);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .nav-inner {
-      min-height: var(--nav-height);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1.25rem;
-    }
-
-    .nav-logo {
-      white-space: nowrap;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
-    .nav-links {
-      margin: 0;
-      padding: 0;
-      list-style: none;
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      gap: 0.35rem;
-      overflow-x: auto;
-      scrollbar-width: none;
-    }
-
-    .nav-links::-webkit-scrollbar {
-      display: none;
-    }
-
-    .nav-link {
-      position: relative;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      padding: 0 0.65rem;
-      font-size: var(--step--1);
-      letter-spacing: 0.01em;
-      opacity: 0.7;
-      transition: opacity 200ms ease;
-    }
-
-    .nav-link::after {
-      content: "";
-      position: absolute;
-      left: 0.65rem;
-      right: 0.65rem;
-      bottom: 8px;
-      height: 2px;
-      border-radius: 999px;
-      background: var(--accent);
-      transform: scaleX(0);
-      transform-origin: left;
-      transition: transform 220ms ease;
-    }
-
-    .nav-link:hover,
-    .nav-link.active {
-      opacity: 1;
-    }
-
-    .nav-link:hover::after,
-    .nav-link.active::after {
-      transform: scaleX(1);
-    }
-
-    main {
-      padding-top: var(--nav-height);
-    }
-
-    .hero {
-      min-height: calc(100svh - var(--nav-height));
-      display: flex;
-      align-items: center;
-      background: linear-gradient(180deg, #ffffff 0%, #fcfaf6 100%);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(260px, 0.8fr);
-      gap: clamp(1.5rem, 4vw, 4rem);
-      align-items: end;
-      width: 100%;
-      padding-block: 3rem;
-    }
-
-    .display {
-      margin-bottom: 0.75rem;
-      font-size: var(--step-5);
-      font-weight: 900;
-      line-height: 0.82;
-      letter-spacing: -0.08em;
-      text-transform: uppercase;
-    }
-
-    .hero-logo-wrap {
-      margin-bottom: 1.1rem;
-    }
-
-    .hero-logo {
-      width: min(100%, 520px);
-      height: auto;
-      display: block;
-      filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.08));
-    }
-
-    .hero-long-game {
-      margin-bottom: 0.85rem;
-      font-family: "Bookman", "Iowan Old Style", "Times New Roman", serif;
-      font-size: clamp(1.2rem, 2vw, 1.9rem);
-      line-height: 1.1;
-      letter-spacing: -0.02em;
-    }
-
-    .artist-label {
-      margin-bottom: 2rem;
-      font-size: var(--step-1);
-      letter-spacing: -0.02em;
-    }
-
-    .project-meta {
-      margin-bottom: 1.4rem;
-      padding-block: 0.9rem;
-      border-top: 1px solid var(--ink);
-      border-bottom: 1px solid var(--ink);
-      display: grid;
-      gap: 0.4rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      letter-spacing: 0.03em;
-      text-transform: uppercase;
-    }
-
-    .hero-media {
-      margin: 0 0 0 auto;
-      width: min(100%, 460px);
-      transform: rotate(-2deg);
-      border-radius: var(--radius);
-      overflow: hidden;
-      border: 1px solid rgba(0, 0, 0, 0.14);
-      background: #e8ddd0;
-    }
-
-    .hero-media img {
-      display: block;
-      width: 100%;
-      height: auto;
-    }
-
-    .timeline {
-      margin-block: 2.25rem 1.6rem;
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .timeline-item {
-      padding: 1.1rem;
-      border: 1px solid var(--line);
-      background: #ffffff;
-      min-height: 172px;
-    }
-
-    .timeline-step {
-      margin-bottom: 0.8rem;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      color: var(--accent);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    .timeline-item h4 {
-      margin-bottom: 0.6rem;
-      font-size: clamp(1.05rem, 1.3vw, 1.3rem);
-      letter-spacing: -0.02em;
-    }
-
-    .timeline-item p {
-      margin: 0;
-      font-size: var(--step--1);
-      line-height: 1.45;
-    }
-
-    .image-timeline-scroll {
-      margin-top: 2.5rem;
-      display: flex;
-      gap: 0.75rem;
-      overflow-x: auto;
-      padding-bottom: 0.5rem;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: thin;
-    }
-
-    .timeline-image {
-      flex: 0 0 clamp(220px, 26vw, 340px);
-      scroll-snap-align: start;
-      aspect-ratio: 3 / 2;
-      border-radius: 11px;
-      overflow: hidden;
-      background: #e8ddd0;
-      border: 1px solid rgba(0, 0, 0, 0.12);
-    }
-
-    .timeline-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .phase-wrap {
-      margin-block: 2.2rem 1.4rem;
-      overflow-x: auto;
-      padding-bottom: 0.4rem;
-    }
-
-    .phase-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(250px, 1fr));
-      gap: 0.8rem;
-      min-width: 780px;
-    }
-
-    .phase-card {
-      padding: 1rem 1.05rem;
-      background: #ffffff;
-      border: 1px solid var(--line);
-    }
-
-    .phase-card h4 {
-      margin-bottom: 0.8rem;
-      font-size: 1.02rem;
-      line-height: 1.2;
-      letter-spacing: 0;
-      text-transform: uppercase;
-    }
-
-    .phase-card p {
-      margin-bottom: 0.45rem;
-      font-size: var(--step--1);
-    }
-
-    .phase-card p:last-child {
-      margin-bottom: 0;
-    }
-
-    .release-list {
-      margin-top: 1.65rem;
-      border-top: 1px solid var(--line);
-    }
-
-    .release-item {
-      display: grid;
-      grid-template-columns: 70px 1fr 80px;
-      gap: 1rem;
-      align-items: baseline;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid var(--line);
-      font-size: var(--step--1);
-    }
-
-    .release-year,
-    .release-type {
-      font-family: "IBM Plex Mono", monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      opacity: 0.8;
-    }
-
-    .image-break {
-      padding: 0;
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      background: #111;
-    }
-
-    .image-break img {
-      width: 100%;
-      height: min(58vh, 620px);
-      object-fit: cover;
-      display: block;
-      opacity: 0.94;
-    }
-
-    .positioning-panel {
-      background: var(--warm-dark);
-      color: var(--warm-dark-ink);
-      border: 1px solid rgba(184, 134, 11, 0.35);
-      padding: clamp(1.4rem, 3vw, 3rem);
-    }
-
-    .positioning-panel .section-marker,
-    .positioning-panel .marquee-header {
-      color: rgba(242, 236, 228, 0.75);
-    }
-
-    .positioning-panel .stylized-subheader {
-      color: #ffffff;
-    }
-
-    .comparison-grid {
-      margin-top: 1.8rem;
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 1rem;
-    }
-
-    .comparison-card {
-      padding: 1rem;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .comparison-card h4 {
-      margin-bottom: 0.9rem;
-      font-size: var(--step--1);
-      font-family: "IBM Plex Mono", monospace;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      line-height: 1.35;
-    }
-
-    .comparison-card p {
-      margin-bottom: 0.7rem;
-      font-size: var(--step--1);
-      line-height: 1.45;
-    }
-
-    .comparison-card p:last-child {
-      margin-bottom: 0;
-    }
-
-    .craft-block {
-      margin-bottom: 1rem;
-      border: 1px solid var(--line);
-      border-left: 4px solid var(--accent);
-      padding: 1rem 1.1rem;
-      background: #ffffff;
-    }
-
-    .craft-block h4 {
-      margin-bottom: 0.6rem;
-      font-size: var(--step--1);
-      font-family: "IBM Plex Mono", monospace;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      line-height: 1.35;
-    }
-
-    .vol2-section {
-      background: var(--warm-dark);
-      color: var(--warm-dark-ink);
-    }
-
-    .vol2-section .section-marker,
-    .vol2-section .marquee-header {
-      color: rgba(242, 236, 228, 0.75);
-    }
-
-    .vol2-section .stylized-subheader {
-      color: #ffffff;
-    }
-
-    .stats-grid {
-      margin-block: 1.9rem;
-      display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
-      gap: 0.65rem;
-    }
-
-    .stat {
-      border: 1px solid rgba(184, 134, 11, 0.45);
-      background: rgba(255, 255, 255, 0.02);
-      padding: 0.9rem;
-      min-height: 120px;
-    }
-
-    .stat-value {
-      margin-bottom: 0.5rem;
-      font-weight: 700;
-      font-size: var(--step-1);
-      line-height: 1.1;
-      color: #ffffff;
-    }
-
-    .stat-label {
-      margin: 0;
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      line-height: 1.35;
-      color: rgba(255, 255, 255, 0.86);
-    }
-
-    .playlist-placeholder {
-      margin-block: 1.6rem;
-      border: 1px dashed rgba(184, 134, 11, 0.6);
-      padding: 1rem 1.1rem;
-      background: rgba(255, 255, 255, 0.02);
-    }
-
-    .playlist-placeholder p:last-child {
-      margin-bottom: 0;
-    }
-
-    .unreleased-block {
-      margin-top: 1.6rem;
-      border: 1px solid rgba(184, 134, 11, 0.45);
-      background: rgba(255, 255, 255, 0.02);
-      padding: 1rem;
-    }
-
-    .embed-stack {
-      display: grid;
-      gap: 0.9rem;
-    }
-
-    .embed-frame {
-      border-radius: 24px;
-      width: 100%;
-      height: 344px;
-      border: 0;
-    }
-
-    .logo-break {
-      padding-block: clamp(2.5rem, 6vw, 5.2rem);
-      background: linear-gradient(180deg, #fbfaf7 0%, #ffffff 100%);
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-    }
-
-    .logo-break-inner {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 130px;
-    }
-
-    .logo-break-img {
-      width: min(100%, 560px);
-      height: auto;
-      transform: rotate(-2deg);
-      opacity: 0.92;
-      filter: drop-shadow(0 12px 26px rgba(0, 0, 0, 0.12));
-    }
-
-    .team {
-      text-align: center;
-      padding-bottom: 7rem;
-    }
-
-    .team-card {
-      border: 1px solid var(--line);
-      background: #ffffff;
-      padding: clamp(1.5rem, 3vw, 2.6rem);
-      max-width: 740px;
-      margin-inline: auto;
-    }
-
-    .team-name {
-      margin-bottom: 1.4rem;
-      font-size: clamp(1.4rem, 2vw, 2.1rem);
-      line-height: 1.1;
-      text-transform: uppercase;
-      letter-spacing: -0.02em;
-    }
-
-    .team-meta {
-      margin-bottom: 1.6rem;
-      font-size: var(--step-0);
-      line-height: 1.5;
-    }
-
-    .btn-row {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 0.65rem;
-    }
-
-    .btn {
-      min-height: 44px;
-      padding: 0.65rem 1rem;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid var(--ink);
-      font-family: "IBM Plex Mono", monospace;
-      font-size: var(--step--1);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      transition: background 180ms ease, color 180ms ease;
-    }
-
-    .btn:hover {
-      background: var(--ink);
-      color: #ffffff;
-    }
-
-    .btn.warm {
-      border-color: var(--accent);
-      color: #7e5b08;
-      background: rgba(184, 134, 11, 0.08);
-    }
-
-    .btn.warm:hover {
-      background: var(--accent);
-      color: #ffffff;
-    }
-
-    .muted {
-      opacity: 0.68;
-    }
-
-    @media (max-width: 1100px) {
-      .offset-left {
-        margin-left: 5%;
-      }
-
-      .offset-right {
-        margin-right: 5%;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 860px) {
-      :root {
-        --section-space: 8rem;
-      }
-
-      .nav-inner {
-        min-height: auto;
-        padding-block: 0.35rem;
-        flex-direction: column;
-        align-items: flex-start;
-      }
-
-      .nav-links {
-        width: 100%;
-        justify-content: flex-start;
-      }
-
-      .hero-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .hero-media {
-        width: min(100%, 380px);
-        margin: 0;
-      }
-
-      .offset-left,
-      .offset-right {
-        margin-inline: 0;
-        max-width: none;
-      }
-
-      .timeline {
-        grid-template-columns: 1fr;
-      }
-
-      .release-item {
-        grid-template-columns: 62px 1fr 72px;
-      }
-
-      .comparison-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .stats-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 640px) {
-      :root {
-        --gutter: 1rem;
-        --section-space: clamp(2rem, 6vw, 3rem);
-      }
-
-      .display {
-        font-size: clamp(3.1rem, 18vw, 4.9rem);
-      }
-
-      .hero-logo {
-        width: min(100%, 420px);
-      }
-
-      .logo-break-img {
-        width: min(100%, 430px);
-      }
-
-      .phase-grid {
-        min-width: 700px;
-      }
-
-      .stats-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .release-item {
-        grid-template-columns: 58px 1fr 64px;
-      }
+      --bg:#FCFAF7;--ink:#111;--ink-soft:#444;--ink-faint:#999;
+      --accent:#9E7B2F;--accent-wash:rgba(158,123,47,.06);
+      --dark:#100E0C;--dark-surface:#1A1714;--on-dark:#EDE8DF;--on-dark-dim:rgba(237,232,223,.55);
+      --serif:"Playfair Display",Georgia,serif;
+      --sans:"Helvetica Neue",Helvetica,Arial,sans-serif;
+      --mono:"IBM Plex Mono",monospace;
+      --max:1200px;--gut:clamp(1.25rem,3vw,2.5rem);
+      --ease:cubic-bezier(.22,1,.36,1);
+    }
+    *,*::before,*::after{box-sizing:border-box}
+    html{font-size:16px;scroll-behavior:smooth;-webkit-font-smoothing:antialiased}
+    body{margin:0;font-family:var(--sans);font-size:clamp(.925rem,1vw,1rem);line-height:1.55;color:var(--ink);background:var(--bg);overflow-x:hidden}
+    ::selection{background:var(--accent);color:#fff}
+    h1,h2,h3,h4,h5{margin:0;font-family:var(--sans);font-weight:700;line-height:1;letter-spacing:-.04em}
+    p{margin:0 0 1.2rem;max-width:62ch}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%;height:auto}
+
+    /* — Layout — */
+    .wrap{width:min(calc(100% - var(--gut)*2),var(--max));margin-inline:auto}
+    .full{width:100vw;position:relative;left:50%;transform:translateX(-50%)}
+
+    /* — Nav — */
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(252,250,247,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid rgba(0,0,0,.08)}
+    .nav-inner{height:56px;display:flex;align-items:center;justify-content:space-between}
+    .nav-logo{font-family:var(--mono);font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500}
+    .nav-links{list-style:none;margin:0;padding:0;display:flex;gap:.15rem;overflow-x:auto;scrollbar-width:none}
+    .nav-links::-webkit-scrollbar{display:none}
+    .nav-link{display:inline-flex;align-items:center;height:44px;padding:0 .7rem;font-size:.72rem;font-family:var(--mono);letter-spacing:.04em;opacity:.5;transition:opacity .2s}
+    .nav-link:hover,.nav-link.active{opacity:1}
+    .nav-link.active{border-bottom:1.5px solid var(--accent)}
+
+    main{padding-top:56px}
+
+    /* — Hero — */
+    .hero{min-height:calc(100svh - 56px);display:flex;align-items:flex-end;padding-bottom:clamp(3rem,6vw,5rem);background:var(--bg);position:relative;overflow:hidden}
+    .hero-bg{position:absolute;top:0;right:-5%;width:55%;height:100%;z-index:0}
+    .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 20%;filter:saturate(.88)sepia(.04)}
+    .hero-bg::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,var(--bg) 15%,transparent 55%),linear-gradient(0deg,var(--bg) 0%,transparent 40%)}
+    .hero-content{position:relative;z-index:2;max-width:620px}
+    .hero-eyebrow{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:1.2rem;opacity:.8}
+    .hero-display{font-size:clamp(3.6rem,10vw,8.4rem);font-weight:700;line-height:.82;letter-spacing:-.07em;text-transform:uppercase;margin-bottom:.6rem}
+    .hero-display em{font-family:var(--serif);font-style:italic;font-weight:700;text-transform:none;letter-spacing:-.04em}
+    .hero-sub{font-family:var(--serif);font-style:italic;font-size:clamp(1.1rem,1.8vw,1.6rem);letter-spacing:-.02em;color:var(--ink-soft);margin-bottom:2rem;line-height:1.3}
+    .hero-meta{display:flex;flex-wrap:wrap;gap:.5rem 1.5rem;font-family:var(--mono);font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);padding-top:1.4rem;border-top:1px solid rgba(0,0,0,.12);margin-bottom:1.8rem}
+    .hero-lead{font-size:clamp(.95rem,1.1vw,1.05rem);line-height:1.6;color:var(--ink-soft);max-width:52ch;margin-bottom:2rem}
+    .hero-stat-stack{display:grid;gap:1.35rem}
+    .hero-stat-note{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.9rem;opacity:.85}
+    .hero-stat-row{display:flex;gap:2.5rem;flex-wrap:wrap}
+    .hero-stat-num{font-size:clamp(1.4rem,2.2vw,1.8rem);font-weight:700;letter-spacing:-.03em;line-height:1}
+    .hero-stat-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);margin-top:.3rem}
+    .hero-snapshot-row{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.7rem}
+    .hero-snapshot-card{padding:1rem 1.05rem;border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.74);backdrop-filter:blur(8px)}
+    .hero-snapshot-value{font-size:clamp(1.25rem,2vw,1.7rem);font-weight:700;letter-spacing:-.03em;line-height:1;margin-bottom:.45rem}
+    .hero-snapshot-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-faint);line-height:1.45}
+
+    /* — Scroll Reveal — */
+    .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+    .reveal.is-visible{opacity:1;transform:none}
+    .no-js .reveal{opacity:1;transform:none}
+
+    /* — Section patterns — */
+    .sec{padding:clamp(4rem,8vw,8rem) 0}
+    .sec-marker{display:block;font-family:var(--mono);font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);opacity:.7;margin-bottom:.6rem}
+    .sec-label{display:block;font-family:var(--mono);font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-faint);margin-bottom:.7rem}
+    .sec-title{font-family:var(--serif);font-style:italic;font-size:clamp(2rem,4.5vw,3.4rem);letter-spacing:-.03em;line-height:1.05;margin-bottom:1.8rem}
+    .sec-lead{font-size:clamp(.95rem,1.1vw,1.05rem);line-height:1.6;color:var(--ink-soft);max-width:58ch}
+
+    /* — Offset Content — */
+    .off-l{margin-left:clamp(0px,8vw,10%);max-width:780px}
+    .off-r{margin-left:auto;margin-right:clamp(0px,8vw,10%);max-width:780px}
+
+    /* — Image filmstrip — */
+    .filmstrip{display:flex;gap:.6rem;overflow-x:auto;padding:.4rem 0 1rem;scroll-snap-type:x mandatory;scrollbar-width:none;margin-top:2.5rem}
+    .filmstrip::-webkit-scrollbar{display:none}
+    .filmstrip-img{flex:0 0 clamp(200px,24vw,320px);aspect-ratio:3/2;overflow:hidden;scroll-snap-align:start;background:#e4ddd3}
+    .filmstrip-img img{width:100%;height:100%;object-fit:cover;transition:transform .4s var(--ease);filter:saturate(.9)sepia(.03)}
+    .filmstrip-img:hover img{transform:scale(1.04)}
+
+    /* — Timeline — */
+    .tl{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:2.5rem 0;border-top:1px solid rgba(0,0,0,.1)}
+    .tl-item{padding:1.4rem 1.2rem 1.4rem 0;border-bottom:1px solid rgba(0,0,0,.1)}
+    .tl-item:not(:last-child){border-right:1px solid rgba(0,0,0,.1);padding-right:1.2rem}
+    .tl-phase{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+    .tl-item h4{font-size:clamp(.9rem,1.1vw,1.05rem);letter-spacing:-.02em;margin-bottom:.5rem;line-height:1.2}
+    .tl-item p{margin:0;font-size:.82rem;line-height:1.5;color:var(--ink-soft)}
+
+    /* — Catalog Release List — */
+    .rel-list{margin:2rem 0;border-top:1px solid rgba(0,0,0,.15)}
+    .rel-row{display:grid;grid-template-columns:72px 1fr auto;gap:1rem;align-items:baseline;padding:.85rem 0;border-bottom:1px solid rgba(0,0,0,.08);font-size:.88rem}
+    .rel-row:hover{background:rgba(158,123,47,.03)}
+    .rel-year{font-family:var(--mono);font-size:.75rem;letter-spacing:.05em;color:var(--ink-faint)}
+    .rel-type{font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint);text-align:right}
+    .rel-note{color:var(--ink-faint);font-size:.82rem}
+
+    /* — Image Break — */
+    .img-break{width:100vw;position:relative;left:50%;transform:translateX(-50%);height:clamp(280px,45vw,520px);overflow:hidden;margin:0}
+    .img-break img{width:100%;height:100%;object-fit:cover;filter:saturate(.85)sepia(.05)}
+
+    /* — Performance Interlude — */
+    .video-interlude{background:linear-gradient(180deg,#17130f 0%,#0f0d0b 100%);color:#fff;width:100vw;position:relative;left:50%;transform:translateX(-50%);padding:clamp(3rem,7vw,5.5rem) var(--gut);border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06)}
+    .video-grid{width:min(calc(100% - var(--gut)*2),var(--max));margin-inline:auto;display:grid;grid-template-columns:minmax(0,.85fr) minmax(320px,1.15fr);gap:clamp(1.2rem,3vw,2.6rem);align-items:center}
+    .video-copy p{color:rgba(237,232,223,.74)}
+    .video-embed{border-radius:24px;overflow:hidden;border:1px solid rgba(158,123,47,.35);box-shadow:0 24px 54px rgba(0,0,0,.26)}
+    .video-embed iframe{display:block;width:100%;aspect-ratio:16/9;border:0}
+
+    /* — Dark sections — */
+    .dark{background:var(--dark);color:var(--on-dark);width:100vw;position:relative;left:50%;transform:translateX(-50%);padding-left:var(--gut);padding-right:var(--gut)}
+    .dark .sec-marker{color:var(--accent);opacity:.9}
+    .dark .sec-label{color:var(--on-dark-dim)}
+    .dark .sec-title{color:#fff}
+    .dark .sec-lead{color:var(--on-dark-dim)}
+
+    /* — Comparison — */
+    .comp{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:2.5rem 0}
+    .comp-col{padding:1.5rem 0}
+    .comp-col:first-child{padding-right:2.5rem;border-right:1px solid rgba(255,255,255,.12)}
+    .comp-col:last-child{padding-left:2.5rem}
+    .comp-col h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.2rem;color:var(--on-dark-dim)}
+    .comp-col p{font-size:.88rem;line-height:1.55;margin-bottom:.8rem;color:var(--on-dark);opacity:.85}
+    .comp-col p:last-child{margin-bottom:0}
+
+    /* — Craft — */
+    .craft-item{margin-bottom:2.5rem}
+    .craft-item h4{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem}
+    .craft-item p{font-size:.95rem;line-height:1.6;color:var(--ink-soft)}
+
+    /* — Pull quote — */
+    .pull{font-family:var(--serif);font-style:italic;font-size:clamp(1.4rem,2.8vw,2.2rem);line-height:1.25;letter-spacing:-.02em;color:var(--ink);max-width:44ch;margin:3rem 0;padding-left:1.5rem;border-left:3px solid var(--accent)}
+    .dark .pull{color:#fff;border-color:var(--accent)}
+
+    /* — Stats (Vol 2) — */
+    .stat-row{display:flex;gap:clamp(2rem,4vw,4rem);flex-wrap:wrap;margin:2.5rem 0}
+    .stat-block .stat-num{font-size:clamp(2rem,4vw,3.2rem);font-weight:700;letter-spacing:-.04em;line-height:1;color:#fff}
+    .stat-block .stat-lbl{font-family:var(--mono);font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:var(--on-dark-dim);margin-top:.4rem;max-width:16ch}
+    .vol2-overview{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,360px);gap:clamp(1.2rem,3vw,2.6rem);align-items:start;margin:2rem 0}
+    .vol2-copy .stat-row{margin:1rem 0 0}
+    .poster-card{margin:0;padding:1rem;border-radius:22px;border:1px solid rgba(158,123,47,.35);background:rgba(255,255,255,.03);box-shadow:0 18px 38px rgba(0,0,0,.22)}
+    .poster-card img{width:100%;height:auto;border-radius:16px;transform:rotate(-1.5deg);box-shadow:0 12px 32px rgba(0,0,0,.28)}
+
+    /* — Callout — */
+    .callout{border-left:3px solid var(--accent);padding:1rem 1.2rem;background:var(--accent-wash);margin:1.8rem 0}
+    .callout p{margin-bottom:.5rem;font-size:.9rem;line-height:1.55}
+    .callout p:last-child{margin-bottom:0}
+    .callout-label{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem}
+    .dark .callout{background:rgba(158,123,47,.1);border-color:var(--accent)}
+    .dark .callout p{color:var(--on-dark)}
+
+    /* — Embed — */
+    .embed-block{margin:2rem 0;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+    .embed-block iframe{width:100%;height:344px;border:0;display:block}
+
+    /* — Logo Interlude — */
+    .logo-interlude{padding:clamp(2rem,5vw,4rem) 0;text-align:center;border-top:1px solid rgba(0,0,0,.06);border-bottom:1px solid rgba(0,0,0,.06)}
+    .logo-interlude img{width:min(100%,480px);margin:0 auto;transform:rotate(-1.5deg);filter:drop-shadow(0 8px 20px rgba(0,0,0,.08))}
+
+    /* — Team — */
+    .team-sec{text-align:center;padding-bottom:6rem}
+    .team-name{font-size:clamp(1.6rem,3vw,2.6rem);letter-spacing:-.03em;text-transform:uppercase;margin-bottom:1rem}
+    .team-info{font-size:.9rem;line-height:1.7;color:var(--ink-soft);margin-bottom:1.5rem}
+    .team-info a{border-bottom:1px solid rgba(0,0,0,.2);transition:border-color .2s}
+    .team-info a:hover{border-color:var(--accent)}
+    .btn-row{display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap}
+    .btn{display:inline-flex;align-items:center;height:42px;padding:0 1rem;font-family:var(--mono);font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--accent);color:var(--accent);transition:all .18s}
+    .btn:hover{background:var(--accent);color:#fff}
+
+    /* — Responsive — */
+    @media(max-width:900px){
+      .hero-bg{width:100%;right:0;opacity:.35}
+      .hero-bg::after{background:linear-gradient(0deg,var(--bg) 0%,rgba(252,250,247,.7) 50%,transparent 100%)}
+      .hero-content{max-width:100%}
+      .off-l,.off-r{margin-inline:0;max-width:none}
+      .tl{grid-template-columns:1fr}
+      .tl-item:not(:last-child){border-right:none;padding-right:0}
+      .comp{grid-template-columns:1fr}
+      .comp-col:first-child{border-right:none;padding-right:0;border-bottom:1px solid rgba(255,255,255,.1);padding-bottom:1.5rem}
+      .comp-col:last-child{padding-left:0;padding-top:1.5rem}
+      .video-grid,.vol2-overview,.hero-snapshot-row{grid-template-columns:1fr}
+    }
+    @media(max-width:640px){
+      .hero-stat-row{gap:1.5rem}
+      .stat-row{gap:1.5rem}
+      .rel-row{grid-template-columns:56px 1fr auto;gap:.6rem;font-size:.82rem}
     }
   </style>
 </head>
 <body>
-  <nav class="nav" aria-label="Primary">
-    <div class="nav-inner container">
-      <div class="nav-logo">Adam Melchor</div>
-      <ul class="nav-links">
-        <li><a class="nav-link active" href="#engine">The Engine</a></li>
-        <li><a class="nav-link" href="#catalog">Catalog</a></li>
-        <li><a class="nav-link" href="#positioning">Positioning</a></li>
-        <li><a class="nav-link" href="#audience">Audience</a></li>
-        <li><a class="nav-link" href="#sound">Sound</a></li>
-        <li><a class="nav-link" href="#vol2">Vol. 2</a></li>
-      </ul>
+<nav class="nav">
+  <div class="nav-inner wrap">
+    <div class="nav-logo">Adam Melchor</div>
+    <ul class="nav-links">
+      <li><a class="nav-link active" href="#engine">The Engine</a></li>
+      <li><a class="nav-link" href="#catalog">Catalog</a></li>
+      <li><a class="nav-link" href="#positioning">Positioning</a></li>
+      <li><a class="nav-link" href="#craft">Craft</a></li>
+      <li><a class="nav-link" href="#vol2">Vol.&nbsp;2</a></li>
+      <li><a class="nav-link" href="#audience">Audience</a></li>
+    </ul>
+  </div>
+</nav>
+
+<main>
+
+  <!-- ════════ HERO ════════ -->
+  <section class="hero">
+    <div class="hero-bg">
+      <img src="./artists/adam/editorial-set-2026/adam-hero-img.jpg" alt="Adam Melchor">
     </div>
-  </nav>
-
-  <main>
-    <section class="hero">
-      <div class="container hero-grid">
+    <div class="wrap hero-content">
+      <div class="hero-eyebrow reveal">All My Friends Inc.</div>
+      <h1 class="hero-display reveal">The<br>Long<br><em>Game</em></h1>
+      <p class="hero-sub reveal">Adam Melchor</p>
+      <div class="hero-meta reveal">
+        <span>Singer-Songwriter</span>
+        <span>Los Angeles via New Jersey</span>
+        <span>Independent</span>
+      </div>
+      <p class="hero-lead reveal">Adam Melchor writes emotionally specific, melody-forward songs and delivers them directly to fans through a weekly ritual that has run for years. His work is built to compound.</p>
+      <div class="hero-stat-stack reveal">
         <div>
-          <div class="hero-logo-wrap">
-            <img class="hero-logo" src="./artists/adam/editorial-set-2026/adam-logo-break-black.png" alt="Adam Melchor main wordmark logo">
-          </div>
-          <p class="hero-long-game">THE LONG GAME</p>
-          <div class="project-meta">
-            <span>Singer-Songwriter · Los Angeles via New Jersey</span>
-            <span>indepdendent</span>
-          </div>
-          <p class="lead">Adam Melchor writes emotionally specific, melody-forward songs and delivers them directly to fans through a weekly ritual that has run for years. His work is built to compound.</p>
-          <div class="callout">
-            <p class="callout-label">The System</p>
-            <p>One song per week. Delivered direct. Performed live. Archived forever.</p>
-            <p>~8,000 active playlist subscribers. 10,000+ community members. Growing (directional).</p>
-          </div>
-        </div>
-        <figure class="hero-media">
-          <img src="./artists/adam/editorial-set-2026/adam-hero-img.jpg" alt="Adam Melchor portrait hero image">
-        </figure>
-      </div>
-    </section>
-
-    <section id="engine" class="section bg-soft">
-      <div class="container offset-left">
-        <header class="section-heading">
-          <span class="section-marker">01</span>
-          <span class="marquee-header">The Creative Engine</span>
-          <h2 class="stylized-subheader">Write. Deliver. Repeat.</h2>
-        </header>
-        <p class="lead">In 2020, Adam built the Melchor Lullaby Hotline — a weekly Sunday ritual where he wrote and sent a new song to a growing list of subscribers. Over 44 weeks, the list approached 10,000 people. That output became his debut project and established two things that are difficult to manufacture later: consistent output as an identity, and a direct-to-fan relationship tied to the act of writing, not just touring or content.</p>
-
-        <div class="timeline" aria-label="Lullaby Hotline progression">
-          <article class="timeline-item">
-            <div class="timeline-step">I</div>
-            <h4>Build the weekly ritual</h4>
-            <p>Sunday songs delivered direct to subscribers, every week.</p>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-step">II</div>
-            <h4>Perform in real time</h4>
-            <p>Each track gets a live moment, tied to the same cadence.</p>
-          </article>
-          <article class="timeline-item">
-            <div class="timeline-step">III</div>
-            <h4>Archive and compound</h4>
-            <p>The catalog grows weekly and stays accessible to late entrants.</p>
-          </article>
-        </div>
-
-        <p>The model is simple: write a song, send it to people who asked for it, perform it live, archive it. The song is the unit of relationship.</p>
-      </div>
-
-      <div class="container">
-        <div class="image-timeline-scroll" aria-label="Adam Melchor complete image set">
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-hero-img.jpg" alt="Adam Melchor hero portrait" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-01.jpg" alt="Adam Melchor in front of a house exterior" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-daniel-topete-4.jpg" alt="Adam Melchor black and white portrait" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-fruitlands-ep-art.jpg" alt="Adam Melchor in a studio portrait setting" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-melchor-portrait.jpg" alt="Adam Melchor portrait in a window frame" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-review-square.jpg" alt="Adam Melchor review square image" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-what-a-damn-shame-1.jpg" alt="Adam Melchor with guitar in field" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-field-sunset.webp" alt="Adam Melchor field sunset image" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-hero-18921.jpg" alt="Adam Melchor collage style image" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-img-18921.jpg" alt="Adam Melchor close portrait" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-unnamed-74.jpg" alt="Adam Melchor in red sweater portrait" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-caro-knapp-2025.jpeg" alt="Adam Melchor with green phone on grass" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-photo-feb-15-2026.png" alt="Adam Melchor image from photo capture" loading="lazy"></figure>
-          <figure class="timeline-image"><img src="./artists/adam/editorial-set-2026/adam-screenshot-2026-03-09.png" alt="Adam Melchor screenshot image from provided set" loading="lazy"></figure>
-        </div>
-      </div>
-    </section>
-
-    <section id="catalog" class="section">
-      <div class="container offset-right">
-        <header class="section-heading">
-          <span class="section-marker">02</span>
-          <span class="marquee-header">Catalog</span>
-          <h2 class="stylized-subheader">Steady Progression, Not a Single Spike</h2>
-        </header>
-
-        <div class="phase-wrap">
-          <div class="phase-grid" role="list" aria-label="Catalog phases">
-            <article class="phase-card" role="listitem">
-              <h4>Phase I (2020)</h4>
-              <p>Lullaby Hotline launches</p>
-              <p>44 songs in 44 weeks</p>
-              <p>Approaching ~10,000 subscribers</p>
-            </article>
-            <article class="phase-card" role="listitem">
-              <h4>Phase II (2021-2024)</h4>
-              <p>Catalog development</p>
-              <p>4 releases in 4 years</p>
-              <p>200M+ Spotify streams (directional)</p>
-            </article>
-            <article class="phase-card" role="listitem">
-              <h4>Phase III (2025-Now)</h4>
-              <p>Vol. 2 launches</p>
-              <p>Weekly engine restarts</p>
-              <p>~8K playlist / 10K+ community (directional)</p>
-            </article>
+          <div class="hero-stat-note">Lullaby Hotline franchise signals</div>
+          <div class="hero-stat-row">
+            <div>
+              <div class="hero-stat-num">~10K</div>
+              <div class="hero-stat-label">SMS opt-ins</div>
+            </div>
+            <div>
+              <div class="hero-stat-num">Weekly</div>
+              <div class="hero-stat-label">Output cadence</div>
+            </div>
+            <div>
+              <div class="hero-stat-num">~10K</div>
+              <div class="hero-stat-label">Untitled.stream subscribers</div>
+            </div>
           </div>
         </div>
-
-        <div class="release-list" aria-label="Selected releases">
-          <div class="release-item">
-            <span class="release-year">2021</span>
-            <span>Melchor Lullaby Hotline, Vol. 1</span>
-            <span class="release-type">Album</span>
-          </div>
-          <div class="release-item">
-            <span class="release-year">2022</span>
-            <span>Here Goes Nothing! <span class="muted">Independent / R&amp;R Digital</span></span>
-            <span class="release-type">Album</span>
-          </div>
-          <div class="release-item">
-            <span class="release-year">2023</span>
-            <span>Fruitland</span>
-            <span class="release-type">EP</span>
-          </div>
-          <div class="release-item">
-            <span class="release-year">2024</span>
-            <span>Mahogany Sessions</span>
-            <span class="release-type">Single</span>
-          </div>
-          <div class="release-item">
-            <span class="release-year">2025</span>
-            <span>The Diary of Living <span class="muted">feat. Bruno Major, Mt. Joy</span></span>
-            <span class="release-type">Album</span>
-          </div>
-          <div class="release-item">
-            <span class="release-year">2025</span>
-            <span>Mt. Joy collaboration</span>
-            <span class="release-type">Single</span>
-          </div>
-        </div>
-
-        <p style="margin-top: 1.4rem;">The arc is steady progression — no viral spike, no single-dependent trajectory. Each release expands the universe without abandoning what made him work.</p>
-
-        <div class="callout">
-          <p class="callout-label">Durability Signal</p>
-          <p>~227M total Spotify streams as of early 2026 (third-party tracker, directional). This is not a vanity number. It indicates a real, recurring audience.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="image-break" aria-hidden="true">
-      <img src="./artists/adam/editorial-set-2026/adam-field-sunset.webp" alt="Adam Melchor in a warm-toned image break">
-    </section>
-
-    <section id="positioning" class="section bg-warm">
-      <div class="container offset-left">
-        <div class="positioning-panel">
-          <header class="section-heading">
-            <span class="section-marker">03</span>
-            <span class="marquee-header">Positioning</span>
-            <h2 class="stylized-subheader">The Open Lane</h2>
-          </header>
-
-          <p class="lead">No singer-songwriter currently owns the intersection of weekly creative output, direct fan delivery, and durable streaming scale. Adam operates in that space naturally.</p>
-
-          <div class="comparison-grid">
-            <article class="comparison-card">
-              <h4>What Most Singer-Songwriters Do</h4>
-              <p>Album-cycle releases with social content layered on top.</p>
-              <p>Fan relationship built on touring and content, not writing.</p>
-              <p>Output is episodic, with long gaps between drops.</p>
-              <p>The moment is the album release window.</p>
-            </article>
-            <article class="comparison-card">
-              <h4>What Adam Does</h4>
-              <p>The song is the unit of relationship, delivered weekly and directly.</p>
-              <p>Fan relationship is tied to the act of writing itself.</p>
-              <p>Output is continuous, and the practice is the identity.</p>
-              <p>The moment is every Sunday.</p>
-            </article>
-          </div>
-
-          <p style="margin-top: 1.4rem; margin-bottom: 0;">This positioning is especially compatible with the current environment where attention is fragmented, albums are harder to eventize, and the artists who keep their base tend to build repeatable rituals.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="sound" class="section">
-      <div class="container offset-right">
-        <header class="section-heading">
-          <span class="section-marker">04</span>
-          <span class="marquee-header">Craft</span>
-          <h2 class="stylized-subheader">Why the Songs Work</h2>
-        </header>
-
-        <article class="craft-block">
-          <h4>Melodic Clarity Under Emotional Weight</h4>
-          <p>His songs are harmonically straightforward enough to be memorable, but emotionally specific enough to feel personal. That combination is what allows a weekly-output model to stay compelling.</p>
-        </article>
-
-        <article class="craft-block">
-          <h4>Voice as Proximity</h4>
-          <p>Even on records with fuller arrangements, the vocal reads as close. That makes his music compatible with intimate delivery formats and also compatible with top-line writing, where a strong vocal demo can move a song forward quickly.</p>
-        </article>
-
-        <article class="craft-block">
-          <h4>Format Flexibility</h4>
-          <p>Voice memos and polished recordings coexisting means his creative identity survives across formats. He can generate usable material quickly, then decide later what becomes a master release vs. a pitch vs. an archive artifact.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="logo-break" aria-hidden="true">
-      <div class="container logo-break-inner">
-        <img class="logo-break-img" src="./artists/adam/editorial-set-2026/adam-logo-hero-green.png" alt="Adam Melchor illustrated secondary logo">
-      </div>
-    </section>
-
-    <section id="vol2" class="section vol2-section">
-      <div class="container offset-left">
-        <header class="section-heading">
-          <span class="section-marker">05</span>
-          <span class="marquee-header">Lullaby Hotline Vol. 2</span>
-          <h2 class="stylized-subheader">The System, Restarted</h2>
-        </header>
-
-        <p class="lead">Vol. 2 is the engine restarting — a weekly song, delivered direct, performed live, and archived as a growing body of work. The numbers confirm the audience was waiting.</p>
-
-        <p class="muted" style="margin-bottom: 0.7rem;">Directional snapshot (early 2026):</p>
-
-        <div class="stats-grid" aria-label="Vol. 2 directional metrics">
-          <article class="stat">
-            <p class="stat-value">~8,000</p>
-            <p class="stat-label">Active subscribers on the Untitled playlist</p>
-          </article>
-          <article class="stat">
-            <p class="stat-value">10,000+</p>
-            <p class="stat-label">Subscribers on community</p>
-          </article>
-          <article class="stat">
-            <p class="stat-value">Weekly</p>
-            <p class="stat-label">New song every Sunday</p>
-          </article>
-          <article class="stat">
-            <p class="stat-value">Live</p>
-            <p class="stat-label">Each song performed at a recurring live moment</p>
-          </article>
-          <article class="stat">
-            <p class="stat-value">Archived</p>
-            <p class="stat-label">Every song indexed and accessible</p>
-          </article>
-        </div>
-
-        <p>The system is designed to compound. Each week adds a new song to a living catalog that fans can enter at any point. There is no "you had to be there" — you just have to show up once, and the archive catches you up.</p>
-
-        <div class="unreleased-block">
-          <p class="callout-label" style="margin-bottom: 0.7rem;">Unreleased Music</p>
-          <div class="embed-stack">
-            <iframe
-              class="embed-frame"
-              src="https://untitled.stream/embed/XYiFoXZZ0iMY"
-              allowfullscreen
-              allow="picture-in-picture"
-              loading="lazy"
-              title="Unreleased Music Stream 1">
-            </iframe>
-            <iframe
-              class="embed-frame"
-              src="https://untitled.stream/embed/JWrg9dgz4mMR"
-              allowfullscreen
-              allow="picture-in-picture"
-              loading="lazy"
-              title="Unreleased Music Stream 2">
-            </iframe>
-          </div>
-        </div>
-
-        <!--
-        <iframe
-          data-testid="embed-iframe"
-          src="SPOTIFY_PLAYLIST_URL_HERE"
-          width="100%"
-          height="352"
-          frameborder="0"
-          allowfullscreen
-          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-          loading="lazy"
-          title="Lullaby Hotline Vol. 2 playlist">
-        </iframe>
-        -->
-
-        <p style="margin-bottom: 0;">Vol. 2 is proof that the hotline model wasn't a pandemic novelty. It's Adam's native creative mode — and it scales.</p>
-      </div>
-    </section>
-
-    <section id="audience" class="section bg-soft">
-      <div class="container offset-right">
-        <header class="section-heading">
-          <span class="section-marker">06</span>
-          <span class="marquee-header">Audience</span>
-          <h2 class="stylized-subheader">Who Stays — And Why</h2>
-        </header>
-
-        <p class="lead">Adam's audience skews toward listeners who value consistency over spectacle. They follow the writing, not the marketing cycle. The Lullaby Hotline trained them to expect a song every week and to treat each one as a small event — not content to be consumed, but a letter to be received.</p>
-
-        <div class="callout">
-          <p>The non-obvious upside: his community plus archive model compounds even when mainstream attention is elsewhere. Artists who last tend to have a dependable cadence fans can return to. Adam's identity is already built on that.</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="team" class="section team">
-      <div class="container">
-        <header class="section-heading">
-          <span class="section-marker">07</span>
-          <span class="marquee-header">Team</span>
-          <h2 class="stylized-subheader">Press + Contact</h2>
-        </header>
-
-        <div class="team-card">
-          <h3 class="team-name">Adam Melchor</h3>
-          <p class="team-meta">
-            Management: All My Friends Inc.<br>
-            Theo Battaglia · <a href="mailto:theo@allmyfriendsinc.com">theo@allmyfriendsinc.com</a><br>
-            Status: indepdendent
-          </p>
-          <div class="btn-row">
-            <a class="btn warm" href="#">Press Photos ZIP</a>
-            <a class="btn warm" href="#">One-Sheet PDF</a>
+        <div>
+          <div class="hero-stat-note">Broader artist snapshot</div>
+          <div class="hero-snapshot-row">
+            <div class="hero-snapshot-card">
+              <div class="hero-snapshot-value">~750K</div>
+              <div class="hero-snapshot-label">2026 Spotify monthly listeners</div>
+            </div>
+            <div class="hero-snapshot-card">
+              <div class="hero-snapshot-value">~400M+</div>
+              <div class="hero-snapshot-label">Aggregate streams across platforms</div>
+            </div>
+            <div class="hero-snapshot-card">
+              <div class="hero-snapshot-value">26K</div>
+              <div class="hero-snapshot-label">YouTube subscribers</div>
+            </div>
+            <div class="hero-snapshot-card">
+              <div class="hero-snapshot-value">2K+</div>
+              <div class="hero-snapshot-label">Discord members</div>
+            </div>
           </div>
         </div>
       </div>
-    </section>
-  </main>
+    </div>
+  </section>
 
-  <script>
-    (() => {
-      const nav = document.querySelector(".nav");
-      const navLinks = Array.from(document.querySelectorAll(".nav-link"));
-      const sections = navLinks
-        .map((link) => document.querySelector(link.getAttribute("href")))
-        .filter(Boolean);
+  <!-- ════════ 01 ENGINE ════════ -->
+  <section id="engine" class="sec">
+    <div class="wrap off-l">
+      <span class="sec-marker reveal">01</span>
+      <span class="sec-label reveal">The Creative Engine</span>
+      <h2 class="sec-title reveal">Write. Deliver. Repeat.</h2>
+      <p class="sec-lead reveal">In 2020, Adam built the Melchor Lullaby Hotline — a weekly Sunday ritual where he wrote and sent a new song to a growing list of subscribers. Over 44 weeks, the list approached roughly 10,000 SMS opt-ins. That output became his debut project and established two things that are difficult to manufacture later: consistent output as an identity, and a direct-to-fan relationship tied to the act of writing, not just touring or content.</p>
+    </div>
 
-      const syncNavHeight = () => {
-        if (!nav) return;
-        document.documentElement.style.setProperty("--nav-height", `${nav.offsetHeight}px`);
-      };
+    <div class="wrap">
+      <div class="tl reveal">
+        <div class="tl-item">
+          <div class="tl-phase">Phase I · 2020</div>
+          <h4>Build the ritual</h4>
+          <p>Lullaby Hotline launches. 44 songs in 44 weeks. List approaches ~10K SMS opt-ins.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-phase">Phase II · 2021–2024</div>
+          <h4>Catalog development</h4>
+          <p>4 releases in 4 years. Broader audience footprint expands well beyond the hotline.</p>
+        </div>
+        <div class="tl-item">
+          <div class="tl-phase">Phase III · 2025–Now</div>
+          <h4>Engine restarts</h4>
+          <p>Vol. 2 launches. Weekly output resumes. ~10K SMS base and ~10K Untitled playlist base.</p>
+        </div>
+      </div>
+    </div>
 
-      const setActive = (sectionId) => {
-        navLinks.forEach((link) => {
-          const isActive = link.getAttribute("href") === `#${sectionId}`;
-          link.classList.toggle("active", isActive);
-        });
-      };
+    <div class="wrap off-l">
+      <p class="pull reveal">The song is the unit of relationship.</p>
+      <p class="reveal" style="color:var(--ink-soft)">The model is simple: write a song, send it to people who asked for it, perform it live, archive it. Most artists treat output as a campaign. Adam treats it as a practice.</p>
+    </div>
 
-      navLinks.forEach((link) => {
-        link.addEventListener("click", (event) => {
-          const target = document.querySelector(link.getAttribute("href"));
-          if (!target) return;
-          event.preventDefault();
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-      });
+    <div class="wrap">
+      <div class="filmstrip reveal">
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-01.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-daniel-topete-4.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-what-a-damn-shame-1.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-melchor-portrait.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-caro-knapp-2025.jpeg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-unnamed-74.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-hero-18921.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-img-18921.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-review-square.jpg" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-photo-feb-15-2026.png" alt="Adam Melchor" loading="lazy"></figure>
+        <figure class="filmstrip-img"><img src="./artists/adam/editorial-set-2026/adam-screenshot-2026-03-09.png" alt="Adam Melchor" loading="lazy"></figure>
+      </div>
+    </div>
+  </section>
 
-      if (sections.length) {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            const visibleEntries = entries
-              .filter((entry) => entry.isIntersecting)
-              .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+  <!-- ════════ 02 CATALOG ════════ -->
+  <section id="catalog" class="sec" style="background:#f7f5f0">
+    <div class="wrap off-r">
+      <span class="sec-marker reveal">02</span>
+      <span class="sec-label reveal">Catalog</span>
+      <h2 class="sec-title reveal">Steady Progression,<br>Not a Single Spike</h2>
 
-            if (visibleEntries[0]?.target?.id) {
-              setActive(visibleEntries[0].target.id);
-            }
-          },
-          {
-            rootMargin: "-35% 0px -50% 0px",
-            threshold: [0.12, 0.24, 0.4, 0.6]
-          }
-        );
+      <div class="rel-list reveal">
+        <div class="rel-row">
+          <span class="rel-year">2025</span>
+          <span>The Diary of Living <span class="rel-note">feat. Bruno Major, Mt. Joy</span></span>
+          <span class="rel-type">Album</span>
+        </div>
+        <div class="rel-row">
+          <span class="rel-year">2023</span>
+          <span>Fruitland</span>
+          <span class="rel-type">EP</span>
+        </div>
+        <div class="rel-row">
+          <span class="rel-year">2022</span>
+          <span>Here Goes Nothing! <span class="rel-note">Independent / R&amp;R Digital</span></span>
+          <span class="rel-type">Album</span>
+        </div>
+        <div class="rel-row">
+          <span class="rel-year">2021</span>
+          <span>Melchor Lullaby Hotline, Vol.&nbsp;1</span>
+          <span class="rel-type">Album</span>
+        </div>
+        <div class="rel-row">
+          <span class="rel-year">2024</span>
+          <span>Mahogany Sessions</span>
+          <span class="rel-type">Single</span>
+        </div>
+        <div class="rel-row">
+          <span class="rel-year">2025</span>
+          <span>Mt. Joy collaboration</span>
+          <span class="rel-type">Single</span>
+        </div>
+      </div>
 
-        sections.forEach((section) => observer.observe(section));
+      <p class="reveal" style="margin-top:1.4rem;color:var(--ink-soft)">The arc is steady progression — no viral spike, no single-dependent trajectory. Each release expands the universe without abandoning what made him work.</p>
+
+      <div class="callout reveal">
+        <div class="callout-label">Scope Check</div>
+        <p>The hotline numbers are franchise-specific. The broader Adam Melchor audience picture is materially larger, which is why the system reads as durable rather than niche.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ PERFORMANCE INTERLUDE ════════ -->
+  <section class="video-interlude reveal">
+    <div class="video-grid">
+      <div class="video-copy">
+        <span class="sec-marker" style="color:rgba(237,232,223,.72)">Live Proof</span>
+        <span class="sec-label" style="color:rgba(237,232,223,.55)">Performance Interlude</span>
+        <h2 class="sec-title" style="color:#fff">The Songs Still Have<br>To Land In The Room</h2>
+        <p style="color:rgba(237,232,223,.72)">The direct-to-fan system only matters if the songs and the live performance hold up on their own. This is a reminder that the underlying material does.</p>
+      </div>
+      <div class="video-embed">
+        <iframe src="https://www.youtube-nocookie.com/embed/EGtoJZZhqac?start=134&amp;rel=0" title="Adam Melchor live performance" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ 03 POSITIONING ════════ -->
+  <section id="positioning" class="sec dark">
+    <div style="width:min(calc(100% - var(--gut)*2),var(--max));margin-inline:auto">
+      <div class="off-l">
+        <span class="sec-marker reveal">03</span>
+        <span class="sec-label reveal">Positioning</span>
+        <h2 class="sec-title reveal">The Open Lane</h2>
+        <p class="sec-lead reveal">No singer-songwriter currently owns the intersection of weekly creative output, direct fan delivery, and durable streaming scale. Adam operates in that space naturally.</p>
+
+        <div class="comp reveal">
+          <div class="comp-col">
+            <h4>What Most Singer-Songwriters Do</h4>
+            <p>Album-cycle releases with social content layered on top.</p>
+            <p>Fan relationship built on touring and content, not writing.</p>
+            <p>Output is episodic — 18 months between albums.</p>
+            <p>The "moment" is the album drop.</p>
+          </div>
+          <div class="comp-col">
+            <h4>What Adam Does</h4>
+            <p>The song is the unit of relationship — delivered weekly, directly.</p>
+            <p>Fan relationship is tied to the act of writing itself.</p>
+            <p>Output is continuous — the practice is the identity.</p>
+            <p>The "moment" is every Sunday.</p>
+          </div>
+        </div>
+
+        <p class="reveal" style="margin-top:1rem;color:var(--on-dark-dim)">This positioning is especially compatible with the current environment where attention is fragmented, albums are harder to eventize, and the artists who keep their base tend to build repeatable rituals.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ 04 CRAFT ════════ -->
+  <section id="craft" class="sec">
+    <div class="wrap off-r">
+      <span class="sec-marker reveal">04</span>
+      <span class="sec-label reveal">Craft</span>
+      <h2 class="sec-title reveal">Why the Songs Work</h2>
+
+      <div class="craft-item reveal">
+        <h4>Melodic Clarity Under Emotional Weight</h4>
+        <p>His songs are harmonically straightforward enough to be memorable, but emotionally specific enough to feel personal. That combination is what allows a weekly-output model to stay compelling: the writing can carry variations in production polish.</p>
+      </div>
+
+      <div class="craft-item reveal">
+        <h4>Voice as Proximity</h4>
+        <p>Even on records with fuller arrangements, the vocal reads as "close." That makes his music compatible with intimate delivery formats — direct links, hotline drops, quiet live moments — and also compatible with top-line writing, where a strong vocal demo can move a song forward quickly.</p>
+      </div>
+
+      <div class="craft-item reveal">
+        <h4>Format Flexibility</h4>
+        <p>Voice memos and polished recordings coexisting — his creative identity survives across formats. He can generate usable material quickly, then decide later what becomes a master release vs. a pitch vs. an archive artifact.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ LOGO INTERLUDE ════════ -->
+  <div class="logo-interlude reveal">
+    <img src="./artists/adam/editorial-set-2026/adam-logo-hero-green.png" alt="Adam Melchor illustrated logo">
+  </div>
+
+  <!-- ════════ 05 VOL 2 ════════ -->
+  <section id="vol2" class="sec dark">
+    <div style="width:min(calc(100% - var(--gut)*2),var(--max));margin-inline:auto">
+      <div class="off-l">
+        <span class="sec-marker reveal">05</span>
+        <span class="sec-label reveal">Lullaby Hotline Vol. 2</span>
+        <h2 class="sec-title reveal">The System, Restarted</h2>
+        <p class="sec-lead reveal">Vol. 2 is the engine restarting — a weekly song, delivered direct, performed live, and archived as a growing body of work. The numbers confirm the audience was waiting.</p>
+
+        <div class="vol2-overview reveal">
+          <div class="vol2-copy">
+            <div class="callout-label" style="color:var(--on-dark-dim);margin-bottom:.8rem">Hotline-specific snapshot</div>
+            <div class="stat-row" style="margin-top:0">
+              <div class="stat-block">
+                <div class="stat-num">~10K</div>
+                <div class="stat-lbl">SMS opt-ins</div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-num">Weekly</div>
+                <div class="stat-lbl">Output cadence</div>
+              </div>
+              <div class="stat-block">
+                <div class="stat-num">~10K</div>
+                <div class="stat-lbl">Untitled.stream subscribers</div>
+              </div>
+            </div>
+            <p style="color:var(--on-dark-dim);margin-top:1.2rem">The hotline numbers matter because they describe a repeatable fan behavior, not just passive awareness. The opt-ins, the weekly expectation, and the playlist base all point to the same thing: Adam built a franchise around receiving songs in real time.</p>
+          </div>
+          <figure class="poster-card">
+            <img src="./artists/adam/editorial-set-2026/adam-lullaby-hotline-vol-2.png" alt="Lullaby Hotline Vol. 2 poster on a telephone pole">
+          </figure>
+        </div>
+
+        <p class="reveal" style="color:var(--on-dark-dim)">The system is designed to compound. Each week adds a new song to a living catalog that fans can enter at any point. There is no "you had to be there" — you just have to show up once, and the archive catches you up.</p>
+
+        <div style="margin-top:2rem" class="reveal">
+          <div class="callout-label" style="color:var(--on-dark-dim);margin-bottom:.8rem">Unreleased Music</div>
+          <div class="embed-block">
+            <iframe src="https://untitled.stream/embed/XYiFoXZZ0iMY" allowfullscreen allow="picture-in-picture" loading="lazy" title="Unreleased Music 1"></iframe>
+          </div>
+          <div class="embed-block" style="margin-top:.6rem">
+            <iframe src="https://untitled.stream/embed/JWrg9dgz4mMR" allowfullscreen allow="picture-in-picture" loading="lazy" title="Unreleased Music 2"></iframe>
+          </div>
+        </div>
+
+        <p class="pull reveal">Vol. 2 is proof that the hotline model wasn't a pandemic novelty. It's Adam's native creative mode — and it scales.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ 06 AUDIENCE ════════ -->
+  <section id="audience" class="sec" style="background:#f7f5f0">
+    <div class="wrap off-r">
+      <span class="sec-marker reveal">06</span>
+      <span class="sec-label reveal">Audience</span>
+      <h2 class="sec-title reveal">Who Stays — And Why</h2>
+      <p class="sec-lead reveal">Adam's audience skews toward listeners who value consistency over spectacle. They follow the writing, not the marketing cycle. The Lullaby Hotline trained them to expect a song every week and to treat each one as a small event — not content to be consumed, but a letter to be received. That behavioral training is Adam's moat: his fans have a habit, not just a preference.</p>
+
+      <div class="callout reveal" style="margin-top:2rem">
+        <p>The non-obvious upside: the hotline is not the whole story, it's the engine inside a much bigger artist profile. Those broader numbers make the direct-fan franchise feel strategic rather than boutique.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════════ 07 TEAM ════════ -->
+  <section id="team" class="sec team-sec">
+    <div class="wrap">
+      <span class="sec-marker reveal">07</span>
+      <h2 class="team-name reveal">Adam Melchor</h2>
+      <p class="team-info reveal">
+        Management: All My Friends Inc.<br>
+        Theo Battaglia · <a href="mailto:theo@allmyfriendsinc.com">theo@allmyfriendsinc.com</a><br>
+        Status: Independent
+      </p>
+      <div class="btn-row reveal">
+        <a class="btn" href="#">Press Photos</a>
+        <a class="btn" href="#">One-Sheet PDF</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+  // Scroll reveal
+  const reveals=document.querySelectorAll(".reveal");
+  const io=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add("is-visible");io.unobserve(e.target)}})
+  },{rootMargin:"-8% 0px -8% 0px",threshold:0.1});
+  reveals.forEach(el=>io.observe(el));
+
+  // Nav scroll spy
+  const links=Array.from(document.querySelectorAll(".nav-link"));
+  const secs=links.map(l=>document.querySelector(l.getAttribute("href"))).filter(Boolean);
+  const spy=new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting){
+        const id=e.target.id;
+        links.forEach(l=>l.classList.toggle("active",l.getAttribute("href")==="#"+id));
       }
+    })
+  },{rootMargin:"-30% 0px -60% 0px"});
+  secs.forEach(s=>spy.observe(s));
 
-      syncNavHeight();
-      window.addEventListener("resize", syncNavHeight);
-    })();
-  </script>
+  // Smooth scroll nav
+  links.forEach(l=>l.addEventListener("click",e=>{
+    e.preventDefault();
+    const t=document.querySelector(l.getAttribute("href"));
+    if(t)t.scrollIntoView({behavior:"smooth",block:"start"});
+  }));
+
+  // Fallback: show all content after 1.5s if reveals haven't fired
+  setTimeout(()=>{
+    document.querySelectorAll(".reveal:not(.is-visible)").forEach(el=>el.classList.add("is-visible"));
+  },1500);
+});
+</script>
 </body>
 </html>
