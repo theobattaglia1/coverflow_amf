@@ -77,11 +77,35 @@ const PORT = process.env.PORT || 10000; // Use Render's default port
 
 // --- Best Practice: Initialize GCS Client and Bucket Name Once ---
 // This single instance is reused for all GCS operations, which is more efficient.
-const gcsStorage = new Storage({
-  keyFilename: process.env.NODE_ENV === 'production' 
-    ? '/etc/secrets/service-account.json' // Correct path for Render Secret Files
-    : path.join(__dirname, '../../gcp/service-account.json') // Local development path
-});
+function getGcsStorageOptions() {
+  // Railway (or any platform): base64-encoded service account JSON in env var
+  if (process.env.GOOGLE_CREDENTIALS_BASE64) {
+    try {
+      const credentials = JSON.parse(
+        Buffer.from(process.env.GOOGLE_CREDENTIALS_BASE64, 'base64').toString('utf8')
+      );
+      console.log('[GCS] Using GOOGLE_CREDENTIALS_BASE64 env var');
+      return { credentials };
+    } catch (e) {
+      console.error('[GCS] Failed to parse GOOGLE_CREDENTIALS_BASE64:', e.message);
+    }
+  }
+  // Explicit file path via env var (GOOGLE_APPLICATION_CREDENTIALS)
+  if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+    console.log('[GCS] Using GOOGLE_APPLICATION_CREDENTIALS:', process.env.GOOGLE_APPLICATION_CREDENTIALS);
+    return { keyFilename: process.env.GOOGLE_APPLICATION_CREDENTIALS };
+  }
+  // Render legacy: secret file at fixed path
+  if (process.env.NODE_ENV === 'production' && fs.existsSync('/etc/secrets/service-account.json')) {
+    console.log('[GCS] Using Render secret file');
+    return { keyFilename: '/etc/secrets/service-account.json' };
+  }
+  // Local development
+  const localKey = path.join(__dirname, '../../gcp/service-account.json');
+  console.log('[GCS] Using local dev key:', localKey);
+  return { keyFilename: localKey };
+}
+const gcsStorage = new Storage(getGcsStorageOptions());
 const gcsBucketName = process.env.GCS_BUCKET_NAME || 'allmyfriends-assets-2025';
 
 const dataSyncConfig = (() => {
