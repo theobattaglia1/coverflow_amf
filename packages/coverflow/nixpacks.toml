@@ -1,8 +1,0 @@
-[phases.setup]
-nixPkgs = ["libheif", "vips", "pkg-config", "ffmpeg"]
-
-[phases.build]
-cmds = ["npm ci --production"]
-
-[start]
-cmd = "npm start"
