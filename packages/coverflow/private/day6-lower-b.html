@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Day 6 — Lower B / Glute Lift + Lateral</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--paper:#F4F1EA;--paper-warm:#ECE7DB;--ink:#0A0A0A;--ink-mid:#444;--ink-soft:#777;--rule:#0A0A0A;--rule-hair:#C9C3B5;--accent:#D72325;--accent-soft:#E63B3D;--highlight:#F4E04D;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Times New Roman",Times,serif;--mono:"IBM Plex Mono",Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}::selection{background:var(--accent);color:var(--paper)}.page{max-width:780px;margin:0 auto;padding:0 24px 100px}header.hero{border-bottom:2px solid var(--rule);padding:40px 0 32px}.meta-bar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mid);margin-bottom:40px}.meta-bar .red{color:var(--accent)}.hero-eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:12px}.hero-title{font-size:clamp(56px,12vw,130px);font-weight:900;line-height:.86;letter-spacing:-.04em;margin-bottom:20px}.hero-title .lt{display:block;font-family:var(--serif);font-style:italic;font-weight:200;color:var(--ink-mid)}.hero-sub{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.45;color:var(--ink-mid);max-width:560px;margin-bottom:36px}.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.stat{padding:14px 16px 14px 0;border-right:1px solid var(--rule-hair)}.stat:last-child{border-right:none}.stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:5px}.stat-val{font-size:17px;font-weight:700;letter-spacing:-.02em}.stat-val .red{color:var(--accent)}.section{margin-top:80px}.section-head{display:grid;grid-template-columns:56px 1fr;gap:20px;align-items:end;border-bottom:2px solid var(--rule);padding-bottom:14px;margin-bottom:32px}.sec-num{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:.85;color:var(--accent)}.sec-title{font-size:26px;font-weight:800;letter-spacing:-.02em;text-transform:uppercase;line-height:1}.sec-kicker{grid-column:2;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-top:5px}.timeline{border-top:1px solid var(--rule)}.tl-row{display:grid;grid-template-columns:90px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule-hair);align-items:start}.tl-time{font-family:var(--mono);font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;padding-top:2px}.tl-label{font-size:14px;font-weight:700;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px}.badge{font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;padding:2px 6px;background:var(--highlight);color:var(--ink)}.badge.key{background:var(--accent);color:var(--paper)}.badge.light{background:transparent;border:1px solid var(--rule-hair);color:var(--ink-soft)}.tl-body{font-size:13px;line-height:1.55;color:var(--ink-mid)}.tl-body strong{color:var(--ink);font-weight:600}.tl-macro{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}.tl-macro span{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-mid);background:var(--paper-warm);padding:4px 8px;border:1px solid var(--rule-hair)}.tl-macro span strong{color:var(--accent);font-weight:600}.expand-bar{display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px}.expand-bar button{background:transparent;border:1px solid var(--rule);color:var(--ink);padding:7px 12px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;cursor:pointer}.expand-bar button:hover{background:var(--ink);color:var(--paper)}.exercise-list{display:flex;flex-direction:column;border-top:1px solid var(--rule)}details.exercise{border-bottom:1px solid var(--rule-hair)}details.exercise:last-child{border-bottom:1px solid var(--rule)}details.exercise[open]{background:rgba(215,35,37,.025)}details.exercise>summary{display:grid;grid-template-columns:28px 1fr auto 28px;gap:14px;align-items:center;padding:15px 4px;cursor:pointer;list-style:none}details.exercise>summary::-webkit-details-marker{display:none}details.exercise>summary:hover .ex-title{color:var(--accent)}.ex-num{font-family:var(--mono);font-size:10px;color:var(--ink-soft);letter-spacing:.06em}.ex-title{font-size:14px;font-weight:700;line-height:1.25;letter-spacing:-.01em}.tag{display:inline-block;font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:2px 5px;vertical-align:middle;margin-left:4px;background:var(--highlight);color:var(--ink)}.tag.iso{background:var(--ink);color:var(--paper);margin-left:0;margin-right:4px}.ex-data{display:flex;gap:10px;font-family:var(--mono);font-size:10px;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.06em;align-items:center;white-space:nowrap;flex-wrap:wrap;justify-content:flex-end}.ex-data .tempo{color:var(--accent);font-weight:500}.ex-data .pipe{color:var(--rule-hair)}.ex-toggle{width:24px;height:24px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;font-weight:300;flex-shrink:0}details.exercise[open]>summary .ex-toggle{background:var(--accent);color:var(--paper);border-color:var(--accent)}details.exercise[open]>summary .ex-toggle::before{content:"−"}details.exercise:not([open])>summary .ex-toggle::before{content:"+"}.ex-body{padding:4px 4px 24px 42px;display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}.ex-cue{grid-column:1/-1;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);padding:10px 16px;background:rgba(215,35,37,.06);border-left:2px solid var(--accent);margin-bottom:2px}.ex-section h6{font-family:var(--mono);font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:7px}.ex-section p{font-size:13px;line-height:1.55;color:var(--ink-mid)}.ex-weight{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em}.ex-weight .unit{font-family:var(--mono);font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.1em;font-weight:400;margin-left:4px}.ex-weight-note{font-size:12px;color:var(--ink-mid);margin-top:5px;line-height:1.5}details.warmup-item{border-bottom:1px solid var(--rule-hair)}details.warmup-item:last-child{border-bottom:1px solid var(--rule)}details.warmup-item>summary{display:grid;grid-template-columns:1fr 24px;gap:12px;align-items:center;padding:12px 4px;cursor:pointer;list-style:none;font-size:13px}details.warmup-item>summary::-webkit-details-marker{display:none}details.warmup-item>summary:hover{color:var(--accent)}details.warmup-item>summary .ex-toggle{width:22px;height:22px;font-size:12px}details.warmup-item[open]>summary .ex-toggle{background:var(--accent);color:var(--paper);border-color:var(--accent)}details.warmup-item[open]>summary .ex-toggle::before{content:"−"}details.warmup-item:not([open])>summary .ex-toggle::before{content:"+"}
+.warmup-body{padding:4px 4px 16px;font-size:12px;color:var(--ink-mid);line-height:1.55;max-width:600px}.sec-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--rule-hair)}.swap-grid{display:grid;grid-template-columns:180px 1fr;gap:4px 16px;margin-top:12px;font-size:13px}.swap-grid dt{font-weight:600;color:var(--ink);padding:6px 0;border-bottom:1px solid var(--rule-hair)}.swap-grid dd{color:var(--ink-mid);font-family:var(--serif);font-style:italic;padding:6px 0;border-bottom:1px solid var(--rule-hair)}.finisher{background:var(--paper-warm);border-left:3px solid var(--accent);padding:18px 22px;margin-top:8px}.finisher p{font-size:13px;line-height:1.55;margin:0}.finisher p+p{margin-top:8px}.fin-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:10px}.callout{background:var(--ink);color:var(--paper);padding:26px 30px;margin:24px 0}.callout-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent-soft);margin-bottom:8px}.callout p{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.4}.progress-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:28px;padding-top:16px;border-top:1px solid var(--rule-hair);font-family:var(--mono);font-size:11px;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.08em}.progress-row .marker{display:flex;align-items:center;gap:6px;cursor:pointer}.progress-row .marker .box{width:12px;height:12px;border:1px solid var(--ink);display:inline-block;flex-shrink:0}.progress-row .marker.checked .box{background:var(--accent);border-color:var(--accent)}.checklist{list-style:none;margin-top:12px}.checklist li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule-hair);font-size:13px;line-height:1.5;cursor:pointer}.checklist li:last-child{border-bottom:none}.checklist .cbox{width:14px;height:14px;border:1px solid var(--ink);flex-shrink:0;margin-top:2px}.checklist li.done .cbox{background:var(--accent);border-color:var(--accent)}.checklist li.done .ctext{text-decoration:line-through;opacity:.5}footer{margin-top:80px;padding:36px 0 20px;border-top:2px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end}.footer-mark{font-size:44px;font-weight:900;letter-spacing:-.04em;line-height:.85}.footer-mark .red{color:var(--accent)}.footer-meta{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);text-align:right;line-height:1.7}
+@media(max-width:640px){.hero-title{font-size:58px}.hero-stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--rule-hair)}details.exercise>summary{grid-template-columns:28px 1fr 24px;grid-template-areas:"num title toggle" ". data .";gap:6px 10px}.ex-num{grid-area:num}.ex-title{grid-area:title}.ex-data{grid-area:data;justify-content:flex-start}.ex-toggle{grid-area:toggle;align-self:center}.ex-body{grid-template-columns:1fr;padding-left:36px}.tl-row{grid-template-columns:70px 1fr;gap:12px}.swap-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="hero">
+  <div class="meta-bar"><span>Aesthetic Physique Program — Day Card</span><span class="red" id="todayDate">—</span></div>
+  <div class="hero-eyebrow">Day 06 / Saturday</div>
+  <h1 class="hero-title">Lower<span class="lt">b</span></h1>
+  <p class="hero-sub">Glute lift + lateral chain. The heaviest lower body session of the week. Hip thrust is the anchor — heavier than anything else. No alcohol last night. You showed up right.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-label">Duration</div><div class="stat-val">~60 <span style="font-size:12px;font-weight:400">min</span></div></div>
+    <div class="stat"><div class="stat-label">Lifts</div><div class="stat-val">7 + finisher</div></div>
+    <div class="stat"><div class="stat-label">Anchor</div><div class="stat-val"><span class="red">Hip</span> thrust</div></div>
+    <div class="stat"><div class="stat-label">After</div><div class="stat-val">Rest day</div></div>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">01</div><div><div class="sec-title">Day Timeline</div><div class="sec-kicker">Saturday — biggest lower session of the week</div></div></div>
+  <div class="timeline">
+    <div class="tl-row"><div class="tl-time">Morning</div><div><div class="tl-label">First Meal <span class="badge key">Carb Up Today</span></div><div class="tl-body">Heavy hip thrust day requires glycogen. <strong>Eat a real carb-forward breakfast</strong> — oats with protein, sourdough with eggs, or your Greek yogurt bowl with extra fruit. If you skipped alcohol last night, your recovery is clean going in. Advantage.</div></div></div>
+    <div class="tl-row"><div class="tl-time">60–90 min pre</div><div><div class="tl-label">Pre-Workout Fuel <span class="badge key">Key</span></div><div class="tl-body"><strong>30g protein + 40–50g carbs.</strong> Slightly higher carbs than other sessions — the hip thrust at 225–275 lb needs fuel. Banana + rice cake + 1 scoop whey. Or a bowl of oats with protein powder.</div><div class="tl-macro"><span><strong>30g</strong> protein</span><span><strong>40–50g</strong> carbs</span><span><strong>~300</strong> cal</span></div></div></div>
+    <div class="tl-row"><div class="tl-time">Session</div><div><div class="tl-label">Lower B <span class="badge key">Training</span></div><div class="tl-body">60 min hard cap. Hip thrust → deficit lunge → single-leg extension → Cossack squat → calves × 2 → wall sit → sled finisher. <strong>Hip thrust weight is the number you're chasing all 16 weeks.</strong> Log it every time.</div></div></div>
+    <div class="tl-row"><div class="tl-time">Within 60 min</div><div><div class="tl-label">Post-Workout Meal <span class="badge key">Critical</span></div><div class="tl-body"><strong>35–40g protein + 60–80g carbs.</strong> Heaviest loading session of the week — biggest post-workout meal. Rotisserie chicken + large rice + avocado. Don't undercut this meal.</div><div class="tl-macro"><span><strong>35–40g</strong> protein</span><span><strong>60–80g</strong> carbs</span><span><strong>~600</strong> cal</span></div></div></div>
+    <div class="tl-row"><div class="tl-time">Afternoon</div><div><div class="tl-label">Recovery Meal</div><div class="tl-body">Saturday afternoon = recovery window. Real food, protein, and vegetables. Treat Sunday as a recovery day, not a cheat day. <strong>Tonight is when the glutes rebuild</strong> — give them the amino acids they need.</div></div></div>
+    <div class="tl-row" style="border-bottom:1px solid var(--rule)"><div class="tl-time">Evening</div><div><div class="tl-label">Steam + Early Sleep</div><div class="tl-body">Steam room if available Saturday evening. Early sleep target — 10:30 or 11pm. <strong>Sunday is rest day but Saturday night sleep is the most important of the week</strong> — you've trained 5 sessions and your body repairs tonight.</div></div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">02</div><div><div class="sec-title">Daily Checklist</div><div class="sec-kicker">Tap to check off</div></div></div>
+  <ul class="checklist" id="checklistEl">
+    <li data-key="d6-c1"><span class="cbox"></span><span class="ctext"><strong>Pre-workout fuel eaten</strong> — carb-forward today</span></li>
+    <li data-key="d6-c2"><span class="cbox"></span><span class="ctext"><strong>Session completed</strong> — all 7 lifts + finisher</span></li>
+    <li data-key="d6-c3"><span class="cbox"></span><span class="ctext"><strong>Hip thrust weight logged in Hevy</strong></span></li>
+    <li data-key="d6-c4"><span class="cbox"></span><span class="ctext"><strong>Post-workout meal</strong> — biggest meal of the week</span></li>
+    <li data-key="d6-c5"><span class="cbox"></span><span class="ctext"><strong>165g protein floor hit</strong></span></li>
+    <li data-key="d6-c6"><span class="cbox"></span><span class="ctext"><strong>In bed before 11pm</strong> — 5 sessions done, repair starts now</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">03</div><div><div class="sec-title">Warmup</div><div class="sec-kicker">5 min / glute activation before heavy hip thrust</div></div></div>
+  <div class="callout"><div class="callout-label">→ Why this warmup matters</div><p>A cold glute does not contract under 250 lb of barbell. It guesses. Five minutes of targeted activation means the first hip thrust set actually trains the glute instead of dumping the load to the lower back and quads.</p></div>
+  <div class="exercise-list">
+    <details class="warmup-item"><summary><span>Glute bridge × 15 (bodyweight, slow)</span><span class="ex-toggle"></span></summary><div class="warmup-body">Lie on back, feet flat, knees bent. Drive through heels and squeeze glutes to lift hips to a straight line from knees to shoulders. Squeeze hard at top for 2 seconds. Lower. Every rep: squeeze intentionally, not just "lift." This is your glute activation primer before loading.</div></details>
+    <details class="warmup-item"><summary><span>Banded clamshell × 15 each</span><span class="ex-toggle"></span></summary><div class="warmup-body">Light resistance band above knees. Lie on side, hips stacked, knees bent 90°. Keeping feet together, rotate top knee up toward ceiling like a clamshell opening. Don't let your hips roll back. Squeeze glute med at top. Switch sides. Activates the hip abductor complex you'll need for the Cossack squat and wall sit.</div></details>
+    <details class="warmup-item"><summary><span>Hip 90/90 stretch × 45s each position</span><span class="ex-toggle"></span></summary><div class="warmup-body">Sit on floor with both legs bent at 90 degrees — one in front, one to the side. Sit tall, both hips pressing toward floor. Lean slightly forward over the front knee to feel the stretch in the rear hip. Switch legs. Opens the hip capsule before heavy hip hinge loading.</div></details>
+    <details class="warmup-item"><summary><span>Bodyweight reverse lunge × 10 each</span><span class="ex-toggle"></span></summary><div class="warmup-body">Step one foot backward, lower until rear knee nearly touches the floor. Keep front shin vertical. Drive through the front heel to return. Ten each side. Rehearses the lunge pattern you'll do loaded with deficit. Also confirms both hip flexors are warm before you add a 2-inch plate deficit.</div></details>
+    <details class="warmup-item"><summary><span>Empty-bar or light hip thrust × 10</span><span class="ex-toggle"></span></summary><div class="warmup-body">Barbell only, or just body weight on the bench. Shoulders across bench, feet flat, bar across hips (pad on). Drive hips up to full extension, squeeze glutes at top. Ten reps slow. This is the most important warmup movement of the week — you're grooving the exact pattern you're about to load to 225+ lb.</div></details>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">04</div><div><div class="sec-title">Working Sets</div><div class="sec-kicker">Tap + on any lift for instructions and starting weight</div></div></div>
+  <p style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:20px">Tempo key — <span style="color:var(--accent)">A-B-X-D</span> = eccentric · bottom pause · concentric (X=explosive) · top pause</p>
+  <div class="expand-bar"><button onclick="expandAll(true)">Expand all</button><button onclick="expandAll(false)">Collapse all</button></div>
+  <div class="exercise-list">
+
+    <details class="exercise"><summary>
+      <span class="ex-num">01</span><span class="ex-title">Heavy Hip Thrust (barbell, 2-min rest)</span>
+      <span class="ex-data"><span>4×6</span><span class="pipe">·</span><span class="tempo">2-2-X-1</span><span class="pipe">·</span><span>2 min rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Drive through heels — if you feel it in your quads, reset your feet forward</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Upper back across a flat bench, bar across hip crease (use pad). Feet flat, shoulder-width apart — toes slightly out, heels directly under knees. Drive through heels, squeeze glutes explosively at the top. Full extension: hips, knees, and shoulders in a straight line. Hold 1 second at top. Lower slowly — 2-second descent, 2-second pause at the bottom. RPE 9 — this should be heavy. Two full minutes between sets.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">225–275 lb</div><div class="ex-weight-note">Primary strength tracker of the program. Log every session. Goal: 315 lb for reps by Week 16. Add 5–10 lb when all 4×6 are clean.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">02</span><span class="ex-title">Reverse Lunge (DB, 2" deficit on plate)</span>
+      <span class="ex-data"><span>3×10 each</span><span class="pipe">·</span><span class="tempo">3-1-X-1</span><span class="pipe">·</span><span>75s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Front shin stays vertical — if it drifts forward, your step is too short</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Stand on a 2-inch plate or small step with both feet. DB in each hand. Step back off the plate with one foot, lowering rear knee to just above the floor. The front foot stays on the plate — this is the deficit that deepens the front-leg glute stretch. Drive through front heel to return. Front shin should be near-vertical throughout — if it drifts forward, you're loading the knee, not the glute.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">35–50 lb<span class="unit">each hand</span></div><div class="ex-weight-note">The deficit makes this harder than a standard lunge. Reduce load if the plate is new for you — the stretched range is more demanding.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">03</span><span class="ex-title">Single-Leg Hip Extension (45° back ext, plate)</span>
+      <span class="ex-data"><span>4×12 each</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Round the lower back slightly — you're training glute, not spine extension</div>
+      <div class="ex-section"><h6>How to do it</h6><p>45-degree back extension machine. One leg hooked in, other leg free — toes of the free leg curled up. Hold a plate at chest. Hinge at the hip, lower torso forward (not down — you're on a 45° pad). Let your lower back round slightly — this maximizes glute stretch instead of spinal erector recruitment. Squeeze glute to return to parallel (not hyperextension). Single-leg changes this from a back exercise to a glute exercise.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">25–45 lb<span class="unit">plate</span></div><div class="ex-weight-note">5 lb plate is fine to start — single-leg with rounded back is already demanding. Build up through the mesocycle.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">04</span><span class="ex-title">Cable Cossack Squat <span class="tag">novelty</span></span>
+      <span class="ex-data"><span>3×8 each</span><span class="pipe">·</span><span class="tempo">3-1-X-0</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Straight leg foot flat on the floor — not angled up</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Cable at low position, D-handle. Stand sideways to the machine, feet very wide — wider than squat stance. Hold the cable handle at chest. Shift your weight to the leg farther from the machine, bending that knee and lowering your body toward that heel. The other leg straightens completely — foot stays flat. Drive through the bent-leg heel to return. The cable acts as counterbalance and adds resistance through the lateral pattern.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">30–50 lb</div><div class="ex-weight-note">Novel movement — start lighter and build over weeks. The mobility demand is often the limiter before the strength is.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">05</span><span class="ex-title">Standing Calf Raise (Smith or HS)</span>
+      <span class="ex-data"><span>4×12</span><span class="pipe">·</span><span class="tempo">3-1-X-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Full stretch at the bottom every rep — half reps build nothing</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Smith machine or Hammer Strength calf raise. Toes on edge of plate/step, heels hanging. Lower until you feel a full stretch in the Achilles and soleus — don't rush this. Press up to the peak contraction, hold 2 seconds squeezing hard. Lower slowly over 3 seconds. Full ROM every single rep. Calves need heavy weight and slow tempo — they're trained every day just walking, so they need more to adapt.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">180–250 lb</div><div class="ex-weight-note">Go heavy. Calves respond poorly to light weight. If you can do 12 reps without burning, load is too light.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">06</span><span class="ex-title">Seated Calf Raise</span>
+      <span class="ex-data"><span>3×15</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Seated position hits soleus — a different muscle than standing calf raise</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Seated calf raise machine or bar across thighs. Toes on edge. The bent knee in seated position isolates the soleus — the lower calf muscle that builds the width and fullness under the gastrocnemius. Same full-ROM rule: full stretch down, full squeeze up. Hold contracted position 2 seconds. 15 reps at RPE 9.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">70–110 lb</div><div class="ex-weight-note">Lighter than standing because the soleus is smaller. Still needs to be challenging to RPE 9 by rep 15.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">07</span><span class="ex-title"><span class="tag iso">iso</span>Wall Sit at 90°</span>
+      <span class="ex-data"><span>3×45s</span><span class="pipe">·</span><span>30s rest</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Knees exactly at 90° — higher is easier but cheats the quad burn</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Back flat against wall, feet shoulder-width apart and far enough from wall that your knees are at exactly 90 degrees. Thighs parallel to the floor. Hold for 45 seconds. Arms out or on thighs — not using your hands to push. This is a finishing isometric for the quads and hip flexors after the hip-dominant movements. Three sets, 30 seconds rest between.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">Bodyweight</div><div class="ex-weight-note">Add a 10–25 lb plate on your thighs when 45 seconds becomes manageable. Or progress to 60 seconds.</div></div>
+    </div></details>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">05</div><div><div class="sec-title">Finisher</div><div class="sec-kicker">4 rounds / sled glute burnout</div></div></div>
+  <div class="finisher">
+    <div class="fin-label">→ 4 rounds / 60s rest between rounds</div>
+    <p><strong>20 yd sled push (heavy)</strong> → <strong>20 yd backward sled drag</strong> (lean back, drive through heels — pure glute) → <strong>20 yd lateral sled drag</strong> each side (abductor chain).</p>
+    <p style="margin-top:10px;font-size:13px;color:var(--ink-mid)">Lighter load than Thursday conditioning — this is a finishing pump, not a conditioning effort. Focus on feeling the glute work, not maximum speed. The three directions hit different parts of the glute complex for a complete pump to close out the session.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">06</div><div><div class="sec-title">Swap Menu</div><div class="sec-kicker">Valid alternatives</div></div></div>
+  <dl class="swap-grid">
+    <dt>Hip thrust →</dt><dd>Smith machine hip thrust / banded hip thrust (resistance band)</dd>
+    <dt>Deficit lunge →</dt><dd>Bulgarian split squat / standard reverse lunge (no plate)</dd>
+    <dt>Single-leg hip ext →</dt><dd>Single-leg glute bridge / Romanian deadlift (bilateral)</dd>
+    <dt>Cable Cossack →</dt><dd>Lateral squat bodyweight / goblet lateral squat</dd>
+    <dt>Standing calf →</dt><dd>Single-leg calf raise on step / leg press calf raise</dd>
+    <dt>Wall sit →</dt><dd>Terminal knee extension band / leg extension machine</dd>
+  </dl>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">07</div><div><div class="sec-title">This Week's Targets</div><div class="sec-kicker">Tap to mark</div></div></div>
+  <div class="progress-row">
+    <span style="color:var(--ink);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;width:100%;margin-bottom:4px">Lower B — Week Goals</span>
+    <span class="marker" data-key="d6-p1"><span class="box"></span> Hip thrust load up from last week</span>
+    <span class="marker" data-key="d6-p2"><span class="box"></span> All 4 hip thrust sets clean — no form breakdown</span>
+    <span class="marker" data-key="d6-p3"><span class="box"></span> Deficit lunge depth hit each rep</span>
+    <span class="marker" data-key="d6-p4"><span class="box"></span> Full ROM on calves — no shortcuts</span>
+    <span class="marker" data-key="d6-p5"><span class="box"></span> Protein floor hit</span>
+    <span class="marker" data-key="d6-p6"><span class="box"></span> In bed before 11pm</span>
+  </div>
+</div>
+
+<footer><div class="footer-mark">Day<br><span class="red">06</span></div><div class="footer-meta">Lower B · Glute Lift + Lateral Chain<br>Aesthetic Physique Program v.2<br>Tap + on any lift for instructions</div></footer>
+</div>
+<script>
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const now=new Date();
+document.getElementById('todayDate').textContent=String(now.getDate()).padStart(2,'0')+' / '+months[now.getMonth()]+' / '+now.getFullYear();
+function expandAll(o){document.querySelectorAll('details.exercise,details.warmup-item').forEach(d=>{if(o)d.setAttribute('open','');else d.removeAttribute('open')});}
+window.expandAll=expandAll;
+document.querySelectorAll('#checklistEl li').forEach(li=>{const k='apg-'+li.getAttribute('data-key');if(localStorage.getItem(k)==='1')li.classList.add('done');li.addEventListener('click',()=>{li.classList.toggle('done');localStorage.setItem(k,li.classList.contains('done')?'1':'0');});});
+document.querySelectorAll('.progress-row .marker').forEach(m=>{const k='apg-'+m.getAttribute('data-key');if(localStorage.getItem(k)==='1')m.classList.add('checked');m.addEventListener('click',()=>{m.classList.toggle('checked');localStorage.setItem(k,m.classList.contains('checked')?'1':'0');});});
+</script>
+</body>
+</html>

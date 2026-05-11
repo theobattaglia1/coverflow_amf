@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Day 3 — Pull A / V-Taper</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--paper:#F4F1EA;--paper-warm:#ECE7DB;--ink:#0A0A0A;--ink-mid:#444;--ink-soft:#777;--rule:#0A0A0A;--rule-hair:#C9C3B5;--accent:#D72325;--accent-soft:#E63B3D;--highlight:#F4E04D;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Times New Roman",Times,serif;--mono:"IBM Plex Mono",Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}::selection{background:var(--accent);color:var(--paper)}.page{max-width:780px;margin:0 auto;padding:0 24px 100px}header.hero{border-bottom:2px solid var(--rule);padding:40px 0 32px}.meta-bar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mid);margin-bottom:40px}.meta-bar .red{color:var(--accent)}.hero-eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:12px}.hero-title{font-size:clamp(64px,14vw,148px);font-weight:900;line-height:.86;letter-spacing:-.04em;margin-bottom:20px}.hero-title .lt{display:block;font-family:var(--serif);font-style:italic;font-weight:200;color:var(--ink-mid)}.hero-sub{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.45;color:var(--ink-mid);max-width:560px;margin-bottom:36px}.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.stat{padding:14px 16px 14px 0;border-right:1px solid var(--rule-hair)}.stat:last-child{border-right:none}.stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:5px}.stat-val{font-size:17px;font-weight:700;letter-spacing:-.02em}.stat-val .red{color:var(--accent)}.section{margin-top:80px}.section-head{display:grid;grid-template-columns:56px 1fr;gap:20px;align-items:end;border-bottom:2px solid var(--rule);padding-bottom:14px;margin-bottom:32px}.sec-num{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:.85;color:var(--accent)}.sec-title{font-size:26px;font-weight:800;letter-spacing:-.02em;text-transform:uppercase;line-height:1}.sec-kicker{grid-column:2;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-top:5px}.timeline{border-top:1px solid var(--rule)}.tl-row{display:grid;grid-template-columns:90px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule-hair);align-items:start}.tl-time{font-family:var(--mono);font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;padding-top:2px}.tl-label{font-size:14px;font-weight:700;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px}.badge{font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;padding:2px 6px;background:var(--highlight);color:var(--ink)}.badge.key{background:var(--accent);color:var(--paper)}.badge.light{background:transparent;border:1px solid var(--rule-hair);color:var(--ink-soft)}.tl-body{font-size:13px;line-height:1.55;color:var(--ink-mid)}.tl-body strong{color:var(--ink);font-weight:600}.tl-macro{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}.tl-macro span{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-mid);background:var(--paper-warm);padding:4px 8px;border:1px solid var(--rule-hair)}.tl-macro span strong{color:var(--accent);font-weight:600}.expand-bar{display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px}.expand-bar button{background:transparent;border:1px solid var(--rule);color:var(--ink);padding:7px 12px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;cursor:pointer}.expand-bar button:hover{background:var(--ink);color:var(--paper)}.exercise-list{display:flex;flex-direction:column;border-top:1px solid var(--rule)}details.exercise{border-bottom:1px solid var(--rule-hair)}details.exercise:last-child{border-bottom:1px solid var(--rule)}details.exercise[open]{background:rgba(215,35,37,.025)}details.exercise>summary{display:grid;grid-template-columns:28px 1fr auto 28px;gap:14px;align-items:center;padding:15px 4px;cursor:pointer;list-style:none}details.exercise>summary::-webkit-details-marker{display:none}details.exercise>summary:hover .ex-title{color:var(--accent)}.ex-num{font-family:var(--mono);font-size:10px;color:var(--ink-soft);letter-spacing:.06em}.ex-title{font-size:14px;font-weight:700;line-height:1.25;letter-spacing:-.01em}.tag{display:inline-block;font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:2px 5px;vertical-align:middle;margin-left:4px;background:var(--highlight);color:var(--ink)}.tag.iso{background:var(--ink);color:var(--paper);margin-left:0;margin-right:4px}.ex-data{display:flex;gap:10px;font-family:var(--mono);font-size:10px;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.06em;align-items:center;white-space:nowrap;flex-wrap:wrap;justify-content:flex-end}.ex-data .tempo{color:var(--accent);font-weight:500}.ex-data .pipe{color:var(--rule-hair)}.ex-toggle{width:24px;height:24px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;font-weight:300;flex-shrink:0}details.exercise[open]>summary .ex-toggle{background:var(--accent);color:var(--paper);border-color:var(--accent)}details.exercise[open]>summary .ex-toggle::before{content:"−"}details.exercise:not([open])>summary .ex-toggle::before{content:"+"}.ex-body{padding:4px 4px 24px 42px;display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}.ex-cue{grid-column:1/-1;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);padding:10px 16px;background:rgba(215,35,37,.06);border-left:2px solid var(--accent);margin-bottom:2px}.ex-section h6{font-family:var(--mono);font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:7px}.ex-section p{font-size:13px;line-height:1.55;color:var(--ink-mid)}.ex-weight{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em}.ex-weight .unit{font-family:var(--mono);font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.1em;font-weight:400;margin-left:4px}.ex-weight-note{font-size:12px;color:var(--ink-mid);margin-top:5px;line-height:1.5}details.warmup-item{border-bottom:1px solid var(--rule-hair)}details.warmup-item:last-child{border-bottom:1px solid var(--rule)}details.warmup-item>summary{display:grid;grid-template-columns:1fr 24px;gap:12px;align-items:center;padding:12px 4px;cursor:pointer;list-style:none;font-size:13px}details.warmup-item>summary::-webkit-details-marker{display:none}details.warmup-item>summary:hover{color:var(--accent)}details.warmup-item>summary .ex-toggle{width:22px;height:22px;font-size:12px}details.warmup-item[open]>summary .ex-toggle{background:var(--accent);color:var(--paper);border-color:var(--accent)}details.warmup-item[open]>summary .ex-toggle::before{content:"−"}details.warmup-item:not([open])>summary .ex-toggle::before{content:"+"}
+.warmup-body{padding:4px 4px 16px;font-size:12px;color:var(--ink-mid);line-height:1.55;max-width:600px}.sec-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--rule-hair)}.swap-grid{display:grid;grid-template-columns:180px 1fr;gap:4px 16px;margin-top:12px;font-size:13px}.swap-grid dt{font-weight:600;color:var(--ink);padding:6px 0;border-bottom:1px solid var(--rule-hair)}.swap-grid dd{color:var(--ink-mid);font-family:var(--serif);font-style:italic;padding:6px 0;border-bottom:1px solid var(--rule-hair)}.finisher{background:var(--paper-warm);border-left:3px solid var(--accent);padding:18px 22px;margin-top:8px}.finisher p{font-size:13px;line-height:1.55;margin:0}.finisher p+p{margin-top:8px}.fin-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:10px}.callout{background:var(--ink);color:var(--paper);padding:26px 30px;margin:24px 0}.callout-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent-soft);margin-bottom:8px}.callout p{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.4}.progress-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:28px;padding-top:16px;border-top:1px solid var(--rule-hair);font-family:var(--mono);font-size:11px;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.08em}.progress-row .marker{display:flex;align-items:center;gap:6px;cursor:pointer}.progress-row .marker .box{width:12px;height:12px;border:1px solid var(--ink);display:inline-block;flex-shrink:0}.progress-row .marker.checked .box{background:var(--accent);border-color:var(--accent)}.checklist{list-style:none;margin-top:12px}.checklist li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule-hair);font-size:13px;line-height:1.5;cursor:pointer}.checklist li:last-child{border-bottom:none}.checklist .cbox{width:14px;height:14px;border:1px solid var(--ink);flex-shrink:0;margin-top:2px}.checklist li.done .cbox{background:var(--accent);border-color:var(--accent)}.checklist li.done .ctext{text-decoration:line-through;opacity:.5}footer{margin-top:80px;padding:36px 0 20px;border-top:2px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end}.footer-mark{font-size:44px;font-weight:900;letter-spacing:-.04em;line-height:.85}.footer-mark .red{color:var(--accent)}.footer-meta{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);text-align:right;line-height:1.7}
+@media(max-width:640px){.hero-title{font-size:68px}.hero-stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--rule-hair)}details.exercise>summary{grid-template-columns:28px 1fr 24px;grid-template-areas:"num title toggle" ". data .";gap:6px 10px}.ex-num{grid-area:num}.ex-title{grid-area:title}.ex-data{grid-area:data;justify-content:flex-start}.ex-toggle{grid-area:toggle;align-self:center}.ex-body{grid-template-columns:1fr;padding-left:36px}.tl-row{grid-template-columns:70px 1fr;gap:12px}.swap-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="hero">
+  <div class="meta-bar"><span>Aesthetic Physique Program — Day Card</span><span class="red" id="todayDate">—</span></div>
+  <div class="hero-eyebrow">Day 03 / Wednesday</div>
+  <h1 class="hero-title">Pull<span class="lt">a</span></h1>
+  <p class="hero-sub">V-taper width + posterior chain. The session that builds the widest point of your silhouette. Lat pulldown is the anchor — pull elbows to your back pockets, every rep.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-label">Duration</div><div class="stat-val">~58 <span style="font-size:12px;font-weight:400">min</span></div></div>
+    <div class="stat"><div class="stat-label">Lifts</div><div class="stat-val">7 + finisher</div></div>
+    <div class="stat"><div class="stat-label">Priority</div><div class="stat-val"><span class="red">Lat</span> width</div></div>
+    <div class="stat"><div class="stat-label">Track</div><div class="stat-val">Dead hang time</div></div>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">01</div><div><div class="sec-title">Day Timeline</div><div class="sec-kicker">Eating, training, recovery — in order</div></div></div>
+  <div class="timeline">
+    <div class="tl-row"><div class="tl-time">Morning</div><div><div class="tl-label">Recovery + First Meal <span class="badge light">Lower A Hangover</span></div><div class="tl-body">Glutes and hamstrings from yesterday are in repair mode. <strong>Prioritize protein this morning</strong> even if semaglutide killed your appetite. Greek yogurt bowl or cottage cheese scramble. The back session today runs better when you've been eating since morning.</div></div></div>
+    <div class="tl-row"><div class="tl-time">60–90 min pre</div><div><div class="tl-label">Pre-Workout Fuel <span class="badge key">Key</span></div><div class="tl-body"><strong>25g protein + 30–40g carbs.</strong> 1 scoop whey + banana + rice cake. Pull A is lat-intensive — carbs available improves mind-muscle connection on pulldowns noticeably. Don't go in fasted.</div><div class="tl-macro"><span><strong>25g</strong> protein</span><span><strong>30–40g</strong> carbs</span><span><strong>~250</strong> cal</span></div></div></div>
+    <div class="tl-row"><div class="tl-time">Session</div><div><div class="tl-label">Pull A <span class="badge key">Training</span></div><div class="tl-body">58 min hard cap. Warmup → 7 working sets → finisher. <strong>Note your dead hang time in Hevy</strong> — beat it every week. It's the most honest measure of back progress in this program.</div></div></div>
+    <div class="tl-row"><div class="tl-time">Within 60 min</div><div><div class="tl-label">Post-Workout Meal <span class="badge key">Critical</span></div><div class="tl-body"><strong>35–40g protein + 50–70g carbs.</strong> Lats and biceps rebuilding. Salmon or tuna bowl with rice is ideal. Whey + oats works if you're not hungry enough for real food.</div><div class="tl-macro"><span><strong>35–40g</strong> protein</span><span><strong>50–70g</strong> carbs</span><span><strong>~500</strong> cal</span></div></div></div>
+    <div class="tl-row"><div class="tl-time">Afternoon</div><div><div class="tl-label">Main Meal</div><div class="tl-body"><strong>50g protein minimum.</strong> Midweek — you've trained 3 of 5 sessions. Treat this as the recovery anchor meal. Back and lats respond especially well to higher protein days. Real food over shakes.</div><div class="tl-macro"><span><strong>50g+</strong> protein</span><span><strong>+ vegetables</strong></span></div></div></div>
+    <div class="tl-row"><div class="tl-time">Evening</div><div><div class="tl-label">Steam Room <span class="badge light">Recovery</span></div><div class="tl-body"><strong>15 minutes.</strong> Electrolytes before + after. Cold shower 60–90s. Tomorrow is conditioning-only (Thu sled + bike) — steam tonight sets the recovery window up well.</div></div></div>
+    <div class="tl-row" style="border-bottom:1px solid var(--rule)"><div class="tl-time">Sleep</div><div><div class="tl-label">7+ Hours <span class="badge key">Non-Negotiable</span></div><div class="tl-body">Midweek sleep is compounding. Three sessions done — what happens tonight determines how Thursday and Friday feel. Phone out by 11pm.</div></div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">02</div><div><div class="sec-title">Daily Checklist</div><div class="sec-kicker">Tap to check off</div></div></div>
+  <ul class="checklist" id="checklistEl">
+    <li data-key="d3-c1"><span class="cbox"></span><span class="ctext"><strong>Pre-workout fuel eaten</strong></span></li>
+    <li data-key="d3-c2"><span class="cbox"></span><span class="ctext"><strong>Session completed</strong> — all 7 lifts + finisher</span></li>
+    <li data-key="d3-c3"><span class="cbox"></span><span class="ctext"><strong>Post-workout meal</strong> — within 60 min</span></li>
+    <li data-key="d3-c4"><span class="cbox"></span><span class="ctext"><strong>Dead hang time logged in Hevy</strong></span></li>
+    <li data-key="d3-c5"><span class="cbox"></span><span class="ctext"><strong>165g protein floor hit</strong></span></li>
+    <li data-key="d3-c6"><span class="cbox"></span><span class="ctext"><strong>Real food meal with vegetables</strong></span></li>
+    <li data-key="d3-c7"><span class="cbox"></span><span class="ctext"><strong>Steam room done</strong> — 15 min + cold shower</span></li>
+    <li data-key="d3-c8"><span class="cbox"></span><span class="ctext"><strong>Asleep by midnight</strong></span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">03</div><div><div class="sec-title">Warmup</div><div class="sec-kicker">5 min / lat and scap activation before any pulling</div></div></div>
+  <div class="callout"><div class="callout-label">→ Why this warmup matters</div><p>Cold lats pull from biceps and traps instead. Scapular work here ensures the first pulldown rep loads the lat, not compensation muscles.</p></div>
+  <div class="sec-label" style="margin-top:28px">5 movements — tap + for instructions</div>
+  <div class="exercise-list">
+    <details class="warmup-item"><summary><span>Cat / cow × 8</span><span class="ex-toggle"></span></summary><div class="warmup-body">Hands and knees, hands under shoulders. Inhale: drop belly toward floor, lift head and tailbone (cow). Exhale: round spine to ceiling, tuck chin and pelvis (cat). Slow, breathing with each rep. Opens the thoracic spine that needs to extend cleanly during rows.</div></details>
+    <details class="warmup-item"><summary><span>Dead hang × 30s</span><span class="ex-toggle"></span></summary><div class="warmup-body">Hang from pull-up bar, wide overhand grip. Passive hang 5 seconds (shoulders relax up), then pull shoulder blades down and back — active hang, you'll rise 2 inches. Hold 25 more seconds. Decompresses spine and primes the lat engagement pattern you need for pulldowns.</div></details>
+    <details class="warmup-item"><summary><span>Scapular pull-up × 8</span><span class="ex-toggle"></span></summary><div class="warmup-body">Hang from pull-up bar. Without bending elbows at all, pull shoulder blades down and back — body rises about 2 inches. Hold 1 second, release. Eight reps. This is the best lat activation drill that exists. If your pulldown doesn't feel like the lat is working, you're not doing this.</div></details>
+    <details class="warmup-item"><summary><span>Band pull-apart × 20</span><span class="ex-toggle"></span></summary><div class="warmup-body">Hold a light band straight in front at chest height, shoulder-width apart. Arms straight. Pull band apart by squeezing shoulder blades together until band touches your chest. Twenty reps, slow return. Activates rear delts and rhomboids before loading them in rows.</div></details>
+    <details class="warmup-item"><summary><span>Banded lat stretch × 30s each</span><span class="ex-toggle"></span></summary><div class="warmup-body">Loop band over a pull-up bar. Grab with one hand, step back and drop into a slight squat. Feel the stretch through the lat — armpit to hip. Optionally rotate torso slightly to deepen. Thirty seconds each side. A stretched lat contracts harder than a cold one.</div></details>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">04</div><div><div class="sec-title">Working Sets</div><div class="sec-kicker">Tap + on any lift for instructions and starting weight</div></div></div>
+  <p style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:20px">Tempo key — <span style="color:var(--accent)">A-B-X-D</span> = eccentric · bottom pause · concentric (X=explosive) · top pause</p>
+  <div class="expand-bar"><button onclick="expandAll(true)">Expand all</button><button onclick="expandAll(false)">Collapse all</button></div>
+  <div class="exercise-list">
+
+    <details class="exercise"><summary>
+      <span class="ex-num">01</span><span class="ex-title">Lat Pulldown (wide neutral, slight back lean)</span>
+      <span class="ex-data"><span>4×10</span><span class="pipe">·</span><span class="tempo">3-1-X-1</span><span class="pipe">·</span><span>90s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Pull elbows to your back pockets — not your hips, your back pockets</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Wide neutral-grip handle, palms facing each other. Sit with knees under pads. Lean back 15 degrees — no more. Pull the bar to your upper chest driving elbows down and back toward your back pockets. Squeeze lats at the bottom, hold 1 second. Return slowly. If biceps fail first, lean back slightly more and drive elbows farther back.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">130–160 lb</div><div class="ex-weight-note">Anchor lift — log every session without exception. Progressive overload here is the primary V-taper driver.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">02</span><span class="ex-title">Chest-Supported T-Bar / HS Row</span>
+      <span class="ex-data"><span>4×10</span><span class="pipe">·</span><span class="tempo">2-1-X-1</span><span class="pipe">·</span><span>75s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Lat initiates, mid-back finishes — two-phase pull</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Chest pressed against pad throughout — removes lower-back fatigue. Neutral grip. Initiate by driving elbows down and back (lat first), then squeeze shoulder blades together at top (mid-back finishes). Don't shrug. Don't lift chest off the pad to reach at the bottom. Full stretch without losing chest contact.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">90–120 lb</div><div class="ex-weight-note">HS row: 1 plate (45 lb) each side is a reasonable start. Adjust by RPE 8.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">03</span><span class="ex-title">Single-Arm Cable Lat Pullover (low → high)</span>
+      <span class="ex-data"><span>4×12</span><span class="pipe">·</span><span class="tempo">3-0-1-2</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Arm stays long — feel the lat stretch overhead, contract at hip</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Cable at lowest position, D-handle. Stand facing cable, slightly to one side. Grab handle with arm farthest from cable, raise it fully overhead — arm extended long. Pull the cable down and across your body in a sweeping arc until hand reaches the opposite hip. Minimal elbow bend throughout. Reverse slowly. The stretch at the top under cable tension is what builds V-taper width.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">25–40 lb</div><div class="ex-weight-note">Most underused V-taper movement in the plan. Don't go heavy — the stretch is the point.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">04</span><span class="ex-title">Reverse Pec Deck (pinky-up grip)</span>
+      <span class="ex-data"><span>4×15</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Lead with pinkies — thumbs-leading makes it a trap exercise</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Sit facing pec deck, chest against pad. Pinky-up grip (thumbs facing each other, pinkies up). This externally rotates the shoulder and redirects load to rear delts instead of traps. Pull handles back and out, leading with pinkies. Hold contracted position 1 second. Return under control. RPE 9 — last 2–3 reps are a grind.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">80–110 lb</div><div class="ex-weight-note">Rear delts respond to high reps and high effort. The pinky-up grip makes it feel harder at the same weight.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">05</span><span class="ex-title">Eccentric-Only CS Row <span class="tag">novelty</span></span>
+      <span class="ex-data"><span>3×6</span><span class="pipe">·</span><span class="tempo">5-0-X-0</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Count it out loud — one Mississippi, two, three, four, five</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Same CS row setup. Load 20–30% heavier than normal. Pull up explosively (1 second), then fight the weight down over a full 5-second count. Six reps total. The slow eccentric is where the peak mechanical tension and most hypertrophy stimulus lives. Heavier load + slow negative = significantly more growth signal per set than standard rows.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">110–145 lb</div><div class="ex-weight-note">If you can't control the descent on rep 5 or 6, drop the weight — the tempo is the entire exercise.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">06</span><span class="ex-title">Incline DB Curl (arms behind body line)</span>
+      <span class="ex-data"><span>3×10</span><span class="pipe">·</span><span class="tempo">3-0-1-1</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Arms stay behind your body the whole set — zero swing</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Incline bench at 60°. Sit back, DBs hanging straight down behind body line. From the full stretch position, curl upward supinating (rotating palms up) as you go. No shoulder movement. Squeeze at top, lower all the way back to the full stretch. The stretched start removes all momentum and adds loaded stretch stimulus that builds bicep length.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">22–30 lb<span class="unit">DBs</span></div><div class="ex-weight-note">Much lighter than standing curls. Correct weight = barely completing rep 10 with strict form and zero swing.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">07</span><span class="ex-title"><span class="tag iso">iso</span>Dead Hang (active scap, max duration)</span>
+      <span class="ex-data"><span>3 × max time</span><span class="pipe">·</span><span>60s rest</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Shoulder blades down and back — active, not dangling</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Hang from pull-up bar, wide overhand grip. Pull shoulder blades down and back so lats fire — "active hang." Hold as long as possible. Record time in Hevy. Beat it every week. Three sets, 60 seconds rest between. Builds grip, lat endurance, and decompresses spine after heavy pulling.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">Bodyweight</div><div class="ex-weight-note">Milestones: 60s / week 4 · 90s / week 8 · 2 min / week 12. Add 10 lb between feet when bodyweight gets easy.</div></div>
+    </div></details>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">05</div><div><div class="sec-title">Finisher</div><div class="sec-kicker">4 min / lat + rear delt density — 3 rounds / 45s rest</div></div></div>
+  <div class="finisher">
+    <div class="fin-label">→ 3 rounds, no rest within round</div>
+    <p><strong>12 straight-arm lat pulldown</strong> (rope, arms long) → <strong>12 face pull</strong> (high pulley, rope, to forehead — elbows wide and high) → <strong>12 cable curl</strong> (both arms, standing).</p>
+    <p style="margin-top:10px;font-size:13px;color:var(--ink-mid)">No rest within each round. Lat pump stays active. Rear delt hit from a different angle than pec deck. Bicep finisher. Three movements in 4 minutes.</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">06</div><div><div class="sec-title">Swap Menu</div><div class="sec-kicker">Valid alternatives</div></div></div>
+  <dl class="swap-grid">
+    <dt>Lat pulldown →</dt><dd>Assisted pull-up / single-arm kneeling pulldown</dd>
+    <dt>CS T-bar row →</dt><dd>Seal row / chest-supported DB row on incline bench</dd>
+    <dt>Cable pullover →</dt><dd>Straight-arm pulldown (both arms) / DB pullover on bench</dd>
+    <dt>Reverse pec deck →</dt><dd>Cable rope face pull / rear delt incline fly DBs</dd>
+    <dt>Eccentric row →</dt><dd>Pendlay row / Meadows row single-arm</dd>
+    <dt>Incline curl →</dt><dd>Cable curl with arms behind body / hammer curl</dd>
+  </dl>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">07</div><div><div class="sec-title">This Week's Targets</div><div class="sec-kicker">Tap to mark</div></div></div>
+  <div class="progress-row">
+    <span style="color:var(--ink);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;width:100%;margin-bottom:4px">Pull A — Week Goals</span>
+    <span class="marker" data-key="d3-p1"><span class="box"></span> Lat pulldown load or reps up</span>
+    <span class="marker" data-key="d3-p2"><span class="box"></span> Deeper pullover stretch at top</span>
+    <span class="marker" data-key="d3-p3"><span class="box"></span> Dead hang longer than last week</span>
+    <span class="marker" data-key="d3-p4"><span class="box"></span> Eccentric row 5s tempo every rep</span>
+    <span class="marker" data-key="d3-p5"><span class="box"></span> Protein floor hit</span>
+    <span class="marker" data-key="d3-p6"><span class="box"></span> Logged in Hevy</span>
+  </div>
+</div>
+
+<footer><div class="footer-mark">Day<br><span class="red">03</span></div><div class="footer-meta">Pull A · V-Taper Width + Posterior<br>Aesthetic Physique Program v.2<br>Tap + on any lift for instructions</div></footer>
+</div>
+<script>
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const now=new Date();
+document.getElementById('todayDate').textContent=String(now.getDate()).padStart(2,'0')+' / '+months[now.getMonth()]+' / '+now.getFullYear();
+function expandAll(o){document.querySelectorAll('details.exercise,details.warmup-item').forEach(d=>{if(o)d.setAttribute('open','');else d.removeAttribute('open')});}
+window.expandAll=expandAll;
+document.querySelectorAll('#checklistEl li').forEach(li=>{const k='apg-'+li.getAttribute('data-key');if(localStorage.getItem(k)==='1')li.classList.add('done');li.addEventListener('click',()=>{li.classList.toggle('done');localStorage.setItem(k,li.classList.contains('done')?'1':'0');});});
+document.querySelectorAll('.progress-row .marker').forEach(m=>{const k='apg-'+m.getAttribute('data-key');if(localStorage.getItem(k)==='1')m.classList.add('checked');m.addEventListener('click',()=>{m.classList.toggle('checked');localStorage.setItem(k,m.classList.contains('checked')?'1':'0');});});
+</script>
+</body>
+</html>

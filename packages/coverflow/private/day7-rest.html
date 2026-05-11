@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Day 7 — Rest / Walk + Mobility + Real Food</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--paper:#F4F1EA;--paper-warm:#ECE7DB;--ink:#0A0A0A;--ink-mid:#444;--ink-soft:#777;--rule:#0A0A0A;--rule-hair:#C9C3B5;--accent:#D72325;--accent-soft:#E63B3D;--highlight:#F4E04D;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Times New Roman",Times,serif;--mono:"IBM Plex Mono",Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}::selection{background:var(--accent);color:var(--paper)}.page{max-width:780px;margin:0 auto;padding:0 24px 100px}header.hero{border-bottom:2px solid var(--rule);padding:40px 0 32px}.meta-bar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mid);margin-bottom:40px}.meta-bar .red{color:var(--accent)}.hero-eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:12px}.hero-title{font-size:clamp(56px,12vw,130px);font-weight:900;line-height:.86;letter-spacing:-.04em;margin-bottom:20px}.hero-title .lt{display:block;font-family:var(--serif);font-style:italic;font-weight:200;color:var(--ink-mid)}.hero-sub{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.45;color:var(--ink-mid);max-width:560px;margin-bottom:36px}.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.stat{padding:14px 16px 14px 0;border-right:1px solid var(--rule-hair)}.stat:last-child{border-right:none}.stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:5px}.stat-val{font-size:17px;font-weight:700;letter-spacing:-.02em}.stat-val .red{color:var(--accent)}.section{margin-top:80px}.section-head{display:grid;grid-template-columns:56px 1fr;gap:20px;align-items:end;border-bottom:2px solid var(--rule);padding-bottom:14px;margin-bottom:32px}.sec-num{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:.85;color:var(--accent)}.sec-title{font-size:26px;font-weight:800;letter-spacing:-.02em;text-transform:uppercase;line-height:1}.sec-kicker{grid-column:2;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-top:5px}.timeline{border-top:1px solid var(--rule)}.tl-row{display:grid;grid-template-columns:90px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule-hair);align-items:start}.tl-time{font-family:var(--mono);font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;padding-top:2px}.tl-label{font-size:14px;font-weight:700;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px}.badge{font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;padding:2px 6px;background:var(--highlight);color:var(--ink)}.badge.key{background:var(--accent);color:var(--paper)}.badge.light{background:transparent;border:1px solid var(--rule-hair);color:var(--ink-soft)}.badge.warn{background:var(--ink);color:var(--paper)}.tl-body{font-size:13px;line-height:1.55;color:var(--ink-mid)}.tl-body strong{color:var(--ink);font-weight:600}.tl-macro{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}.tl-macro span{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-mid);background:var(--paper-warm);padding:4px 8px;border:1px solid var(--rule-hair)}.tl-macro span strong{color:var(--accent);font-weight:600}
+.callout{background:var(--ink);color:var(--paper);padding:26px 30px;margin:24px 0}.callout-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent-soft);margin-bottom:8px}.callout p{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.4}
+.rule-card{border:1px solid var(--rule);margin-bottom:2px}.rule-head{padding:16px 20px;background:var(--paper-warm);display:flex;justify-content:space-between;align-items:center}.rule-title{font-size:15px;font-weight:800;text-transform:uppercase;letter-spacing:-.01em}.rule-tag{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft)}.rule-body{padding:16px 20px;font-size:13px;line-height:1.6;color:var(--ink-mid)}.rule-body strong{color:var(--ink)}
+.mobility-list{border-top:1px solid var(--rule)}details.mob-item{border-bottom:1px solid var(--rule-hair)}details.mob-item:last-child{border-bottom:1px solid var(--rule)}details.mob-item>summary{display:grid;grid-template-columns:1fr 24px;gap:12px;align-items:center;padding:14px 4px;cursor:pointer;list-style:none;font-size:14px;font-weight:700}details.mob-item>summary::-webkit-details-marker{display:none}details.mob-item>summary:hover{color:var(--accent)}.mob-toggle{width:24px;height:24px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;font-weight:300;flex-shrink:0}details.mob-item[open]>summary .mob-toggle{background:var(--accent);color:var(--paper);border-color:var(--accent)}details.mob-item[open]>summary .mob-toggle::before{content:"−"}details.mob-item:not([open])>summary .mob-toggle::before{content:"+"}.mob-body{padding:4px 4px 18px;font-size:13px;line-height:1.6;color:var(--ink-mid);max-width:600px}
+.checklist{list-style:none;margin-top:12px}.checklist li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule-hair);font-size:13px;line-height:1.5;cursor:pointer}.checklist li:last-child{border-bottom:none}.checklist .cbox{width:14px;height:14px;border:1px solid var(--ink);flex-shrink:0;margin-top:2px}.checklist li.done .cbox{background:var(--accent);border-color:var(--accent)}.checklist li.done .ctext{text-decoration:line-through;opacity:.5}
+.meal-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:24px}.meal-card{border:1px solid var(--rule);padding:18px 20px}.meal-name{font-size:14px;font-weight:800;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:8px}.meal-items{font-size:13px;line-height:1.65;color:var(--ink-mid)}.meal-macro{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.meal-macro span{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.08em;background:var(--paper-warm);padding:3px 7px;border:1px solid var(--rule-hair);color:var(--ink-soft)}.meal-macro span strong{color:var(--accent);font-weight:600}
+.progress-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:28px;padding-top:16px;border-top:1px solid var(--rule-hair);font-family:var(--mono);font-size:11px;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.08em}.progress-row .marker{display:flex;align-items:center;gap:6px;cursor:pointer}.progress-row .marker .box{width:12px;height:12px;border:1px solid var(--ink);display:inline-block;flex-shrink:0}.progress-row .marker.checked .box{background:var(--accent);border-color:var(--accent)}
+footer{margin-top:80px;padding:36px 0 20px;border-top:2px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end}.footer-mark{font-size:44px;font-weight:900;letter-spacing:-.04em;line-height:.85}.footer-mark .red{color:var(--accent)}.footer-meta{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);text-align:right;line-height:1.7}
+@media(max-width:640px){.hero-title{font-size:58px}.hero-stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--rule-hair)}.meal-grid{grid-template-columns:1fr}.tl-row{grid-template-columns:70px 1fr;gap:12px}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="hero">
+  <div class="meta-bar"><span>Aesthetic Physique Program — Day Card</span><span class="red" id="todayDate">—</span></div>
+  <div class="hero-eyebrow">Day 07 / Sunday</div>
+  <h1 class="hero-title">Rest<span class="lt">+ move</span></h1>
+  <p class="hero-sub">Five sessions done. The body doesn't change in the gym — it changes tonight. Your only jobs today: walk, eat, sleep, and stay off your feet. This day is part of the program.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-label">Training</div><div class="stat-val" style="color:var(--ink-soft)">None</div></div>
+    <div class="stat"><div class="stat-label">Steps</div><div class="stat-val">5–8k</div></div>
+    <div class="stat"><div class="stat-label">Mobility</div><div class="stat-val">10 min</div></div>
+    <div class="stat"><div class="stat-label">Sleep target</div><div class="stat-val"><span class="red">8h</span></div></div>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">01</div><div><div class="sec-title">The Rules for Today</div><div class="sec-kicker">Four non-negotiables for a proper rest day</div></div></div>
+  <div class="callout"><div class="callout-label">→ The one mistake that kills progress</div><p>Treating Sunday like a bonus cardio day. Extra sessions don't build the body faster — they deplete the recovery budget you need for Monday's Push A. This day is not optional.</p></div>
+
+  <div style="margin-top:24px;display:flex;flex-direction:column;gap:2px">
+    <div class="rule-card">
+      <div class="rule-head"><span class="rule-title">Walk 5,000–8,000 steps</span><span class="rule-tag">Active recovery</span></div>
+      <div class="rule-body">Easy walking — not a hike, not a run. A 35–50 minute walk around your neighborhood or Runyon. Low-intensity movement increases blood flow to sore muscles and accelerates glycogen replenishment without adding any training stress. The step count is a range: 5k minimum, 8k maximum. Go over 8k and you've crossed into fatigue territory.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-head"><span class="rule-title">10-minute mobility floor work</span><span class="rule-tag">Maintenance</span></div>
+      <div class="rule-body">Not yoga. Not stretching for the sake of it. Ten focused minutes — hips, thoracic spine, shoulders — the areas that get compressed during a 5-day lifting week. Instructions below in the mobility section. This is the minimum that keeps your movement patterns functional heading into week 2.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-head"><span class="rule-title">One big real-food meal</span><span class="rule-tag">Priority</span></div>
+      <div class="rule-body"><strong>Cook something.</strong> Or order from a place where you know what's in the food. Sunday is the best day of the week for real food eating — no pre-workout timing pressure, no post-workout window. Just eat well. Protein + vegetables + carbs + healthy fat. Suggested meals below.</div>
+    </div>
+    <div class="rule-card">
+      <div class="rule-head"><span class="rule-title">8 hours sleep target</span><span class="rule-tag" style="color:var(--accent);font-weight:700">Non-negotiable</span></div>
+      <div class="rule-body">Sunday night sleep directly determines Monday's Push A quality. GH release, cortisol reset, muscle protein synthesis — all happen overnight. The entire week's training compresses into this one sleep window. <strong>Phone out by 10:30pm.</strong> This is the highest-leverage action in the whole program.</div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">02</div><div><div class="sec-title">Daily Checklist</div><div class="sec-kicker">Tap to check off</div></div></div>
+  <ul class="checklist" id="checklistEl">
+    <li data-key="d7-c1"><span class="cbox"></span><span class="ctext"><strong>Walk completed</strong> — 5,000–8,000 steps, easy pace</span></li>
+    <li data-key="d7-c2"><span class="cbox"></span><span class="ctext"><strong>10-min mobility floor work done</strong></span></li>
+    <li data-key="d7-c3"><span class="cbox"></span><span class="ctext"><strong>Big real-food meal eaten</strong> — protein + vegetables + carbs</span></li>
+    <li data-key="d7-c4"><span class="cbox"></span><span class="ctext"><strong>165g protein floor hit</strong></span></li>
+    <li data-key="d7-c5"><span class="cbox"></span><span class="ctext"><strong>Massage gun or foam roller</strong> — quads, glutes, lats, 5 min</span></li>
+    <li data-key="d7-c6"><span class="cbox"></span><span class="ctext"><strong>No gym visit</strong> — especially no "quick cardio"</span></li>
+    <li data-key="d7-c7"><span class="cbox"></span><span class="ctext"><strong>Phone out by 10:30pm</strong></span></li>
+    <li data-key="d7-c8"><span class="cbox"></span><span class="ctext"><strong>Asleep by 11pm — 8 hours before Monday</strong></span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">03</div><div><div class="sec-title">10-Minute Mobility Routine</div><div class="sec-kicker">Floor work — hips, spine, shoulders in order</div></div></div>
+  <p style="font-size:13px;line-height:1.6;color:var(--ink-mid);margin-bottom:20px">Do these on a mat or carpet, in this order. No timer pressure — move at your own pace through the sequence. Total: ~10 minutes.</p>
+  <div class="mobility-list">
+    <details class="mob-item"><summary><span>Thoracic spine rotation on foam roller × 10 each</span><span class="mob-toggle"></span></summary><div class="mob-body">Place foam roller perpendicular to your spine at mid-back. Support your head, knees bent. Slowly roll up to your shoulder blades, then back to mid-back. At each point, let your elbows open to the sides for rotation. This decompresses the thoracic spine that gets compressed during all the pressing and pulling this week.</div></details>
+    <details class="mob-item"><summary><span>90/90 hip switch × 5 each direction</span><span class="mob-toggle"></span></summary><div class="mob-body">Sit on the floor with knees bent at 90° — one shin in front, one to the side. Rotate your whole lower body to switch which shin is in front (windshield wiper motion). Move through the full range without lifting off the ground. The hip flexors and external rotators worked hard this week — this is their release valve.</div></details>
+    <details class="mob-item"><summary><span>Deep squat hold × 60s</span><span class="mob-toggle"></span></summary><div class="mob-body">Feet slightly wider than hip-width, toes out. Drop into the deepest squat you can with your heels on the floor. Hold on to a doorframe or squat rack if needed. You can shift your weight gently from side to side. Sixty seconds continuous. Opens hips, ankles, and thoracic spine in one movement.</div></details>
+    <details class="mob-item"><summary><span>Pigeon stretch × 60s each</span><span class="mob-toggle"></span></summary><div class="mob-body">From hands and knees, bring one knee forward and place it behind the same-side wrist — shin angled across your body. The other leg extends back straight. Let your hips sink toward the floor. Walk your hands forward and relax your upper body over your front leg. Sixty seconds each side. This is the deepest glute and piriformis stretch — particularly important after yesterday's Lower B.</div></details>
+    <details class="mob-item"><summary><span>Child's pose with lat reach × 45s each</span><span class="mob-toggle"></span></summary><div class="mob-body">From hands and knees, push hips back toward heels. Walk both hands to the right — arms extended, hands wide right. Feel the stretch through the left lat and the left side of your back. Hold 45 seconds. Walk hands to center, then left. Switch sides. The lat stretch is important after Pull A's high volume this week.</div></details>
+    <details class="mob-item"><summary><span>Dead bug × 8 each side</span><span class="mob-toggle"></span></summary><div class="mob-body">Lie on back. Press lower back firmly into the floor. Arms straight up, knees bent 90° — tabletop position. Simultaneously lower one arm overhead and the opposite leg toward the floor. Keep lower back pressed down — don't let it arch. Return. Switch sides. Eight each side. This is a core stability reset after the heavy loading from this week's sessions.</div></details>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">04</div><div><div class="sec-title">Today's Nutrition</div><div class="sec-kicker">Rest day target — protein stays, calories drop slightly</div></div></div>
+  <div class="callout"><div class="callout-label">→ Rest day eating rule</div><p>Protein floor doesn't move on rest days. 165g minimum, always. Calories can drop to 2,000–2,100. Don't restrict — you're rebuilding five sessions of damage tonight.</p></div>
+  <div class="meal-grid">
+    <div class="meal-card">
+      <div class="meal-name">Breakfast Option</div>
+      <div class="meal-items">3 eggs + 1 cup cottage cheese scrambled together<br>2 slices sourdough toast<br>Fruit or berries on the side</div>
+      <div class="meal-macro"><span><strong>~55g</strong> protein</span><span><strong>~45g</strong> carbs</span></div>
+    </div>
+    <div class="meal-card">
+      <div class="meal-name">The Big Meal</div>
+      <div class="meal-items">Protein of choice (8+ oz) — salmon, chicken, steak<br>Roasted vegetables (sheet pan, whatever's in the fridge)<br>Rice, potatoes, or sourdough</div>
+      <div class="meal-macro"><span><strong>60–70g</strong> protein</span><span><strong>~60g</strong> carbs</span></div>
+    </div>
+    <div class="meal-card">
+      <div class="meal-name">Afternoon Snack</div>
+      <div class="meal-items">Greek yogurt (Fage 5%, 1 cup)<br>Handful of mixed nuts<br>Or: Premier Protein shake if under on protein</div>
+      <div class="meal-macro"><span><strong>~30g</strong> protein</span></div>
+    </div>
+    <div class="meal-card">
+      <div class="meal-name">Dinner</div>
+      <div class="meal-items">Real food — not delivery. Protein + vegetables.<br>Keep it simple: rotisserie chicken + salad,<br>or eggs again if it's been a lazy Sunday.</div>
+      <div class="meal-macro"><span><strong>~40g</strong> protein</span><span><strong>real food</strong></span></div>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">05</div><div><div class="sec-title">Soft Tissue Work</div><div class="sec-kicker">5 minutes — foam roller or massage gun</div></div></div>
+  <p style="font-size:13px;line-height:1.65;color:var(--ink-mid)">Not a deep tissue session. Five minutes of maintenance rolling on the areas that trained heaviest this week.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px">
+    <div style="border:1px solid var(--rule-hair);padding:14px 16px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);margin-bottom:6px">Priority zones</div><p style="font-size:13px;line-height:1.6;color:var(--ink-mid)"><strong style="color:var(--ink)">Glutes + hamstrings</strong><br>Lower B was yesterday. Foam roller figure-four on the floor, 60s each.<br><br><strong style="color:var(--ink)">Quads + hip flexors</strong><br>Front of leg — roll from hip to knee. 30s each.<br><br><strong style="color:var(--ink)">Lats</strong><br>Lie on your side, roller under armpit. Slow roll to mid-back. 30s each.</p></div>
+    <div style="border:1px solid var(--rule-hair);padding:14px 16px"><div style="font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);margin-bottom:6px">Massage gun (if available)</div><p style="font-size:13px;line-height:1.6;color:var(--ink-mid)"><strong style="color:var(--ink)">Delts + traps</strong><br>Push A + Push B hit these hard. 30s each head of the delt.<br><br><strong style="color:var(--ink)">Calves</strong><br>Lower B calf work + any walking today. 30s each.<br><br><strong style="color:var(--ink)">Avoid:</strong> directly on the spine, over joints, on acute pain.</p></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">06</div><div><div class="sec-title">This Week Closes Out</div><div class="sec-kicker">Tap to mark</div></div></div>
+  <div style="font-size:13px;line-height:1.7;color:var(--ink-mid);margin-bottom:24px;padding:20px 0;border-bottom:1px solid var(--rule-hair)">
+    This is the end of the week's training. Five sessions, one conditioning day, one full rest. Whether it was week 1 or week 12 — the pattern compounds. The body you're building is being built right now, tonight, in sleep. Not in the gym.
+  </div>
+  <div class="progress-row">
+    <span style="color:var(--ink);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;width:100%;margin-bottom:4px">Week Close — Final Marks</span>
+    <span class="marker" data-key="d7-p1"><span class="box"></span> All 5 sessions done</span>
+    <span class="marker" data-key="d7-p2"><span class="box"></span> Hevy log updated for all training days</span>
+    <span class="marker" data-key="d7-p3"><span class="box"></span> Protein floor hit every day</span>
+    <span class="marker" data-key="d7-p4"><span class="box"></span> Today: walk + mobility + real food</span>
+    <span class="marker" data-key="d7-p5"><span class="box"></span> In bed by 11pm tonight</span>
+    <span class="marker" data-key="d7-p6"><span class="box"></span> Ready for Push A Monday</span>
+  </div>
+</div>
+
+<footer><div class="footer-mark">Day<br><span class="red">07</span></div><div class="footer-meta">Rest · Walk + Mobility + Real Food<br>Aesthetic Physique Program v.2<br>The body changes tonight</div></footer>
+</div>
+<script>
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const now=new Date();
+document.getElementById('todayDate').textContent=String(now.getDate()).padStart(2,'0')+' / '+months[now.getMonth()]+' / '+now.getFullYear();
+document.querySelectorAll('#checklistEl li').forEach(li=>{const k='apg-'+li.getAttribute('data-key');if(localStorage.getItem(k)==='1')li.classList.add('done');li.addEventListener('click',()=>{li.classList.toggle('done');localStorage.setItem(k,li.classList.contains('done')?'1':'0');});});
+document.querySelectorAll('.progress-row .marker').forEach(m=>{const k='apg-'+m.getAttribute('data-key');if(localStorage.getItem(k)==='1')m.classList.add('checked');m.addEventListener('click',()=>{m.classList.toggle('checked');localStorage.setItem(k,m.classList.contains('checked')?'1':'0');});});
+</script>
+</body>
+</html>

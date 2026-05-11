@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Day 5 — Push B / Delt Density + Abs</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+:root{--paper:#F4F1EA;--paper-warm:#ECE7DB;--ink:#0A0A0A;--ink-mid:#444;--ink-soft:#777;--rule:#0A0A0A;--rule-hair:#C9C3B5;--accent:#D72325;--accent-soft:#E63B3D;--highlight:#F4E04D;--sans:"Helvetica Neue",Helvetica,Arial,sans-serif;--serif:"Times New Roman",Times,serif;--mono:"IBM Plex Mono",Menlo,monospace}
+*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{background:var(--paper);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased}::selection{background:var(--accent);color:var(--paper)}.page{max-width:780px;margin:0 auto;padding:0 24px 100px}header.hero{border-bottom:2px solid var(--rule);padding:40px 0 32px}.meta-bar{display:flex;justify-content:space-between;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-mid);margin-bottom:40px}.meta-bar .red{color:var(--accent)}.hero-eyebrow{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.18em;color:var(--accent);margin-bottom:12px}.hero-title{font-size:clamp(64px,14vw,148px);font-weight:900;line-height:.86;letter-spacing:-.04em;margin-bottom:20px}.hero-title .lt{display:block;font-family:var(--serif);font-style:italic;font-weight:200;color:var(--ink-mid)}.hero-sub{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.45;color:var(--ink-mid);max-width:560px;margin-bottom:36px}.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.stat{padding:14px 16px 14px 0;border-right:1px solid var(--rule-hair)}.stat:last-child{border-right:none}.stat-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:5px}.stat-val{font-size:17px;font-weight:700;letter-spacing:-.02em}.stat-val .red{color:var(--accent)}.section{margin-top:80px}.section-head{display:grid;grid-template-columns:56px 1fr;gap:20px;align-items:end;border-bottom:2px solid var(--rule);padding-bottom:14px;margin-bottom:32px}.sec-num{font-size:52px;font-weight:900;letter-spacing:-.04em;line-height:.85;color:var(--accent)}.sec-title{font-size:26px;font-weight:800;letter-spacing:-.02em;text-transform:uppercase;line-height:1}.sec-kicker{grid-column:2;font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-top:5px}.timeline{border-top:1px solid var(--rule)}.tl-row{display:grid;grid-template-columns:90px 1fr;gap:20px;padding:20px 0;border-bottom:1px solid var(--rule-hair);align-items:start}.tl-time{font-family:var(--mono);font-size:11px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.08em;padding-top:2px}.tl-label{font-size:14px;font-weight:700;letter-spacing:-.01em;text-transform:uppercase;margin-bottom:4px;display:flex;align-items:center;gap:8px}.badge{font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.12em;padding:2px 6px;background:var(--highlight);color:var(--ink)}.badge.key{background:var(--accent);color:var(--paper)}.badge.light{background:transparent;border:1px solid var(--rule-hair);color:var(--ink-soft)}.tl-body{font-size:13px;line-height:1.55;color:var(--ink-mid)}.tl-body strong{color:var(--ink);font-weight:600}.tl-macro{display:flex;gap:16px;margin-top:8px;flex-wrap:wrap}.tl-macro span{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-mid);background:var(--paper-warm);padding:4px 8px;border:1px solid var(--rule-hair)}.tl-macro span strong{color:var(--accent);font-weight:600}.expand-bar{display:flex;justify-content:flex-end;gap:10px;margin-bottom:12px}.expand-bar button{background:transparent;border:1px solid var(--rule);color:var(--ink);padding:7px 12px;font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;cursor:pointer}.expand-bar button:hover{background:var(--ink);color:var(--paper)}.exercise-list{display:flex;flex-direction:column;border-top:1px solid var(--rule)}details.exercise{border-bottom:1px solid var(--rule-hair)}details.exercise:last-child{border-bottom:1px solid var(--rule)}details.exercise[open]{background:rgba(215,35,37,.025)}details.exercise>summary{display:grid;grid-template-columns:28px 1fr auto 28px;gap:14px;align-items:center;padding:15px 4px;cursor:pointer;list-style:none}details.exercise>summary::-webkit-details-marker{display:none}details.exercise>summary:hover .ex-title{color:var(--accent)}.ex-num{font-family:var(--mono);font-size:10px;color:var(--ink-soft);letter-spacing:.06em}.ex-title{font-size:14px;font-weight:700;line-height:1.25;letter-spacing:-.01em}.tag{display:inline-block;font-family:var(--mono);font-size:8px;font-weight:600;text-transform:uppercase;letter-spacing:.1em;padding:2px 5px;vertical-align:middle;margin-left:4px;background:var(--highlight);color:var(--ink)}.tag.iso{background:var(--ink);color:var(--paper);margin-left:0;margin-right:4px}.ex-data{display:flex;gap:10px;font-family:var(--mono);font-size:10px;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.06em;align-items:center;white-space:nowrap;flex-wrap:wrap;justify-content:flex-end}.ex-data .tempo{color:var(--accent);font-weight:500}.ex-data .pipe{color:var(--rule-hair)}.ex-toggle{width:24px;height:24px;border:1px solid var(--rule);display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:14px;font-weight:300;flex-shrink:0}details.exercise[open]>summary .ex-toggle{background:var(--accent);color:var(--paper);border-color:var(--accent)}details.exercise[open]>summary .ex-toggle::before{content:"−"}details.exercise:not([open])>summary .ex-toggle::before{content:"+"}.ex-body{padding:4px 4px 24px 42px;display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}.ex-cue{grid-column:1/-1;font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink);padding:10px 16px;background:rgba(215,35,37,.06);border-left:2px solid var(--accent);margin-bottom:2px}.ex-section h6{font-family:var(--mono);font-size:9px;font-weight:500;text-transform:uppercase;letter-spacing:.14em;color:var(--ink-soft);margin-bottom:7px}.ex-section p{font-size:13px;line-height:1.55;color:var(--ink-mid)}.ex-weight{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:-.01em}.ex-weight .unit{font-family:var(--mono);font-size:10px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.1em;font-weight:400;margin-left:4px}.ex-weight-note{font-size:12px;color:var(--ink-mid);margin-top:5px;line-height:1.5}details.warmup-item{border-bottom:1px solid var(--rule-hair)}details.warmup-item:last-child{border-bottom:1px solid var(--rule)}details.warmup-item>summary{display:grid;grid-template-columns:1fr 24px;gap:12px;align-items:center;padding:12px 4px;cursor:pointer;list-style:none;font-size:13px}details.warmup-item>summary::-webkit-details-marker{display:none}details.warmup-item>summary:hover{color:var(--accent)}details.warmup-item>summary .ex-toggle{width:22px;height:22px;font-size:12px}details.warmup-item[open]>summary .ex-toggle{background:var(--accent);color:var(--paper);border-color:var(--accent)}details.warmup-item[open]>summary .ex-toggle::before{content:"−"}details.warmup-item:not([open])>summary .ex-toggle::before{content:"+"}
+.warmup-body{padding:4px 4px 16px;font-size:12px;color:var(--ink-mid);line-height:1.55;max-width:600px}.sec-label{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid var(--rule-hair)}.swap-grid{display:grid;grid-template-columns:180px 1fr;gap:4px 16px;margin-top:12px;font-size:13px}.swap-grid dt{font-weight:600;color:var(--ink);padding:6px 0;border-bottom:1px solid var(--rule-hair)}.swap-grid dd{color:var(--ink-mid);font-family:var(--serif);font-style:italic;padding:6px 0;border-bottom:1px solid var(--rule-hair)}.finisher{background:var(--paper-warm);border-left:3px solid var(--accent);padding:18px 22px;margin-top:8px}.finisher p{font-size:13px;line-height:1.55;margin:0}.finisher p+p{margin-top:8px}.fin-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--accent);margin-bottom:10px}.callout{background:var(--ink);color:var(--paper);padding:26px 30px;margin:24px 0}.callout-label{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:.16em;color:var(--accent-soft);margin-bottom:8px}.callout p{font-family:var(--serif);font-style:italic;font-size:19px;line-height:1.4}.progress-row{display:flex;gap:16px;flex-wrap:wrap;margin-top:28px;padding-top:16px;border-top:1px solid var(--rule-hair);font-family:var(--mono);font-size:11px;color:var(--ink-mid);text-transform:uppercase;letter-spacing:.08em}.progress-row .marker{display:flex;align-items:center;gap:6px;cursor:pointer}.progress-row .marker .box{width:12px;height:12px;border:1px solid var(--ink);display:inline-block;flex-shrink:0}.progress-row .marker.checked .box{background:var(--accent);border-color:var(--accent)}.checklist{list-style:none;margin-top:12px}.checklist li{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--rule-hair);font-size:13px;line-height:1.5;cursor:pointer}.checklist li:last-child{border-bottom:none}.checklist .cbox{width:14px;height:14px;border:1px solid var(--ink);flex-shrink:0;margin-top:2px}.checklist li.done .cbox{background:var(--accent);border-color:var(--accent)}.checklist li.done .ctext{text-decoration:line-through;opacity:.5}footer{margin-top:80px;padding:36px 0 20px;border-top:2px solid var(--rule);display:flex;justify-content:space-between;align-items:flex-end}.footer-mark{font-size:44px;font-weight:900;letter-spacing:-.04em;line-height:.85}.footer-mark .red{color:var(--accent)}.footer-meta{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--ink-soft);text-align:right;line-height:1.7}
+@media(max-width:640px){.hero-title{font-size:68px}.hero-stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:none}.stat:nth-child(1),.stat:nth-child(2){border-bottom:1px solid var(--rule-hair)}details.exercise>summary{grid-template-columns:28px 1fr 24px;grid-template-areas:"num title toggle" ". data .";gap:6px 10px}.ex-num{grid-area:num}.ex-title{grid-area:title}.ex-data{grid-area:data;justify-content:flex-start}.ex-toggle{grid-area:toggle;align-self:center}.ex-body{grid-template-columns:1fr;padding-left:36px}.tl-row{grid-template-columns:70px 1fr;gap:12px}.swap-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="hero">
+  <div class="meta-bar"><span>Aesthetic Physique Program — Day Card</span><span class="red" id="todayDate">—</span></div>
+  <div class="hero-eyebrow">Day 05 / Friday</div>
+  <h1 class="hero-title">Push<span class="lt">b</span></h1>
+  <p class="hero-sub">Delt density + abs architecture. Higher rep ranges, more isolation angles, and the only dedicated ab block in the week. The session that builds definition into what Push A built for size.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-label">Duration</div><div class="stat-val">~58 <span style="font-size:12px;font-weight:400">min</span></div></div>
+    <div class="stat"><div class="stat-label">Lifts</div><div class="stat-val">6 + abs + finisher</div></div>
+    <div class="stat"><div class="stat-label">Priority</div><div class="stat-val"><span class="red">Delt</span> density</div></div>
+    <div class="stat"><div class="stat-label">Unique</div><div class="stat-val">Ab block</div></div>
+  </div>
+</header>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">01</div><div><div class="sec-title">Day Timeline</div><div class="sec-kicker">End-of-week training — come in fueled</div></div></div>
+  <div class="timeline">
+    <div class="tl-row"><div class="tl-time">Morning</div><div><div class="tl-label">First Meal <span class="badge light">Friday Energy</span></div><div class="tl-body">Four sessions are done for the week. One left. <strong>Don't phone it in on nutrition today.</strong> Greek yogurt bowl or cottage cheese scramble. The abs block in this session is 8 minutes of real work — show up with glycogen.</div></div></div>
+    <div class="tl-row"><div class="tl-time">60–90 min pre</div><div><div class="tl-label">Pre-Workout Fuel <span class="badge key">Key</span></div><div class="tl-body"><strong>25g protein + 30–40g carbs.</strong> Same as every training day. Push B is a density session — higher reps, shorter rest. Carb availability directly affects the pump and the ab block intensity.</div><div class="tl-macro"><span><strong>25g</strong> protein</span><span><strong>30–40g</strong> carbs</span><span><strong>~250</strong> cal</span></div></div></div>
+    <div class="tl-row"><div class="tl-time">Session</div><div><div class="tl-label">Push B <span class="badge key">Training</span></div><div class="tl-body">58 min hard cap. Warmup → 6 delt lifts → 8 min abs block → finisher. <strong>Abs are trained with progressive load here</strong> — cable crunch weight gets logged and beaten each week, same as any other lift.</div></div></div>
+    <div class="tl-row"><div class="tl-time">Within 60 min</div><div><div class="tl-label">Post-Workout Meal <span class="badge key">Critical</span></div><div class="tl-body"><strong>35–40g protein + 50–70g carbs.</strong> End of the lifting week — your body is primed to absorb nutrients. This is when the food does the most work. Real food over a shake if at all possible.</div><div class="tl-macro"><span><strong>35–40g</strong> protein</span><span><strong>50–70g</strong> carbs</span><span><strong>~500</strong> cal</span></div></div></div>
+    <div class="tl-row"><div class="tl-time">Evening</div><div><div class="tl-label">Steam Room <span class="badge light">Recovery</span></div><div class="tl-body"><strong>15 min + cold shower.</strong> Tomorrow is Lower B — the heavy hip thrust day. Friday steam primes the posterior chain recovery window heading into Saturday's session.</div></div></div>
+    <div class="tl-row" style="border-bottom:1px solid var(--rule)"><div class="tl-time">Night</div><div><div class="tl-label">Alcohol Consideration <span class="badge light">Friday Risk</span></div><div class="tl-body">It's Friday. The plan allows ≤4 drinks per week during the build phase. If you drink tonight, drink clear spirits — mezcal neat, vodka soda, dry red wine. <strong>Never the night before a Lower day.</strong> Lower B is tomorrow.</div></div></div>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">02</div><div><div class="sec-title">Daily Checklist</div><div class="sec-kicker">Tap to check off</div></div></div>
+  <ul class="checklist" id="checklistEl">
+    <li data-key="d5-c1"><span class="cbox"></span><span class="ctext"><strong>Pre-workout fuel eaten</strong></span></li>
+    <li data-key="d5-c2"><span class="cbox"></span><span class="ctext"><strong>Session completed</strong> — all 6 lifts + abs + finisher</span></li>
+    <li data-key="d5-c3"><span class="cbox"></span><span class="ctext"><strong>Post-workout meal</strong> — within 60 min</span></li>
+    <li data-key="d5-c4"><span class="cbox"></span><span class="ctext"><strong>Cable crunch weight logged in Hevy</strong></span></li>
+    <li data-key="d5-c5"><span class="cbox"></span><span class="ctext"><strong>165g protein floor hit</strong></span></li>
+    <li data-key="d5-c6"><span class="cbox"></span><span class="ctext"><strong>Steam room done</strong></span></li>
+    <li data-key="d5-c7"><span class="cbox"></span><span class="ctext"><strong>If drinking tonight — clear spirits only, before midnight</strong></span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">03</div><div><div class="sec-title">Warmup</div><div class="sec-kicker">5 min / shoulder + core activation</div></div></div>
+  <div class="exercise-list">
+    <details class="warmup-item"><summary><span>Band pass-through × 15</span><span class="ex-toggle"></span></summary><div class="warmup-body">Same as Day 1 dislocates. Hold a band wider than shoulder-width, palms down, arms straight. Pass overhead and behind you, then reverse. Wider grip is easier. Opens the shoulder capsule before pressing.</div></details>
+    <details class="warmup-item"><summary><span>Cuban rotation (5 lb DB) × 10 each</span><span class="ex-toggle"></span></summary><div class="warmup-body">Hold a very light dumbbell. Lift elbow out to shoulder height, forearm hanging straight down. From there, rotate forearm up and back so palm faces forward (forearm now pointing up). Reverse. Ten reps. Activates the rotator cuff before overhead pressing — the muscle that stabilizes everything.</div></details>
+    <details class="warmup-item"><summary><span>Push-up to T-rotation × 6 each side</span><span class="ex-toggle"></span></summary><div class="warmup-body">Do one push-up. At the top, rotate your body to one side, lifting that arm straight up toward the ceiling — T shape. Hold one breath. Return, do another push-up, rotate the other side. Six rotations per side. Opens the thoracic spine for pressing and wakes up the serratus.</div></details>
+    <details class="warmup-item"><summary><span>Hollow hold × 20s</span><span class="ex-toggle"></span></summary><div class="warmup-body">Lie on your back. Press lower back into the floor and lift both legs and shoulders a few inches off the ground. Arms straight overhead. Body forms a shallow "U." Lower back must stay pressed to the floor — if it lifts, raise your legs higher. 20 seconds. This is also ab pre-activation for the abs block later.</div></details>
+    <details class="warmup-item"><summary><span>Band lateral raise × 20</span><span class="ex-toggle"></span></summary><div class="warmup-body">Stand on one end of a light band, hold other end in one hand. Lateral raise motion, 20 reps each arm. Activates medial delt with no fatigue cost before the loaded sets.</div></details>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">04</div><div><div class="sec-title">Working Sets</div><div class="sec-kicker">Tap + on any lift for instructions and starting weight</div></div></div>
+  <p style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--ink-soft);margin-bottom:20px">Tempo key — <span style="color:var(--accent)">A-B-X-D</span> = eccentric · bottom pause · concentric (X=explosive) · top pause</p>
+  <div class="expand-bar"><button onclick="expandAll(true)">Expand all</button><button onclick="expandAll(false)">Collapse all</button></div>
+  <div class="exercise-list">
+
+    <details class="exercise"><summary>
+      <span class="ex-num">01</span><span class="ex-title">Seated DB Shoulder Press (neutral grip)</span>
+      <span class="ex-data"><span>4×8</span><span class="pipe">·</span><span class="tempo">3-1-X-0</span><span class="pipe">·</span><span>75s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">No arch — ribs stay stacked over hips the whole set</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Bench fully upright. DBs at shoulder height, palms facing each other (neutral grip — more shoulder-friendly than pronated). Press straight up without rotating the dumbbells. No back arch, ribs over hips throughout. Lower under control to ear height. Neutral grip takes the shoulder joint through a safer arc than the barbell press.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">50–65 lb<span class="unit">each hand</span></div><div class="ex-weight-note">Push toward 70+ across the mesocycle. If you feel shoulder pinching, drop 5 lb and check that your grip is neutral not pronated.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">02</span><span class="ex-title">Egyptian Lateral Raise <span class="tag">novelty</span></span>
+      <span class="ex-data"><span>4×12 each</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">The lean removes all momentum — this is the purest medial delt isolation</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Stand next to a cable column. Grab a vertical post or rack with your free hand at chest height. Lean your body away from the post at ~30° — body forms a diagonal. Grab a D-handle from the low cable with the other hand (cable should be on the far side of your body from the working arm). From this leaning position, do a strict lateral raise. The lean eliminates all hip swing and momentum.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">12–18 lb</div><div class="ex-weight-note">Will feel ridiculously hard for the load. That's the entire point — it's the most isolated medial delt movement in the program.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">03</span><span class="ex-title">Cable Front Raise (rope, low pulley between legs)</span>
+      <span class="ex-data"><span>3×12</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Stop at forehead height — above that recruits traps</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Cable at lowest position, rope attachment. Straddle the cable so the rope runs up between your legs. Both hands on the rope, palms facing each other. Raise rope forward and up to forehead height — no higher. As you raise, separate the rope ends so hands end up wide apart at the top. Lower slowly. The between-legs setup creates a unique pulling angle that hits the front delt through a longer arc than standard front raises.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">30–50 lb</div><div class="ex-weight-note">Front delts respond to higher reps. Stop at forehead — going above that turns it into a trap exercise.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">04</span><span class="ex-title">Reverse Cable Fly (single-arm, cross-body)</span>
+      <span class="ex-data"><span>4×15 each</span><span class="pipe">·</span><span class="tempo">2-1-1-1</span><span class="pipe">·</span><span>30s rest each side</span><span class="pipe">·</span><span>RPE 9</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Lead with elbow — if you lead with hand it becomes a shoulder rotation</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Cable at chest height, D-handle. Stand sideways to the column, cable on your left. Grab with your right hand so cable crosses in front of you. Step away to create tension, arm extended across chest. Pull handle back and out leading with your elbow. Squeeze rear delt at end. Slow return. Switch sides. Short rest — 30 seconds each side, then immediately switch.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">12–20 lb</div><div class="ex-weight-note">High reps, short rest, RPE 9. By the last set you'll be working. Stay strict.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">05</span><span class="ex-title">Cable Crossover (low → high, upper shelf)</span>
+      <span class="ex-data"><span>3×12</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Hands meet at chin height — the angle is what builds the upper shelf</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Opposite of Day 1 crossover. Both pulleys at lowest position. D-handles, split stance, slight forward lean. Start with arms down at your sides. Sweep both hands up and across your body, meeting at chin height. The upward angle specifically loads the upper chest fibers — the "shelf" that shows above a low V-neck. Slow return. Hold the cross for 2 seconds.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">25–35 lb<span class="unit">per side</span></div><div class="ex-weight-note">This builds the chest line that shows in clothes. Form over load.</div></div>
+    </div></details>
+
+    <details class="exercise"><summary>
+      <span class="ex-num">06</span><span class="ex-title"><span class="tag iso">iso</span>DB Lateral Raise Hold (at parallel)</span>
+      <span class="ex-data"><span>3×30s</span><span class="pipe">·</span><span>45s rest</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Pinky just below thumb — don't shrug</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Hold a dumbbell in each hand. Lift both out to the side until arms are parallel to the floor. Hold for 30 seconds. Pinky just below thumb level (slight forward tilt). Don't shrug into the hold — if traps are activating, drop 2 lb. By second 20 your delts will scream. That's the adaptation signal. Hold through it.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">12–15 lb<span class="unit">each hand</span></div><div class="ex-weight-note">Lighter than your dynamic lateral raise. The 30-second hold is the work, not the load.</div></div>
+    </div></details>
+
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">05</div><div><div class="sec-title">Abs Block</div><div class="sec-kicker">8 min / tri-set × 3 rounds / 60s rest between rounds</div></div></div>
+  <div class="callout"><div class="callout-label">→ Abs are trained like any other muscle</div><p>Progressive load. Cable crunch weight goes up week over week. The goal is visible abs at rest — that requires direct hypertrophy work, not just being lean.</p></div>
+  <div class="expand-bar" style="margin-top:20px"><button onclick="expandAllAbs(true)">Expand all</button><button onclick="expandAllAbs(false)">Collapse all</button></div>
+  <div class="exercise-list" id="absList">
+    <details class="exercise"><summary>
+      <span class="ex-num">A</span><span class="ex-title">Cable Rope Crunch (kneeling)</span>
+      <span class="ex-data"><span>15 reps</span><span class="pipe">·</span><span class="tempo">3-1-2-0</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Arms are hooks — abs do the work, not the shoulders</div>
+      <div class="ex-section"><h6>How to do it</h6><p>High cable, rope attachment. Kneel facing away from cable. Hold rope at sides of your head, rope hanging over shoulders. Crunch down by curling your spine — chin toward pelvis — squeezing abs. Hold contracted position 2 seconds. Return slowly. Never pull with your arms — they're hooks for the rope. Log the weight and beat it every week.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">60–100 lb</div><div class="ex-weight-note">Most underloaded ab movement in any gym. Go heavy and progressive.</div></div>
+    </div></details>
+    <details class="exercise"><summary>
+      <span class="ex-num">B</span><span class="ex-title">Hanging Leg Raise (straight if possible)</span>
+      <span class="ex-data"><span>12 reps</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Posterior pelvic tilt BEFORE you lift — that's what makes it an ab exercise</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Hang from pull-up bar. Initiate by tilting your pelvis backward — tuck tailbone forward — before lifting. Then raise legs straight to parallel (or higher). Lower under control. The pelvic tilt at the start engages lower abs first so hip flexors don't dominate. If straight legs are too hard, bend knees. Add a DB between feet when 12 strict reps becomes easy.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">Bodyweight</div><div class="ex-weight-note">Add 5–15 lb DB between feet when strict reps feel manageable.</div></div>
+    </div></details>
+    <details class="exercise"><summary>
+      <span class="ex-num">C</span><span class="ex-title">Reverse Crunch with Hip Lift</span>
+      <span class="ex-data"><span>15 reps</span><span class="pipe">·</span><span class="tempo">2-1-1-1</span></span>
+      <span class="ex-toggle"></span>
+    </summary><div class="ex-body">
+      <div class="ex-cue">Lift hips toward the ceiling — not just knees toward chest</div>
+      <div class="ex-section"><h6>How to do it</h6><p>Lie on back, hands at sides, knees bent 90° feet off floor. Pull knees toward chest while simultaneously driving hips up off the floor — hips lift toward ceiling. Pause briefly at top with hips elevated. Lower slowly. Feet don't touch ground between reps. The hip lift is what separates this from a basic knee tuck.</p></div>
+      <div class="ex-section"><h6>Starting weight</h6><div class="ex-weight">Bodyweight</div><div class="ex-weight-note">The hip lift at top is non-negotiable. That's the lower ab contraction.</div></div>
+    </div></details>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">06</div><div><div class="sec-title">Finisher</div><div class="sec-kicker">3 min / delt EMOM — one movement per minute</div></div></div>
+  <div class="finisher">
+    <div class="fin-label">→ 3 minutes, no rest</div>
+    <p><strong>Min 1:</strong> 15 DB lateral raise · <strong>Min 2:</strong> 15 cable upright row (rope, wide grip) · <strong>Min 3:</strong> 15 rear delt fly (pec deck or cable).</p>
+    <p style="margin-top:10px;font-size:13px;color:var(--ink-mid)">One set per minute, move immediately. Hits all three delt heads in 3 minutes. In Week 3 (Peak), repeat for a second round (6 minutes total).</p>
+  </div>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">07</div><div><div class="sec-title">Swap Menu</div><div class="sec-kicker">Valid alternatives</div></div></div>
+  <dl class="swap-grid">
+    <dt>DB shoulder press →</dt><dd>HS shoulder press / Smith machine press</dd>
+    <dt>Egyptian lateral →</dt><dd>Single-arm cable lateral (low pulley) / machine lateral</dd>
+    <dt>Cable front raise →</dt><dd>DB front raise (plate held, both hands) / band front raise</dd>
+    <dt>Reverse cable fly →</dt><dd>Reverse pec deck / DB rear delt fly incline</dd>
+    <dt>Low-to-high crossover →</dt><dd>Low cable fly single-arm / low incline DB fly</dd>
+    <dt>Cable crunch →</dt><dd>Ab wheel rollout / decline weighted crunch</dd>
+  </dl>
+</div>
+
+<div class="section">
+  <div class="section-head"><div class="sec-num">08</div><div><div class="sec-title">This Week's Targets</div><div class="sec-kicker">Tap to mark</div></div></div>
+  <div class="progress-row">
+    <span style="color:var(--ink);font-weight:700;font-size:12px;text-transform:uppercase;letter-spacing:.08em;width:100%;margin-bottom:4px">Push B — Week Goals</span>
+    <span class="marker" data-key="d5-p1"><span class="box"></span> Shoulder press load or reps up</span>
+    <span class="marker" data-key="d5-p2"><span class="box"></span> Egyptian lateral — strict tempo every rep</span>
+    <span class="marker" data-key="d5-p3"><span class="box"></span> Cable crunch weight up from last week</span>
+    <span class="marker" data-key="d5-p4"><span class="box"></span> All 3 ab movements + 3 rounds completed</span>
+    <span class="marker" data-key="d5-p5"><span class="box"></span> Protein floor hit</span>
+    <span class="marker" data-key="d5-p6"><span class="box"></span> Logged in Hevy</span>
+  </div>
+</div>
+
+<footer><div class="footer-mark">Day<br><span class="red">05</span></div><div class="footer-meta">Push B · Delt Density + Abs<br>Aesthetic Physique Program v.2<br>Tap + on any lift for instructions</div></footer>
+</div>
+<script>
+const months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const now=new Date();
+document.getElementById('todayDate').textContent=String(now.getDate()).padStart(2,'0')+' / '+months[now.getMonth()]+' / '+now.getFullYear();
+function expandAll(o){document.querySelectorAll('details.exercise,details.warmup-item').forEach(d=>{if(o)d.setAttribute('open','');else d.removeAttribute('open')});}
+function expandAllAbs(o){document.querySelectorAll('#absList details.exercise').forEach(d=>{if(o)d.setAttribute('open','');else d.removeAttribute('open')});}
+window.expandAll=expandAll;window.expandAllAbs=expandAllAbs;
+document.querySelectorAll('#checklistEl li').forEach(li=>{const k='apg-'+li.getAttribute('data-key');if(localStorage.getItem(k)==='1')li.classList.add('done');li.addEventListener('click',()=>{li.classList.toggle('done');localStorage.setItem(k,li.classList.contains('done')?'1':'0');});});
+document.querySelectorAll('.progress-row .marker').forEach(m=>{const k='apg-'+m.getAttribute('data-key');if(localStorage.getItem(k)==='1')m.classList.add('checked');m.addEventListener('click',()=>{m.classList.toggle('checked');localStorage.setItem(k,m.classList.contains('checked')?'1':'0');});});
+</script>
+</body>
+</html>
