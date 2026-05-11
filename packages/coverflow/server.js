@@ -662,10 +662,38 @@ if (process.env.NODE_ENV === 'development') {
 
 
 // Private — password-protected workout plan
-app.use('/t', basicAuth({
-  users: { 'theo': 'fit' },
-  challenge: true
-}), express.static(PRIVATE_DIR));
+// First visit prompts for password; on success we mint a long-lived signed
+// cookie so the device skips the prompt on later visits.
+const T_COOKIE_NAME = 't_auth';
+const T_COOKIE_MAX_AGE_S = 365 * 24 * 60 * 60;
+const tBasicAuth = basicAuth({ users: { 'theo': 'fit' }, challenge: true });
+
+function tAuth(req, res, next) {
+  const cookieHeader = req.headers.cookie || '';
+  const cookie = cookieHeader.split(';').map(s => s.trim()).find(s => s.startsWith(T_COOKIE_NAME + '='));
+  if (cookie) {
+    try {
+      verifyJwt(cookie.slice(T_COOKIE_NAME.length + 1), JWT_SECRET);
+      return next();
+    } catch (e) { /* fall through to basic auth */ }
+  }
+  tBasicAuth(req, res, (err) => {
+    if (err) return next(err);
+    const token = signJwt({ scope: 't' }, JWT_SECRET, '365d');
+    const parts = [
+      `${T_COOKIE_NAME}=${token}`,
+      `Max-Age=${T_COOKIE_MAX_AGE_S}`,
+      'Path=/t',
+      'HttpOnly',
+      'SameSite=Lax'
+    ];
+    if (process.env.NODE_ENV === 'production') parts.push('Secure');
+    res.append('Set-Cookie', parts.join('; '));
+    next();
+  });
+}
+
+app.use('/t', tAuth, express.static(PRIVATE_DIR));
 
 // Basic auth for specific public files
 app.get('/hudson-deck.html', basicAuth({ users: { 'guest': 'MakeItTogether25!' }, challenge: true }), (req, res) => {
