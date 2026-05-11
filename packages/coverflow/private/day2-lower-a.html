@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Day 2 — Lower A / Glute Sculpt</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #F4F1EA;
+    --paper-warm: #ECE7DB;
+    --ink: #0A0A0A;
+    --ink-mid: #444;
+    --ink-soft: #777;
+    --rule: #0A0A0A;
+    --rule-hair: #C9C3B5;
+    --accent: #D72325;
+    --accent-soft: #E63B3D;
+    --highlight: #F4E04D;
+    --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --serif: "Times New Roman", Times, serif;
+    --mono: "IBM Plex Mono", Menlo, monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent); color: var(--paper); }
+
+  /* ============ PAGE ============ */
+  .page { max-width: 780px; margin: 0 auto; padding: 0 24px 100px; }
+
+  /* ============ HERO ============ */
+  header.hero {
+    border-bottom: 2px solid var(--rule);
+    padding: 40px 0 32px;
+    margin-bottom: 0;
+  }
+  .meta-bar {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-mid);
+    margin-bottom: 40px;
+  }
+  .meta-bar .red { color: var(--accent); }
+
+  .hero-eyebrow {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .hero-title {
+    font-size: clamp(64px, 14vw, 148px);
+    font-weight: 900;
+    line-height: 0.86;
+    letter-spacing: -0.04em;
+    margin-bottom: 20px;
+  }
+  .hero-title .lt {
+    display: block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 200;
+    color: var(--ink-mid);
+  }
+  .hero-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 19px;
+    line-height: 1.45;
+    color: var(--ink-mid);
+    max-width: 560px;
+    margin-bottom: 36px;
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .stat { padding: 14px 16px 14px 0; border-right: 1px solid var(--rule-hair); }
+  .stat:last-child { border-right: none; }
+  .stat-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-soft); margin-bottom: 5px; }
+  .stat-val { font-size: 17px; font-weight: 700; letter-spacing: -0.02em; }
+  .stat-val .red { color: var(--accent); }
+
+  /* ============ SECTION HEADS ============ */
+  .section { margin-top: 80px; }
+  .section-head {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    gap: 20px;
+    align-items: end;
+    border-bottom: 2px solid var(--rule);
+    padding-bottom: 14px;
+    margin-bottom: 32px;
+  }
+  .sec-num { font-size: 52px; font-weight: 900; letter-spacing: -0.04em; line-height: 0.85; color: var(--accent); }
+  .sec-title { font-size: 26px; font-weight: 800; letter-spacing: -0.02em; text-transform: uppercase; line-height: 1; }
+  .sec-kicker {
+    grid-column: 2;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    margin-top: 5px;
+  }
+
+  /* ============ DAY TIMELINE ============ */
+  .timeline { border-top: 1px solid var(--rule); }
+  .tl-row {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--rule-hair);
+    align-items: start;
+  }
+  .tl-time {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding-top: 2px;
+  }
+  .tl-content {}
+  .tl-label {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .tl-label .badge {
+    font-family: var(--mono);
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 2px 6px;
+    background: var(--highlight);
+    color: var(--ink);
+  }
+  .tl-label .badge.key { background: var(--accent); color: var(--paper); }
+  .tl-label .badge.light { background: transparent; border: 1px solid var(--rule-hair); color: var(--ink-soft); }
+  .tl-body {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-mid);
+  }
+  .tl-body strong { color: var(--ink); font-weight: 600; }
+  .tl-body em { font-family: var(--serif); font-style: italic; }
+  .tl-macro {
+    display: flex;
+    gap: 16px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+  }
+  .tl-macro span {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--ink-mid);
+    background: var(--paper-warm);
+    padding: 4px 8px;
+    border: 1px solid var(--rule-hair);
+  }
+  .tl-macro span strong { color: var(--accent); font-weight: 600; }
+
+  /* ============ EXERCISE CARDS ============ */
+  .expand-bar {
+    display: flex; justify-content: flex-end; gap: 10px;
+    margin-bottom: 12px;
+  }
+  .expand-bar button {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    padding: 7px 12px;
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+  }
+  .expand-bar button:hover { background: var(--ink); color: var(--paper); }
+
+  .exercise-list { display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
+
+  details.exercise {
+    border-bottom: 1px solid var(--rule-hair);
+  }
+  details.exercise:last-child { border-bottom: 1px solid var(--rule); }
+  details.exercise[open] { background: rgba(215,35,37,.025); }
+
+  details.exercise > summary {
+    display: grid;
+    grid-template-columns: 28px 1fr auto 28px;
+    gap: 14px;
+    align-items: center;
+    padding: 15px 4px;
+    cursor: pointer;
+    list-style: none;
+  }
+  details.exercise > summary::-webkit-details-marker { display: none; }
+  details.exercise > summary:hover .ex-title { color: var(--accent); }
+
+  .ex-num { font-family: var(--mono); font-size: 10px; color: var(--ink-soft); letter-spacing: 0.06em; }
+  .ex-title { font-size: 14px; font-weight: 700; line-height: 1.25; letter-spacing: -0.01em; }
+  .ex-title .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 5px;
+    vertical-align: middle;
+    margin-left: 4px;
+  }
+  .ex-title .tag { background: var(--highlight); color: var(--ink); }
+  .ex-title .tag.iso { background: var(--ink); color: var(--paper); margin-left: 0; margin-right: 4px; }
+  .ex-data {
+    display: flex; gap: 10px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    align-items: center;
+    white-space: nowrap;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+  .ex-data .tempo { color: var(--accent); font-weight: 500; }
+  .ex-data .pipe { color: var(--rule-hair); }
+
+  .ex-toggle {
+    width: 24px; height: 24px;
+    border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 14px; font-weight: 300;
+    flex-shrink: 0;
+  }
+  details.exercise[open] > summary .ex-toggle { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  details.exercise[open] > summary .ex-toggle::before { content: "−"; }
+  details.exercise:not([open]) > summary .ex-toggle::before { content: "+"; }
+
+  .ex-body {
+    padding: 4px 4px 24px 42px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px 28px;
+  }
+  .ex-cue {
+    grid-column: 1 / -1;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink);
+    padding: 10px 16px;
+    background: rgba(215,35,37,.06);
+    border-left: 2px solid var(--accent);
+    margin-bottom: 2px;
+  }
+  .ex-section h6 {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    margin-bottom: 7px;
+  }
+  .ex-section p { font-size: 13px; line-height: 1.55; color: var(--ink-mid); }
+  .ex-weight { font-size: 18px; font-weight: 700; color: var(--ink); letter-spacing: -0.01em; }
+  .ex-weight .unit { font-family: var(--mono); font-size: 10px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 400; margin-left: 4px; }
+  .ex-weight-note { font-size: 12px; color: var(--ink-mid); margin-top: 5px; line-height: 1.5; }
+
+  /* warmup */
+  details.warmup-item { border-bottom: 1px solid var(--rule-hair); }
+  details.warmup-item:last-child { border-bottom: 1px solid var(--rule); }
+  details.warmup-item > summary {
+    display: grid;
+    grid-template-columns: 1fr 24px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 4px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 13px;
+  }
+  details.warmup-item > summary::-webkit-details-marker { display: none; }
+  details.warmup-item > summary:hover { color: var(--accent); }
+  details.warmup-item > summary .ex-toggle { width: 22px; height: 22px; font-size: 12px; }
+  details.warmup-item[open] > summary .ex-toggle { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  details.warmup-item[open] > summary .ex-toggle::before { content: "−"; }
+  details.warmup-item:not([open]) > summary .ex-toggle::before { content: "+"; }
+  .warmup-body { padding: 4px 4px 16px; font-size: 12px; color: var(--ink-mid); line-height: 1.55; max-width: 600px; }
+
+  /* section label */
+  .sec-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin: 28px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-hair);
+  }
+  .sec-label:first-child { margin-top: 0; }
+
+  /* swap */
+  .swap-grid { display: grid; grid-template-columns: 180px 1fr; gap: 4px 16px; margin-top: 12px; font-size: 13px; }
+  .swap-grid dt { font-weight: 600; color: var(--ink); padding: 6px 0; border-bottom: 1px solid var(--rule-hair); }
+  .swap-grid dd { color: var(--ink-mid); font-family: var(--serif); font-style: italic; padding: 6px 0; border-bottom: 1px solid var(--rule-hair); }
+
+  /* finisher */
+  .finisher {
+    background: var(--paper-warm);
+    border-left: 3px solid var(--accent);
+    padding: 18px 22px;
+    margin-top: 8px;
+  }
+  .finisher p { font-size: 13px; line-height: 1.55; margin: 0; }
+  .finisher p + p { margin-top: 8px; }
+  .finisher .fin-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 10px; }
+
+  /* callout */
+  .callout { background: var(--ink); color: var(--paper); padding: 26px 30px; margin: 24px 0; }
+  .callout-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-soft); margin-bottom: 8px; }
+  .callout p { font-family: var(--serif); font-style: italic; font-size: 19px; line-height: 1.4; }
+
+  /* progress markers */
+  .progress-row {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    margin-top: 28px; padding-top: 16px;
+    border-top: 1px solid var(--rule-hair);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .progress-row .marker { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .progress-row .marker .box { width: 12px; height: 12px; border: 1px solid var(--ink); display: inline-block; flex-shrink: 0; }
+  .progress-row .marker.checked .box { background: var(--accent); border-color: var(--accent); }
+
+  /* conditioning */
+  .cond-block {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 20px;
+    padding: 20px 0;
+    border-top: 1px solid var(--rule-hair);
+    border-bottom: 1px solid var(--rule-hair);
+  }
+  .cond-type { font-size: 22px; font-weight: 900; letter-spacing: -0.03em; line-height: 1; text-transform: uppercase; }
+  .cond-detail { font-size: 13px; line-height: 1.55; color: var(--ink-mid); }
+  .cond-detail strong { color: var(--ink); font-weight: 600; }
+
+  /* checklist */
+  .checklist { list-style: none; margin-top: 12px; }
+  .checklist li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-hair);
+    font-size: 13px;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .checklist .cbox { width: 14px; height: 14px; border: 1px solid var(--ink); flex-shrink: 0; margin-top: 2px; }
+  .checklist li.done .cbox { background: var(--accent); border-color: var(--accent); }
+  .checklist li.done .ctext { text-decoration: line-through; opacity: 0.5; }
+  .checklist .ctext strong { font-weight: 700; }
+  .checklist .ctext em { font-family: var(--serif); font-style: italic; color: var(--ink-mid); }
+
+  /* footer */
+  footer {
+    margin-top: 80px;
+    padding: 36px 0 20px;
+    border-top: 2px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .footer-mark { font-size: 44px; font-weight: 900; letter-spacing: -0.04em; line-height: 0.85; }
+  .footer-mark .red { color: var(--accent); }
+  .footer-meta { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); text-align: right; line-height: 1.7; }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 640px) {
+    .hero-title { font-size: 68px; }
+    .hero-stats { grid-template-columns: 1fr 1fr; }
+    .stat:nth-child(2) { border-right: none; }
+    .stat:nth-child(1), .stat:nth-child(2) { border-bottom: 1px solid var(--rule-hair); }
+    details.exercise > summary { grid-template-columns: 28px 1fr 24px; grid-template-areas: "num title toggle" ". data ."; gap: 6px 10px; }
+    .ex-num { grid-area: num; }
+    .ex-title { grid-area: title; }
+    .ex-data { grid-area: data; justify-content: flex-start; }
+    .ex-toggle { grid-area: toggle; align-self: center; }
+    .ex-body { grid-template-columns: 1fr; padding-left: 36px; }
+    .tl-row { grid-template-columns: 70px 1fr; gap: 12px; }
+    .swap-grid { grid-template-columns: 1fr; }
+    .swap-grid dt { border-bottom: none; padding-bottom: 0; }
+    .swap-grid dd { border-bottom: 1px solid var(--rule-hair); }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="meta-bar">
+      <span>Aesthetic Physique Program — Day Card</span>
+      <span class="red" id="todayDate">—</span>
+    </div>
+    <div class="hero-eyebrow">Day 02 / Tuesday</div>
+    <h1 class="hero-title">
+      Lower<span class="lt">a</span>
+    </h1>
+    <p class="hero-sub">Glute sculpt + lean legs. The session that builds the shelf. Hip thrust is the anchor — everything else supports it.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-label">Duration</div><div class="stat-val">~58 <span style="font-size:12px; font-weight:400;">min</span></div></div>
+      <div class="stat"><div class="stat-label">Lifts</div><div class="stat-val">7 + finisher</div></div>
+      <div class="stat"><div class="stat-label">Priority</div><div class="stat-val"><span class="red">Glute</span> shelf</div></div>
+      <div class="stat"><div class="stat-label">Post-session</div><div class="stat-val">12 min walk</div></div>
+    </div>
+  </header>
+
+  <!-- ============ 01 DAY TIMELINE ============ -->
+  <div class="section" id="timeline">
+    <div class="section-head">
+      <div class="sec-num">01</div>
+      <div>
+        <div class="sec-title">Day Timeline</div>
+        <div class="sec-kicker">Eating, training, recovery — in order</div>
+      </div>
+    </div>
+
+    <div class="timeline">
+
+      <div class="tl-row">
+        <div class="tl-time">Morning</div>
+        <div class="tl-content">
+          <div class="tl-label">Wake + First Meal <span class="badge light">Optional</span></div>
+          <div class="tl-body">If you're training morning: skip this or keep it very light (coffee, small piece of fruit). If training afternoon: this is a real meal. <strong>Greek yogurt bowl or cottage cheese scramble</strong> — aim for 40–50g protein. See nutrition section.</div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">60–90 min<br>pre-session</div>
+        <div class="tl-content">
+          <div class="tl-label">Pre-Workout Fuel <span class="badge key">Key</span></div>
+          <div class="tl-body"><strong>25g protein + 30–40g carbs.</strong> Default: 1 scoop whey + banana + rice cake with almond butter. Don't train Lower A fasted — the hip thrust and RDL volume requires glycogen to hit proper RPE.</div>
+          <div class="tl-macro">
+            <span><strong>25g</strong> protein</span>
+            <span><strong>30–40g</strong> carbs</span>
+            <span><strong>~250</strong> cal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">10 min pre</div>
+        <div class="tl-content">
+          <div class="tl-label">Priming <span class="badge light">Quick</span></div>
+          <div class="tl-body">200mg caffeine if you want it — but not required. Walk to the gym or park + walk in. That's your CNS warmup. Don't stretch cold muscles statically — save that for the warmup block inside.</div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">Session</div>
+        <div class="tl-content">
+          <div class="tl-label">Lower A <span class="badge key">Training</span></div>
+          <div class="tl-body">58 minutes hard cap. Warmup → 7 working sets → finisher. See sections below. <strong>Bring your phone out of your pocket</strong> — Hevy app for logging, playlist running. Rest times are real — don't scroll Instagram, watch the timer.</div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">Post-session</div>
+        <div class="tl-content">
+          <div class="tl-label">12 min Incline Walk <span class="badge">Conditioning</span></div>
+          <div class="tl-body">12% incline, 3.0 mph, treadmill. Do this immediately after the finisher — legs are already working, no extra CNS cost. This is not cardio for the sake of cardio; it's a low-impact caloric burn while your muscles are pumped. Glutes stay activated through the walk.</div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">Within 60 min</div>
+        <div class="tl-content">
+          <div class="tl-label">Post-Workout Meal <span class="badge key">Critical</span></div>
+          <div class="tl-body"><strong>35–40g protein + 50–70g carbs.</strong> This is the most important meal of a Lower A day — your glutes and hamstrings are depleted and need to rebuild. Default: 2 scoops whey + 1 cup oats + berries. Or a real-food option: rotisserie chicken bowl with rice.</div>
+          <div class="tl-macro">
+            <span><strong>35–40g</strong> protein</span>
+            <span><strong>50–70g</strong> carbs</span>
+            <span><strong>~500</strong> cal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">Afternoon</div>
+        <div class="tl-content">
+          <div class="tl-label">Main Meal</div>
+          <div class="tl-body">Real food. Protein + vegetables + carbs. This is where you close the daily gap. <strong>Target: 50g protein minimum.</strong> Mediterranean plate, poke bowl with double protein, grilled protein + rice + salad. Don't skip this because semaglutide killed your appetite — your glutes are rebuilding right now and need amino acids.</div>
+          <div class="tl-macro">
+            <span><strong>50g+</strong> protein</span>
+            <span><strong>+ vegetables</strong></span>
+            <span><strong>~700</strong> cal</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">Evening</div>
+        <div class="tl-content">
+          <div class="tl-label">Steam Room <span class="badge light">Recovery</span></div>
+          <div class="tl-body"><strong>15 minutes.</strong> Post-lift or evening — either works. Hydrate 16 oz electrolyte water before + after. Finish with a 60–90s cold shower — the contrast effect is what matters, not the duration of the cold. This is your Lower A recovery protocol: moves lactic acid, reduces DOMS in glutes + hamstrings by tomorrow.</div>
+        </div>
+      </div>
+
+      <div class="tl-row">
+        <div class="tl-time">Night</div>
+        <div class="tl-content">
+          <div class="tl-label">Before Bed <span class="badge light">Optional</span></div>
+          <div class="tl-body"><strong>Optional: 30g casein protein</strong> (cottage cheese, Greek yogurt, or casein shake) if you're still short on the day's protein floor. Casein digests slowly overnight — it feeds muscle repair during sleep, which is when the glute session actually converts into shape. <em>Only useful if you're under 140g for the day.</em></div>
+        </div>
+      </div>
+
+      <div class="tl-row" style="border-bottom: 1px solid var(--rule);">
+        <div class="tl-time">Sleep</div>
+        <div class="tl-content">
+          <div class="tl-label">7+ Hours <span class="badge key">Non-Negotiable</span></div>
+          <div class="tl-body">Lower A is the highest-volume lower session. Your glutes will be sore tomorrow — <strong>sleep is the only time they actually grow.</strong> No alcohol tonight. Phone out by 11pm. Room cool. This is training — it just happens in bed.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ 02 DAY CHECKLIST ============ -->
+  <div class="section" id="checklist">
+    <div class="section-head">
+      <div class="sec-num">02</div>
+      <div>
+        <div class="sec-title">Daily Checklist</div>
+        <div class="sec-kicker">Tap to check off — saved in your browser</div>
+      </div>
+    </div>
+
+    <ul class="checklist" id="checklistEl">
+      <li data-key="d2-c1"><span class="cbox"></span><span class="ctext"><strong>Pre-workout fuel eaten</strong> — 60–90 min before session</span></li>
+      <li data-key="d2-c2"><span class="cbox"></span><span class="ctext"><strong>Session completed</strong> — all 7 lifts + finisher</span></li>
+      <li data-key="d2-c3"><span class="cbox"></span><span class="ctext"><strong>Post-workout meal</strong> — within 60 min, 35–40g protein + carbs</span></li>
+      <li data-key="d2-c4"><span class="cbox"></span><span class="ctext"><strong>12 min incline walk</strong> — post-session on treadmill</span></li>
+      <li data-key="d2-c5"><span class="cbox"></span><span class="ctext"><strong>165g protein floor hit</strong> — or on track to hit it by end of day</span></li>
+      <li data-key="d2-c6"><span class="cbox"></span><span class="ctext"><strong>Real food meal eaten</strong> — vegetables present, no processed carbs</span></li>
+      <li data-key="d2-c7"><span class="cbox"></span><span class="ctext"><strong>Steam room done</strong> — 15 min + 60–90s cold shower after</span></li>
+      <li data-key="d2-c8"><span class="cbox"></span><span class="ctext"><strong>Logged in Hevy</strong> — hip thrust and RDL weights recorded</span></li>
+      <li data-key="d2-c9"><span class="cbox"></span><span class="ctext"><strong>Asleep by midnight</strong> — phone out of bedroom</span></li>
+    </ul>
+  </div>
+
+  <!-- ============ 03 WARMUP ============ -->
+  <div class="section" id="warmup">
+    <div class="section-head">
+      <div class="sec-num">03</div>
+      <div>
+        <div class="sec-title">Warmup</div>
+        <div class="sec-kicker">5 min / non-negotiable before any loaded hip hinge</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">→ Why warmup matters most on Lower A</div>
+      <p>The hip joint is the most complex joint you're loading today. Cold hip flexors + glutes = compensatory lower back on the hip thrust. Five minutes here prevents injury and doubles your mind-muscle connection on the first working set.</p>
+    </div>
+
+    <div class="sec-label" style="margin-top: 28px;">5 movements — tap + for instructions</div>
+    <div class="exercise-list">
+      <details class="warmup-item">
+        <summary><span>Hip CARs × 5 each side</span><span class="ex-toggle"></span></summary>
+        <div class="warmup-body">"Controlled Articular Rotations." Stand on one leg and hold a wall or rack for balance. Lift the other knee to hip height, then slowly circle the entire leg outward — knee traces a big arc up and out to the side, then behind you, then back to start. Make the circle as large as your mobility allows. Reverse direction. Five full circles each direction, each leg. You should feel the hip socket moving through its full range.</div>
+      </details>
+      <details class="warmup-item">
+        <summary><span>Glute bridge × 15 (3-second top hold)</span><span class="ex-toggle"></span></summary>
+        <div class="warmup-body">Lie on your back, knees bent, feet flat on the floor hip-width apart. Drive through your heels to lift your hips until your body forms a straight line from knees to shoulders. Squeeze your glutes hard at the top — hold for a full 3 seconds. Lower under control. 15 reps. This isn't just warmup, it's activation — if you rush through these, your first hip thrust set will feel like your lower back is doing all the work.</div>
+      </details>
+      <details class="warmup-item">
+        <summary><span>90/90 hip switches × 8 each side</span><span class="ex-toggle"></span></summary>
+        <div class="warmup-body">Sit on the floor with both knees bent at 90 degrees. One leg is in front of you (knee pointing outward), one is to the side (knee pointing sideways). Without using your hands, rotate your hips to switch sides — the front leg swings to the side, the side leg comes to front. Sit tall throughout. Eight switches each direction. This opens the hip rotators and adductors you'll be loading in the Bulgarian split squat and cable kickback.</div>
+      </details>
+      <details class="warmup-item">
+        <summary><span>Goblet squat hold × 30s (light DB)</span><span class="ex-toggle"></span></summary>
+        <div class="warmup-body">Hold a 10kg dumbbell vertically against your chest with both hands cupping the top weight. Squat down until your thighs are parallel to the floor or below — keep your torso upright, chest tall. Hold the bottom position for 30 full seconds. Use your elbows to gently push your knees apart. If your heels lift, you need more ankle mobility — do this on a slight incline (heels on a 5 lb plate).</div>
+      </details>
+      <details class="warmup-item">
+        <summary><span>Lateral band walk × 15 each direction</span><span class="ex-toggle"></span></summary>
+        <div class="warmup-body">Loop a mini-band just above your knees (or around your ankles for a harder version). Drop into a quarter squat — slight bend, hips back a few inches. Step laterally one direction for 15 steps, keeping tension on the band throughout (feet never come together). Reverse and walk back 15 steps. This pre-activates the gluteus medius — the upper-glute "shelf" muscle. If you skip this, the abduction machine and kickbacks will feel disconnected.</div>
+      </details>
+    </div>
+  </div>
+
+  <!-- ============ 04 WORKING SETS ============ -->
+  <div class="section" id="session">
+    <div class="section-head">
+      <div class="sec-num">04</div>
+      <div>
+        <div class="sec-title">Working Sets</div>
+        <div class="sec-kicker">Tap + on any lift for instructions and starting weight</div>
+      </div>
+    </div>
+
+    <p style="font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin-bottom: 20px;">
+      Tempo key — <span style="color: var(--accent);">A-B-X-D</span> = eccentric · bottom pause · concentric (X = explosive) · top pause
+    </p>
+
+    <div class="expand-bar">
+      <button onclick="expandAll(true)">Expand all</button>
+      <button onclick="expandAll(false)">Collapse all</button>
+    </div>
+
+    <div class="exercise-list">
+
+      <!-- 01 Hip Thrust -->
+      <details class="exercise">
+        <summary>
+          <span class="ex-num">01</span>
+          <span class="ex-title">Barbell Hip Thrust</span>
+          <span class="ex-data">
+            <span>4 × 8</span><span class="pipe">·</span>
+            <span class="tempo">2-2-X-1</span><span class="pipe">·</span>
+            <span>90s rest</span><span class="pipe">·</span>
+            <span>RPE 8</span>
+          </span>
+          <span class="ex-toggle"></span>
+        </summary>
+        <div class="ex-body">
+          <div class="ex-cue">Chin tucked, ribs down, heel drive — the top hold is the rep</div>
+          <div class="ex-section">
+            <h6>How to do it</h6>
+            <p>Sit on the floor with your upper back braced against a bench — the edge should hit just below your shoulder blades. Knees bent, feet flat about hip-width. Roll a loaded barbell over your hips — use a thick pad or Hampton bar. Tuck your chin (look at your hips, not the ceiling). Drive through your heels to lift hips up until your body forms a straight line from knees to shoulders. Squeeze glutes hard at the top and hold for 2 full seconds. Lower under control. The hold is not optional — it's where the shape comes from.</p>
+          </div>
+          <div class="ex-section">
+            <h6>Starting weight</h6>
+            <div class="ex-weight">185–225 lb</div>
+            <div class="ex-weight-note">This is your anchor lift — log every session. Most people progress to 275+ quickly. If your lower back is doing the work, your feet are too close to your hips — walk them out an inch.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 02 DB RDL -->
+      <details class="exercise">
+        <summary>
+          <span class="ex-num">02</span>
+          <span class="ex-title">Dumbbell RDL</span>
+          <span class="ex-data">
+            <span>4 × 10</span><span class="pipe">·</span>
+            <span class="tempo">4-1-X-0</span><span class="pipe">·</span>
+            <span>75s rest</span><span class="pipe">·</span>
+            <span>RPE 8</span>
+          </span>
+          <span class="ex-toggle"></span>
+        </summary>
+        <div class="ex-body">
+          <div class="ex-cue">Push hips to the wall behind you — don't pull the weight down</div>
+          <div class="ex-section">
+            <h6>How to do it</h6>
+            <p>Hold a dumbbell in each hand, standing tall, feet hip-width apart. Create a slight knee bend that doesn't change during the movement — this is a hinge, not a squat. Push your hips backward (like trying to close a car door with your butt) while the dumbbells travel down the front of your thighs. Keep your back completely flat and your chest proud. Lower until you feel a deep stretch in your hamstrings — usually mid-shin. Drive your hips forward to return to standing. The 4-second eccentric is where the hamstring sweep gets built.</p>
+          </div>
+          <div class="ex-section">
+            <h6>Starting weight</h6>
+            <div class="ex-weight">60–80 lb <span class="unit">each hand</span></div>
+            <div class="ex-weight-note">Use straps if grip fails before hamstrings — grip is not the target today. Should feel a strong hamstring stretch at the bottom of every rep.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 03 Bulgarian -->
+      <details class="exercise">
+        <summary>
+          <span class="ex-num">03</span>
+          <span class="ex-title">Bulgarian Split Squat <span class="tag">15° forward lean</span></span>
+          <span class="ex-data">
+            <span>3 × 10 each</span><span class="pipe">·</span>
+            <span class="tempo">3-1-X-1</span><span class="pipe">·</span>
+            <span>60s rest</span><span class="pipe">·</span>
+            <span>RPE 8</span>
+          </span>
+          <span class="ex-toggle"></span>
+        </summary>
+        <div class="ex-body">
+          <div class="ex-cue">Long stride, drive through the front heel — lean forward for glutes not back for quads</div>
+          <div class="ex-section">
+            <h6>How to do it</h6>
+            <p>Stand about 2–3 feet in front of a bench. Place the top of your back foot on the bench, laces down. Hold dumbbells at your sides. Lean your torso forward 15 degrees — this is critical, it's what makes this a glute exercise instead of a quad exercise. Lower until your front thigh is parallel to the floor. Drive through the front heel to stand back up. Your front shin should stay mostly vertical — if your knee shoots way past your toes, step the front foot forward an inch.</p>
+          </div>
+          <div class="ex-section">
+            <h6>Starting weight</h6>
+            <div class="ex-weight">30–45 lb <span class="unit">DBs each hand</span></div>
+            <div class="ex-weight-note">Balance is part of the training stress. If you can't hit 10 strict reps, do bodyweight first until the pattern is grooved. Don't rush the load.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 04 Cable Kickback -->
+      <details class="exercise">
+        <summary>
+          <span class="ex-num">04</span>
+          <span class="ex-title">Cable Glute Kickback (single-leg)</span>
+          <span class="ex-data">
+            <span>4 × 12 each</span><span class="pipe">·</span>
+            <span class="tempo">2-1-1-2</span><span class="pipe">·</span>
+            <span>45s rest</span><span class="pipe">·</span>
+            <span>RPE 8</span>
+          </span>
+          <span class="ex-toggle"></span>
+        </summary>
+        <div class="ex-body">
+          <div class="ex-cue">The squeeze and hold is the rep — don't reach for more range with your lower back</div>
+          <div class="ex-section">
+            <h6>How to do it</h6>
+            <p>Attach an ankle strap to a low cable. Face the machine and hold the frame for balance. Strap one ankle. Kick that leg straight back and slightly across your body's center line — the working glute should cross the midline of your standing leg at full extension. Squeeze the glute hard at the top and hold for 2 seconds. Lower under control. The squeeze, not the range, is where the shape comes from. If you feel your lower back arching to get more extension, drop the weight 10 lb.</p>
+          </div>
+          <div class="ex-section">
+            <h6>Starting weight</h6>
+            <div class="ex-weight">25–40 lb</div>
+            <div class="ex-weight-note">Lower than most people start. Strict form first, load second. The 2-second hold is non-negotiable at any weight.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 05 Abduction -->
+      <details class="exercise">
+        <summary>
+          <span class="ex-num">05</span>
+          <span class="ex-title">Hip Abduction Machine <span class="tag">forward lean</span></span>
+          <span class="ex-data">
+            <span>4 × 15</span><span class="pipe">·</span>
+            <span class="tempo">2-0-1-2</span><span class="pipe">·</span>
+            <span>45s rest</span><span class="pipe">·</span>
+            <span>RPE 9</span>
+          </span>
+          <span class="ex-toggle"></span>
+        </summary>
+        <div class="ex-body">
+          <div class="ex-cue">Lean 30° forward — that single adjustment changes the target muscle entirely</div>
+          <div class="ex-section">
+            <h6>How to do it</h6>
+            <p>Sit in the abduction machine with knees against the pads. Here's the key: instead of sitting upright (which hits the lower glute), lean your torso forward about 30 degrees. This shifts the target to the gluteus medius — the upper glute that creates the side-shelf look in pants and swimwear. Press your knees apart to full range, brief pause, return slowly. Don't bounce. RPE 9 on the last set means you're 1 rep from failure.</p>
+          </div>
+          <div class="ex-section">
+            <h6>Starting weight</h6>
+            <div class="ex-weight">100–140 lb</div>
+            <div class="ex-weight-note">Machine ranges vary a lot. Go heavy here — this is the upper-glute builder and it needs progressive load to respond. The forward lean alone will make it feel much harder than before.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 06 B-Stance RDL -->
+      <details class="exercise">
+        <summary>
+          <span class="ex-num">06</span>
+          <span class="ex-title">B-Stance Cable RDL <span class="tag">novelty</span></span>
+          <span class="ex-data">
+            <span>3 × 12 each</span><span class="pipe">·</span>
+            <span class="tempo">3-1-X-1</span><span class="pipe">·</span>
+            <span>60s rest</span><span class="pipe">·</span>
+            <span>RPE 7</span>
+          </span>
+          <span class="ex-toggle"></span>
+        </summary>
+        <div class="ex-body">
+          <div class="ex-cue">80% of your bodyweight on the front leg — back foot is a kickstand, not a co-worker</div>
+          <div class="ex-section">
+            <h6>How to do it</h6>
+            <p>Stand facing a low cable with a rope or D-handle attachment. Put one foot forward, the other 6 inches behind with just the toe touching the floor. Intentionally shift 80% of your bodyweight onto the front leg — the back foot is balance only. Hinge from the hips, lowering the cable while pushing your hips back. Drive through the front heel to return. Keep your back flat throughout. If it feels equal between both legs, you're using the back leg too much — shift forward.</p>
+          </div>
+          <div class="ex-section">
+            <h6>Starting weight</h6>
+            <div class="ex-weight">40–60 lb</div>
+            <div class="ex-weight-note">The single-leg emphasis makes this harder than the load suggests. RPE 7 is intentional — this comes after two heavy hinge movements. Don't go to failure here.</div>
+          </div>
+        </div>
+      </details>
+
+      <!-- 07 Isometric -->
+      <details class="exercise">
+        <summary>
+          <span class="ex-num">07</span>
+          <span class="ex-title"><span class="tag iso">iso</span>Single-Leg Hip Thrust Hold</span>
+          <span class="ex-data">
+            <span>3 × 25s each</span><span class="pipe">·</span>
+            <span>30s rest</span>
+          </span>
+          <span class="ex-toggle"></span>
+        </summary>
+        <div class="ex-body">
+          <div class="ex-cue">Hips square — the moment one side drops, the rep is over</div>
+          <div class="ex-section">
+            <h6>How to do it</h6>
+            <p>Set up like a standard hip thrust — upper back on the bench, one foot flat on the floor, the other leg extended straight out in front of you. Drive the planted foot down to lift your hips to full extension. Hold the top position for 25 seconds. Critical: keep your hips perfectly square — don't let the unsupported side drop or rotate. That rotation is your glute compensating by cheating. Switch legs. Rest only 30 seconds between sides.</p>
+          </div>
+          <div class="ex-section">
+            <h6>Starting weight</h6>
+            <div class="ex-weight">Bodyweight</div>
+            <div class="ex-weight-note">Add a 25–45 lb plate on your hips when 25 seconds feels easy. Most people don't need added load for the first 4 weeks — just holding the position strictly is the challenge.</div>
+          </div>
+        </div>
+      </details>
+
+    </div>
+  </div>
+
+  <!-- ============ 05 FINISHER ============ -->
+  <div class="section" id="finisher">
+    <div class="section-head">
+      <div class="sec-num">05</div>
+      <div>
+        <div class="sec-title">Finisher</div>
+        <div class="sec-kicker">3 min / frog pump burnout — no rest within rounds</div>
+      </div>
+    </div>
+
+    <div class="finisher">
+      <div class="fin-label">→ 2 rounds, no rest within each round</div>
+      <p><strong>30 frog pumps</strong> (1-second top hold every rep) → <strong>15 banded clamshells each side</strong> → <strong>30-second plank.</strong></p>
+      <p style="margin-top: 12px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-mid);">60s rest between rounds.</p>
+    </div>
+
+    <div style="margin-top: 20px;">
+      <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.6;"><strong style="color: var(--ink);">Frog pumps:</strong> Lie on your back, soles of your feet together, knees dropped out to the sides (like a frog). Drive your hips up by squeezing your glutes — hold 1 second at the top. This position engages the glutes at end range of hip external rotation, hitting the lower glute from an angle nothing else in this session does.</p>
+      <p style="font-size: 13px; color: var(--ink-mid); line-height: 1.6; margin-top: 10px;"><strong style="color: var(--ink);">Clamshells:</strong> Mini-band above the knees. Lie on your side, hips bent 45°, knees bent 90°. Keeping your feet together, raise your top knee as high as you can without rotating your pelvis. 15 reps, switch sides.</p>
+    </div>
+  </div>
+
+  <!-- ============ 06 CONDITIONING ============ -->
+  <div class="section" id="conditioning">
+    <div class="section-head">
+      <div class="sec-num">06</div>
+      <div>
+        <div class="sec-title">Post-Session Conditioning</div>
+        <div class="sec-kicker">Immediately after the finisher — don't skip</div>
+      </div>
+    </div>
+
+    <div class="cond-block">
+      <div>
+        <div class="cond-type">Z2<br>Walk</div>
+      </div>
+      <div class="cond-detail">
+        <p><strong>12 minutes · 12% incline · 3.0 mph · treadmill.</strong></p>
+        <p style="margin-top: 10px;">Do this while your legs are already fatigued from the session — it costs almost nothing in recovery terms but burns meaningful calories and keeps the glute pump active for another 12 minutes. Don't run. Don't do flat walking. The 12% incline is what keeps the glutes engaged. This is the Tuesday conditioning slot — one of two weekly cardio exposures in the plan.</p>
+        <p style="margin-top: 10px; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft);">Skip only if genuine injury — otherwise this is mandatory on Lower A days.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 07 SWAP MENU ============ -->
+  <div class="section" id="swaps">
+    <div class="section-head">
+      <div class="sec-num">07</div>
+      <div>
+        <div class="sec-title">Swap Menu</div>
+        <div class="sec-kicker">Equipment unavailable or need to rotate — valid alternatives</div>
+      </div>
+    </div>
+
+    <dl class="swap-grid">
+      <dt>Hip thrust →</dt><dd>HS Glute Drive machine / Smith machine hip thrust</dd>
+      <dt>DB RDL →</dt><dd>Barbell RDL / single-leg KB RDL (strap the KB to a wrist, 1 foot)</dd>
+      <dt>Bulgarian split squat →</dt><dd>Smith machine reverse lunge / step-up on knee-high box</dd>
+      <dt>Cable glute kickback →</dt><dd>Glute kickback machine / 45° back extension (glute-focused, rounded upper back)</dd>
+      <dt>Hip abduction machine →</dt><dd>Cable lateral abduction standing / banded clamshells 3 × 25 (weaker sub)</dd>
+      <dt>B-stance cable RDL →</dt><dd>Single-leg hip thrust with DB / Romanian split-stance hinge with DB</dd>
+      <dt>Single-leg isometric hold →</dt><dd>HS Glute Drive top hold (same position, machine provides load)</dd>
+    </dl>
+  </div>
+
+  <!-- ============ 08 NUTRITION ============ -->
+  <div class="section" id="nutrition">
+    <div class="section-head">
+      <div class="sec-num">08</div>
+      <div>
+        <div class="sec-title">Nutrition — Day 2</div>
+        <div class="sec-kicker">Targets and low-effort options for Lower A days</div>
+      </div>
+    </div>
+
+    <div class="callout">
+      <div class="callout-label">→ Lower A is your highest-volume lower day</div>
+      <p>Your glutes and hamstrings are doing the most work they'll do all week. Today is not the day to under-eat. Hit the protein floor. Eat the carbs. Don't fight the hunger.</p>
+    </div>
+
+    <table style="width: 100%; border-collapse: collapse; margin-top: 28px; font-size: 13px;">
+      <thead>
+        <tr>
+          <th style="font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--rule);">Metric</th>
+          <th style="font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--rule);">Target</th>
+          <th style="font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); text-align: left; padding: 10px 8px; border-bottom: 1px solid var(--rule);">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair);"><strong>Protein</strong></td><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair); color: var(--accent); font-weight: 700;">165g floor / 175g target</td><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair); color: var(--ink-mid);">Highest priority variable in the plan</td></tr>
+        <tr><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair);"><strong>Calories</strong></td><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair);">2,300–2,400</td><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair); color: var(--ink-mid);">Training day — higher end of range</td></tr>
+        <tr><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair);"><strong>Carbs</strong></td><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair);">200–250g</td><td style="padding: 12px 8px; border-bottom: 1px solid var(--rule-hair); color: var(--ink-mid);">Don't restrict today — you need glycogen</td></tr>
+        <tr><td style="padding: 12px 8px;"><strong>Alcohol</strong></td><td style="padding: 12px 8px; color: var(--accent);">Zero tonight</td><td style="padding: 12px 8px; color: var(--ink-mid);">Never the night before or after a Lower day</td></tr>
+      </tbody>
+    </table>
+
+    <div class="sec-label" style="margin-top: 32px;">Three meal ideas for Lower A days — high protein, real food, low effort</div>
+
+    <div style="display: flex; flex-direction: column; border-top: 1px solid var(--rule);">
+      <div style="padding: 20px 0; border-bottom: 1px solid var(--rule-hair); display: grid; grid-template-columns: 60px 1fr; gap: 16px;">
+        <div style="font-size: 36px; font-weight: 900; letter-spacing: -0.04em; color: var(--accent); line-height: 0.9;">A</div>
+        <div>
+          <div style="font-size: 16px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px;">Rotisserie Chicken Bowl</div>
+          <div style="font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin-bottom: 10px;">~50g protein · 5 min</div>
+          <div style="font-size: 13px; color: var(--ink-mid); line-height: 1.6;">6 oz pulled rotisserie chicken · 1 microwave rice pouch · ½ avocado · everything bagel seasoning + hot sauce + lime. Optional: bagged slaw. Best post-workout real-food meal when you need carbs and don't want to cook.</div>
+        </div>
+      </div>
+      <div style="padding: 20px 0; border-bottom: 1px solid var(--rule-hair); display: grid; grid-template-columns: 60px 1fr; gap: 16px;">
+        <div style="font-size: 36px; font-weight: 900; letter-spacing: -0.04em; color: var(--accent); line-height: 0.9;">B</div>
+        <div>
+          <div style="font-size: 16px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px;">Greek Yogurt Power Bowl</div>
+          <div style="font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin-bottom: 10px;">~50g protein · 4 min</div>
+          <div style="font-size: 13px; color: var(--ink-mid); line-height: 1.6;">1.5 cups Fage 5% · 1 scoop whey isolate · ½ cup berries · 2 tbsp hemp seeds · 1 tbsp honey. Use this for a high-protein lower-effort option when appetite is suppressed from semaglutide but you still need to hit the protein floor.</div>
+        </div>
+      </div>
+      <div style="padding: 20px 0; border-bottom: 1px solid var(--rule); display: grid; grid-template-columns: 60px 1fr; gap: 16px;">
+        <div style="font-size: 36px; font-weight: 900; letter-spacing: -0.04em; color: var(--accent); line-height: 0.9;">C</div>
+        <div>
+          <div style="font-size: 16px; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 4px;">Insurance Shake</div>
+          <div style="font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin-bottom: 10px;">~30g protein · 90 seconds</div>
+          <div style="font-size: 13px; color: var(--ink-mid); line-height: 1.6;">Premier Protein shake from Costco. Not a meal replacement — a gap-filler. If it's 8pm and you're at 130g protein, drink one. That's the whole play.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 09 PROGRESS ============ -->
+  <div class="section" id="progress">
+    <div class="section-head">
+      <div class="sec-num">09</div>
+      <div>
+        <div class="sec-title">This Week's Targets</div>
+        <div class="sec-kicker">Tap to mark — small wins that compound</div>
+      </div>
+    </div>
+
+    <div class="progress-row">
+      <span style="color: var(--ink); font-weight: 700; font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; width: 100%; margin-bottom: 4px;">Lower A — Week Goals</span>
+      <span class="marker" data-key="d2-p1"><span class="box"></span> Hip thrust load up from last session</span>
+      <span class="marker" data-key="d2-p2"><span class="box"></span> RDL reps increased or tempo held at 4s</span>
+      <span class="marker" data-key="d2-p3"><span class="box"></span> Bulgarian ROM deeper than last week</span>
+      <span class="marker" data-key="d2-p4"><span class="box"></span> Abduction machine: +10 lb with forward lean</span>
+      <span class="marker" data-key="d2-p5"><span class="box"></span> Rest periods tighter (no phone between sets)</span>
+      <span class="marker" data-key="d2-p6"><span class="box"></span> Protein floor hit by end of day</span>
+      <span class="marker" data-key="d2-p7"><span class="box"></span> 12 min incline walk completed post-session</span>
+      <span class="marker" data-key="d2-p8"><span class="box"></span> Logged in Hevy</span>
+    </div>
+  </div>
+
+  <!-- ============ FOOTER ============ -->
+  <footer>
+    <div class="footer-mark">Day<br><span class="red">02</span></div>
+    <div class="footer-meta">
+      Lower A · Glute Sculpt + Lean Legs<br>
+      Aesthetic Physique Program v.2<br>
+      Tap + on any lift for instructions
+    </div>
+  </footer>
+
+</div>
+
+<script>
+  // Date
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const now = new Date();
+  document.getElementById('todayDate').textContent =
+    `${String(now.getDate()).padStart(2,'0')} / ${months[now.getMonth()]} / ${now.getFullYear()}`;
+
+  // Expand all
+  function expandAll(open) {
+    document.querySelectorAll('details.exercise, details.warmup-item').forEach(d => {
+      if (open) d.setAttribute('open',''); else d.removeAttribute('open');
+    });
+  }
+  window.expandAll = expandAll;
+
+  // Checklist
+  document.querySelectorAll('#checklistEl li').forEach(li => {
+    const key = 'apg-' + li.getAttribute('data-key');
+    if (localStorage.getItem(key) === '1') li.classList.add('done');
+    li.addEventListener('click', () => {
+      li.classList.toggle('done');
+      localStorage.setItem(key, li.classList.contains('done') ? '1' : '0');
+    });
+  });
+
+  // Progress markers
+  document.querySelectorAll('.progress-row .marker').forEach(m => {
+    const key = 'apg-' + m.getAttribute('data-key');
+    if (localStorage.getItem(key) === '1') m.classList.add('checked');
+    m.addEventListener('click', () => {
+      m.classList.toggle('checked');
+      localStorage.setItem(key, m.classList.contains('checked') ? '1' : '0');
+    });
+  });
+</script>
+</body>
+</html>

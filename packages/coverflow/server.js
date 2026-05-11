@@ -35,6 +35,7 @@ const __dirname = path.dirname(__filename);
 
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const ADMIN_DIR = path.join(__dirname, 'admin');
+const PRIVATE_DIR = path.join(__dirname, 'private');
 
 const DEFAULT_DATA_DIR = path.join(__dirname, 'data');
 
@@ -659,6 +660,12 @@ if (process.env.NODE_ENV === 'development') {
   app.use('/admin', express.static(ADMIN_DIR));
 }
 
+
+// Private — password-protected workout plan
+app.use('/t', basicAuth({
+  users: { 'theo': 'fit' },
+  challenge: true
+}), express.static(PRIVATE_DIR));
 
 // Basic auth for specific public files
 app.get('/hudson-deck.html', basicAuth({ users: { 'guest': 'MakeItTogether25!' }, challenge: true }), (req, res) => {

@@ -1,0 +1,2383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Aesthetic Physique Program — 16 Weeks</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style>
+  /* ============ DESIGN TOKENS ============ */
+  :root {
+    --paper: #F4F1EA;
+    --paper-warm: #ECE7DB;
+    --ink: #0A0A0A;
+    --ink-mid: #444;
+    --ink-soft: #777;
+    --rule: #0A0A0A;
+    --rule-hair: #C9C3B5;
+    --accent: #D72325;
+    --accent-soft: #E63B3D;
+    --highlight: #F4E04D;
+    --sans: "Helvetica Neue", "Helvetica", "Arial", sans-serif;
+    --serif: "Times New Roman", Times, serif;
+    --mono: "IBM Plex Mono", "Menlo", monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent); color: var(--paper); }
+  a { color: var(--ink); text-decoration: none; }
+
+  /* ============ LAYOUT ============ */
+  .container { display: grid; grid-template-columns: 240px 1fr; min-height: 100vh; }
+
+  aside.nav {
+    border-right: 1px solid var(--rule);
+    padding: 32px 24px;
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    overflow-y: auto;
+    background: var(--paper);
+  }
+
+  .nav-brand {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mid);
+    line-height: 1.4;
+    margin-bottom: 32px;
+  }
+  .nav-brand strong { color: var(--ink); font-weight: 600; display: block; }
+  .nav-list { list-style: none; }
+  .nav-item {
+    display: flex;
+    gap: 12px;
+    padding: 8px 0;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    cursor: pointer;
+    border-bottom: 1px solid var(--rule-hair);
+    transition: padding-left 200ms ease, color 200ms ease;
+  }
+  .nav-item:hover { padding-left: 6px; color: var(--accent); }
+  .nav-item.active { color: var(--accent); font-weight: 600; }
+  .nav-item.active .nav-num::after { content: " →"; color: var(--accent); }
+  .nav-num { font-family: var(--mono); font-size: 10px; color: var(--ink-soft); flex-shrink: 0; width: 18px; }
+  .nav-item.active .nav-num { color: var(--accent); }
+  .nav-footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 9px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  /* ============ MAIN ============ */
+  main { padding: 0 64px 120px; max-width: 1100px; }
+
+  /* ============ HEADER ============ */
+  header.hero { border-bottom: 1px solid var(--rule); padding: 40px 0 32px; }
+  .meta-bar {
+    display: flex;
+    justify-content: space-between;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-mid);
+    margin-bottom: 56px;
+  }
+  .meta-bar .accent { color: var(--accent); }
+  .hero-title {
+    font-size: clamp(56px, 9vw, 132px);
+    font-weight: 900;
+    line-height: 0.88;
+    letter-spacing: -0.04em;
+    margin-bottom: 24px;
+  }
+  .hero-title span { display: block; }
+  .hero-title .lt { font-weight: 200; font-style: italic; font-family: var(--serif); color: var(--ink-mid); }
+  .hero-sub {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.4;
+    color: var(--ink-mid);
+    max-width: 640px;
+    margin-bottom: 48px;
+  }
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+  .meta-cell { padding: 16px 18px 16px 0; border-right: 1px solid var(--rule-hair); }
+  .meta-cell:last-child { border-right: none; }
+  .meta-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); margin-bottom: 6px; }
+  .meta-val { font-size: 18px; font-weight: 600; letter-spacing: -0.02em; }
+
+  /* ============ TODAY BANNER ============ */
+  .today-banner {
+    background: var(--ink);
+    color: var(--paper);
+    padding: 18px 24px;
+    margin: 32px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .today-banner .session-name {
+    font-family: var(--sans);
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    text-transform: uppercase;
+  }
+  .today-banner button {
+    background: var(--accent);
+    color: var(--paper);
+    border: none;
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+  }
+  .today-banner button:hover { opacity: 0.85; }
+
+  /* ============ SECTIONS ============ */
+  section.block { padding: 96px 0 0; scroll-margin-top: 24px; }
+  .block-head {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 24px;
+    align-items: end;
+    margin-bottom: 40px;
+    padding-bottom: 16px;
+    border-bottom: 2px solid var(--rule);
+  }
+  .block-num { font-size: 64px; font-weight: 900; letter-spacing: -0.04em; line-height: 0.85; color: var(--accent); }
+  .block-title { font-size: 32px; font-weight: 700; letter-spacing: -0.02em; line-height: 1; text-transform: uppercase; }
+  .block-kicker {
+    grid-column: 2;
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    margin-top: 6px;
+  }
+
+  .prose p { font-size: 16px; line-height: 1.6; margin-bottom: 16px; max-width: 720px; }
+  .prose p.lede {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 22px;
+    line-height: 1.45;
+    color: var(--ink);
+    border-left: 2px solid var(--accent);
+    padding-left: 20px;
+    margin-bottom: 32px;
+  }
+  .prose strong { font-weight: 700; }
+  .prose em { font-style: italic; }
+  .prose .pullquote {
+    font-size: 32px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 40px 0;
+    padding: 32px 0;
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+    text-transform: uppercase;
+  }
+  .prose .pullquote .red { color: var(--accent); }
+
+  /* ============ TABLES ============ */
+  table { width: 100%; border-collapse: collapse; margin: 24px 0; font-size: 13px; }
+  table th {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--ink-soft);
+    text-align: left;
+    padding: 10px 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  table td { padding: 12px 8px; border-bottom: 1px solid var(--rule-hair); vertical-align: top; }
+  table tr:last-child td { border-bottom: none; }
+  table.zebra tr:nth-child(even) td { background: rgba(0,0,0,0.025); }
+
+  /* ============ PHASE BLOCK ============ */
+  .phase-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 32px 0;
+  }
+  .phase-cell { background: var(--paper); padding: 24px 20px; }
+  .phase-cell.peak { background: var(--paper-warm); }
+  .phase-week { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); }
+  .phase-name { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; margin-top: 4px; margin-bottom: 18px; text-transform: uppercase; }
+  .phase-detail { font-family: var(--mono); font-size: 11px; line-height: 1.6; }
+  .phase-detail span { display: block; color: var(--ink-mid); }
+  .phase-detail span strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ DAY GRID ============ */
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin: 24px 0;
+  }
+  .day-cell { background: var(--paper); padding: 14px 12px; min-height: 110px; cursor: pointer; transition: background 150ms ease; }
+  .day-cell:hover { background: var(--paper-warm); }
+  .day-cell.today { background: var(--ink); color: var(--paper); }
+  .day-cell.today .day-name { color: var(--accent-soft); }
+  .day-cell.rest { color: var(--ink-soft); }
+  .day-cell.today.rest { color: var(--paper-warm); opacity: 0.6; }
+  .day-name { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-soft); margin-bottom: 8px; }
+  .day-session { font-size: 14px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.15; text-transform: uppercase; }
+  .day-theme { font-family: var(--serif); font-style: italic; font-size: 11px; color: var(--ink-mid); margin-top: 6px; line-height: 1.3; }
+  .day-cell.today .day-theme { color: var(--paper); opacity: 0.8; }
+
+  /* ============ SESSION CARDS ============ */
+  .session-list { display: flex; flex-direction: column; border-top: 1px solid var(--rule); }
+  .session-card { border-bottom: 1px solid var(--rule); transition: background 200ms ease; }
+  .session-card:hover { background: rgba(215, 35, 37, 0.03); }
+  .session-summary {
+    display: grid;
+    grid-template-columns: 60px 1fr auto auto;
+    gap: 24px;
+    align-items: center;
+    padding: 28px 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .session-summary::-webkit-details-marker { display: none; }
+  .session-num { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); letter-spacing: 0.1em; }
+  .session-id { display: flex; flex-direction: column; gap: 4px; }
+  .session-id .name { font-size: 24px; font-weight: 800; letter-spacing: -0.02em; line-height: 1; text-transform: uppercase; }
+  .session-id .theme { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-mid); }
+  .session-meta { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); text-align: right; line-height: 1.6; }
+  .session-toggle {
+    width: 36px; height: 36px;
+    border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 18px; font-weight: 300;
+    transition: background 200ms ease, color 200ms ease;
+  }
+  .session-card[open] > .session-summary > .session-toggle { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  .session-card[open] > .session-summary > .session-toggle::before { content: "−"; }
+  .session-card:not([open]) > .session-summary > .session-toggle::before { content: "+"; }
+
+  .session-detail { padding: 8px 0 40px 84px; border-top: 1px solid var(--rule-hair); }
+
+  .session-section-label {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin: 32px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule-hair);
+  }
+  .session-section-label:first-child { margin-top: 12px; }
+
+  /* ============ EXERCISE CARDS (NEW EXPANDABLE) ============ */
+  .exercise-list { display: flex; flex-direction: column; }
+
+  details.exercise {
+    border-bottom: 1px solid var(--rule-hair);
+    transition: background 150ms ease;
+  }
+  details.exercise:last-child { border-bottom: none; }
+  details.exercise[open] { background: rgba(215, 35, 37, 0.025); }
+
+  details.exercise > summary {
+    display: grid;
+    grid-template-columns: 28px 1fr auto 28px;
+    gap: 14px;
+    align-items: center;
+    padding: 14px 4px;
+    cursor: pointer;
+    list-style: none;
+  }
+  details.exercise > summary::-webkit-details-marker { display: none; }
+  details.exercise > summary:hover { color: var(--accent); }
+
+  .ex-num {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    letter-spacing: 0.06em;
+  }
+
+  .ex-title {
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .ex-title .ex-tag {
+    display: inline-block;
+    background: var(--highlight);
+    color: var(--ink);
+    font-family: var(--mono);
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 5px;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+  .ex-title .ex-tag.iso { background: var(--ink); color: var(--paper); margin-right: 4px; margin-left: 0; }
+  .ex-title .ex-tag.warm { background: transparent; color: var(--ink-soft); border: 1px solid var(--rule-hair); }
+
+  .ex-data {
+    display: flex;
+    gap: 14px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    align-items: center;
+    white-space: nowrap;
+  }
+  .ex-data .pipe { color: var(--rule-hair); }
+  .ex-data .tempo { color: var(--accent); font-weight: 500; }
+
+  .ex-toggle {
+    width: 24px; height: 24px;
+    border: 1px solid var(--rule);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--mono); font-size: 14px; font-weight: 300;
+    flex-shrink: 0;
+    transition: background 150ms ease, color 150ms ease;
+  }
+  details.exercise[open] > summary > .ex-toggle { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  details.exercise[open] > summary > .ex-toggle::before { content: "−"; }
+  details.exercise:not([open]) > summary > .ex-toggle::before { content: "+"; }
+
+  .ex-body {
+    padding: 4px 4px 24px 42px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px 32px;
+  }
+
+  .ex-body .ex-cue {
+    grid-column: 1 / -1;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 15px;
+    color: var(--ink);
+    padding: 12px 16px;
+    background: rgba(215, 35, 37, 0.06);
+    border-left: 2px solid var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .ex-body .ex-section h6 {
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    margin-bottom: 8px;
+  }
+
+  .ex-body .ex-section p {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--ink-mid);
+  }
+
+  .ex-body .ex-weight {
+    font-family: var(--sans);
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .ex-body .ex-weight .unit {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-left: 4px;
+    font-weight: 400;
+  }
+  .ex-body .ex-weight-note {
+    font-size: 12px;
+    color: var(--ink-mid);
+    margin-top: 6px;
+    line-height: 1.5;
+  }
+
+  /* warmup item — same expandable pattern, slightly tighter */
+  details.warmup-item {
+    border-bottom: 1px solid var(--rule-hair);
+  }
+  details.warmup-item:last-child { border-bottom: none; }
+  details.warmup-item > summary {
+    display: grid;
+    grid-template-columns: 1fr 24px;
+    gap: 14px;
+    align-items: center;
+    padding: 11px 4px;
+    cursor: pointer;
+    list-style: none;
+    font-size: 13px;
+  }
+  details.warmup-item > summary::-webkit-details-marker { display: none; }
+  details.warmup-item > summary:hover { color: var(--accent); }
+  details.warmup-item > summary > .ex-toggle {
+    width: 22px; height: 22px;
+    font-size: 12px;
+  }
+  details.warmup-item[open] > summary > .ex-toggle { background: var(--accent); color: var(--paper); border-color: var(--accent); }
+  details.warmup-item[open] > summary > .ex-toggle::before { content: "−"; }
+  details.warmup-item:not([open]) > summary > .ex-toggle::before { content: "+"; }
+
+  .warmup-body {
+    padding: 4px 4px 16px 4px;
+    font-size: 12px;
+    color: var(--ink-mid);
+    line-height: 1.55;
+    max-width: 640px;
+  }
+
+  /* swap menu */
+  .swap-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 4px 16px;
+    margin-top: 12px;
+    font-size: 12px;
+  }
+  .swap-grid dt { font-weight: 600; color: var(--ink); }
+  .swap-grid dd { color: var(--ink-mid); font-style: italic; font-family: var(--serif); }
+
+  /* finisher */
+  .finisher-box {
+    background: var(--paper-warm);
+    border-left: 3px solid var(--accent);
+    padding: 18px 22px;
+    margin-top: 16px;
+  }
+  .finisher-box p { font-size: 13px; line-height: 1.5; margin: 0; }
+  .finisher-box p + p { margin-top: 8px; }
+
+  /* progress markers */
+  .progress-row {
+    display: flex; gap: 18px; flex-wrap: wrap;
+    margin-top: 24px; padding-top: 16px;
+    border-top: 1px solid var(--rule-hair);
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--ink-mid);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .progress-row .marker { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+  .progress-row .marker .box { width: 12px; height: 12px; border: 1px solid var(--ink); display: inline-block; }
+  .progress-row .marker.checked .box { background: var(--accent); border-color: var(--accent); }
+
+  /* feature list */
+  .feature-list { list-style: none; counter-reset: ftr; margin: 24px 0; }
+  .feature-list li {
+    counter-increment: ftr;
+    padding: 18px 0;
+    border-bottom: 1px solid var(--rule-hair);
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 20px;
+    align-items: start;
+  }
+  .feature-list li::before {
+    content: counter(ftr, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .feature-list .feat-title { font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; margin-bottom: 4px; }
+  .feature-list .feat-body { font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-mid); line-height: 1.5; }
+
+  /* duo */
+  .duo { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; margin-top: 24px; }
+  .duo-col h4 {
+    font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+    margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--rule);
+  }
+  .duo-col h4 .red { color: var(--accent); }
+
+  /* callout */
+  .callout { background: var(--ink); color: var(--paper); padding: 32px 36px; margin: 32px 0; }
+  .callout-label { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.16em; color: var(--accent-soft); margin-bottom: 10px; }
+  .callout p { font-family: var(--serif); font-style: italic; font-size: 22px; line-height: 1.4; max-width: 720px; }
+
+  /* nutrition cards */
+  .nutri-meals { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 24px 0; }
+  .meal-card { background: var(--paper); padding: 22px; }
+  .meal-num { font-family: var(--mono); font-size: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 0.12em; }
+  .meal-name { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; margin: 6px 0 10px; }
+  .meal-stats { font-family: var(--mono); font-size: 10px; color: var(--ink-mid); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; padding-bottom: 10px; border-bottom: 1px solid var(--rule-hair); }
+  .meal-card ul { list-style: none; font-size: 12px; line-height: 1.7; }
+  .meal-card ul li::before { content: "—  "; color: var(--accent); }
+
+  /* timeline */
+  .timeline { margin: 32px 0; border-top: 1px solid var(--rule); }
+  .timeline-row { display: grid; grid-template-columns: 100px 1fr 1fr 1fr; gap: 24px; padding: 24px 0; border-bottom: 1px solid var(--rule-hair); }
+  .timeline-week { font-size: 36px; font-weight: 900; letter-spacing: -0.03em; line-height: 0.9; color: var(--accent); }
+  .timeline-week .label { display: block; font-family: var(--mono); font-size: 9px; font-weight: 400; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.12em; margin-top: 6px; }
+  .timeline-cell h5 { font-family: var(--mono); font-size: 9px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-soft); margin-bottom: 8px; }
+  .timeline-cell p { font-size: 13px; line-height: 1.5; margin: 0; }
+
+  /* keyval */
+  .keyval { display: grid; grid-template-columns: 200px 1fr; gap: 0 24px; margin: 24px 0; border-top: 1px solid var(--rule); }
+  .keyval dt { padding: 14px 0; font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink); border-bottom: 1px solid var(--rule-hair); }
+  .keyval dd { padding: 14px 0; border-bottom: 1px solid var(--rule-hair); font-size: 14px; }
+  .keyval dd em { font-family: var(--serif); color: var(--ink-mid); }
+
+  /* footer */
+  footer { margin-top: 120px; padding: 48px 0 24px; border-top: 2px solid var(--rule); display: flex; justify-content: space-between; align-items: end; }
+  .footer-mark { font-size: 56px; font-weight: 900; letter-spacing: -0.04em; line-height: 0.85; }
+  .footer-mark .red { color: var(--accent); }
+  .footer-meta { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-soft); text-align: right; line-height: 1.6; }
+
+  /* expand-all toggle */
+  .expand-all-bar {
+    display: flex; justify-content: flex-end; gap: 12px;
+    margin-bottom: 8px; margin-top: 12px;
+  }
+  .expand-all-bar button {
+    background: transparent;
+    border: 1px solid var(--rule);
+    color: var(--ink);
+    padding: 8px 14px;
+    font-family: var(--mono);
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    cursor: pointer;
+    transition: all 150ms ease;
+  }
+  .expand-all-bar button:hover { background: var(--ink); color: var(--paper); }
+
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 960px) {
+    .container { grid-template-columns: 1fr; }
+    aside.nav { position: relative; height: auto; border-right: none; border-bottom: 1px solid var(--rule); }
+    main { padding: 0 20px 80px; }
+    .hero-title { font-size: 56px; }
+    .meta-grid { grid-template-columns: repeat(2, 1fr); }
+    .meta-cell:nth-child(2) { border-right: none; }
+    .meta-cell:nth-child(1), .meta-cell:nth-child(2) { border-bottom: 1px solid var(--rule-hair); }
+    .day-grid { grid-template-columns: repeat(2, 1fr); }
+    .phase-grid { grid-template-columns: 1fr 1fr; }
+    .nutri-meals { grid-template-columns: 1fr; }
+    .duo { grid-template-columns: 1fr; gap: 32px; }
+    .timeline-row { grid-template-columns: 1fr; }
+    .session-summary { grid-template-columns: 40px 1fr auto; }
+    .session-meta { display: none; }
+    .session-detail { padding-left: 0; }
+
+    /* exercise on mobile: stack data below title */
+    details.exercise > summary {
+      grid-template-columns: 28px 1fr 24px;
+      grid-template-areas: "num title toggle" ". data toggle";
+      gap: 6px 12px;
+    }
+    .ex-num { grid-area: num; }
+    .ex-title { grid-area: title; }
+    .ex-data { grid-area: data; flex-wrap: wrap; gap: 10px; }
+    .ex-toggle { grid-area: toggle; }
+
+    .ex-body { grid-template-columns: 1fr; padding-left: 36px; gap: 20px; }
+  }
+
+  @media print {
+    aside.nav, .today-banner, .session-toggle, .ex-toggle, .expand-all-bar { display: none; }
+    .container { grid-template-columns: 1fr; }
+    body { background: white; font-size: 11px; }
+    main { padding: 0; max-width: 100%; }
+    section.block { padding-top: 32px; page-break-inside: avoid; }
+    .session-card { page-break-inside: avoid; }
+    details > summary { list-style: none; }
+    details, details > div { display: block !important; }
+    details[open] { display: block; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="nav">
+    <div class="nav-brand">
+      <strong>AESTHETIC PHYSIQUE</strong>
+      Working Document<br>
+      v.2 / Confidential
+    </div>
+    <ul class="nav-list">
+      <li class="nav-item" data-target="assessment"><span class="nav-num">01</span>Assessment</li>
+      <li class="nav-item" data-target="phase"><span class="nav-num">02</span>Phase Call</li>
+      <li class="nav-item" data-target="mesocycle"><span class="nav-num">03</span>Mesocycle</li>
+      <li class="nav-item" data-target="week"><span class="nav-num">04</span>Weekly Layout</li>
+      <li class="nav-item" data-target="sessions"><span class="nav-num">05</span>Sessions</li>
+      <li class="nav-item" data-target="exercises"><span class="nav-num">06</span>Exercises</li>
+      <li class="nav-item" data-target="priorities"><span class="nav-num">07</span>Priorities</li>
+      <li class="nav-item" data-target="conditioning"><span class="nav-num">08</span>Conditioning</li>
+      <li class="nav-item" data-target="nutrition"><span class="nav-num">09</span>Nutrition</li>
+      <li class="nav-item" data-target="adhd"><span class="nav-num">10</span>Compliance</li>
+      <li class="nav-item" data-target="timeline"><span class="nav-num">11</span>Timeline</li>
+      <li class="nav-item" data-target="recovery"><span class="nav-num">12</span>Recovery</li>
+    </ul>
+    <div class="nav-footer">
+      Tap + on any lift<br>
+      for instructions<br>
+      and starting weight
+    </div>
+  </aside>
+
+  <main>
+
+    <!-- ============ HERO ============ -->
+    <header class="hero">
+      <div class="meta-bar">
+        <span>Theo / Working Document</span>
+        <span class="accent" id="todayDate">— / — / 2026</span>
+      </div>
+
+      <h1 class="hero-title">
+        <span>Aesthetic</span>
+        <span class="lt">physique</span>
+        <span>Program</span>
+      </h1>
+
+      <p class="hero-sub">
+        A 16-week build to the Calvin Klein silhouette. Engineered for capped delts, glute shelf, V-taper, and a 6-pack at rest — without sacrificing the lean line.
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta-cell"><div class="meta-label">Target</div><div class="meta-val">~9% BF / 161 lb</div></div>
+        <div class="meta-cell"><div class="meta-label">Cadence</div><div class="meta-val">5 × 60 min</div></div>
+        <div class="meta-cell"><div class="meta-label">Phase</div><div class="meta-val">Aggressive Recomp</div></div>
+        <div class="meta-cell"><div class="meta-label">Duration</div><div class="meta-val">16 Weeks</div></div>
+      </div>
+
+      <div class="today-banner" id="todayBanner">
+        <span>Today / <span id="todayDayName">—</span></span>
+        <span class="session-name" id="todaySession">—</span>
+        <button onclick="jumpToTodaySession()">Open Session →</button>
+      </div>
+    </header>
+
+    <!-- ============ 01 ASSESSMENT ============ -->
+    <section class="block" id="assessment">
+      <div class="block-head">
+        <div class="block-num">01</div>
+        <div>
+          <div class="block-title">Honest Assessment</div>
+          <div class="block-kicker">The starting position, the bottleneck, the realistic horizon</div>
+        </div>
+      </div>
+
+      <div class="prose">
+        <p class="lede">
+          You're 5'10", ~162 lb, ~13.5% body fat — about 5–7 lb of fat and 4–6 lb of strategically-placed lean tissue away from the brief. You're not starting over; you're recomposing.
+        </p>
+        <p>
+          The bottleneck isn't fat — it's <strong>delt cap</strong> and <strong>glute shelf</strong>. Without those two structures, getting leaner just makes you look skinnier, not architectural. Every session below is biased toward those two priorities while abs and lean line maintain themselves through volume, tempo discipline, and the existing semaglutide-assisted caloric environment.
+        </p>
+
+        <div class="pullquote">
+          The single biggest constraint:<br>
+          <span class="red">protein under-eating on semaglutide.</span><br>
+          Solve that — the lifting is solved here.
+        </div>
+
+        <p><strong>Twelve weeks:</strong> abs visible at rest in normal lighting, capped delts emerging at the side profile, glutes meaningfully fuller in slim-cut pants.</p>
+        <p><strong>Twenty-four weeks:</strong> full target physique. Vascularity in forearms, V-cut sharp into hips, square chest with clear separation, glutes that read in swimwear.</p>
+      </div>
+    </section>
+
+    <!-- ============ 02 PHASE ============ -->
+    <section class="block" id="phase">
+      <div class="block-head">
+        <div class="block-num">02</div>
+        <div>
+          <div class="block-title">Phase Call</div>
+          <div class="block-kicker">Aggressive recomp — and why the alternatives lose</div>
+        </div>
+      </div>
+
+      <table class="zebra">
+        <thead><tr><th style="width:25%">Option</th><th>Why I rejected it</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Clean bulk</strong></td><td>You're already too lean to add 5–8 lb without visible fat gain; you'd need a harder cut later — eating compliance window for nothing.</td></tr>
+          <tr><td><strong>Standard cut</strong></td><td>You'd lose the muscle you actually need to build for shape; the silhouette would arrive <em>worse</em>.</td></tr>
+          <tr><td style="color: var(--accent); font-weight: 700;">Aggressive recomp ✓</td><td>Semaglutide already creates a mild deficit; intermediate-advanced training age keeps the recomp window open; lets us build delts/glutes while the leg/back lines stay clean.</td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-label">→ Targets by week 16</div>
+        <p>Lose 4–6 lb fat, gain 3–5 lb lean tissue (delts, glutes, upper chest). Net weight ~159–163 lb at ~9% BF.</p>
+      </div>
+    </section>
+
+    <!-- ============ 03 MESOCYCLE ============ -->
+    <section class="block" id="mesocycle">
+      <div class="block-head">
+        <div class="block-num">03</div>
+        <div>
+          <div class="block-title">4-Week Mesocycle</div>
+          <div class="block-kicker">Accumulation → Intensification → Peak → Deload, repeated × 4</div>
+        </div>
+      </div>
+
+      <div class="phase-grid">
+        <div class="phase-cell">
+          <div class="phase-week">Week 1</div>
+          <div class="phase-name">Accumulate</div>
+          <div class="phase-detail"><span><strong>Volume</strong> 100%</span><span><strong>Intensity</strong> 65–75%</span><span><strong>RPE</strong> 7</span><span><strong>Rest</strong> 90–120s</span></div>
+        </div>
+        <div class="phase-cell">
+          <div class="phase-week">Week 2</div>
+          <div class="phase-name">Intensify</div>
+          <div class="phase-detail"><span><strong>Volume</strong> 95%</span><span><strong>Intensity</strong> 75–85%</span><span><strong>RPE</strong> 8</span><span><strong>Rest</strong> 60–90s</span></div>
+        </div>
+        <div class="phase-cell peak">
+          <div class="phase-week">Week 3 — Peak</div>
+          <div class="phase-name">Push</div>
+          <div class="phase-detail"><span><strong>Volume</strong> 110%</span><span><strong>Intensity</strong> 80–90%</span><span><strong>RPE</strong> 9</span><span><strong>Density</strong> EMOMs in</span></div>
+        </div>
+        <div class="phase-cell">
+          <div class="phase-week">Week 4</div>
+          <div class="phase-name">Deload</div>
+          <div class="phase-detail"><span><strong>Volume</strong> 55%</span><span><strong>Intensity</strong> 50–60%</span><span><strong>RPE</strong> 6</span><span><strong>Focus</strong> Tempo + mobility</span></div>
+        </div>
+      </div>
+
+      <p style="font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-soft); margin-top: 8px;">
+        Tempo notation key — <span style="color: var(--accent)">A-B-X-D</span> = eccentric / bottom pause / concentric (X = explosive) / top pause. Example: <span style="color: var(--accent)">3-1-X-1</span>.
+      </p>
+
+      <div class="callout">
+        <div class="callout-label">→ Suggested weights — read this once</div>
+        <p>The starting weights below are estimates for an intermediate 162 lb lifter. Use them for Week 1 only. Then ignore the number — train to the <strong>RPE</strong>. If the prescribed RPE is 8, the last 2 reps should feel hard but you should still have 2 in the tank. Adjust load accordingly. If you're crushing the prescribed reps with no struggle, add 5–10% next session.</p>
+      </div>
+    </section>
+
+    <!-- ============ 04 WEEK ============ -->
+    <section class="block" id="week">
+      <div class="block-head">
+        <div class="block-num">04</div>
+        <div>
+          <div class="block-title">Weekly Layout</div>
+          <div class="block-kicker">5-day default — drop to 4-day fallback when life requires</div>
+        </div>
+      </div>
+
+      <div class="day-grid" id="dayGrid">
+        <div class="day-cell" data-day="1" data-target="s1"><div class="day-name">Mon</div><div class="day-session">Push A</div><div class="day-theme">Upper Shelf + Delt Cap</div></div>
+        <div class="day-cell" data-day="2" data-target="s2"><div class="day-name">Tue</div><div class="day-session">Lower A</div><div class="day-theme">Glute Sculpt + Lean Legs</div></div>
+        <div class="day-cell" data-day="3" data-target="s3"><div class="day-name">Wed</div><div class="day-session">Pull A</div><div class="day-theme">V-Taper Width + Posterior</div></div>
+        <div class="day-cell" data-day="4"><div class="day-name">Thu</div><div class="day-session">Conditioning</div><div class="day-theme">Sled + Steam</div></div>
+        <div class="day-cell" data-day="5" data-target="s4"><div class="day-name">Fri</div><div class="day-session">Push B</div><div class="day-theme">Delt Density + Abs</div></div>
+        <div class="day-cell" data-day="6" data-target="s5"><div class="day-name">Sat</div><div class="day-session">Lower B</div><div class="day-theme">Glute Lift + Lateral</div></div>
+        <div class="day-cell rest" data-day="0"><div class="day-name">Sun</div><div class="day-session">Rest</div><div class="day-theme">Walk + mobility + real food</div></div>
+      </div>
+
+      <p style="font-family: var(--serif); font-style: italic; font-size: 14px; color: var(--ink-mid); margin-top: 12px;">
+        Fallback when 4 sessions is the realistic ceiling: Mon Upper Push · Tue Lower A · Thu Upper Pull · Sat Lower B. Never below 4 — below 4 is maintenance.
+      </p>
+    </section>
+
+    <!-- ============ 05 SESSIONS ============ -->
+    <section class="block" id="sessions">
+      <div class="block-head">
+        <div class="block-num">05</div>
+        <div>
+          <div class="block-title">Session Cards</div>
+          <div class="block-kicker">Tap a session to expand. Tap + on any exercise for instructions and weights.</div>
+        </div>
+      </div>
+
+      <div class="expand-all-bar">
+        <button onclick="expandAllExercises(true)">Expand all</button>
+        <button onclick="expandAllExercises(false)">Collapse all</button>
+      </div>
+
+      <div class="session-list">
+
+        <!-- ===== SESSION 1: PUSH A ===== -->
+        <details class="session-card" id="s1">
+          <summary class="session-summary">
+            <div class="session-num">01 / MON</div>
+            <div class="session-id">
+              <div class="name">Push A</div>
+              <div class="theme">Upper shelf + delt cap</div>
+            </div>
+            <div class="session-meta">58 min<br>7 lifts + finisher</div>
+            <div class="session-toggle"></div>
+          </summary>
+          <div class="session-detail">
+
+            <div class="session-section-label">Warmup / 5 min — tap any item for instructions</div>
+            <div class="exercise-list">
+              <details class="warmup-item">
+                <summary><span>Band shoulder dislocates × 15</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Hold a long resistance band wider than shoulder-width with both hands, palms down. Keep arms straight and lift the band up overhead, then continue back behind you and down to your lower back. Reverse the motion to return to start. Wider grip = easier; narrow it as your shoulders open up.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Scapular wall slides × 10</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Stand with your back, head, and elbows pressed against a wall. Bend elbows 90° with backs of hands also touching the wall (think: goalpost arms). Slide arms straight up overhead while keeping all contact points pressed to the wall, then slide back down. If you can't keep contact, that's the point — it's diagnostic of where you're tight.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Banded face pulls × 20</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Anchor a band at face height (a power rack pin, a door anchor, or a high pulley with a rope). Grip the band with both hands palms-down, step back to create tension. Pull the band toward your forehead, leading with your elbows wide and high, ending with hands beside your ears. Squeeze rear delts at the end position.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Push-up to down-dog × 8</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Start in a standard push-up position. Do one push-up. At the top, push your hips back and up into downward dog (legs as straight as comfortable, head between arms, heels reaching toward the floor). Hold one breath, then return to push-up position. That's one rep.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Empty bar incline press × 10 (slow tempo)</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Just the Smith bar — no plates. Set the bench at 30°. Press with a deliberate 3-second eccentric (lowering) and a 1-second pause at chest before pressing back up. The point is to groove the movement pattern, not to fatigue. Treat it like rehearsal.</div>
+              </details>
+            </div>
+
+            <div class="session-section-label">Working Sets — tap + for instructions and starting weights</div>
+            <div class="exercise-list">
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">01</span>
+                  <span class="ex-title">Smith Incline Press <span class="ex-tag">30°</span></span>
+                  <span class="ex-data"><span>4 × 8</span><span class="pipe">·</span><span class="tempo">3-1-X-1</span><span class="pipe">·</span><span>90s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Drive elbows to wall behind you</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set bench at 30° (the lower notch, not 45°). Lie back, position eyes directly under the bar. Grip the bar just outside shoulder width and unrack with a slight twist. Lower the bar slowly to the upper chest just below the collarbone, pause briefly, then press up and slightly forward — like you're trying to push the wall behind you, not the ceiling. Keep ribs locked down throughout (no big arch like flat bench).</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">135–155 lb<span class="unit">on the bar</span></div>
+                    <div class="ex-weight-note">Smith bars typically weigh 15–25 lb. Add to your final number. Push to 165+ as RPE allows.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">02</span>
+                  <span class="ex-title">Cable Crossover (high → low)</span>
+                  <span class="ex-data"><span>4 × 12</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Squeeze inner pec at hand cross, hold 2s</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set both pulleys at the highest position. Grab a D-handle in each hand, step forward into a slight split stance, and lean your torso forward about 15°. Start with arms out wide at shoulder height, with a slight bend in the elbows that doesn't change during the rep. Pull both hands down and across, meeting at hip level — let your hand cross past your opposite hip. Squeeze the inner pec hard for 2 seconds at the bottom before reversing slowly.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">25–35 lb<span class="unit">per side</span></div>
+                    <div class="ex-weight-note">If 12 reps with the prescribed tempo feels easy, the load is too light. The squeeze is the point.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">03</span>
+                  <span class="ex-title">Hammer Strength Shoulder Press</span>
+                  <span class="ex-data"><span>4 × 10</span><span class="pipe">·</span><span class="tempo">3-1-X-0</span><span class="pipe">·</span><span>75s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Pinky high at lockout</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Sit in the machine and adjust the seat so the handles align with your shoulders. Use the neutral grip if available. Press straight up while keeping ribs stacked over hips — no back arch. At lockout, pinky should be slightly higher than thumb. Lower under control to shoulder height; don't drop below, that recruits the front delts incorrectly and stresses the rotator cuff.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">50–70 lb<span class="unit">per side</span></div>
+                    <div class="ex-weight-note">Plate-loaded HS machines vary. Total external load typically 100–140 lb plus carriage weight.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">04</span>
+                  <span class="ex-title">DB Lateral Raise (palm down, slight forward angle)</span>
+                  <span class="ex-data"><span>5 × 12</span><span class="pipe">·</span><span class="tempo">2-1-1-1</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Lead with the elbow, not the dumbbell</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Stand tall, dumbbells at your sides, palms facing in. Tilt your torso forward about 10° (not perfectly upright). Lift the dumbbells out to the side, leading with the elbow — pinky should be slightly higher than thumb at the top. Stop just below shoulder height; going higher recruits traps and ruins the lift. Lower under control with a 1-second pause at the bottom (no rest at the bottom — start the next rep).</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">12–18 lb<span class="unit">DBs</span></div>
+                    <div class="ex-weight-note">99% of people overshoot here. If you're using 25s with momentum, drop to 15s with strict tempo — you'll feel it more.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">05</span>
+                  <span class="ex-title">Cable Y-Raise on incline bench <span class="ex-tag">novelty</span></span>
+                  <span class="ex-data"><span>3 × 15</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 7</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Long lever, eyes follow hands</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set an incline bench to 45°. Grab two D-handles attached to low pulleys (one cable on each side) and lie face-down on the bench. Start with arms hanging straight down toward the floor. Raise both arms up and out into a "Y" shape — like making a touchdown signal. Squeeze the upper back at the top, then lower slowly. Keep arms long throughout (slight elbow bend only).</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">5–10 lb<span class="unit">per side</span></div>
+                    <div class="ex-weight-note">Tiny weight, big result. This trains the rear/medial delt junction — the angle that creates the 3D cap.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">06</span>
+                  <span class="ex-title">Overhead Cable Tricep Extension (rope)</span>
+                  <span class="ex-data"><span>3 × 12</span><span class="pipe">·</span><span class="tempo">3-1-1-1</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Elbows tight, full lockout</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set the cable to high position, attach a rope. Face away from the cable, grab the rope and step forward so your arms are fully extended overhead with the rope behind your head. Lower the rope behind your head by bending only at the elbows — elbows stay pointed forward (not flaring out). Extend back up to full lockout, separating the rope at the top to engage the triceps fully.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">40–55 lb</div>
+                    <div class="ex-weight-note">If your elbows flare, the weight's too heavy — drop and reset.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">07</span>
+                  <span class="ex-title"><span class="ex-tag iso">iso</span>Cable Lateral Raise Hold (10° below shoulder)</span>
+                  <span class="ex-data"><span>3 × 30s</span><span class="pipe">·</span><span>30s rest</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Ribs down, no shrug</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set a cable to the lowest position, attach a D-handle. Stand with the cable on the side opposite to your working arm (so the cable runs across the front of your body). Lift the handle out to the side until your arm is just below shoulder height (about 10° below parallel — not all the way up). Hold for 30 seconds without shrugging. Switch arms.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">10–15 lb</div>
+                    <div class="ex-weight-note">Should burn by second 15 and shake by second 25. If you're stable through the whole hold, go heavier.</div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+
+            <div class="session-section-label">Swap Menu</div>
+            <dl class="swap-grid">
+              <dt>Smith incline →</dt><dd>HS incline / eccentric DB incline (4×6, 5s descent)</dd>
+              <dt>Cable crossover →</dt><dd>Pec deck / single-arm cable fly</dd>
+              <dt>HS shoulder press →</dt><dd>Landmine press / half-kneeling DB press</dd>
+              <dt>DB lateral →</dt><dd>Single-arm cable lateral / machine lateral</dd>
+              <dt>Y-Raise →</dt><dd>Rope face pull from high pulley</dd>
+              <dt>Tricep ext →</dt><dd>Rope pushdown / single-arm kickback</dd>
+            </dl>
+
+            <div class="session-section-label">Finisher / 4 min — Lateral Raise Mechanical Drop</div>
+            <div class="finisher-box">
+              <p>12 DB lateral (heavy) → 12 DB lateral (lighter, partials in stretch) → 12 DB front raise.</p>
+              <p style="font-family: var(--mono); font-size: 11px; color: var(--ink-soft);">Rest 60s × 2 rounds.</p>
+            </div>
+
+            <div class="progress-row">
+              <span style="color: var(--ink); font-weight: 600;">This week:</span>
+              <span class="marker" data-key="s1-m1"><span class="box"></span> +reps lift 1</span>
+              <span class="marker" data-key="s1-m2"><span class="box"></span> +load lift 4</span>
+              <span class="marker" data-key="s1-m3"><span class="box"></span> tempo discipline</span>
+              <span class="marker" data-key="s1-m4"><span class="box"></span> tighter rest</span>
+            </div>
+          </div>
+        </details>
+
+        <!-- ===== SESSION 2: LOWER A ===== -->
+        <details class="session-card" id="s2">
+          <summary class="session-summary">
+            <div class="session-num">02 / TUE</div>
+            <div class="session-id">
+              <div class="name">Lower A</div>
+              <div class="theme">Glute sculpt + lean legs</div>
+            </div>
+            <div class="session-meta">58 min<br>7 lifts + finisher</div>
+            <div class="session-toggle"></div>
+          </summary>
+          <div class="session-detail">
+
+            <div class="session-section-label">Warmup / 5 min — tap any item for instructions</div>
+            <div class="exercise-list">
+              <details class="warmup-item">
+                <summary><span>Hip CARs × 5 each</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">"Controlled Articular Rotations." Stand on one leg, hold a wall for balance. Lift the other knee to hip height, then circle it outward (knee opens to the side), then back behind you, then return to start. Make the slowest, biggest circle you can with full hip range. Reverse direction. Five each direction per leg.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Glute bridge × 15 (3-second top hold)</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Lie on your back, knees bent, feet flat on the floor about hip-width apart. Drive through your heels to lift your hips up until your body forms a straight line from knees to shoulders. Squeeze glutes hard at the top and hold for 3 seconds. Lower under control. The 3-second hold is non-negotiable — that's where the warmup activation happens.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>90/90 hip switches × 8 each</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Sit on the floor with both knees bent at 90°. One leg in front (knee out, foot back), the other to the side (also 90°). Without using your hands, rotate your hips to switch sides — front leg becomes side leg, side leg becomes front. Move slowly, sit tall. Eight switches each side.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Goblet squat hold (10kg DB) × 30s</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Hold a 10kg dumbbell vertically against your chest, both hands cupping the top weight. Squat down to a comfortable depth (thighs parallel or below), keeping torso upright and elbows pointing inside knees. Hold the bottom position for 30 seconds. Use your elbows to gently push your knees outward to open the hips.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Lateral band walk × 15 each direction</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Loop a mini-band around both legs, just above the knees (or around the ankles for harder). Drop into a quarter squat with feet hip-width apart. Step laterally one direction for 15 steps, keeping tension on the band the whole time (don't let your feet come together). Reverse and walk back 15 steps the other direction.</div>
+              </details>
+            </div>
+
+            <div class="session-section-label">Working Sets — tap + for instructions and starting weights</div>
+            <div class="exercise-list">
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">01</span>
+                  <span class="ex-title">Barbell Hip Thrust</span>
+                  <span class="ex-data"><span>4 × 8</span><span class="pipe">·</span><span class="tempo">2-2-X-1</span><span class="pipe">·</span><span>90s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Chin tucked, ribs down, heel drive</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Sit on the floor with your upper back braced against a bench (the bench should hit just below shoulder blades). Knees bent, feet flat about hip-width. Roll a loaded barbell over your hips — use a thick pad or Hampton bar. Drive through your heels to lift hips up until your body forms a straight line from knees to shoulders. Squeeze glutes hard at the top, hold 2 seconds. Lower under control. Tuck your chin (look at hips, not ceiling) and don't hyperextend lower back.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">185–225 lb</div>
+                    <div class="ex-weight-note">Anchor lift — track this religiously. Most people can quickly progress to 275+ here. The top hold is what builds the shape.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">02</span>
+                  <span class="ex-title">Dumbbell RDL</span>
+                  <span class="ex-data"><span>4 × 10</span><span class="pipe">·</span><span class="tempo">4-1-X-0</span><span class="pipe">·</span><span>75s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Long spine, push hips to wall behind</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Hold a dumbbell in each hand, standing tall with feet hip-width apart. Slight bend in knees that doesn't change during the rep (it's a hinge, not a squat). Push your hips backward like you're closing a car door with your butt while lowering the DBs along the front of your thighs. Keep your back flat. Stop when you feel a deep stretch in your hamstrings — usually mid-shin. Drive your hips forward to stand back up.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">60–80 lb<span class="unit">DBs each hand</span></div>
+                    <div class="ex-weight-note">If grip fails before hamstrings, use straps. The 4-second eccentric is where the hamstring sweep gets built.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">03</span>
+                  <span class="ex-title">Bulgarian Split Squat (15° forward lean)</span>
+                  <span class="ex-data"><span>3 × 10 each</span><span class="pipe">·</span><span class="tempo">3-1-X-1</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Long stride, vertical shin</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Stand 2–3 feet in front of a bench. Place the top of your back foot on the bench (laces down). Hold dumbbells at your sides. Lean your torso forward about 15° — this targets the glute over the quad. Lower until your front thigh is parallel to the floor. Drive through the front heel (not the toe) to stand back up. Front shin stays mostly vertical; if your knee shoots far past your toes, your stride is too short.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">30–45 lb<span class="unit">DBs each hand</span></div>
+                    <div class="ex-weight-note">Balance is part of the work. If you can't hit 10 strict reps with 30s, do bodyweight first to nail the pattern.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">04</span>
+                  <span class="ex-title">Cable Glute Kickback (single-leg)</span>
+                  <span class="ex-data"><span>4 × 12 each</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Squeeze and HOLD at top</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Attach an ankle strap to a low cable. Face the machine with hands on the frame for balance. Strap one ankle. Kick that leg straight back and slightly across the body's center line (so the working glute crosses the midline of your standing leg). Squeeze glute hard at the top, hold 2 seconds. Lower under control. Don't arch your lower back to extend further — the squeeze, not the range, is the rep.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">25–40 lb</div>
+                    <div class="ex-weight-note">If you're using your low back to extend, drop the weight by 10 lb.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">05</span>
+                  <span class="ex-title">Hip Abduction Machine (forward lean)</span>
+                  <span class="ex-data"><span>4 × 15</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Forward lean changes the muscle target</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Sit in the abduction machine with knees against the pads. Instead of sitting upright (which trains the lower glute), lean your torso forward 30°. This shifts the target to the upper glute (gluteus medius) — the muscle that creates the side-shelf look. Press knees apart to full range, pause briefly, return slowly. Don't bounce.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">100–140 lb</div>
+                    <div class="ex-weight-note">Machine ranges vary widely. RPE 9 means you're 1 rep from failure on the last set — go heavy here, this is the upper-glute builder.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">06</span>
+                  <span class="ex-title">B-Stance Cable RDL <span class="ex-tag">novelty</span></span>
+                  <span class="ex-data"><span>3 × 12 each</span><span class="pipe">·</span><span class="tempo">3-1-X-1</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 7</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">80% load on the front leg</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Stand facing a low cable with a rope or D-handle attachment. One foot forward, the other foot 6 inches back with just the toe touching the floor (kickstand position). 80% of your weight on the front leg — the back foot is for balance only. Hinge from the hips, lowering the cable while pushing hips back. Drive through the front heel to return. Keep back flat throughout.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">40–60 lb</div>
+                    <div class="ex-weight-note">Should feel like a focused single-leg RDL with training wheels. If it feels 50/50 between legs, shift more weight forward.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">07</span>
+                  <span class="ex-title"><span class="ex-tag iso">iso</span>Single-Leg Hip Thrust Hold (top position)</span>
+                  <span class="ex-data"><span>3 × 25s each</span><span class="pipe">·</span><span>30s rest</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Hips square, no rotation</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set up like a standard hip thrust — upper back on bench, knees bent. Extend one leg straight out in front of you (the other foot stays planted). Drive the planted foot down to lift hips up to full extension. Hold the top position for 25 seconds. Critical: keep hips square — don't let one side drop or rotate. Switch legs.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">Bodyweight</div>
+                    <div class="ex-weight-note">Add a plate (25–45 lb) on your hips when 25s feels too easy. Most people don't need added weight for the first 4 weeks.</div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+
+            <div class="session-section-label">Swap Menu</div>
+            <dl class="swap-grid">
+              <dt>Hip thrust →</dt><dd>HS glute drive / Smith hip thrust</dd>
+              <dt>DB RDL →</dt><dd>Barbell RDL / single-leg KB RDL</dd>
+              <dt>Bulgarian →</dt><dd>Smith reverse lunge / step-up (knee-high box)</dd>
+              <dt>Cable kickback →</dt><dd>Glute kickback machine / hip ext (45°, glute focus)</dd>
+              <dt>Abduction →</dt><dd>Cable lateral abduction / banded clamshells (3×25)</dd>
+              <dt>B-stance RDL →</dt><dd>Single-leg hip thrust / Romanian split-stance hinge</dd>
+            </dl>
+
+            <div class="session-section-label">Finisher / 3 min — Frog Pump Burnout</div>
+            <div class="finisher-box">
+              <p>30 frog pumps (1s top hold) → 15 banded clamshells each side → 30s plank.</p>
+              <p style="font-family: var(--mono); font-size: 11px; color: var(--ink-soft);">× 2 rounds, no rest within round.</p>
+            </div>
+
+            <div class="progress-row">
+              <span style="color: var(--ink); font-weight: 600;">This week:</span>
+              <span class="marker" data-key="s2-m1"><span class="box"></span> +load hip thrust</span>
+              <span class="marker" data-key="s2-m2"><span class="box"></span> +reps RDL</span>
+              <span class="marker" data-key="s2-m3"><span class="box"></span> deeper Bulgarian ROM</span>
+              <span class="marker" data-key="s2-m4"><span class="box"></span> tighter rest</span>
+            </div>
+          </div>
+        </details>
+
+        <!-- ===== SESSION 3: PULL A ===== -->
+        <details class="session-card" id="s3">
+          <summary class="session-summary">
+            <div class="session-num">03 / WED</div>
+            <div class="session-id">
+              <div class="name">Pull A</div>
+              <div class="theme">V-taper width + posterior chain</div>
+            </div>
+            <div class="session-meta">58 min<br>7 lifts + finisher</div>
+            <div class="session-toggle"></div>
+          </summary>
+          <div class="session-detail">
+
+            <div class="session-section-label">Warmup / 5 min — tap any item for instructions</div>
+            <div class="exercise-list">
+              <details class="warmup-item">
+                <summary><span>Cat / cow × 8</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">On hands and knees, hands under shoulders, knees under hips. Inhale — drop your belly toward the floor and look up (cow). Exhale — round your spine toward the ceiling and tuck your chin (cat). Move slowly and breathe with the motion. Eight full cycles.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Dead hang × 30s</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Hang from a pull-up bar with a wide overhand grip. Let your shoulders relax up toward your ears initially, then engage your scapulae (pull shoulder blades down and back) to "active" hang. Hold 30 seconds. Keep breathing throughout. Decompresses the spine and primes the lats.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Scapular pull-up × 8</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Hang from a pull-up bar in a passive hang (shoulders shrugged up). Without bending your elbows at all, pull your shoulder blades down and back — your body will rise about 2 inches. Hold for one second, then release back to passive hang. This isolates lat activation and is the most underused movement for V-taper development.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Band pull-apart × 20</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Hold a light resistance band straight in front of you with both hands at chest height, shoulder-width apart. Keeping arms straight, pull the band apart by squeezing your shoulder blades together until the band touches your chest. Slow return. Twenty reps.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Banded lat stretch × 30s each</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Loop a band over a pull-up bar. Grab the band with one hand, palm down. Step back and drop into a slight squat to create tension. You should feel a deep stretch through the lat (side of your back) and shoulder. Optionally rotate your torso slightly to deepen it. Hold 30 seconds, switch sides.</div>
+              </details>
+            </div>
+
+            <div class="session-section-label">Working Sets — tap + for instructions and starting weights</div>
+            <div class="exercise-list">
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">01</span>
+                  <span class="ex-title">Lat Pulldown (wide neutral, slight back lean)</span>
+                  <span class="ex-data"><span>4 × 10</span><span class="pipe">·</span><span class="tempo">3-1-X-1</span><span class="pipe">·</span><span>90s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Pull elbows to back pockets</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Use the wide neutral-grip handle (palms facing each other). Sit at the lat pulldown machine, knees secured under the pads. Lean back slightly — about 15° from vertical, no more. Pull the bar down to your upper chest by driving your elbows down and slightly back, like you're trying to put them in your back pockets. Squeeze the lats at the bottom. Return slowly.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">130–160 lb</div>
+                    <div class="ex-weight-note">Anchor lift — track every week. Should be one of the easier loads to progress on.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">02</span>
+                  <span class="ex-title">Chest-Supported T-Bar / HS Row</span>
+                  <span class="ex-data"><span>4 × 10</span><span class="pipe">·</span><span class="tempo">2-1-X-1</span><span class="pipe">·</span><span>75s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Lats first, then squeeze mid-back</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Use a chest-supported T-bar row machine or Hammer Strength row. Chest pressed against the pad. Grab the handles with a neutral grip. Initiate the pull by driving elbows down and back — feel the lats engage first — then squeeze the shoulder blades together at the top. Don't shrug. Return slowly without losing chest contact with the pad.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">90–120 lb</div>
+                    <div class="ex-weight-note">For HS row: 1 plate (45 lb) per side is a good starting estimate. T-bar plate-loaded similar.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">03</span>
+                  <span class="ex-title">Single-Arm Cable Lat Pullover (low → high)</span>
+                  <span class="ex-data"><span>4 × 12</span><span class="pipe">·</span><span class="tempo">3-0-1-2</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Long arm, feel the lat lengthen and contract</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set the cable to the lowest position, attach a single D-handle. Stand facing the cable, slightly to the side so the cable runs across your body. Grab the handle with the arm farthest from the cable, raise it up overhead with arm fully extended (long arm). Pull the cable down and across your body in a sweeping arc until your hand reaches your opposite hip — keep the arm long throughout (only slight elbow bend). Reverse slowly.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">25–40 lb</div>
+                    <div class="ex-weight-note">Most underused movement for V-taper. The lat stretch at the top is the magic — don't shortchange it.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">04</span>
+                  <span class="ex-title">Reverse Pec Deck (pinky-up grip)</span>
+                  <span class="ex-data"><span>4 × 15</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Lead with pinky, hold contraction</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Sit facing the pec deck (chest against the pad). Grab the handles with a pinky-up grip (thumbs facing each other, pinkies pointing up). This grip emphasizes the rear delts and protects the rotator cuff. Pull the handles back and out, leading with your pinkies. Hold the contracted position for one second. Return under control. Don't recruit traps.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">80–110 lb</div>
+                    <div class="ex-weight-note">Rear delts respond to high reps. RPE 9 means the last 2–3 reps are a grind.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">05</span>
+                  <span class="ex-title">Eccentric-Only Chest-Supported Row <span class="ex-tag">novelty</span></span>
+                  <span class="ex-data"><span>3 × 6</span><span class="pipe">·</span><span class="tempo">5-0-X-0</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">5-second negative every rep</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Same setup as the chest-supported row. Use a slightly heavier weight than your normal working set (about 20–30% more). Pull the handles up explosively (1 second), then resist the eccentric — lower the weight over a full 5-second count. Count it out: "one Mississippi, two Mississippi..." That's one rep. Six reps total per set.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">110–145 lb</div>
+                    <div class="ex-weight-note">Heavier than your normal CS row because the eccentric is the only working portion. If you can't hold the 5-second count on rep 5–6, the weight is too heavy.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">06</span>
+                  <span class="ex-title">Incline DB Curl (arms behind body line)</span>
+                  <span class="ex-data"><span>3 × 10</span><span class="pipe">·</span><span class="tempo">3-0-1-1</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">No swing, supinate at the top</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set an incline bench to about 60°. Sit back, dumbbells in each hand hanging straight down at your sides. Critical detail: let your arms hang fully so they're slightly behind your body line. From this stretched position, curl the dumbbells up — supinate (rotate palms up) as you curl. No swinging, no shoulder movement. Squeeze biceps at top. Lower under control all the way back to the stretched start.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">22–30 lb<span class="unit">DBs</span></div>
+                    <div class="ex-weight-note">Goes much lighter than standing curls because the stretched position eliminates momentum entirely.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">07</span>
+                  <span class="ex-title"><span class="ex-tag iso">iso</span>Dead Hang (active scap)</span>
+                  <span class="ex-data"><span>3 × max time</span><span class="pipe">·</span><span>60s rest</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Active scap, not passive</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Hang from a pull-up bar with a wide overhand grip. Engage your scapulae — pull your shoulder blades down and back so you feel your lats fire. This is "active hang," not letting yourself dangle passively. Hold for as long as possible. Track your time and aim to beat it the next session.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">Bodyweight</div>
+                    <div class="ex-weight-note">Targets: 60s by week 4, 90s by week 8, 2 min by week 12. Hangs build grip + lat endurance + decompress the spine.</div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+
+            <div class="session-section-label">Swap Menu</div>
+            <dl class="swap-grid">
+              <dt>Lat pulldown →</dt><dd>Pull-up (assisted) / single-arm pulldown (kneeling)</dd>
+              <dt>T-bar row →</dt><dd>Seal row / chest-supported DB row</dd>
+              <dt>Cable pullover →</dt><dd>Straight-arm pulldown / DB pullover on bench</dd>
+              <dt>Reverse pec deck →</dt><dd>Cable rope face pull / rear delt fly on incline</dd>
+              <dt>Eccentric row →</dt><dd>Pendlay row / Meadows row</dd>
+              <dt>Incline curl →</dt><dd>Cable curl (arms behind) / hammer curl</dd>
+            </dl>
+
+            <div class="session-section-label">Finisher / 4 min — Lat + Rear Delt Density</div>
+            <div class="finisher-box">
+              <p>12 straight-arm pulldown → 12 face pull (high pulley, rope, to forehead) → 12 cable curl.</p>
+              <p style="font-family: var(--mono); font-size: 11px; color: var(--ink-soft);">Rest 45s × 3 rounds.</p>
+            </div>
+
+            <div class="progress-row">
+              <span style="color: var(--ink); font-weight: 600;">This week:</span>
+              <span class="marker" data-key="s3-m1"><span class="box"></span> +reps pulldown</span>
+              <span class="marker" data-key="s3-m2"><span class="box"></span> deeper pullover stretch</span>
+              <span class="marker" data-key="s3-m3"><span class="box"></span> longer dead hang</span>
+              <span class="marker" data-key="s3-m4"><span class="box"></span> tighter row ROM</span>
+            </div>
+          </div>
+        </details>
+
+        <!-- ===== SESSION 4: PUSH B ===== -->
+        <details class="session-card" id="s4">
+          <summary class="session-summary">
+            <div class="session-num">04 / FRI</div>
+            <div class="session-id">
+              <div class="name">Push B</div>
+              <div class="theme">Delt density + abs architecture</div>
+            </div>
+            <div class="session-meta">58 min<br>6 lifts + abs + finisher</div>
+            <div class="session-toggle"></div>
+          </summary>
+          <div class="session-detail">
+
+            <div class="session-section-label">Warmup / 5 min — tap any item for instructions</div>
+            <div class="exercise-list">
+              <details class="warmup-item">
+                <summary><span>Band pass-through × 15</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Same movement as the Day 1 dislocates. Hold a band wider than shoulder-width, palms down. Keep arms straight and pass the band overhead and down behind you, then back. Wider grip is easier — narrow it as your shoulders open.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Cuban rotation (light DB) × 10</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Hold a very light dumbbell (5 lb is plenty) in one hand. Lift your elbow out to the side at shoulder height, with forearm hanging straight down (forearm vertical, palm toward your body). From there, rotate your forearm up and back so palm faces forward and forearm is now vertical pointing up. Reverse. Activates the rotator cuff before pressing.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Push-up to T-rotation × 6 each side</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Do one push-up. At the top, rotate your body to one side, lifting that arm straight up toward the ceiling so your body forms a "T." Hold for one breath. Return to push-up, do another rep, rotate the other side. Six rotations per side.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Hollow hold × 20s</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Lie on your back. Press lower back into the floor and lift both legs and shoulders/arms a few inches off the ground. Body forms a shallow "U" or "banana" shape. Arms straight overhead. Hold 20 seconds. Lower back must stay pressed to the floor — if it lifts, raise your legs higher.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Band lateral raise × 20</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Stand on one end of a light band, hold the other end in one hand at your side. Lift your arm out to the side with the band creating tension. Twenty reps each arm. Activates the medial delt before loading it heavily.</div>
+              </details>
+            </div>
+
+            <div class="session-section-label">Working Sets — tap + for instructions and starting weights</div>
+            <div class="exercise-list">
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">01</span>
+                  <span class="ex-title">Seated DB Shoulder Press (neutral grip)</span>
+                  <span class="ex-data"><span>4 × 8</span><span class="pipe">·</span><span class="tempo">3-1-X-0</span><span class="pipe">·</span><span>75s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">No arch, ribs stacked over hips</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set an adjustable bench fully upright. Sit with a dumbbell in each hand at shoulder height, palms facing each other (neutral grip). Press straight up without rotating the dumbbells. No back arch — keep ribs stacked over hips. Lower under control to ear height. The neutral grip is more shoulder-friendly than pronated.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">50–65 lb<span class="unit">DBs each hand</span></div>
+                    <div class="ex-weight-note">Push up to 70+ over the program. Watch for shoulder cranking — if you feel pinching, drop weight.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">02</span>
+                  <span class="ex-title">Egyptian Lateral Raise <span class="ex-tag">novelty</span></span>
+                  <span class="ex-data"><span>4 × 12 each</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Lean creates the angle that forces the medial delt</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Stand next to a cable column. Grab a vertical post or rack with your free hand at chest height. Lean your body away from the post so you're tilted at ~30° (your body forms a diagonal line). Grab a single D-handle from the low cable with your other hand — the cable should be on the opposite side of your body from the working arm. From this leaning position, perform a strict lateral raise with the cable arm. The lean removes momentum and forces strict isolation. Switch sides.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">12–18 lb</div>
+                    <div class="ex-weight-note">Will feel ridiculously hard for the load. That's the point — it's the most pure medial delt isolation that exists.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">03</span>
+                  <span class="ex-title">Cable Front Raise (rope, low pulley between legs)</span>
+                  <span class="ex-data"><span>3 × 12</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Bring rope to forehead height, no higher</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set a cable to the lowest position, attach a rope. Straddle the cable so the rope runs up between your legs. Grab the rope with both hands, palms facing each other. Stand with feet shoulder-width apart. Raise the rope up and out in front of you to forehead height — no higher. As you raise, separate the rope ends so your hands end up wide apart at the top. Lower slowly.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">30–50 lb</div>
+                    <div class="ex-weight-note">Front delts respond to higher reps. Don't go above forehead — that recruits traps.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">04</span>
+                  <span class="ex-title">Reverse Cable Fly (single-arm, cross-body)</span>
+                  <span class="ex-data"><span>4 × 15 each</span><span class="pipe">·</span><span class="tempo">2-1-1-1</span><span class="pipe">·</span><span>30s rest each</span><span class="pipe">·</span><span>RPE 9</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Lead with elbow, not hand</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set a cable to chest height, attach a D-handle. Stand sideways to the cable column with the cable on your left side. Grab the handle with your right hand, so the cable crosses in front of your body (left to right). Step away to create tension, arm extended across your chest. Pull the handle back and out to the side, leading with your elbow. Squeeze rear delt at the end. Slow return. Switch sides.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">12–20 lb</div>
+                    <div class="ex-weight-note">High reps + short rest. By the last set you'll be cooked. Stay strict.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">05</span>
+                  <span class="ex-title">Cable Crossover (low → high, upper-shelf bias)</span>
+                  <span class="ex-data"><span>3 × 12</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Hands meet at chin height</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Inverse of the Day 1 crossover. Set both pulleys at the lowest position. Grab D-handles, step forward into a slight split stance. Start with arms down at your sides, slight bend in elbows. Sweep both hands up and across your body — meeting at chin height. The upward angle hits the upper chest fibers — the "shelf" muscle. Slow return.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">25–35 lb<span class="unit">per side</span></div>
+                    <div class="ex-weight-note">This one builds the chest line that shows above a low V-neck. Don't go too heavy — form > load.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">06</span>
+                  <span class="ex-title"><span class="ex-tag iso">iso</span>Lateral Raise Hold (DB at parallel)</span>
+                  <span class="ex-data"><span>3 × 30s</span><span class="pipe">·</span><span>45s rest</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Pinky just below thumb</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Hold a dumbbell in each hand at your sides. Lift both DBs out to the side until your arms are parallel to the floor — straight out. Hold for 30 seconds. Pinky just below thumb level (slight tilt forward). Don't shrug. By second 20 your delts will scream — hold through it.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">12–15 lb<span class="unit">DBs each hand</span></div>
+                    <div class="ex-weight-note">Lighter than your dynamic lateral raise weight. The hold is the work.</div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+
+            <div class="session-section-label">Abs Block / 8 min — Tri-set × 3 rounds, 60s rest between rounds</div>
+            <div class="exercise-list">
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">A</span>
+                  <span class="ex-title">Cable Rope Crunch (kneeling)</span>
+                  <span class="ex-data"><span>15 reps</span><span class="pipe">·</span><span class="tempo">3-1-2-0</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Squeeze the abs, don't pull arms</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Attach a rope to a high cable. Kneel facing away from the cable, hold the rope at the sides of your head (rope hangs over your shoulders). Crunch down by curling your spine — chin to pelvis — squeezing your abs hard. Hold the contracted position for 2 seconds. Don't pull with your arms; arms are just hooks for the rope. Return slowly to start.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">60–100 lb</div>
+                    <div class="ex-weight-note">Anchor lift. Most underloaded ab movement in the gym — go progressive.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">B</span>
+                  <span class="ex-title">Hanging Leg Raise (straight legs if possible)</span>
+                  <span class="ex-data"><span>12 reps</span><span class="pipe">·</span><span class="tempo">2-0-1-2</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Posterior pelvic tilt, then lift</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Hang from a pull-up bar with arms straight. Initiate by tilting your pelvis backward (like tucking your tailbone forward) — this is critical, it engages the lower abs before the hip flexors take over. Then lift your legs straight up to parallel with the floor (or higher if you can). Lower under control. Don't swing. If straight legs are too hard, bend the knees.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">Bodyweight</div>
+                    <div class="ex-weight-note">Add a DB between feet (5–15 lb) when 12 strict reps becomes easy.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">C</span>
+                  <span class="ex-title">Reverse Crunch with Hip Lift</span>
+                  <span class="ex-data"><span>15 reps</span><span class="pipe">·</span><span class="tempo">2-1-1-1</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Lift hips toward ceiling, not just legs</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Lie on your back, hands at sides or under glutes for support. Bend knees to 90° with feet off the floor. Pull your knees toward your chest while simultaneously lifting your hips off the floor (drive hips up, not just legs in). Pause briefly with hips elevated. Lower slowly without letting your feet touch the ground between reps.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">Bodyweight</div>
+                    <div class="ex-weight-note">The hip lift at the top is what separates this from a basic knee-tuck. Don't skip it.</div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+
+            <div class="session-section-label">Finisher / 3 min — Delt EMOM</div>
+            <div class="finisher-box">
+              <p><strong>Min 1:</strong> 15 DB lateral raise · <strong>Min 2:</strong> 15 cable upright row (rope, wide) · <strong>Min 3:</strong> 15 rear delt fly.</p>
+              <p style="font-family: var(--mono); font-size: 11px; color: var(--ink-soft);">Repeat × 1 in Week 3 (Peak).</p>
+            </div>
+
+            <div class="progress-row">
+              <span style="color: var(--ink); font-weight: 600;">This week:</span>
+              <span class="marker" data-key="s4-m1"><span class="box"></span> +load shoulder press</span>
+              <span class="marker" data-key="s4-m2"><span class="box"></span> +reps lateral block</span>
+              <span class="marker" data-key="s4-m3"><span class="box"></span> visible ab definition pre-workout</span>
+            </div>
+          </div>
+        </details>
+
+        <!-- ===== SESSION 5: LOWER B ===== -->
+        <details class="session-card" id="s5">
+          <summary class="session-summary">
+            <div class="session-num">05 / SAT</div>
+            <div class="session-id">
+              <div class="name">Lower B</div>
+              <div class="theme">Glute lift + lateral power</div>
+            </div>
+            <div class="session-meta">58 min<br>7 lifts + finisher</div>
+            <div class="session-toggle"></div>
+          </summary>
+          <div class="session-detail">
+
+            <div class="session-section-label">Warmup / 5 min — tap any item for instructions</div>
+            <div class="exercise-list">
+              <details class="warmup-item">
+                <summary><span>World's greatest stretch × 5 each side</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">From standing, step into a deep forward lunge with your right foot. Place both hands inside your right foot (left hand on the floor). Rotate your torso open to the right, reaching your right arm up toward the ceiling. Pause and breathe. Return hand down, push back to standing. Switch sides. Five reps each side. Hits hips, T-spine, hamstrings.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Cossack squat (bodyweight) × 5 each</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Stand with feet wider than shoulders, toes pointed slightly out. Shift your weight to one side, bending that knee while keeping the other leg straight. Sink into the squat — heel of bent leg stays down, toes of straight leg can come up. Push through the bent leg's heel to return to start. Switch sides.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Glute bridge × 15</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Same as Day 2's warmup. Lie on back, knees bent, feet flat. Drive through heels to lift hips up to a straight line from knees to shoulders. Squeeze glutes hard at top. Lower under control. Fifteen reps to fully activate glutes before heavy hip thrusting.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Lateral band walk × 12 each direction</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Mini-band around legs above knees. Drop into a quarter squat. Step laterally one direction for 12 steps maintaining tension on the band — don't let feet come together. Reverse and walk back. Pre-activates glute medius before lateral work.</div>
+              </details>
+              <details class="warmup-item">
+                <summary><span>Single-leg balance (eyes closed) × 30s each</span><span class="ex-toggle"></span></summary>
+                <div class="warmup-body">Stand on one leg with eyes closed. Hold for 30 seconds. Switch legs. Looks easy, isn't. Activates the entire stabilizer chain (foot, ankle, hip, core) and primes you for the single-leg work coming. If you fall, restart the timer.</div>
+              </details>
+            </div>
+
+            <div class="session-section-label">Working Sets — tap + for instructions and starting weights</div>
+            <div class="exercise-list">
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">01</span>
+                  <span class="ex-title">Heavy Hip Thrust (BB or HS Glute Drive)</span>
+                  <span class="ex-data"><span>4 × 6</span><span class="pipe">·</span><span class="tempo">2-2-X-1</span><span class="pipe">·</span><span>2 min rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Top hold is non-negotiable</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Same setup as the Lower A hip thrust, but heavier. Sit on floor with upper back against bench, feet flat, knees bent. Roll a heavy barbell over your hips with a thick pad. Drive through your heels to lift hips to full extension — body forms a straight line from knees to shoulders. Squeeze glutes hard at the top, hold 2 full seconds. Lower under control. Lower reps + heavier weight here for top-end glute strength.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">225–275 lb</div>
+                    <div class="ex-weight-note">Heavier than your Lower A hip thrust — the lower rep range allows more load. Push to 315+ as you progress.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">02</span>
+                  <span class="ex-title">Reverse Lunge (DB, deficit on 2" plate)</span>
+                  <span class="ex-data"><span>3 × 10 each</span><span class="pipe">·</span><span class="tempo">3-1-X-1</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Step long, drive through heel</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Stand on a 2-inch plate or low platform with both feet. Hold dumbbells at your sides. Step backward off the plate with one leg, lowering until back knee is just above the ground. The deficit (standing on the plate) increases the range of motion and stretches the front-leg glute. Drive through the front leg's heel to step back up onto the plate. Alternate legs or do all reps on one side first.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">35–50 lb<span class="unit">DBs each hand</span></div>
+                    <div class="ex-weight-note">The deficit makes this harder than a standard reverse lunge. Start lighter than you think.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">03</span>
+                  <span class="ex-title">Single-Leg Hip Extension (45° back ext, glute focus)</span>
+                  <span class="ex-data"><span>4 × 12 each</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Round upper back slightly to take low back out</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Set up on a 45° back extension machine. Anchor one foot under the foot pads, lift the other leg straight back so only one leg is doing the work. Round your upper back slightly (like a slight slouch) — this de-emphasizes the lower back and emphasizes the glutes. Hinge at the hips to lower your torso, then squeeze the glute of the working leg to come back up. Hold contracted position 1 second.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">25–45 lb<span class="unit">plate held at chest</span></div>
+                    <div class="ex-weight-note">Start bodyweight, add a plate when you can hit 12 strict reps with the slow tempo.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">04</span>
+                  <span class="ex-title">Cable Cossack Squat <span class="ex-tag">novelty</span></span>
+                  <span class="ex-data"><span>3 × 8 each</span><span class="pipe">·</span><span class="tempo">3-1-X-0</span><span class="pipe">·</span><span>60s rest</span><span class="pipe">·</span><span>RPE 8</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Heel down on the bent leg</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Stand sideways to a cable column. Grab a D-handle from a low cable with the hand farthest from the column. Step away to create tension, hold the handle at chest height. With feet wider than shoulders and toes pointed slightly out, shift your weight to the leg closer to the cable, bending that knee while keeping the other leg straight. Heel of bent leg stays down. Drive back up. Eight reps, then switch sides.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">30–50 lb</div>
+                    <div class="ex-weight-note">Lateral plane work. Most people are weak here. The cable adds resistance and helps with balance.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">05</span>
+                  <span class="ex-title">Standing Calf Raise (Smith / HS)</span>
+                  <span class="ex-data"><span>4 × 12</span><span class="pipe">·</span><span class="tempo">3-1-X-2</span><span class="pipe">·</span><span>45s rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Pause stretched, full extension at top</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Use a Smith machine with a low platform under the balls of your feet (or a Hammer Strength standing calf machine). Position the bar across your traps. Stand with the balls of your feet on the platform, heels hanging off. Lower your heels as far as they'll go (full stretch — pause 1 second). Drive up onto the balls of your feet to full extension and hold for 2 seconds at the top.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">180–250 lb</div>
+                    <div class="ex-weight-note">Calves are stubborn. Need heavy load + strict tempo + full stretch every rep. The 2-second top hold is what makes them grow.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">06</span>
+                  <span class="ex-title">Seated Calf Raise</span>
+                  <span class="ex-data"><span>3 × 15</span><span class="pipe">·</span><span class="tempo">2-1-1-2</span><span class="pipe">·</span><span>30s rest</span><span class="pipe">·</span><span>RPE 9</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Don't bounce</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Sit on the seated calf machine with the pads on top of your knees. Balls of your feet on the platform. Lower heels into a full stretch (1 second). Press up to full extension on the balls of your feet, pause 2 seconds. Slow lower. Targets the soleus (deep calf muscle), which gives the calf its width.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">70–110 lb</div>
+                    <div class="ex-weight-note">Soleus responds to high reps + slow tempo. Bouncing reps don't build calves.</div>
+                  </div>
+                </div>
+              </details>
+
+              <details class="exercise">
+                <summary>
+                  <span class="ex-num">07</span>
+                  <span class="ex-title"><span class="ex-tag iso">iso</span>Wall Sit at 90°</span>
+                  <span class="ex-data"><span>3 × 45s</span><span class="pipe">·</span><span>60s rest</span></span>
+                  <span class="ex-toggle"></span>
+                </summary>
+                <div class="ex-body">
+                  <div class="ex-cue">Back flat, knees over ankles</div>
+                  <div class="ex-section">
+                    <h6>How to do it</h6>
+                    <p>Stand with your back against a wall. Walk your feet out and slide your back down the wall until your thighs are parallel to the floor (90° at the knees). Knees should stack directly over ankles — adjust your foot position if your knees jut forward. Press your entire back flat against the wall. Hold for 45 seconds.</p>
+                  </div>
+                  <div class="ex-section">
+                    <h6>Suggested weight</h6>
+                    <div class="ex-weight">Bodyweight</div>
+                    <div class="ex-weight-note">Hold a DB at chest level (10–25 lb) when 45s feels easy. Quad burner that doesn't require any equipment beyond a wall.</div>
+                  </div>
+                </div>
+              </details>
+
+            </div>
+
+            <div class="session-section-label">Swap Menu</div>
+            <dl class="swap-grid">
+              <dt>Heavy hip thrust →</dt><dd>Single-leg hip thrust (heavy DB) / KAS glute bridge</dd>
+              <dt>Reverse lunge →</dt><dd>Walking lunge / step-up (high box)</dd>
+              <dt>Single-leg hip ext →</dt><dd>Cable pull-through (heavy) / good morning (light)</dd>
+              <dt>Cable cossack →</dt><dd>DB cossack / lateral lunge with cable</dd>
+              <dt>Standing calf →</dt><dd>Leg press calf / single-leg standing calf</dd>
+              <dt>Seated calf →</dt><dd>Donkey calf raise (machine if available)</dd>
+            </dl>
+
+            <div class="session-section-label">Finisher / 4 min — Sled Glute Burnout</div>
+            <div class="finisher-box">
+              <p>30-yard sled push (heavy) → 30-yard sled pull backward (lean back, drive through heel) → 60s rest.</p>
+              <p style="font-family: var(--mono); font-size: 11px; color: var(--ink-soft);">× 4 rounds.</p>
+            </div>
+
+            <div class="progress-row">
+              <span style="color: var(--ink); font-weight: 600;">This week:</span>
+              <span class="marker" data-key="s5-m1"><span class="box"></span> +load hip thrust</span>
+              <span class="marker" data-key="s5-m2"><span class="box"></span> deeper deficit lunge</span>
+              <span class="marker" data-key="s5-m3"><span class="box"></span> +calf load</span>
+              <span class="marker" data-key="s5-m4"><span class="box"></span> longer wall sit</span>
+            </div>
+          </div>
+        </details>
+
+      </div>
+    </section>
+
+    <!-- ============ 06 EXERCISES (database) ============ -->
+    <section class="block" id="exercises">
+      <div class="block-head">
+        <div class="block-num">06</div>
+        <div>
+          <div class="block-title">Exercise Database</div>
+          <div class="block-kicker">Why each lift earns its place — common error → mind-muscle cue</div>
+        </div>
+      </div>
+
+      <table class="zebra">
+        <thead>
+          <tr><th style="width:24%">Exercise</th><th>Why for THIS goal</th><th>Common error</th><th>Cue</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Smith Incline Press</strong></td><td>Upper-pec shelf without flat-bench mass-everywhere effect</td><td>Bar drifts toward neck</td><td><em>Push the bar forward, not just up</em></td></tr>
+          <tr><td><strong>Cable Crossover (high → low)</strong></td><td>Inner-pec separation; the seam line</td><td>Bending elbows mid-rep</td><td><em>Hand to opposite hip, hold the squeeze</em></td></tr>
+          <tr><td><strong>HS Shoulder Press</strong></td><td>Delt mass without trap recruitment of free weights</td><td>Letting the back arch</td><td><em>Press straight up, ribs locked down</em></td></tr>
+          <tr><td><strong>DB Lateral Raise</strong></td><td>The single most important movement for the cap</td><td>Shrugging traps to lift heavier</td><td><em>Lift with the elbow, not the dumbbell</em></td></tr>
+          <tr><td><strong>Cable Y-Raise (incline)</strong></td><td>Posterior + medial delt union — the 3D cap angle</td><td>Too much weight, swinging</td><td><em>Long arms, eyes track the hands</em></td></tr>
+          <tr><td><strong>Egyptian Lateral Raise</strong></td><td>Removes momentum entirely; isolates medial delt under stretch</td><td>Hip swing</td><td><em>Lean creates the angle, not momentum</em></td></tr>
+          <tr><td><strong>Cable Rope Tricep Ext</strong></td><td>Triceps shape without elbow strain</td><td>Elbows flaring outward</td><td><em>Elbows pointed at the floor the whole rep</em></td></tr>
+          <tr><td><strong>Barbell Hip Thrust</strong></td><td>Foundational glute mass and shelf</td><td>Hyperextending lumbar at top</td><td><em>Tuck the chin, ribs to hips</em></td></tr>
+          <tr><td><strong>DB RDL</strong></td><td>Hamstring sweep + glute origin without quad recruitment</td><td>Squatting the weight down</td><td><em>Push hips to the wall behind you</em></td></tr>
+          <tr><td><strong>Bulgarian Split Squat</strong></td><td>Glute and quad shape with built-in hip mobility</td><td>Vertical torso (becomes quad-only)</td><td><em>15° forward lean = glute</em></td></tr>
+          <tr><td><strong>Cable Glute Kickback</strong></td><td>Direct glute contraction with full ROM</td><td>Arching low back to extend further</td><td><em>Squeeze and hold, don't reach</em></td></tr>
+          <tr><td><strong>Hip Abduction (forward lean)</strong></td><td>Upper-glute (medius) for the side-shelf look</td><td>Sitting upright (hits lower glute)</td><td><em>Forward lean changes the muscle</em></td></tr>
+          <tr><td><strong>B-Stance Cable RDL</strong></td><td>Unilateral hinge without single-leg balance challenge</td><td>50/50 weight distribution</td><td><em>80% on the front leg</em></td></tr>
+          <tr><td><strong>Lat Pulldown (wide neutral)</strong></td><td>Lat width without trap overdevelopment</td><td>Pulling with biceps</td><td><em>Elbows to back pockets</em></td></tr>
+          <tr><td><strong>Chest-Supported Row</strong></td><td>Mid-back density without low-back fatigue</td><td>Shrugging at the top</td><td><em>Squeeze blades, don't shrug</em></td></tr>
+          <tr><td><strong>Single-Arm Cable Pullover</strong></td><td>Lat under stretch — most underused movement for V-taper</td><td>Bending elbow</td><td><em>Long arm, lat does the work</em></td></tr>
+          <tr><td><strong>Reverse Pec Deck (pinky-up)</strong></td><td>Rear delt isolation — protects shoulder health</td><td>Using traps</td><td><em>Pinkies up = rear delt only</em></td></tr>
+          <tr><td><strong>Eccentric-Only Row</strong></td><td>Mechanical tension under stretch — best for hypertrophy</td><td>Rushing the negative</td><td><em>Five Mississippi, every rep</em></td></tr>
+          <tr><td><strong>Incline DB Curl</strong></td><td>Bicep length and peak shape — the lean-arm look</td><td>Swinging</td><td><em>Arm behind body the whole set</em></td></tr>
+          <tr><td><strong>Cable Cossack Squat</strong></td><td>Lateral hip mobility + adductor/glute med</td><td>Heel up on bent leg</td><td><em>Push the floor away laterally</em></td></tr>
+          <tr><td><strong>Heavy Hip Thrust</strong></td><td>Top-end glute strength = shape, not just size</td><td>Skipping the top hold</td><td><em>The squeeze IS the rep</em></td></tr>
+          <tr><td><strong>Reverse Lunge (deficit)</strong></td><td>Glute under stretch; safer than forward lunge for knees</td><td>Knee drifts forward</td><td><em>Step long, hips back</em></td></tr>
+          <tr><td><strong>45° Back Ext (glute)</strong></td><td>Glutes through hip extension under load with low back protected</td><td>Using lumbar to lift</td><td><em>Round upper back, hinge from hip</em></td></tr>
+          <tr><td><strong>Standing Calf Raise</strong></td><td>Calf mass — gastrocnemius (the visible part)</td><td>Bouncing</td><td><em>Pause stretched, two-second top hold</em></td></tr>
+          <tr><td><strong>Cable Rope Crunch</strong></td><td>Trains abs as a contracting muscle, not just stabilizer</td><td>Pulling with arms</td><td><em>Arms are hooks; abs do the work</em></td></tr>
+          <tr><td><strong>Hanging Leg Raise</strong></td><td>Lower abs + serratus — the V-cut into the hip</td><td>Swinging</td><td><em>Posterior pelvic tilt, then lift</em></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============ 07 PRIORITIES ============ -->
+    <section class="block" id="priorities">
+      <div class="block-head">
+        <div class="block-num">07</div>
+        <div>
+          <div class="block-title">Aesthetic Priorities</div>
+          <div class="block-kicker">The 5 you never skip — the 5 you actively avoid — the 30-min emergency</div>
+        </div>
+      </div>
+
+      <div class="duo">
+        <div class="duo-col">
+          <h4><span class="red">→</span> NEVER SKIP</h4>
+          <ol class="feature-list">
+            <li><div><div class="feat-title">DB Lateral Raise</div><div class="feat-body">In some form, 4–5 sessions a week. Without delt cap, the silhouette doesn't exist.</div></div></li>
+            <li><div><div class="feat-title">Hip Thrust</div><div class="feat-body">Single biggest contributor to the glute shelf. The reference images all have it.</div></div></li>
+            <li><div><div class="feat-title">Romanian Deadlift</div><div class="feat-body">Hamstring sweep + glute origin. The line that separates ass from hamstring in shorts.</div></div></li>
+            <li><div><div class="feat-title">Smith / HS Incline Press</div><div class="feat-body">Upper-pec shelf is what makes the chest read "square" instead of "round."</div></div></li>
+            <li><div><div class="feat-title">Cable Rope Crunch</div><div class="feat-body">Abs need direct hypertrophy work to show at rest, not just be strong.</div></div></li>
+          </ol>
+        </div>
+
+        <div class="duo-col">
+          <h4><span class="red">×</span> ACTIVELY AVOID</h4>
+          <ol class="feature-list">
+            <li><div><div class="feat-title">High-Bar Back Squat</div><div class="feat-body">Builds quad sweep + trap thickness that destroys the silhouette. RDL hits glutes/hams better.</div></div></li>
+            <li><div><div class="feat-title">Heavy Barbell Shrugs</div><div class="feat-body">Yoked traps shorten the neckline and make shoulders look narrower.</div></div></li>
+            <li><div><div class="feat-title">Flat Barbell Bench (as primary)</div><div class="feat-body">Builds lower-chest droop, not upper shelf. Use sparingly if at all.</div></div></li>
+            <li><div><div class="feat-title">Heavy Barbell Curls</div><div class="feat-body">Bicep mass without shape. You want lean arms with longer bellies. Cable + DB only.</div></div></li>
+            <li><div><div class="feat-title">Olympic Lifts</div><div class="feat-body">Explosive trap and upper-back development that fights the V-taper.</div></div></li>
+          </ol>
+        </div>
+      </div>
+
+      <div class="session-section-label" style="margin-top: 64px;">If I only have 30 minutes / Emergency session</div>
+      <table class="zebra">
+        <thead>
+          <tr><th style="width:14%">Time</th><th style="width:46%">Exercise</th><th>Sets × Reps</th><th>Tempo</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>0:00 – 5:00</td><td><strong>Hip Thrust</strong> (heavy)</td><td>4 × 8</td><td style="font-family: var(--mono); color: var(--accent);">2-2-X-1</td></tr>
+          <tr><td>5:00 – 11:00</td><td><strong>Lateral Raise Giant Set</strong> — 12 cable + 12 DB + 12 rear delt</td><td>3 rounds</td><td style="font-family: var(--mono); color: var(--accent);">2-0-1-1</td></tr>
+          <tr><td>11:00 – 17:00</td><td><strong>Smith Incline Press</strong> OR Cable Crossover</td><td>3 × 12</td><td style="font-family: var(--mono); color: var(--accent);">3-0-X-0</td></tr>
+          <tr><td>17:00 – 22:00</td><td><strong>Cable Crunch + Hanging Leg Raise</strong> (superset)</td><td>3 × 15+12</td><td>controlled</td></tr>
+          <tr><td>22:00 – 27:00</td><td><strong>Sled Push</strong> 4 × 20yd</td><td>60s rest</td><td>—</td></tr>
+          <tr><td>27:00 – 30:00</td><td>Walk out, mobility</td><td>—</td><td>—</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============ 08 CONDITIONING ============ -->
+    <section class="block" id="conditioning">
+      <div class="block-head">
+        <div class="block-num">08</div>
+        <div>
+          <div class="block-title">Conditioning</div>
+          <div class="block-kicker">2 sessions / week (3 in Peak weeks). Burns the right currency.</div>
+        </div>
+      </div>
+
+      <table class="zebra">
+        <thead>
+          <tr><th style="width:14%">Day</th><th style="width:22%">Type</th><th style="width:30%">Duration / Protocol</th><th>Why this slot</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong>Tue</strong><br><span style="font-family: var(--mono); font-size: 10px; color: var(--ink-soft);">post Lower A</span></td><td>Z2 incline walk</td><td>12 min · 12% incline · 3.0 mph</td><td><em>Caloric burn without recovery cost; legs already tired so no extra strain.</em></td></tr>
+          <tr><td><strong>Thu</strong><br><span style="font-family: var(--mono); font-size: 10px; color: var(--ink-soft);">standalone</span></td><td>Sled + Assault Bike</td><td>5 rounds: 60yd push + 60yd pull, 90s rest → 5 min Tabata bike (20s/10s × 8)</td><td><em>Mid-week glute hit + anaerobic spike; full 48h before Push B.</em></td></tr>
+          <tr><td><strong>Sat</strong><br><span style="font-family: var(--mono); font-size: 10px; color: var(--ink-soft);">post Lower B</span></td><td>Stairmaster Z2</td><td>8 min · level 6</td><td><em>Active glute pump + capillary work; shouldn't tax CNS.</em></td></tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <div class="callout-label">→ Avoid</div>
+        <p>Long-distance running, HIIT classes (random programming), spin class. They burn the wrong currency for this physique. Skip sprint intervals until week 12+.</p>
+      </div>
+    </section>
+
+    <!-- ============ 09 NUTRITION ============ -->
+    <section class="block" id="nutrition">
+      <div class="block-head">
+        <div class="block-num">09</div>
+        <div>
+          <div class="block-title">Nutrition Guardrails</div>
+          <div class="block-kicker">No meal plan. Floors, ranges, the protocol on alcohol, and three low-effort meals.</div>
+        </div>
+      </div>
+
+      <dl class="keyval">
+        <dt>Protein floor</dt><dd><strong>165g / day</strong> minimum · target 175g · realistic ceiling ~200g on semaglutide. <em>If you only solve one variable, solve this one.</em></dd>
+        <dt>Calorie band</dt><dd>Training day: <strong>2,300–2,400</strong> · Non-training: <strong>2,000–2,100</strong> · Weekly average: <strong>~2,200</strong></dd>
+        <dt>Pre-training (60–90 min)</dt><dd>25g protein + 30–40g carbs. <em>Default: scoop whey + small banana + rice cake with almond butter.</em></dd>
+        <dt>Post-training (within 60 min)</dt><dd>35–40g protein + 50–70g carbs. <em>Default: 2 scoops whey + 1 cup oats + berries.</em></dd>
+        <dt>Alcohol</dt><dd>≤ 4 drinks / week build · ≤ 2 / week cut weeks. Clear spirits + soda + lime, mezcal neat, dry red. Skip beer + sugar cocktails. <em>Never the night before a Lower day.</em></dd>
+        <dt>Restaurant default</dt><dd>Order the protein you'd cook at home. Eat half the starch. All the vegetables. No menu math required.</dd>
+      </dl>
+
+      <div class="session-section-label">Three meals for low-appetite days</div>
+      <div class="nutri-meals">
+        <div class="meal-card">
+          <div class="meal-num">Meal 01</div>
+          <div class="meal-name">Greek Yogurt Power Bowl</div>
+          <div class="meal-stats">~50g protein · 4 min</div>
+          <ul><li>1.5 cups Fage 5%</li><li>1 scoop whey isolate</li><li>½ cup berries</li><li>2 tbsp hemp seeds</li><li>1 tbsp honey</li></ul>
+        </div>
+        <div class="meal-card">
+          <div class="meal-num">Meal 02</div>
+          <div class="meal-name">Rotisserie Chicken Bowl</div>
+          <div class="meal-stats">~50g protein · 5 min</div>
+          <ul><li>6 oz pulled rotisserie chicken</li><li>1 microwave rice pouch</li><li>½ avocado</li><li>Everything bagel seasoning + hot sauce + lime</li><li>Optional: bagged slaw mix</li></ul>
+        </div>
+        <div class="meal-card">
+          <div class="meal-num">Meal 03</div>
+          <div class="meal-name">Cottage Cheese Egg Scramble</div>
+          <div class="meal-stats">~55g protein · 6 min</div>
+          <ul><li>4 whole eggs</li><li>1 cup cottage cheese (folded in off heat)</li><li>1 slice sourdough toast</li><li>Cholula or Crystal hot sauce</li><li>Optional: arugula on top</li></ul>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">→ Insurance policy</div>
+        <p>Premier Protein shakes (30g protein, 160 cal, ~$2 at Costco) in the fridge by Tuesday. One shake = 17% of the daily protein floor in 90 seconds. Nothing-sounds-good days, that's the play.</p>
+      </div>
+    </section>
+
+    <!-- ============ 10 ADHD COMPLIANCE ============ -->
+    <section class="block" id="adhd">
+      <div class="block-head">
+        <div class="block-num">10</div>
+        <div>
+          <div class="block-title">Compliance System</div>
+          <div class="block-kicker">Anchor lifts vs rotation. Wildcard session. Tracking. Self-check.</div>
+        </div>
+      </div>
+
+      <div class="duo">
+        <div class="duo-col">
+          <h4>Anchor lifts <span class="red">/ never rotate</span></h4>
+          <ul style="list-style: none; font-size: 14px; line-height: 2;">
+            <li>—  Smith Incline Press</li>
+            <li>—  Barbell Hip Thrust</li>
+            <li>—  DB RDL</li>
+            <li>—  DB Lateral Raise</li>
+            <li>—  Lat Pulldown (wide neutral)</li>
+            <li>—  Cable Rope Crunch</li>
+          </ul>
+          <p style="font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--ink-mid); margin-top: 12px;">These are your benchmarks. Progression on these = real progress.</p>
+        </div>
+
+        <div class="duo-col">
+          <h4>Rotation <span class="red">/ every 4 weeks</span></h4>
+          <table style="font-size: 11px;">
+            <thead><tr><th>Slot</th><th>B1</th><th>B2</th><th>B3</th><th>B4</th></tr></thead>
+            <tbody>
+              <tr><td>Push novelty</td><td>Y-Raise</td><td>Egyptian</td><td>Cuban Press</td><td>Behind-back</td></tr>
+              <tr><td>Pull novelty</td><td>Eccentric row</td><td>Pullover</td><td>Meadows</td><td>Pendlay</td></tr>
+              <tr><td>Lower novelty</td><td>B-stance RDL</td><td>Cossack</td><td>SL hip thrust</td><td>FFE split</td></tr>
+              <tr><td>Glute acc</td><td>Kickback</td><td>45° ext</td><td>Frog pump</td><td>Top hold</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="session-section-label" style="margin-top: 56px;">Wildcard Session / 30 min · Low-Motivation Days</div>
+      <table class="zebra">
+        <thead><tr><th style="width:14%">Time</th><th>What</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>0:00 – 3:00</td><td>3 sets × 15 lateral raise, whatever DB feels right</td><td><em>Easiest entry, hits priority muscle</em></td></tr>
+          <tr><td>3:00 – 8:00</td><td>Hip thrust machine, 3 × 10 moderate</td><td><em>Anchor lift, glutes</em></td></tr>
+          <tr><td>8:00 – 14:00</td><td>Cable crossover OR cable curl OR rear delt fly — pick one</td><td><em>Lets ADHD brain pick</em></td></tr>
+          <tr><td>14:00 – 20:00</td><td>Sled push or stairmaster, 6 min</td><td><em>Conditioning, easy compliance</em></td></tr>
+          <tr><td>20:00 – 25:00</td><td>15 cable crunch + 12 hanging leg raise + 30s plank, 2 rounds</td><td><em>High-payoff finisher</em></td></tr>
+          <tr><td>25:00 – 30:00</td><td>Steam room or walk out</td><td><em>Sense of completion</em></td></tr>
+        </tbody>
+      </table>
+
+      <div class="duo">
+        <div class="duo-col">
+          <h4>Tracking <span class="red">/ Hevy</span></h4>
+          <p style="font-size: 13px; line-height: 1.6;">Visual progression graphs (dopamine), built-in supersets / drop sets / EMOM timer, one-tap repeat workout, streak tracking, custom exercise creation for novelty lifts. <strong>Setup tonight.</strong> Build the 5 sessions as templates. After Sunday you should never open this doc at the gym again.</p>
+        </div>
+        <div class="duo-col">
+          <h4>Sunday self-check <span class="red">/ 2 min</span></h4>
+          <ol style="font-size: 13px; line-height: 1.7; padding-left: 20px;">
+            <li>Strength PR on at least one anchor lift?</li>
+            <li>Sleep average + wakings/night?</li>
+            <li>Days hit 165g protein? (target 6/7)</li>
+            <li>Joints / soft-tissue complaints &gt; 3 days?</li>
+            <li>Sessions completed / sessions planned?</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 11 TIMELINE ============ -->
+    <section class="block" id="timeline">
+      <div class="block-head">
+        <div class="block-num">11</div>
+        <div>
+          <div class="block-title">Timeline</div>
+          <div class="block-kicker">What you'll see, what you'll feel, plateaus, and how to break them</div>
+        </div>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-row">
+          <div class="timeline-week">04<span class="label">Week</span></div>
+          <div class="timeline-cell"><h5>You'll see</h5><p>Ab definition slightly clearer in morning mirror. Lateral raise load up ~15%.</p></div>
+          <div class="timeline-cell"><h5>You'll feel</h5><p>Energy steadier. Slight strength wave.</p></div>
+          <div class="timeline-cell"><h5>Plateau / Fix</h5><p>None — honeymoon. Ride it.</p></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-week">08<span class="label">Week</span></div>
+          <div class="timeline-cell"><h5>You'll see</h5><p>Visible delt cap from front. Glutes fuller in jeans. Clearer V into hip.</p></div>
+          <div class="timeline-cell"><h5>You'll feel</h5><p>Workouts feel "yours" — sessions in muscle memory.</p></div>
+          <div class="timeline-cell"><h5>Plateau / Fix</h5><p>First incline press stall. <strong>Fix:</strong> switch to eccentric tempo (5-1-X-0) for 2 weeks.</p></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-week">12<span class="label">Week</span></div>
+          <div class="timeline-cell"><h5>You'll see</h5><p>Abs visible at rest in good light. Chest reads "square" with upper shelf. ~160 lb.</p></div>
+          <div class="timeline-cell"><h5>You'll feel</h5><p>Confidence shift in clothes. First time you genuinely like a shirtless mirror photo.</p></div>
+          <div class="timeline-cell"><h5>Plateau / Fix</h5><p>Glutes plateau. <strong>Fix:</strong> add 4th glute exposure — heavy hip thrust 5×5, separate 20-min Sun mini-session.</p></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-week">16<span class="label">Week</span></div>
+          <div class="timeline-cell"><h5>You'll see</h5><p>Full target silhouette. V-taper visible in t-shirt, capped delts, glute shelf, 6-pack at rest, ~9% BF.</p></div>
+          <div class="timeline-cell"><h5>You'll feel</h5><p>Looking at the references and recognizing yourself.</p></div>
+          <div class="timeline-cell"><h5>Plateau / Fix</h5><p>Diet fatigue. <strong>Fix:</strong> drop volume 20%, raise carbs 30% for one week, re-enter recomp.</p></div>
+        </div>
+        <div class="timeline-row">
+          <div class="timeline-week">24<span class="label">Week</span></div>
+          <div class="timeline-cell"><h5>You'll see</h5><p>Calvin Klein silhouette achieved. Light forearm vascularity. Sharp V-cut.</p></div>
+          <div class="timeline-cell"><h5>You'll feel</h5><p>Done. Now: maintenance vs push further.</p></div>
+          <div class="timeline-cell"><h5>Plateau / Fix</h5><p>Body adapts to rotation. <strong>Fix:</strong> redesign — switch to 6-day push/pull/legs, 12-week "polish" block.</p></div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <div class="callout-label">→ Compliance held means</div>
+        <p>≥ 90% sessions hit · ≥ 85% days hit protein floor · ≥ 7 hours sleep avg · alcohol within cap. Anything less and the timeline shifts right by 4–8 weeks. Not catastrophic — just real.</p>
+      </div>
+    </section>
+
+    <!-- ============ 12 RECOVERY ============ -->
+    <section class="block" id="recovery">
+      <div class="block-head">
+        <div class="block-num">12</div>
+        <div>
+          <div class="block-title">Recovery + Lifestyle</div>
+          <div class="block-kicker">Sleep, mobility floor, steam room, rest day. The non-negotiables.</div>
+        </div>
+      </div>
+
+      <dl class="keyval">
+        <dt>Sleep floor</dt><dd>7 hours, 5+ nights/week. Target 7.5 hours, 6+ nights. <em>Phone out of bedroom by 11pm. Room 65–68°F. No alcohol within 3 hours of bed.</em></dd>
+        <dt>Why sleep matters most</dt><dd>Semaglutide + Vyvanse + heavy training = elevated cortisol baseline. Sleep is the only lever big enough to keep cortisol from sabotaging glute and delt growth. Skip sleep, lose the silhouette.</dd>
+        <dt>Mobility floor</dt><dd>10 min daily — same 5 movements: 90/90 hip switches × 10 each · world's greatest stretch × 5 each · cat/cow × 10 · couch stretch × 60s each · banded shoulder dislocates × 15. <em>Do it while coffee brews. Habit, not session.</em></dd>
+        <dt>Steam room protocol</dt><dd>3–4 sessions / week · 15 min · post-lift or evening. Hydrate 16 oz electrolyte before + after. Finish with a 60–90s cold shower for the contrast effect. <em>Equinox doesn't have a sauna; steam is the swap.</em></dd>
+        <dt>Caffeine</dt><dd>Cap 200mg before noon, none after. Vyvanse already does the lifting. Pre-workout caffeine only when sleep was &lt; 7h.</dd>
+        <dt>Rest day</dt><dd>5,000–8,000 steps · mobility floor · big real-food meal · one maintenance thing (steam / massage gun / foam roller) · 8 hours sleep target. <em>DO NOT make rest day a "catch up on cardio" day. Rest is the work.</em></dd>
+      </dl>
+
+      <div class="callout">
+        <div class="callout-label">→ Quick reference</div>
+        <p>Weekly: 5 × 60 min · Mon Push A · Tue Lower A · Wed Pull A · Fri Push B · Sat Lower B. Daily: 165g protein · 7+h sleep · 10-min mobility · 5,000+ steps. Weekly: Sunday self-check · conditioning slots · ≤ 4 drinks. Every 4 weeks: rotate accessories · re-test anchors · photograph progress.</p>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-mark">Built for<br>the work.<span class="red">.</span></div>
+      <div class="footer-meta">
+        Aesthetic Physique Program<br>
+        16-Week Build · v.2<br>
+        Tap + on any lift for instructions and weight
+      </div>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // ===== Today / Date =====
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const sessionMap = {
+    1: { name: 'Push A — Upper Shelf + Delt Cap', target: 's1' },
+    2: { name: 'Lower A — Glute Sculpt + Lean Legs', target: 's2' },
+    3: { name: 'Pull A — V-Taper Width + Posterior', target: 's3' },
+    4: { name: 'Conditioning + Steam', target: null },
+    5: { name: 'Push B — Delt Density + Abs', target: 's4' },
+    6: { name: 'Lower B — Glute Lift + Lateral', target: 's5' },
+    0: { name: 'Rest — Walk + Mobility + Real Food', target: null }
+  };
+  const now = new Date();
+  const dow = now.getDay();
+  document.getElementById('todayDate').textContent =
+    `${String(now.getDate()).padStart(2,'0')} / ${months[now.getMonth()]} / ${now.getFullYear()}`;
+  document.getElementById('todayDayName').textContent = days[dow];
+  document.getElementById('todaySession').textContent = sessionMap[dow].name;
+  const tBtn = document.querySelector('.today-banner button');
+  if (!sessionMap[dow].target) tBtn.style.display = 'none';
+
+  const dgCells = document.querySelectorAll('#dayGrid .day-cell');
+  dgCells.forEach(c => {
+    if (parseInt(c.getAttribute('data-day')) === dow) c.classList.add('today');
+    c.addEventListener('click', () => {
+      const target = c.getAttribute('data-target');
+      if (target) {
+        const el = document.getElementById(target);
+        el.setAttribute('open', '');
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  function jumpToTodaySession() {
+    const t = sessionMap[dow].target;
+    if (!t) return;
+    const el = document.getElementById(t);
+    el.setAttribute('open','');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  window.jumpToTodaySession = jumpToTodaySession;
+
+  function expandAllExercises(open) {
+    document.querySelectorAll('details.exercise, details.warmup-item').forEach(d => {
+      if (open) d.setAttribute('open',''); else d.removeAttribute('open');
+    });
+  }
+  window.expandAllExercises = expandAllExercises;
+
+  // sidebar nav active
+  const sections = document.querySelectorAll('section.block');
+  const navItems = document.querySelectorAll('.nav-item');
+  const navMap = {};
+  navItems.forEach(n => { navMap[n.getAttribute('data-target')] = n; });
+  navItems.forEach(n => {
+    n.addEventListener('click', () => {
+      const t = n.getAttribute('data-target');
+      const el = document.getElementById(t);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        navItems.forEach(n => n.classList.remove('active'));
+        const id = e.target.id;
+        if (navMap[id]) navMap[id].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-30% 0px -65% 0px' });
+  sections.forEach(s => observer.observe(s));
+
+  // progress markers (localStorage)
+  const markers = document.querySelectorAll('.progress-row .marker');
+  markers.forEach(m => {
+    const key = 'apg-' + m.getAttribute('data-key');
+    if (localStorage.getItem(key) === '1') m.classList.add('checked');
+    m.addEventListener('click', () => {
+      m.classList.toggle('checked');
+      localStorage.setItem(key, m.classList.contains('checked') ? '1' : '0');
+    });
+  });
+</script>
+
+</body>
+</html>
