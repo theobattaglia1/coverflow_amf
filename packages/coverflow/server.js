@@ -128,7 +128,11 @@ if (dataSyncEnabled) {
   console.log(`[DATA SYNC] Enabled with provider=${dataSyncConfig.provider}, bucket=${dataSyncConfig.bucket}, prefix=${dataSyncConfig.prefix}, files=${dataSyncConfig.files.join(', ')}`);
 }
 
-await initializeDataSync();
+// Run startup sync in background so the server binds to PORT immediately.
+// If GCS is slow or unreachable the server still starts; sync completes async.
+initializeDataSync().catch(err =>
+  console.error('[DATA SYNC] Background startup sync failed:', err.message)
+);
 
 
 // --- Middleware Setup ---
