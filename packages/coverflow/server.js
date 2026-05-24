@@ -704,6 +704,12 @@ app.get('/hudson-deck.html', basicAuth({ users: { 'guest': 'MakeItTogether25!' }
   res.sendFile(path.join(PUBLIC_DIR, 'hudson-deck.html'));
 });
 
+// THE FRIEND GROUP — v1 investor deck (private link, basic auth)
+const fgAuth = basicAuth({ users: { 'guest': 'StoriesSongsFriendsForever26!' }, challenge: true, realm: 'The Friend Group' });
+app.get(['/the-friend-group-v1', '/the-friend-group-v1.html'], fgAuth, (req, res) => {
+  res.sendFile(path.join(PUBLIC_DIR, 'the-friend-group-v1.html'));
+});
+
 // Static files for PUBLIC site
 app.use(express.static(PUBLIC_DIR, { extensions: ['html'] }));
 
